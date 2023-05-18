@@ -1,6 +1,0 @@
-build/*
-install/*
-devel/*
-*.user
-.vscode
-*.autosave
