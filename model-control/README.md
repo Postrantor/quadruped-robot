@@ -176,3 +176,9 @@ Or run the code on the Lite3
 ```
 rosrun examples example_lite3_real
 ```
+
+If you have any question, please join our discussion group by scanning the following wechat QR code
+
+<div align="center">
+    <img src="./img/wechat.jpg">
+</div>
