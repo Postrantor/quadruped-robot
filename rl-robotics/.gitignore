@@ -91,3 +91,5 @@ time.txt
 *.pt
 *interface*.so
 build/
+
+isaacgym
