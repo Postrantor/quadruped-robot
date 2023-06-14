@@ -180,5 +180,5 @@ rosrun examples example_lite3_real
 If you have any question, please join our discussion group by scanning the following wechat QR code
 
 <div align="center">
-    <img src="./img/wechat.jpg" width="30%">
+    <img src="./img/QR-code.jpeg" width="30%">
 </div>
