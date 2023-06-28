@@ -9,11 +9,11 @@ This is a modified version of ego-planner for legged robot, which is a lightweig
 ## Software architecture
 This repository consists of below directories:
 - ego_planner: The modified version of ego-planner for legged robot.
-- legged_real: The path following node which publish the velocity commands for real legged robot
+- legged_real: The path following node which publish the velocity commands for real robot.
 
 
 ## Prepare environment 
-For environment preparation, please refer to [EGO-Planner](https://github.com/ZJU-FAST-Lab/ego-planner) install dependencies. Then compile the workspace.
+For environment preparation, please refer to [EGO-Planner](https://github.com/ZJU-FAST-Lab/ego-planner) to install related dependencies. Then compile the workspace.
 ```
 cd legged-ego-planner
 catkin_make
@@ -23,9 +23,9 @@ catkin_make
 # Usage
 
 ### View the results in rviz
-- Download the rosbag [rosbag](https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Atlas%20200I%20DK%20A2/DevKit/models/23.0.RC1/cann/tracking.bag) for test.
+- Download the [rosbag](https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Atlas%20200I%20DK%20A2/DevKit/models/23.0.RC1/cann/tracking.bag) for test.
     
-- launch the planner and play the rosbag. 
+- Launch the planner and play the rosbag. 
 ```
 source devel/setup.bash
 roslaunch ego_planner run_in_exp.launch
@@ -38,7 +38,7 @@ For real robot deployment, there are some other modules needed.
 * Point cloud or depth image from lidar or depth camera need to be published to construct the grid map.
 * An odometry or localization module is needed to provide the pose of the robot.
 
-Please check the `odom_topic` `cloud_topic` `depth_topic` in `run_in_exp.launch` for more detailed.
+Please check the `odom_topic` `cloud_topic` `depth_topic` in `run_in_exp.launch` for more details.
 ```
 source devel/setup.bash
 roslaunch ego_planner run_in_exp.launch
