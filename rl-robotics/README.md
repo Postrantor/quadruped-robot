@@ -110,4 +110,4 @@ Once the training process finishes, you can deploy it in the simulation or the r
 ## Communication
 If you have any question, please join our discussion group by scanning the following wechat QR code.
 
-<img src="./docs/QR-code.jpeg" alt="QR" title="" width="200" align=center />
+<img src="./docs/QR-code.jpg" alt="QR" title="" width="200" align=center />

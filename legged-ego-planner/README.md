@@ -9,7 +9,7 @@ This is a modified version of ego-planner for legged robot, which is a lightweig
 ## Software architecture
 This repository consists of below directories:
 - ego_planner: The modified version of ego-planner for legged robot.
-- legged_real: The path following module which output the commands for real legged robot
+- legged_real: The path following node which publish the velocity commands for real legged robot
 
 
 ## Prepare environment 
@@ -34,6 +34,11 @@ rosbag play tracking.bag
 ```
 
 ### Run on real legged robot
+For real robot deployment, there are some other modules needed.
+* Point cloud or depth image from lidar or depth camera need to be published to construct the grid map.
+* An odometry or localization module is needed to provide the pose of the robot.
+
+Please check the `odom_topic` `cloud_topic` `depth_topic` in `run_in_exp.launch` for more detailed.
 ```
 source devel/setup.bash
 roslaunch ego_planner run_in_exp.launch
@@ -47,4 +52,4 @@ roslaunch legged_real trace.launch
 ## Communication
 If you have any question, please join our discussion group by scanning the following wechat QR code.
 
-<img src="src/docs/QR-code.jpeg" alt="QR" title="" width="200" align=center />
+<img src="src/docs/QR-code.jpg" alt="QR" title="" width="200" align=center />
