@@ -23,7 +23,7 @@ catkin_make
 # Usage
 
 ### View the results in rviz
-- Download the [rosbag](https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Atlas%20200I%20DK%20A2/DevKit/models/23.0.RC1/cann/tracking.bag) for test.
+- Download the [rosbag](https://ascend-devkit-tool.obs.cn-south-1.myhuaweicloud.com/CANN/tracking.bag) for test.
     
 - Launch the planner and play the rosbag. 
 ```
