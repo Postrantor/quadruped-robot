@@ -27,6 +27,165 @@
 
 using robotics::math::clip;
 
+int fourCharToInt (char a, char b, char c, char d) {
+    int ret_val = 0;
+    ret_val = a;
+    ret_val <<= 8;
+    ret_val |= b;
+    ret_val <<= 8;
+    ret_val |= c;
+    ret_val <<= 8;
+    ret_val |= d;
+    return ret_val;
+}
+
+int Quadruped::qrDesiredStateCommand::RecvSocket()
+{
+    // 创建套接字
+    int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+
+    // 绑定套接字到本地端口
+    sockaddr_in localAddr;
+    localAddr.sin_family = AF_INET;
+    localAddr.sin_port = htons(43892);
+    localAddr.sin_addr.s_addr = INADDR_ANY;
+    bind(sock, (sockaddr*)&localAddr, sizeof(localAddr));
+
+    // 接收数据
+    while(1) {
+        sockaddr_in remoteAddr;
+        socklen_t remoteAddrLen = sizeof(remoteAddr);
+        memset(data_buffer, 0, sizeof(data_buffer));
+        int recvLen = recvfrom(sock, data_buffer, sizeof(data_buffer), 0, (sockaddr*)&remoteAddr, &remoteAddrLen);
+        
+        // 输出接收到的数据
+        // std::cout << "Received " << recvLen << " bytes from " << inet_ntoa(remoteAddr.sin_addr) << ":" << ntohs(remoteAddr.sin_port) << std::endl;
+        for (uint8_t i=0; i<3; ++i) {
+            socket_value[i] = fourCharToInt(data_buffer[i*4+3], data_buffer[i*4+2], data_buffer[i*4+1], data_buffer[i*4]);
+            // printf("original data: --%02x--%02x--%02x--%02x--\n", data_buffer[i*4+3], data_buffer[i*4+2], data_buffer[i*4+1], data_buffer[i*4]);
+            // std::cout << socket_value[i] << std::endl;
+        }
+        // 0x21010130
+        // 0x21010131
+        // 0x21010135
+        // 0x21010c0e
+        // 16908577 // A
+        
+        joyCmdVz = 0;
+        
+        /* If A key is pressed, joy control will be enabled or disabled
+        * currently the joy control is enabled by default
+        */
+        // if (joy_msg->buttons[0] == 1) {
+        //     if (!joyCtrlOnRequest) {
+        //         ROS_INFO("You have open joy control!!!\n");
+        //         joyCtrlOnRequest = true;
+        //     } else {
+        //         ROS_INFO("You have turned off joy control!!!\n");
+        //         joyCtrlOnRequest = false;
+        //     }
+        // }
+
+        rosCmdRequest = !joyCtrlOnRequest;
+
+        if (joyCtrlOnRequest || rosCmdRequest) {
+            /* X key. */
+            if (socket_value[0] == 0x21010300) {
+                ROS_INFO("You have change the gait !!!\n");
+                if (movementMode == 0) {
+                    movementMode = 1;
+                }
+                joyCtrlStateChangeRequest = true;
+            }
+
+            /* User control the robot locomotion direction and velocity. */
+            if (joyCtrlOnRequest) {
+                /* Right joy stick up/down. */
+                if (socket_value[0] == 0x21010130) {
+                    std::cout << "vx = " << socket_value[1]/32768.0 << std::endl;
+                    joyCmdVx = socket_value[1]/32768.0 * MAX_VELX;
+                } else{
+                    joyCmdVx = 0;
+                }
+
+                /* Right joy stick horizontal movement. */
+                if (socket_value[0] == 0x21010131) {
+                    std::cout << "vy = " << socket_value[1]/32768.0 << std::endl;
+                    joyCmdVy = socket_value[1]/32768.0 * MAX_VELY;
+                } else {
+                    joyCmdVy = 0;
+                }
+                /* Left joy stick horizontal movement. */
+                if (socket_value[0] == 0x21010131) {
+                    std::cout << "w = " << socket_value[1]/32768.0 << std::endl;
+                    joyCmdYawRate = socket_value[1]/32768.0 * MAX_YAWRATE;
+                } else {
+                    joyCmdYawRate = 0;
+                }
+                /* left cross button left/right movement
+                * if you want to enable it, use:
+                * joy_msg->axes[6] * JOY_CMD_ROLL_MAX * (-1);
+                */
+                joyCmdRollRate = 0;
+
+                /* left cross button up/down movement
+                * if you want to enable it, use:
+                * joy_msg->axes[7] * JOY_CMD_PITCH_MAX;
+                */
+                joyCmdPitchRate = 0;
+            }
+
+            /* If B key is pressed, the quadruped will stop troting and stand by MPC controller. */
+            if (socket_value[0] == 0x21010201) {
+                ROS_INFO("You have pressed the stop button!!!!\n");
+                if (movementMode == 1) {
+                    movementMode = 0;
+                    joyCtrlStateChangeRequest = true;
+                } else if (movementMode == 0) {
+                    if (bodyUp >= 0) {
+                        // movementMode = 1;
+                        bodyUp = 0;
+                        joyCtrlStateChangeRequest = true;
+                    }
+                }
+            }
+
+            /* If Y key is pressed when the quadruped is sitting down,
+            * no commands will be sent to quadruped and it will lie on the ground.
+            */
+            if (socket_value[0] == 0x21010307) {
+                ROS_INFO("You have pressed the exit button!!!!\n");
+                if (movementMode == 0 && bodyUp <= 0) {
+                    joyCmdExit = true;
+                    joyCtrlStateChangeRequest = true;
+                    joyCtrlOnRequest = false;
+                }
+            }
+
+            /* If Rb key is pressed when quadruped is standing by MPC,
+            * quadruped will switch to position mode and can sit down and stand up with position mode.
+            */
+            if (socket_value[0] == 0x21010402) {
+                ROS_INFO("You have pressed the up/down button!!!!\n");
+                if (movementMode == 0) {
+                    if (bodyUp==0) {
+                        bodyUp = 1;
+                    } else {
+                        bodyUp = -bodyUp;
+                    }
+                    joyCtrlStateChangeRequest = true;
+                }
+            }
+        }
+        
+        sleep(0.1);
+    }
+    // 关闭套接字
+    close(sock);
+
+    return 0;
+}
+
 Quadruped::qrDesiredStateCommand::qrDesiredStateCommand(ros::NodeHandle &nhIn, qrRobot* robotIn):nh(nhIn)
 {
     stateDes.setZero();
@@ -60,6 +219,13 @@ Quadruped::qrDesiredStateCommand::qrDesiredStateCommand(ros::NodeHandle &nhIn, q
     gamepadCommandSub = nh.subscribe(topicName, 10, &qrDesiredStateCommand::JoyCallback, this);
 
     printf("[Desired State Command] init finish...\n");
+        
+    memset(data_buffer, 0, sizeof(data_buffer));
+    
+    // 创建新线程并运行ReceiveData函数
+    // t = std::thread(Quadruped::RecvSocket);
+    // 等待新线程结束
+    // t.join();
 }
 
 

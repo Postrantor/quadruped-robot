@@ -59,7 +59,7 @@ void qrFSMStateStandUp<T>::Run()
 {
     /* stand up, keep position or sit down according to the value of %standup. */
     if (standUp == 1) {
-        Quadruped::Action::StandUp(this->_data->quadruped, 2.f, 3.f, 1.0f / this->_data->userParameters->controlFrequency);
+        Quadruped::Action::StandUp(this->_data->quadruped, 1.f, 2.f, 0.001);
         motorAngles = this->_data->quadruped->standUpMotorAngles;
         isUp = true;
     } else if (standUp == -1) {

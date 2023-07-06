@@ -119,6 +119,8 @@ qrRobotLite2::qrRobotLite2(std::string configFilePath)
     standUpKneeAngle = robotConfig["robot_params"]["default_standup_angle"]["knee"].as<float>();
     defaultStandUpAngle << standUpAbAngle, standUpHipAngle, standUpKneeAngle;
     standUpMotorAngles << defaultStandUpAngle, defaultStandUpAngle, defaultStandUpAngle, defaultStandUpAngle;
+    standUpMotorAngles[7] += 0.15;
+    standUpMotorAngles[10] += 0.15;
 
     float sitDownAbAngle, sitDownHipAngle, sitDownKneeAngle;
     sitDownAbAngle = robotConfig["robot_params"]["default_sitdown_angle"]["ab"].as<float>();
@@ -248,7 +250,7 @@ void qrRobotLite2::ApplyAction(const Eigen::MatrixXf &motorCommands, MotorMode m
 {
     // std::array<float, 60> motorCommandsArray = {0};
     RobotCmd motorCommandsArray;
-    float t = GetTimeSinceReset();
+    // float t = GetTimeSinceReset();
 
     if (motorControlMode == POSITION_MODE) {
         Eigen::Matrix<float, 12, 1> motorCommandsShaped = motorCommands;
@@ -319,6 +321,10 @@ void qrRobotLite2::ApplyAction(const Eigen::MatrixXf &motorCommands, MotorMode m
         
         for (int motorId = 0; motorId < NumMotor; motorId++) {
             int motorId_ = (motorId/3)%2 == 0? motorId+3: motorId-3;
+            // if (motorId == 10) {
+            //     printf("p = %.2f, Kp = %.1f, v=%.2f Kd=%.1f, f=%.2f\n",motorCommandsShaped(POSITION, motorId), motorCommandsShaped(KP, motorId), 
+            //     motorCommandsShaped(VELOCITY, motorId), motorCommandsShaped(KD, motorId), motorCommandsShaped(TORQUE, motorId));
+            // }
             motorCommandsArray.joint_cmd[motorId_].pos = motorCommandsShaped(POSITION, motorId);
             motorCommandsArray.joint_cmd[motorId_].kp = motorCommandsShaped(KP, motorId);
             motorCommandsArray.joint_cmd[motorId_].vel = motorCommandsShaped(VELOCITY, motorId);

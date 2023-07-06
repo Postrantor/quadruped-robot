@@ -24,7 +24,7 @@
 
 #include "quadruped/exec/qr_robot_runner.h"
 #include "quadruped/ros/qr_control2gazebo_msg.h"
-
+#include <thread>
 #include <ros/package.h>
 
 using namespace std;
@@ -59,6 +59,9 @@ int main(int argc, char **argv)
     qrLocomotionController* locomotionController = robotRunner.GetLocomotionController();
     qrStateEstimatorContainer* stateEstimators = robotRunner.GetStateEstimator();
     qrDesiredStateCommand* desiredStateCommand = robotRunner.GetDesiredStateCommand();
+
+    // std::thread t(&qrDesiredStateCommand::RecvSocket, desiredStateCommand);
+
     std::cout << "---------LocomotionController Reset Finished---------" << std::endl;
     // ros module init
     // RobotOdometryEstimator *legOdom = new RobotOdometryEstimator(quadruped, nh);
@@ -79,7 +82,6 @@ int main(int argc, char **argv)
     ROS_INFO("start control loop....");
     Vec3<float> desiredSpeed(0,0,0);
     float desiredTwistingSpeed = 0;
-
 
     // Action::SitDown(quadruped, 3, 0.001); 
     Action::StandUp(quadruped, 3.f, 5.f, 0.001);
@@ -166,7 +168,8 @@ int main(int argc, char **argv)
         // }
         vis.Show();
     }
-
+    
+    // t.join(); // 等待新线程结束
     ros::shutdown();
     return 0;
 }
