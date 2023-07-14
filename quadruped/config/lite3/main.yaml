@@ -1,5 +1,6 @@
 name: lite3
 
+network_path: "./lite3.onnx"
 speed_update_mode: 0 # twist  0(const), 1(ros/cmd_vel)
 const_twist:
   linear: [0.2, 0., 0.]

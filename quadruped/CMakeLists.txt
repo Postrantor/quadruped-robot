@@ -11,7 +11,8 @@ ADD_COMPILE_OPTIONS(-D_useros)
 # ADD_COMPILE_OPTIONS(-DQPOASES_AVOID_LA_NAMING_CONFLICTS)
 
 option(USE_GO1                            "WHICH ROBOT"                     OFF)
-option(USE_BLAS                            "USE MKL BLAS"                   ON)
+option(USE_BLAS                            "USE MKL BLAS"                   OFF)
+option(USE_ONNX                            "USE CPP ONNXRUNTIME"            ON)
 
 
 EXECUTE_PROCESS( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE ARCHITECTURE )
@@ -80,6 +81,16 @@ list(APPEND includePath ${PYTHON_INCLUDE_DIRS})
 list(APPEND includePath ${PROJECT_SOURCE_DIR}/extern/matplotlib-cpp)
 find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 
+if(${USE_ONNX})
+    find_package(onnxruntime REQUIRED)
+    message(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" ${onnxruntime_INCLUDE_DIRS})
+    message(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" ${onnxruntime_LIBRARIES})
+    list(APPEND includePath ${onnxruntime_INCLUDE_DIRS})
+    #list(APPEND linkPath '~/.local/lib/libonnxruntime.so')
+else()
+    set(onnxruntime_LIBRARIES)
+endif()
+
 # MIT AMD
 add_subdirectory("include/quadruped/utils/amd")
 
@@ -142,6 +153,7 @@ target_include_directories(quadruped PUBLIC ${includePath} ${catkin_INCLUDE_DIRS
 target_link_directories(quadruped PUBLIC ${linkPath})
 
 target_link_libraries(quadruped PUBLIC
+    ${onnxruntime_LIBRARIES}
     ${PYTHON_LIBRARIES}
     ${YAML_CPP_LIBRARIES}
     ${catkin_LIBRARIES}

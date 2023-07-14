@@ -60,7 +60,7 @@ qrLocomotionController *SetUpController(qrRobot *quadruped, qrGaitGenerator* gai
                                     qrDesiredStateCommand* desiredStateCommand,
                                     qrStateEstimatorContainer* stateEstimators, 
                                     qrUserParameters* userParameters,
-                                    std::string& homeDir);
+                                    std::string& homeDir, bool enablRL=false);
 
 /**
  * @brief Setup the desired speed for robot.

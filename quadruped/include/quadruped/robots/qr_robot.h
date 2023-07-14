@@ -677,12 +677,15 @@ public:
     std::unordered_map<int, std::string> modeMap = {{0, "velocity"},
                                                     {1, "position"},
                                                     {2, "walk"},
-                                                    {3, "advanced_trot"}};
+                                                    {3, "advanced_trot"},
+                                                    {4, "rl_trot"}};
 
     /**
      * @brief Current finite state machine mode.
      */
     int fsmMode = 4;
+
+    std::string networkPath = "";
 
 };
 

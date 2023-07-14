@@ -86,6 +86,7 @@ controller_params:
   # mode: 1 # POS_MODE
   # mode: 2 # WALK_LOCOMOTION
   mode: 3 # ADVANCED_TROT
+  # mode: 4 # RL_TROT
 
 # is simulate or not
 is_sim: false

@@ -62,6 +62,7 @@ void qrLocomotionController::Reset()
     posePlanner->Reset(timeSinceReset);
     swingLegController->Reset(timeSinceReset);
     stanceLegController->Reset(timeSinceReset);
+    printf("68\n");
     BindCommand();
 }
 

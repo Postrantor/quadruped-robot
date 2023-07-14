@@ -72,9 +72,9 @@ void qrRaibertSwingLegController::Reset(float current_time)
     footholdPlanner->Reset(current_time); // reset planner
     swingKp = MatrixXf::Map(&userParameters->swingKp["trot"][0], 3, 1);
 
-    std::cout << "[SwingLegController Reset] phaseSwitchFootLocalPos: \n" << phaseSwitchFootLocalPos << std::endl;
-    std::cout << "[SwingLegController Reset] phaseSwitchFootGlobalPos: \n" << phaseSwitchFootGlobalPos << std::endl;
-    std::cout << "[SwingLegController Reset] footHoldInWorldFrame: \n" << footHoldInWorldFrame << std::endl;
+    // std::cout << "[SwingLegController Reset] phaseSwitchFootLocalPos: \n" << phaseSwitchFootLocalPos << std::endl;
+    // std::cout << "[SwingLegController Reset] phaseSwitchFootGlobalPos: \n" << phaseSwitchFootGlobalPos << std::endl;
+    // std::cout << "[SwingLegController Reset] footHoldInWorldFrame: \n" << footHoldInWorldFrame << std::endl;
     switch (robot->controlParams["mode"]) {
         case LocomotionMode::POSITION_LOCOMOTION: {
             footHoldInWorldFrame = phaseSwitchFootGlobalPos;

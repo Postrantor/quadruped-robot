@@ -58,7 +58,7 @@ void qrRobotEstimator::Reset(float currentTime)
     estimatedPosition = pose.head(3);
     estimatedRPY = pose.tail(3);
     lastTimestamp = 0;
-    std::cout << "reset pos= " << estimatedPosition.transpose() << std::endl;
+    // std::cout << "reset pos= " << estimatedPosition.transpose() << std::endl;
 }
 
 

@@ -31,6 +31,8 @@
 #include "qr_control_fsm_data.hpp"
 
 #include "qr_fsm_state_locomotion.hpp"
+#include "qr_fsm_state_rl_locomotion.hpp"
+
 #include "qr_fsm_state_passive.hpp"
 #include "qr_fsm_state_standup.hpp"
 
@@ -54,6 +56,8 @@ struct qrFSMStatesList {
     qrFSMStateStandUp<T>* standUp;
 
     qrFSMStateLocomotion<T> *locomotion;
+
+    qrFSMStateRLLocomotion<T> *rlLocomotion;
 
 };
 
@@ -95,6 +99,7 @@ public:
         resetTime = currentTime;
         timeSinceReset = 0;
         statesList.locomotion->Reset(currentTime);
+        statesList.rlLocomotion->Reset(currentTime);
     }
 
     /**
@@ -137,6 +142,11 @@ public:
      */
     void PrintInfo(int opt);
 
+    /**
+     * @brief Current FSM state.
+     */
+    qrFSMState<T> *currentState;
+
 private:
 
     /**
@@ -163,11 +173,6 @@ private:
      * @brief Contains all the FSM states.
      */
     qrFSMStatesList<T> statesList;
-
-    /**
-     * @brief Current FSM state.
-     */
-    qrFSMState<T> *currentState;
 
     /**
      * @brief Next FSM state.
