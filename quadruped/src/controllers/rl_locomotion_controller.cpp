@@ -24,13 +24,194 @@
 
 #include "controllers/rl_locomotion_controller.h"
 
+#if USE_NPU // OM
+static int32_t deviceId = 0;
+static uint32_t modelId;
+static size_t dataSize = 0;
+static void *hostData = nullptr;
+static void *deviceData = nullptr;
+static size_t dataSize1 = 0;
+static void *hostData1 = nullptr;
+static void *deviceData1 = nullptr;
+
+static void *outputHostData = nullptr;
+static size_t outputDataSize = 0;
+static void *outputDeviceData = nullptr;
+
+static aclmdlDataset *inputDataSet;
+static aclDataBuffer *inputDataBuffer;
+static aclmdlDataset *inputDataSet1;
+static aclDataBuffer *inputDataBuffer1;
+static aclmdlDataset *outputDataSet;
+static aclDataBuffer *outputDataBuffer;
+static aclmdlDesc *modelDesc;
+
+
+std::vector<std::string> split (const std::string &s, char delim) {
+    std::vector<std::string> result;
+    std::stringstream ss (s);
+    std::string item;
+
+    while (getline (ss, item, delim)) {
+        result.push_back (item);
+    }
+
+    return result;
+}
+
+void InitResource()
+{
+    //指定当前进程或线程中用于运算的Device，同时隐式创建默认Context。同步接口。
+    aclError ret = aclInit(nullptr);
+    ret = aclrtSetDevice(deviceId);
+}
+
+void LoadModel(const char* modelPath)
+{
+    //模型ID的指针。
+    //系统成功加载模型后会返回的模型ID。
+    aclError ret = aclmdlLoadFromFile(modelPath, &modelId);
+    printf("LoadModel %d, modelid = %d\n",ret, modelId);
+}
+
+void CreateHostData()
+{
+    dataSize = 320 * sizeof(float);
+    aclError ret = aclrtMallocHost(&hostData, dataSize);
+    // hostData = malloc(dataSize);
+    dataSize1 = 40 * dataSize;
+    ret = aclrtMallocHost(&hostData1, dataSize1);
+    // hostData1 = malloc(dataSize1);
+}
+
+//申请Device侧的内存，再以内存复制的方式将内存中的图片数据传输到Device
+void CopyDataFromHostToDevice()
+{
+    //第三个参数代表申请内存的相关策略
+    aclError ret;
+    if (deviceData == nullptr) {
+        ret = aclrtMalloc(&deviceData, dataSize, ACL_MEM_MALLOC_HUGE_FIRST);
+    }
+    //进行主机内存到设备内存间的复制
+    ret = aclrtMemcpy(deviceData, dataSize, hostData, dataSize, ACL_MEMCPY_HOST_TO_DEVICE);
+    if (deviceData1 == nullptr) {
+        ret = aclrtMalloc(&deviceData1, dataSize1, ACL_MEM_MALLOC_HUGE_FIRST);
+    }
+    ret = aclrtMemcpy(deviceData1, dataSize1, hostData1, dataSize1, ACL_MEMCPY_HOST_TO_DEVICE);
+}
+
+// 准备模型推理的输入数据结构
+void CreateModelInput()
+{
+    //创建aclmdlDataset类型的数据，描述模型推理的输入
+    //使用aclmdlDesc类型的数据描述模型基本信息（例如输入/输出的个数、名称、数
+    //据类型、Format、维度信息等）。
+    //模型加载成功后，用户可根据模型的ID，调用该数据类型下的操作接口获取该模
+    //型的描述信息，进而从模型的描述信息中获取模型输入/输出的个数、内存大小、
+    //维度信息、Format、数据类型等信息。
+    //● 使用aclDataBuffer类型的数据来描述每个输入/输出的内存地址、内存大小。
+    //调用aclDataBuffer类型下的操作接口获取内存地址、内存大小等，便于向内存中存放输入数据、获取输出数据。
+    //● 使用aclmdlDataset类型的数据描述模型的输入/输出数据。
+    //模型可能存在多个输入、多个输出，调用aclmdlDataset类型的操作接口添加多个aclDataBuffer类型的数据。
+    inputDataSet = aclmdlCreateDataset();
+
+    inputDataBuffer = aclCreateDataBuffer(deviceData, dataSize);
+    aclError ret = aclmdlAddDatasetBuffer(inputDataSet, inputDataBuffer);
+    
+    inputDataBuffer1 = aclCreateDataBuffer(deviceData1, dataSize1);
+    ret = aclmdlAddDatasetBuffer(inputDataSet, inputDataBuffer1);
+}
+
+// 准备模型推理的输出数据结构
+void CreateModelOutput()
+{
+    // 创建模型描述信息
+    modelDesc = aclmdlCreateDesc();
+    aclError ret = aclmdlGetDesc(modelDesc, modelId);
+    // 创建aclmdlDataset类型的数据，描述模型推理的输出
+    outputDataSet = aclmdlCreateDataset();
+    // 获取模型输出数据需占用的内存大小，单位为Byte
+    outputDataSize = aclmdlGetOutputSizeByIndex(modelDesc, 0);
+    // printf("outputDataSize = %lu\n", outputDataSize);
+    // 申请输出内存
+    ret = aclrtMalloc(&outputDeviceData, outputDataSize, ACL_MEM_MALLOC_HUGE_FIRST);
+    
+    outputDataBuffer = aclCreateDataBuffer(outputDeviceData, outputDataSize);
+    ret = aclmdlAddDatasetBuffer(outputDataSet, outputDataBuffer);
+}
+
+void ACLInference()
+{
+    if (outputDeviceData == nullptr) {
+        CreateModelInput();
+        CreateModelOutput();
+    }
+    // printf("Start Inference...\n");
+    // start();
+    aclError ret = aclmdlExecute(modelId, inputDataSet, outputDataSet);
+    // printf("cost t = %.3f [ms]\n", getMs());
+    // printf("End Inference !\n");
+    // 获取推理结果数据
+    if (outputHostData == nullptr) {
+        ret = aclrtMallocHost(&outputHostData, outputDataSize);
+    }
+    ret = aclrtMemcpy(outputHostData, outputDataSize, outputDeviceData, outputDataSize, ACL_MEMCPY_DEVICE_TO_HOST);
+}
+
+void UnloadModel()
+{
+    // 释放模型描述信息
+    aclmdlDestroyDesc(modelDesc);
+    // 卸载模型
+    aclmdlUnload(modelId);
+}
+
+void UnloadData()
+{
+    aclError ret = aclrtFreeHost(hostData);
+    hostData = nullptr;
+    ret = aclrtFree(deviceData);
+    deviceData = nullptr;
+    aclDestroyDataBuffer(inputDataBuffer);
+    inputDataBuffer = nullptr;
+    aclmdlDestroyDataset(inputDataSet);
+    inputDataSet = nullptr;
+
+    ret = aclrtFreeHost(hostData1);
+    hostData1 = nullptr;
+    ret = aclrtFree(deviceData1);
+    deviceData1 = nullptr;
+    aclDestroyDataBuffer(inputDataBuffer1);
+    inputDataBuffer1 = nullptr;
+    aclmdlDestroyDataset(inputDataSet1);
+    inputDataSet1 = nullptr;
+
+    ret = aclrtFreeHost(outputHostData);
+    outputHostData = nullptr;
+    ret = aclrtFree(outputDeviceData);
+    outputDeviceData = nullptr;
+    aclDestroyDataBuffer(outputDataBuffer);
+    outputDataBuffer = nullptr;
+    aclmdlDestroyDataset(outputDataSet);
+    outputDataSet = nullptr;
+}
+
+void DestroyResource()
+{
+    //复位当前运算的Device，释放Device上的资源，包括默认Context、默认Stream以及默认Context下创建的所有Stream，同步接口。若默认Context或默认Stream下的任务还未完成，系统会等待任务完成后再释放。
+    aclError ret = aclrtResetDevice(deviceId);
+    aclFinalize();
+}
+
+#endif
+
 namespace Quadruped {
 
-inline float CubicUp(float x) {
+float CubicUp(float x) {
     return -16 * pow(x, 3) + 12 * pow(x, 2);
 }
 
-inline float CubicDown(float x) {
+float CubicDown(float x) {
     return 16 * pow(x, 3) - 36 * pow(x, 2) + 24 * x - 4;
 }
 
@@ -43,19 +224,8 @@ void SwapFourLeg(Vec12<float>& data) {
     }
 }
 
-rlLocomotionController::rlLocomotionController(
-    qrRobot *robotIn,
-    qrGaitGenerator *gaitGeneratorIn,
-    qrDesiredStateCommand* desiredStateCommandIn,
-    qrStateEstimatorContainer *stateEstimatorIn,
-    qrComAdjuster *comAdjusterIn,
-    qrPosePlanner *posePlannerIn,
-    qrRaibertSwingLegController *swingLegControllerIn,
-    qrStanceLegControllerInterface *stanceLegControllerIn,
-    qrUserParameters *userParameters):
-    
-    qrLocomotionController(robotIn, gaitGeneratorIn, desiredStateCommandIn, stateEstimatorIn, comAdjusterIn, posePlannerIn, swingLegControllerIn, stanceLegControllerIn, userParameters),
-    onnxSession(nullptr)
+LocomotionControllerRLWrapper::LocomotionControllerRLWrapper(qrLocomotionController* locomotionController_)
+    :locomotionController(locomotionController_), robot(locomotionController_->robot)
 {
     command_scale = 1;
     rpy_scale = 1;
@@ -66,28 +236,18 @@ rlLocomotionController::rlLocomotionController(
     cpg_scale = 1;
     height_scale = 5;
     obs_history.reserve(NUM_HISTORY_STEPS * 320);
-
     // Reset();
-
 }
 
-void rlLocomotionController::Reset()
+void LocomotionControllerRLWrapper::Reset()
 {
-    qrLocomotionController::Reset();
-    // resetTime = robot->GetTimeSinceReset();
-    // timeSinceReset = 0.;
-    // gaitGenerator->Reset(timeSinceReset);
-    // comAdjuster->Reset(timeSinceReset);
-    // posePlanner->Reset(timeSinceReset);
-    // swingLegController->Reset(timeSinceReset);
-    // stanceLegController->Reset(timeSinceReset);
-    // BindCommand();
+    locomotionController->Reset();
 
     deque_dof_p.clear();
     deque_dof_v.clear();
     deque_dof_p_target.clear();
     obs_history.clear();
-    gaitFreq = 1.f/gaitGenerator->fullCyclePeriod[0];
+    gaitFreq = 1.f/locomotionController->gaitGenerator->fullCyclePeriod[0];
     
     target_joint_angles.setZero();
     deltaPhi.setZero();
@@ -95,43 +255,55 @@ void rlLocomotionController::Reset()
     proprioceptiveObs.setZero();
     exteroceptiveObs.setZero();
     total_obs.setZero();
-    // cpg_info << 0,0,0,0,
-    //             1,1,1,1,
-    //             0,0,0,0,
-    //             gaitFreq;
-    PMTGStep(0);
+    command.setZero();
+    PMTGStep();
+}
 
+LocomotionControllerRLWrapper::~LocomotionControllerRLWrapper()
+{
+    UnloadModel();
+    UnloadData();
+    DestroyResource();
 }
 
 
-void rlLocomotionController::BindCommand(std::string networkPath, std::string networkType) {
-    qrLocomotionController::BindCommand();
+void LocomotionControllerRLWrapper::BindCommand(std::string networkPath) {
+    locomotionController->BindCommand();
     
     if (networkPath.size() == 0) {
         throw std::logic_error("");
     } else {
-        // TODO
+        std::vector<std::string> words = split(networkPath, '.');
+        std::string& networkType = words.back();
         // LoadModel
         if (networkType == "onnx") {
+            #if USE_ONNX
+            // ONNX LOAD FUNCTION
             onnxEnv = Ort::Env(ORT_LOGGING_LEVEL_WARNING, "test");
             Ort::SessionOptions session_options;
-            onnxSession = Ort::Session(onnxEnv, "./a1.onnx", session_options);
+            onnxSession = Ort::Session(onnxEnv, networkPath.c_str(), session_options);
+            #endif
         } else if (networkType == "om") {
-            ;
+            #if USE_NPU
+            // ACL LOAD FUNCTION
+            if (dataSize == 0) { // cost 500 ms
+                InitResource();
+                LoadModel(networkPath.c_str());
+                CreateHostData();
+            }
+            #endif
         } else {
+            // CKPT LOAD FUNCTION, TODO
             throw std::logic_error("");
         }
-        // ACL LOAD FUNCTION
-        // ONNX LOAD FUNCTION
-        // CKPT LOAD FUNCTION
     }    
 }
 
 
-void rlLocomotionController::RLUpdate(bool enableInference)
+void LocomotionControllerRLWrapper::RLUpdate(bool enableInference)
 {
     if (!robot->stop) {
-        timeSinceReset = robot->GetTimeSinceReset() - resetTime;
+        locomotionController->timeSinceReset = robot->GetTimeSinceReset() - locomotionController->resetTime;
     }
     if (enableInference) {
         if (allowUpdateObs) {
@@ -146,12 +318,11 @@ void rlLocomotionController::RLUpdate(bool enableInference)
         // printf("Inference TIME: %.3f [ms]\n", tik.getMs()); 
         
     }
-    
-    
+
     // pmtg update, not swing controllers
-    gaitGenerator->Update(timeSinceReset);
+    locomotionController->gaitGenerator->Update(locomotionController->timeSinceReset);
     target_joint_angles.setZero();
-    PMTGStep(timeSinceReset);
+    PMTGStep();
     /*
     -0.331181   0.98929 -0.239799  
     0.357972   1.98558 -0.847333  
@@ -167,14 +338,8 @@ void rlLocomotionController::RLUpdate(bool enableInference)
 }
 
 
-void rlLocomotionController::Inference(Eigen::Matrix<float, 320, 1>& obs)
+void LocomotionControllerRLWrapper::Inference(Eigen::Matrix<float, 320, 1>& obs)
 {
-    // std::cout << "dof p = " << robot->GetMotorAngles().transpose() << std::endl;
-    std::vector<int64_t> input0_node_dims = {1, 320};
-    std::vector<float> input0_tensor_values(obs.data(), obs.data() + 320);
-    std::vector<int64_t> input1_node_dims = {1, 320*40};
-    // std::cout << "obs = " << obs.block<133, 1>(0,0).transpose() << std::endl;
-
     if (obs_history.empty()) {
         Eigen::Matrix<float, 12800, 1> obs_history_data = obs.replicate<40,1>();
         obs_history.insert(obs_history.end(), obs_history_data.data(),  obs_history_data.data() + obs_history_data.size());
@@ -183,11 +348,25 @@ void rlLocomotionController::Inference(Eigen::Matrix<float, 320, 1>& obs)
         obs_history.erase(it, it+320);
         obs_history.insert(obs_history.end(), obs.data(), obs.data()+obs.size());
     }
-
     // pretty_print(obs_history.data() + 320*38, "obs_his[-2]", 320);
     // pretty_print(obs_history.data() + 320*39, "obs_his[-1]", 320);
     // std::cout << "obs_his[-2] = " << obs_history.block<1, 320>(0, 320*38) << std::endl;
     // std::cout << "obs_his[-1] = " << obs_history.block<1, 320>(0, 320*39) << std::endl;
+    
+    #if USE_NPU
+    memcpy(hostData, obs.data(), dataSize);
+    memcpy(hostData1, obs_history.data(), dataSize1);
+    CopyDataFromHostToDevice();
+    ACLInference();
+    float* results_ = reinterpret_cast<float*>(outputHostData);
+    
+    #else
+    // std::cout << "dof p = " << robot->GetMotorAngles().transpose() << std::endl;
+    std::vector<int64_t> input0_node_dims = {1, 320};
+    std::vector<float> input0_tensor_values(obs.data(), obs.data() + 320);
+    std::vector<int64_t> input1_node_dims = {1, 320*40};
+    // std::cout << "obs = " << obs.block<133, 1>(0,0).transpose() << std::endl;
+
     // std::vector<float> input1_tensor_values(obs_history.data(), obs_history.data() + obs_history.rows() * obs_history.cols());
     std::array<float, 16> results_{};
     std::array<int64_t, 2> output_shape_{1, 16};
@@ -225,7 +404,7 @@ void rlLocomotionController::Inference(Eigen::Matrix<float, 320, 1>& obs)
     // Run inference.
     // onnxSession.Run(Ort::RunOptions{nullptr}, inputNames.data(), *((const Ort::Value* const*)input_tensor.data()), inputNames.size(), outputNames.data(),  &output_tensor, outputNames.size());
     onnxSession.Run(Ort::RunOptions{nullptr}, inputNames.data(), input_tensor.data(), inputNames.size(), outputNames.data(),  &output_tensor, outputNames.size());
-
+    #endif
     
     // auto& output_tensor = output_tensors.front().Get<Tensor>();
     // auto output_shape = output_tensor.Shape();
@@ -261,15 +440,15 @@ void rlLocomotionController::Inference(Eigen::Matrix<float, 320, 1>& obs)
 
 }
 
-void rlLocomotionController::CollectProprioceptiveObs()
+void LocomotionControllerRLWrapper::CollectProprioceptiveObs()
 {
-    Vec3<float> command;
-    command << desiredStateCommand->stateDes(6),
-                desiredStateCommand->stateDes(7),
-                desiredStateCommand->stateDes(11); 
+    const Vec12<float>& stateDes = locomotionController->desiredStateCommand->stateDes;
+    command << stateDes(6),
+               stateDes(7),
+               stateDes(11); 
     Vec12<float> dof_pos = robot->GetMotorAngles();
     Vec12<float> dof_v = robot->GetMotorVelocities();
-    SwapFourLeg(dof_pos); // todo    
+    SwapFourLeg(dof_pos); 
     SwapFourLeg(dof_v);
     // std::cout << "dof_pos = "<< dof_pos.transpose() << std::endl;
     
@@ -338,8 +517,7 @@ void rlLocomotionController::CollectProprioceptiveObs()
     // std::cout << "proprioceptiveObs= " << proprioceptiveObs.transpose() << std::endl;
 }
 
-
-void rlLocomotionController::PMTGStep(double timeSinceReset)
+void LocomotionControllerRLWrapper::PMTGStep()
 {
     // pretty_print(delta_phi_, "delta_phi_", 4);
     // pretty_print(residual_angle_, "residual_angle_", 12);
@@ -349,15 +527,15 @@ void rlLocomotionController::PMTGStep(double timeSinceReset)
     // Eigen::Map<Eigen::MatrixXf> delta_phi(delta_phi_,4, 1);;
 
     // std::cout << gaitGenerator->phaseInFullCycle << std::endl;
-    Vec4<float> phi = 2 * M_PI * gaitGenerator->phaseInFullCycle + 1*deltaPhi;
+    Vec4<float> phi = 2 * M_PI * locomotionController->gaitGenerator->phaseInFullCycle + deltaPhi;
     // phi = phi.unaryExpr([](const float x) { return fmod(x, 3.1415f*2);});
     // std::cout << "phi = " << phi.transpose() << std::endl;
     cpg_info << deltaPhi, phi.array().cos(), phi.array().sin(), gaitFreq;
 
-    Vec4<bool> is_swing = gaitGenerator->desiredLegState.cwiseEqual(0); //swing:0, stance: 1
-    // is_swing.setZero(); // todo
+    Vec4<bool> is_swing = locomotionController->gaitGenerator->desiredLegState.cwiseEqual(0); //swing:0, stance: 1
+    // is_swing.setZero();
     // std::cout << "is_swing = " << is_swing.transpose() << std::endl;
-    Vec4<float> swing_phi = gaitGenerator->normalizedPhase;  // [0,1)
+    Vec4<float> swing_phi = locomotionController->gaitGenerator->normalizedPhase;  // [0,1)
     Vec4<float> sin_swing_phi = (swing_phi * M_2PI).array().sin();
     // std::cout << "sin_swing_phi = " <<  sin_swing_phi.transpose() << std::endl;
     Vec4<float> factor{0,0,0,0};
@@ -370,28 +548,24 @@ void rlLocomotionController::PMTGStep(double timeSinceReset)
     foot_target_position_in_hip_frame.setZero();
     foot_target_position_in_hip_frame.col(2) = factor.cwiseProduct(is_swing.cast<float>() * MaxClearance).array() - robot->bodyHeight;
     foot_target_position_in_hip_frame.col(0) = -MaxHorizontalOffset * sin_swing_phi.cwiseProduct(is_swing.cast<float>());
-    // std::cout << foot_target_position_in_hip_frame << std::endl;
-    // foot_target_position_in_base_frame = transform_to_base_frame(foot_target_position_in_hip_frame, base_orientation)
     Mat3<float> RT = robotics::math::coordinateRotation(robotics::math::CoordinateAxis::X, robot->baseRollPitchYaw[0]) *
                      robotics::math::coordinateRotation(robotics::math::CoordinateAxis::Y, robot->baseRollPitchYaw[1]);
     Eigen::Matrix<float, 4, 3> foot_target_position_in_base_frame = robot->defaultHipPosition.transpose() +  foot_target_position_in_hip_frame * RT.transpose();  // WORLD --> BASE  [0.185, 0.135, 0]
-    // std::cout << foot_target_position_in_base_frame << std::endl;
 
-    // target_joint_angles =  get_target_joint_angles( foot_target_position_in_base_frame)
     Vec3<int> joint_idx;
     Vec3<float> target_joint_angles_per_leg;
     for (int i = 0; i < 4; ++i) {
         robot->ComputeMotorAnglesFromFootLocalPosition(i, foot_target_position_in_base_frame.row(i), joint_idx, target_joint_angles_per_leg);
         for (int j = 0; j < 3; ++j) {
-            target_joint_angles(joint_idx[j]) = target_joint_angles_per_leg(j) + 1*residualAngle(joint_idx[j]);
+            target_joint_angles(joint_idx[j]) = target_joint_angles_per_leg(j) + residualAngle(joint_idx[j]);
         }
     }
     
 }
 
-std::vector<qrMotorCommand> rlLocomotionController::GetRLAction()
+std::vector<qrMotorCommand> LocomotionControllerRLWrapper::GetRLAction()
 {
-    action.clear(); 
+    std::vector<qrMotorCommand> action;
     // target_joint_angles << 0, 0.8 , -1.6,
     //                         0, 0.8 , -1.6,
     //                         0, 0.8 , -1.6,

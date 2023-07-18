@@ -35,7 +35,7 @@ qrLocomotionController *SetUpController(
     qrDesiredStateCommand* desiredStateCommand,
     qrStateEstimatorContainer* stateEstimators,
     qrUserParameters* userParameters,
-    std::string& homeDir, bool enablRL)
+    std::string& homeDir)
 {
     qrComAdjuster *comAdjuster = new qrComAdjuster(quadruped, gaitGenerator, stateEstimators->GetRobotEstimator());
     std::cout << "init comAdjuster finish\n" << std::endl;
@@ -67,29 +67,16 @@ qrLocomotionController *SetUpController(
                                                                                        + "/stance_leg_controller.yaml");
 
     std::cout << "init stanceLegController finish\n" << std::endl;
-    qrLocomotionController *locomotionController = nullptr;
-    if (enablRL) {
-        locomotionController = new rlLocomotionController(quadruped,
-                                                        gaitGenerator,
-                                                        desiredStateCommand,
-                                                        stateEstimators,
-                                                        comAdjuster,
-                                                        posePlanner,
-                                                        swingLegController,
-                                                        stanceLegController,
-                                                        userParameters);
-
-    } else {
-        locomotionController = new qrLocomotionController(quadruped,
-                                                        gaitGenerator,
-                                                        desiredStateCommand,
-                                                        stateEstimators,
-                                                        comAdjuster,
-                                                        posePlanner,
-                                                        swingLegController,
-                                                        stanceLegController,
-                                                        userParameters);
-    }
+    qrLocomotionController *locomotionController = new qrLocomotionController(quadruped,
+                                                            gaitGenerator,
+                                                            desiredStateCommand,
+                                                            stateEstimators,
+                                                            comAdjuster,
+                                                            posePlanner,
+                                                            swingLegController,
+                                                            stanceLegController,
+                                                            userParameters);
+    
     std::cout << "init locomotionController finish\n" << std::endl;
 
     return locomotionController;
@@ -124,12 +111,12 @@ qrRobotRunner::qrRobotRunner(qrRobot* quadrupedIn, std::string& homeDir, ros::No
     quadruped->timeStep = 1.0 / userParameters.controlFrequency;
     
     quadruped->ReceiveObservation();
-    quadruped->ReceiveObservation();
-    quadruped->ReceiveObservation();
-    if (quadruped->robotName == "lite3") {
-        Action::ShinkLeg(quadruped, 2.0f, 0.001);
-    }
-    Action::StandUp(quadruped, 2.0f, 4.f, 0.001);
+    // quadruped->ReceiveObservation();
+    // quadruped->ReceiveObservation();
+    // if (quadruped->robotName == "lite3") {
+    //     Action::ShinkLeg(quadruped, 2.0f, 0.001);
+    // }
+    // Action::StandUp(quadruped, 2.0f, 4.f, 0.001);
     // Action::KeepStand(quadruped, 10,  0.001);
     //Action::ControlFoot(quadruped, nullptr, 15, 0.001);
     
@@ -146,6 +133,12 @@ qrRobotRunner::qrRobotRunner(qrRobot* quadrupedIn, std::string& homeDir, ros::No
                                                         "config/" + quadruped->robotName + "/terrain.yaml", 
                                                         homeDir); 
     controlFSM = new qrControlFSM<float>(quadruped, stateEstimators, gaitGenerator, desiredStateCommand, &userParameters);    
+    quadruped->ReceiveObservation();
+    quadruped->ReceiveObservation();
+    if (quadruped->robotName == "lite3") {
+        Action::ShinkLeg(quadruped, 2.0f, 0.001);
+    }
+    Action::StandUp(quadruped, 2.0f, 4.f, 0.001);
     resetTime = quadruped->GetTimeSinceReset();
     stateEstimators->Reset();
     // gaitGenerator->Reset(resetTime);

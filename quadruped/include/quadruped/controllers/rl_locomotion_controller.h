@@ -25,20 +25,22 @@
 #ifndef RL_LOCOMOTION_CONTROLLER_H
 #define RL_LOCOMOTION_CONTROLLER_H
 
-#include <onnxruntime/onnxruntime_cxx_api.h>
-
 #include "controllers/qr_locomotion_controller.h"
-
-
+#if USE_NPU
+#include <acl/acl.h>
+#endif
+#if USE_ONNX
+#include <onnxruntime/onnxruntime_cxx_api.h>
+#endif
 
 namespace Quadruped {
 
-class rlLocomotionController: public qrLocomotionController {
+class LocomotionControllerRLWrapper{
 
 public:
 
     /**
-     * @brief Constructor of class rlLocomotionController.
+     * @brief Constructor of class LocomotionControllerRLWrapper.
      * @param robot: pointer to the Robot.
      * @param gaitGenerator: pointer to the Gait Generator.
      * Openloop Gait Generator or Walk Gait Generator.
@@ -50,21 +52,13 @@ public:
      * @param stanceLegController: pointer to StanceLegControllerInterface.
      * @param userParameters: pointer to UserParameters.
      */
-    rlLocomotionController(qrRobot *robot,
-                         qrGaitGenerator *gaitGenerator,
-                         qrDesiredStateCommand* desiredStateCommand,
-                         qrStateEstimatorContainer *stateEstimator,
-                         qrComAdjuster *comAdjuster,
-                         qrPosePlanner *posePlanner,
-                         qrRaibertSwingLegController *swingLegController,
-                         qrStanceLegControllerInterface *stanceLegController,
-                         qrUserParameters *userParameters);
+    LocomotionControllerRLWrapper(qrLocomotionController* locomotionController);
 
-    ~rlLocomotionController() = default;
+    ~LocomotionControllerRLWrapper();
 
     void Reset();
 
-    void BindCommand(std::string networkPath, std::string networkType);
+    void BindCommand(std::string networkPath);
 
     /**
      * @brief Update components in the locomotion controller every control loop.
@@ -75,7 +69,7 @@ public:
     
     void Inference(Eigen::Matrix<float, 320, 1>& obs);
 
-    void PMTGStep(double timeSinceReset);
+    void PMTGStep();
 
 
     /** @brief Compute all motors' commands via subcontrollers.
@@ -85,6 +79,9 @@ public:
 
     const float MaxHorizontalOffset = 0.05; // 0.05
     const float  MaxClearance = 0.15; // 0.15
+
+    qrLocomotionController* locomotionController;
+    qrRobot *robot;
 
 private:
 
@@ -104,6 +101,7 @@ private:
 
     bool allowUpdateObs = true;
 
+    Vec3<float> command;
     float command_scale, rpy_scale, v_scale, w_scale, dp_scale, dv_scale, cpg_scale, height_scale;
     float gaitFreq;
     Eigen::Matrix<float, 13, 1> cpg_info;
@@ -116,11 +114,11 @@ private:
     std::deque<Vec12<float>> deque_dof_v;
     std::deque<Vec12<float>> deque_dof_p_target;
 
+    #if USE_ONNX
     Ort::Env onnxEnv;
-    Ort::Session onnxSession;
+    Ort::Session onnxSession(nullptr);
     Ort::AllocatorWithDefaultOptions onnxAllocator;
-
-
+    #endif
 };
 
 } // Namespace Quadruped

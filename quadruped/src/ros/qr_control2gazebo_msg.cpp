@@ -22,6 +22,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#ifndef NOT_USE_SIM
+
 #include "ros/qr_control2gazebo_msg.h"
 
 namespace Quadruped {
@@ -168,3 +170,5 @@ void qrController2GazeboMsg::PublishGazeboStateCallback()
 }
 
 }
+
+#endif

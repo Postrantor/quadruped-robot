@@ -11,8 +11,31 @@ ADD_COMPILE_OPTIONS(-D_useros)
 # ADD_COMPILE_OPTIONS(-DQPOASES_AVOID_LA_NAMING_CONFLICTS)
 
 option(USE_GO1                            "WHICH ROBOT"                     OFF)
-option(USE_BLAS                            "USE MKL BLAS"                   OFF)
-option(USE_ONNX                            "USE CPP ONNXRUNTIME"            ON)
+option(USE_BLAS                           "USE MKL BLAS"                    OFF)
+option(USE_ONNX                           "USE CPP ONNXRUNTIME"             ON)
+option(USE_NPU                            "USE NPU ACL, first"              ON)
+option(USE_SIM                            "USE Simulation"                  OFF)
+
+if (NOT ${USE_SIM})
+    message("not use sim >>>>>>>>>>>>>>>>>>>>>>>")
+    add_definitions(-DNOT_USE_SIM)
+endif()
+
+set(ASCENDCL_LIB)
+if (${USE_NPU})
+    message("use npu ----------------------")
+    add_definitions(-DUSE_NPU)
+    set(NPU_HOST_LIB  "/usr/local/Ascend/ascend-toolkit/latest/aarch64-linux/devlib/")
+    set(DDK_PATH "/usr/local/Ascend/ascend-toolkit/latest/")
+    # set(CMAKE_CXX_FLAGS_RELEASE "-fPIC -O2 -Wall")
+    include_directories(${DDK_PATH}/acllib/include/)
+    link_directories(${NPU_HOST_LIB})
+    list(APPEND ASCENDCL_LIB ascendcl)
+endif()
+
+if ((NOT ${USE_NPU}) AND (NOT ${USE_ONNX}))
+    message(FATAL_ERROR "Requires to use ONNX or NPU")
+endif()
 
 
 EXECUTE_PROCESS( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE ARCHITECTURE )
@@ -110,9 +133,12 @@ list(APPEND includePath "${qpOASES_DIR}")
 list(APPEND includePath "${qpOASES_DIR}/include")
 
 # library xpp
-set(XPP_DIR ${PROJECT_SOURCE_DIR}/../xpp)
-list(APPEND includePath ${XPP_DIR}/xpp_states/include
-                    ${XPP_DIR}/xpp_msgs/include)
+set(XPP_LIBS)
+if (NOT ${USE_SIM})
+    set(XPP_DIR ${PROJECT_SOURCE_DIR}/../xpp)
+    list(APPEND includePath ${XPP_DIR}/xpp_states/include ${XPP_DIR}/xpp_msgs/include)
+    list(APPEND XPP_LIBS xpp_states xpp_vis)
+endif()
 
 # ROS
 find_package(catkin REQUIRED COMPONENTS
@@ -139,6 +165,15 @@ list(APPEND includePath include/quadruped src)
 
 # add source files
 file(GLOB_RECURSE sources "src/*.cpp")
+if (NOT ${USE_SIM})
+list(REMOVE_ITEM includePath "include/quadruped/robots/qr_robot_sim.h" 
+                            "include/quadruped/robots/qr_lite2_sim.h" 
+                            "include/quadruped/robots/qr_lite3_sim.h")
+
+list(REMOVE_ITEM sources   "src/robots/qr_robot_sim.cpp" 
+                            "src/robots/qr_lite2_sim.cpp" 
+                            "src/robots/qr_lite3_sim.cpp")
+endif()
 
 # add include files
 list(APPEND includePath "config/")
@@ -159,9 +194,9 @@ target_link_libraries(quadruped PUBLIC
     ${catkin_LIBRARIES}
     ${BLAS_LIBRARIES}
     ${UNITREE_SDK_LIB}
+    ${ASCENDCL_LIB}
     deeprobotics_legged_sdk
     lcm tinynurbs::tinynurbs
-    xpp_states xpp_vis
     MITAMD quadprog qpOASES)
 
 add_dependencies(quadruped ${catkin_EXPORTED_TARGETS})
@@ -172,7 +207,3 @@ if(${USE_GO1})
 else() #A1 & AligenGo
     target_link_libraries(quadruped PUBLIC robot_interface)
 endif()
-
-# if (${USE_BLAS})
-#    target_link_libraries(quadruped PUBLIC ${BLAS_LIBRARIES})
-# endif()

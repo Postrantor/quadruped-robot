@@ -23,32 +23,17 @@
 // SOFTWARE.
 
 #include "fsm/qr_fsm_state_locomotion.hpp"
-#include <ros/package.h>
 
 
 using namespace Quadruped;
-
-
-extern qrLocomotionController *SetUpController(qrRobot *quadruped, qrGaitGenerator *gaitGenerator,
-                                             qrDesiredStateCommand *desiredStateCommand,
-                                             qrStateEstimatorContainer *stateEstimators,
-                                             qrUserParameters *userParameters,
-                                             std::string &homeDir, bool enableRL);
 
 extern void UpdateControllerParams(qrLocomotionController *controller, Eigen::Vector3f linSpeed, float angSpeed);
 
 
 template<typename T>
-qrFSMStateLocomotion<T>::qrFSMStateLocomotion(qrControlFSMData<T> *controlFSMData):
-    qrFSMState<T>(controlFSMData, FSM_StateName::LOCOMOTION, "LOCOMOTION")
+qrFSMStateLocomotion<T>::qrFSMStateLocomotion(qrControlFSMData<T> *controlFSMData, qrLocomotionController* locomotionController_):
+    qrFSMState<T>(controlFSMData, FSM_StateName::LOCOMOTION, "LOCOMOTION"), locomotionController(locomotionController_)
 {
-    std::string homeDir = ros::package::getPath("quadruped") + "/";
-    locomotionController = SetUpController(controlFSMData->quadruped, controlFSMData->gaitGenerator,
-                                           controlFSMData->desiredStateCommand, controlFSMData->stateEstimators,
-                                           controlFSMData->userParameters, homeDir, false);
-
-    printf("LocomotionController Init Finished\n");
-
     this->TurnOnAllSafetyChecks();
 
     /* Turn off Foot pos command since it is set in WBC as operational task. */
@@ -83,7 +68,7 @@ void qrFSMStateLocomotion<T>::OnEnter()
     // reset the robot control_mode
     // this->_data->_gaitScheduler->gaitData._nextGait = LocomotionMode::VELOCITY;
     Quadruped::RC_MODE ctrlState = this->_data->desiredStateCommand->getJoyCtrlState();
-    printf("[FSM] On Enter State: %d", int(ctrlState));
+    printf("[FSM] On Enter State: %d\n", int(ctrlState));
 
     if (ctrlState != Quadruped::RC_MODE::HARD_CODE) {
         /* This control frequency can be adjusted by user. */
@@ -109,6 +94,7 @@ void qrFSMStateLocomotion<T>::OnEnter()
             this->_data->gaitGenerator->gait = "walk";
             break;
         default:
+            this->_data->quadruped->controlParams["mode"] = LocomotionMode::ADVANCED_TROT;
             this->_data->gaitGenerator->gait = "stand";
             break;
         }
@@ -122,7 +108,7 @@ void qrFSMStateLocomotion<T>::OnEnter()
         locomotionController->Reset();
         this->_data->stateEstimators->Reset();
     }
-    printf("[FSM LOCOMOTION] On Enter\n");
+    printf("[FSM LOCOMOTION] On Enter End\n");
 }
 
 

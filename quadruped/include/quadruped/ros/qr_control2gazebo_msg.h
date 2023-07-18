@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+#ifndef NOT_USE_SIM
 #ifndef QR_CONTROL2GAZEBO_MSG_H_
 #define QR_CONTROL2GAZEBO_MSG_H_
 
@@ -89,3 +90,4 @@ private:
 } // Namespace Quadruped
 
 #endif // QR_CONTROL2GAZEBO_MSG_H_
+#endif

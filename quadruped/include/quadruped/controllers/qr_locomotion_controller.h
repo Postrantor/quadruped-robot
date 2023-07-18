@@ -74,7 +74,7 @@ public:
     /**
      * @brief Reset all components in the locomotion controller.
      */
-    virtual void Reset();
+    void Reset();
 
     /**
      * @brief Bind desiredStateCommand to swingLegController.

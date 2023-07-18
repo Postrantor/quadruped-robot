@@ -23,6 +23,13 @@
 // SOFTWARE.
 
 #include "fsm/qr_control_fsm.hpp"
+#include <ros/package.h>
+
+extern Quadruped::qrLocomotionController *SetUpController(Quadruped::qrRobot *quadruped, Quadruped::qrGaitGenerator *gaitGenerator,
+                                             Quadruped::qrDesiredStateCommand *desiredStateCommand,
+                                             Quadruped::qrStateEstimatorContainer *stateEstimators,
+                                             qrUserParameters *userParameters,
+                                             std::string &homeDir);
 
 
 template<typename T>
@@ -40,17 +47,23 @@ qrControlFSM<T>::qrControlFSM(
     data.userParameters = userParameters;
     data.networkPath = quadruped->networkPath;
 
+    std::string homeDir = ros::package::getPath("quadruped") + "/";
+    Quadruped::qrLocomotionController* locomotionController = SetUpController(quadruped, gaitScheduler,
+                                           desiredStateCommand, stateEstimators,
+                                           userParameters, homeDir);
+    locomotionController->BindCommand();
+    printf("LocomotionController Init Finished\n");
+
     /* Add all FSM states into the statelist and initialize the FSM. */
     statesList.invalid = nullptr;
     statesList.passive = new qrFSMStatePassive<T>(&data);
     statesList.standUp = new qrFSMStateStandUp<T>(&data);
-    statesList.locomotion = new qrFSMStateLocomotion<T>(&data);
-    statesList.rlLocomotion = new qrFSMStateRLLocomotion<T>(&data);
+    statesList.locomotion = new qrFSMStateLocomotion<T>(&data, locomotionController);
+    statesList.rlLocomotion = new qrFSMStateRLLocomotion<T>(&data, locomotionController);
 
     safetyChecker = new qrSafetyChecker<T>(&data);
 
     Initialize();
-
     printf("FSM Init Finished");
 }
 
@@ -74,7 +87,7 @@ void qrControlFSM<T>::RunFSM(std::vector<Quadruped::qrMotorCommand>& hybridActio
     if(data.desiredStateCommand->getJoyCtrlStateChangeRequest()) {
         
         const Quadruped::RC_MODE ctrlState = data.desiredStateCommand->getJoyCtrlState();
-        std::cout<< "[CONTROL FSM]: control mode = "<< ctrlState <<std::endl;
+        std::cout<< "[RunFSM]: RC_MODE = "<< ctrlState <<std::endl;
         if (ctrlState == Quadruped::RC_MODE::JOY_TROT ||
             ctrlState == Quadruped::RC_MODE::JOY_ADVANCED_TROT ||
             ctrlState == Quadruped::RC_MODE::RL_TROT ||
@@ -133,7 +146,6 @@ void qrControlFSM<T>::RunFSM(std::vector<Quadruped::qrMotorCommand>& hybridActio
                 // std::cout << "132 ---------------" << std::endl;
                 /* Exit the current state. */
                 currentState->OnExit();
-
                 /* Enter next state */
                 currentState = nextState;
                 // std::cout << "138 ---------------" << std::endl;

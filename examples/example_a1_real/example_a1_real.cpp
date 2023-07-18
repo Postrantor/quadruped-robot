@@ -23,7 +23,10 @@
 // SOFTWARE.
 
 #include "quadruped/exec/qr_robot_runner.h"
+
+#ifndef NOT_USE_SIM
 #include "quadruped/ros/qr_control2gazebo_msg.h"
+#endif
 
 #include <ros/package.h>
 

@@ -46,7 +46,7 @@ public:
      * @brief Constructor of qrFSMStateLocomotion
      * @param controlFSMData: pointer to the data this FSM needed
      */
-    qrFSMStateLocomotion(qrControlFSMData<T> *control_fsm_data);
+    qrFSMStateLocomotion(qrControlFSMData<T> *control_fsm_data, Quadruped::qrLocomotionController* locomotionController_);
 
     /**
      * @brief Getter method of locomotionController.

@@ -282,18 +282,18 @@ bool qrRobotA1::BuildDynamicModel()
     // spatial inertias
     Mat3<float> abadRotationalInertia = linkInertias[0];
     Vec3<float> abadCOM(linksComPos[0][0],linksComPos[0][1],linksComPos[0][2]);
-    std::cout << "abadCOM=" << abadCOM << std::endl;
+    // std::cout << "abadCOM=" << abadCOM << std::endl;
     
-    std::cout << "linkMasses[0]=" << linkMasses[0] << std::endl;
-    std::cout << "abadRotationalInertia=" << abadRotationalInertia << std::endl;
+    // std::cout << "linkMasses[0]=" << linkMasses[0] << std::endl;
+    // std::cout << "abadRotationalInertia=" << abadRotationalInertia << std::endl;
     SpatialInertia<float> abadInertia(linkMasses[0], abadCOM, abadRotationalInertia);
 
     Mat3<float> hipRotationalInertia = linkInertias[1];
     // Vec3<float> hipCOM(-0.003237, -0.022327, -0.027326); // a1. left, for right filp y-axis value.
     Vec3<float> hipCOM(linksComPos[1][0],linksComPos[1][1],linksComPos[1][2]);
     SpatialInertia<float> hipInertia(linkMasses[1], hipCOM, hipRotationalInertia);
-    std::cout << "linkMasses[1]=" << linkMasses[1] << std::endl;
-    std::cout << "hipRotationalInertia=" << hipRotationalInertia << std::endl;
+    // std::cout << "linkMasses[1]=" << linkMasses[1] << std::endl;
+    // std::cout << "hipRotationalInertia=" << hipRotationalInertia << std::endl;
     
     Mat3<float> kneeRotationalInertia, kneeRotationalInertiaRotated;
     kneeRotationalInertiaRotated = linkInertias[2];
@@ -301,8 +301,8 @@ bool qrRobotA1::BuildDynamicModel()
     
     Vec3<float> kneeCOM(linksComPos[2][0],linksComPos[2][1],linksComPos[2][2]);
     SpatialInertia<float> kneeInertia(linkMasses[2], kneeCOM, kneeRotationalInertia);
-    std::cout << "linkMasses[2]=" << linkMasses[2] << std::endl;
-    std::cout << "kneeRotationalInertia=" << kneeRotationalInertia << std::endl;
+    // std::cout << "linkMasses[2]=" << linkMasses[2] << std::endl;
+    // std::cout << "kneeRotationalInertia=" << kneeRotationalInertia << std::endl;
 
     Vec3<float> rotorCOM(0, 0, 0);
     float rotorMass = 1e-8; //0.055
@@ -316,7 +316,7 @@ bool qrRobotA1::BuildDynamicModel()
     // (0.02, 0.0, 0.04);
     // (0.03, 0.0, 0.04);
     
-    std::cout << "totalMass = " << totalMass << ", bodyMass = " << bodyMass << std::endl;
+    // std::cout << "totalMass = " << totalMass << ", bodyMass = " << bodyMass << std::endl;
     SpatialInertia<float> bodyInertia_(bodyMass, bodyCOM, bodyRotationalInertia);
     
     model.addBase(bodyInertia_);
