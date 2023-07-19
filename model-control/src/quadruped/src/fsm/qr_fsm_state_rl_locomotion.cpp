@@ -22,57 +22,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "fsm/qr_fsm_state_locomotion.hpp"
-
+#include "fsm/qr_fsm_state_rl_locomotion.hpp"
 
 using namespace Quadruped;
 
 extern void UpdateControllerParams(qrLocomotionController *controller, Eigen::Vector3f linSpeed, float angSpeed);
 
-
 template<typename T>
-qrFSMStateLocomotion<T>::qrFSMStateLocomotion(qrControlFSMData<T> *controlFSMData, qrLocomotionController* locomotionController_):
-    qrFSMState<T>(controlFSMData, FSM_StateName::LOCOMOTION, "LOCOMOTION"), locomotionController(locomotionController_)
+qrFSMStateRLLocomotion<T>::qrFSMStateRLLocomotion(qrControlFSMData<T> *controlFSMData, qrLocomotionController* locomotionController_):
+    qrFSMState<T>(controlFSMData, FSM_StateName::RL_LOCOMOTION, "RL_LOCOMOTION"), locomotionController(locomotionController_), locomotionControllerRLWrapper(locomotionController_)
 {
+    MITTimer tim;
+    locomotionControllerRLWrapper.BindCommand(controlFSMData->networkPath);
+    printf("RLWrapper Init Finished, cost %.3f [ms]\n", tim.getMs());
+
     this->TurnOnAllSafetyChecks();
 
     /* Turn off Foot pos command since it is set in WBC as operational task. */
     this->checkPDesFoot = false;
 
-    printf("BuildDynamicModel Init BEFORE\n");
-    controlFSMData->quadruped->BuildDynamicModel();
-    printf("BuildDynamicModel Init Finished\n");
-    
-    wbcController = new qrWbcLocomotionController<T>(controlFSMData->quadruped->model, controlFSMData);
-    printf("WbcLocomotionCtrl Init Finished\n");
-
-    /* If use WBC controller, then initialize the WBC controllers. */
-    if (controlFSMData->userParameters->useWBC) {
-        wbcData = &(controlFSMData->quadruped->stateDataFlow.wbcData);
-        wbcData->pBody_des.setZero();
-        wbcData->vBody_des.setZero();
-        wbcData->aBody_des.setZero();
-        for (int legId(0); legId < NumLeg; ++legId) {
-            wbcData->Fr_des[legId].setZero();
-        }
-    }
 }
 
 
 template<typename T>
-void qrFSMStateLocomotion<T>::OnEnter()
+void qrFSMStateRLLocomotion<T>::OnEnter()
 {
+    RC_MODE ctrlState = this->_data->desiredStateCommand->getJoyCtrlState();
+    std::cout << "[FSM-RL] On Enter State: " << int(ctrlState) << std::endl;
     this->nextStateName = this->stateName;
     this->transitionData.Zero();
      
     // reset the robot control_mode
     // this->_data->_gaitScheduler->gaitData._nextGait = LocomotionMode::VELOCITY;
-    Quadruped::RC_MODE ctrlState = this->_data->desiredStateCommand->getJoyCtrlState();
-    printf("[FSM] On Enter State: %d\n", int(ctrlState));
 
-    if (ctrlState != Quadruped::RC_MODE::HARD_CODE) {
+    if (ctrlState != RC_MODE::HARD_CODE) {
         /* This control frequency can be adjusted by user. */
-        this->_data->userParameters->controlFrequency = 1000;
+        this->_data->userParameters->controlFrequency = 333;
 
         /* JOY_TROT: trotting by Force Balance controller.
          * JOY_ADVANCED_TROT: trotting by MPC or MPC-WBC controller.
@@ -80,21 +65,11 @@ void qrFSMStateLocomotion<T>::OnEnter()
          * JOY_STAND: keep standing.
          */
         switch (ctrlState) {
-        case Quadruped::RC_MODE::JOY_TROT:
-            this->_data->quadruped->controlParams["mode"] = LocomotionMode::VELOCITY_LOCOMOTION;
-            this->_data->gaitGenerator->gait = "trot";
-            break;
-        case Quadruped::RC_MODE::JOY_ADVANCED_TROT:
-            // this->_data->userParameters->controlFrequency = 500;
-            this->_data->quadruped->controlParams["mode"] = LocomotionMode::ADVANCED_TROT;
-            this->_data->gaitGenerator->gait = "advanced_trot";
-            break;
-        case Quadruped::RC_MODE::JOY_WALK:
-            this->_data->quadruped->controlParams["mode"] = LocomotionMode::WALK_LOCOMOTION;
-            this->_data->gaitGenerator->gait = "walk";
+        case RC_MODE::RL_TROT: // 
+            this->_data->quadruped->controlParams["mode"] = LocomotionMode::RL_LOCOMOTION;
+            this->_data->gaitGenerator->gait = "rl_trot";
             break;
         default:
-            this->_data->quadruped->controlParams["mode"] = LocomotionMode::ADVANCED_TROT;
             this->_data->gaitGenerator->gait = "stand";
             break;
         }
@@ -105,50 +80,42 @@ void qrFSMStateLocomotion<T>::OnEnter()
 
         std::cout << "Time Step: " << this->_data->quadruped->timeStep << std::endl;
 
-        locomotionController->Reset();
+        locomotionControllerRLWrapper.Reset();
         this->_data->stateEstimators->Reset();
+        count = 0;
     }
-    printf("[FSM LOCOMOTION] On Enter End\n");
+    printf("[FSM RL_LOCOMOTION] On Enter End\n");
 }
 
 
 template<typename T>
-void qrFSMStateLocomotion<T>::Run()
+void qrFSMStateRLLocomotion<T>::Run()
 {
     /* Call the locomotion control logic for this iteration and get the results, including commands and reaction force
      * Save the commands into FSM Data structure.
      */
-    locomotionController->Update();
-    auto [hybridAction, qpSol] = locomotionController->GetAction();
+    // std::cout << "iter >>>>>>>>>>>>>>>>>>>> " << iter_ << ", " << qrFSMState<T>::enableStateEstimation << std::endl;
+    locomotionControllerRLWrapper.RLUpdate(qrFSMState<T>::enableStateEstimation);
+    std::vector<qrMotorCommand> hybridAction = locomotionControllerRLWrapper.GetRLAction();
     this->_data->legCmd = std::move(hybridAction);
-
     
-    if (this->_data->quadruped->controlParams["mode"] == LocomotionMode::ADVANCED_TROT) {
-
-        /* Add a compensation torque to hip joints in MPC. */
-        float tua_ = -0.8, tua = 0;
-        for (int motorId(0); motorId < NumMotor; ++motorId) {
-            if (motorId % 3 == 0) {
-                tua = tua_ * pow(-1, (motorId / 3 + 1) % 2);
-            } else {
-                tua = 0;
-            }
-            this->_data->legCmd[motorId].tua += tua;
-        }
-        
-        /* Run Whole Body Controller if WBC is enabled. */
-        if (this->_data->userParameters->useWBC && wbcData->allowAfterMPC) {
-            wbcController->Run(wbcData);
-        }
+    if (++count > 3) {
+        count = 0;
+        qrFSMState<T>::enableStateEstimation = true;
+    } else {
+        qrFSMState<T>::enableStateEstimation = false;
     }
+    // if (++iter_ > 30000) {
+    //     throw std::logic_error("126");
+    // }
 }
 
 
 template<typename T>
-FSM_StateName qrFSMStateLocomotion<T>::CheckTransition()
+FSM_StateName qrFSMStateRLLocomotion<T>::CheckTransition()
 {
     iter++;
-
+    // printf("CheckTransition = %d\n", this->_data->quadruped->fsmMode); // K_LOCOMOTION
     if (LocomotionSafe()) {
 
         switch (this->_data->quadruped->fsmMode) {
@@ -163,42 +130,19 @@ FSM_StateName qrFSMStateLocomotion<T>::CheckTransition()
             this->transitionDuration = 2.0;
             iter = 0;
             printf("FSM_State_Locomotion: reset iter for GAIT_TRANSITION!!!\n");
-            const Quadruped::RC_MODE ctrlState = this->_data->desiredStateCommand->getJoyCtrlState();
-            if (ctrlState == Quadruped::RC_MODE::RL_TROT) {
-                this->nextStateName = FSM_StateName::RL_LOCOMOTION;
-            }
+            // const RC_MODE ctrlState = this->_data->desiredStateCommand->getJoyCtrlState();
+            // if (ctrlState != RC_MODE::RL_TROT) {
+                this->nextStateName = FSM_StateName::LOCOMOTION;
+            // }
             break;
         }
         case LOCOMOTION_STAND:
-            this->transitionDuration = 1.0;
+            this->transitionDuration = 2.0;
             iter = 0;
+            this->nextStateName = FSM_StateName::LOCOMOTION;
             printf("FSM_State_Locomotion: reset iter for LOCOMOTION_STAND!!!\n");
             break;
 
-        case K_BALANCE_STAND:
-            this->nextStateName = FSM_StateName::BALANCE_STAND;
-            this->transitionDuration = 0.0;
-            break;
-        case K_PASSIVE:
-            this->nextStateName = FSM_StateName::PASSIVE;
-            this->transitionDuration = 0.0;
-            break;
-        case K_STAND_UP:
-            this->nextStateName = FSM_StateName::STAND_UP;
-            this->transitionDuration = 0.;
-            break;
-        case K_STAND_DOWN:
-            this->nextStateName = FSM_StateName::STAND_UP;
-            this->transitionDuration = 0.;
-            break;
-        case K_RECOVERY_STAND:
-            this->nextStateName = FSM_StateName::RECOVERY_STAND;
-            this->transitionDuration = 0.;
-            break;
-        case K_VISION:
-            this->nextStateName = FSM_StateName::VISION;
-            this->transitionDuration = 0.;
-            break;
         default:
             std::cout << "[CONTROL FSM] Bad Request: Cannot transition from "
                       << "K_LOCOMOTION" << " to "
@@ -215,30 +159,24 @@ FSM_StateName qrFSMStateLocomotion<T>::CheckTransition()
 
 
 template<typename T>
-qrTransitionData<T> qrFSMStateLocomotion<T>::Transition()
+qrTransitionData<T> qrFSMStateRLLocomotion<T>::Transition()
 {   
-
     switch (this->nextStateName) {
     case FSM_StateName::LOCOMOTION:
         /* If transfer from trot to walk, gait transition happens and quadruped needs switch mode.
          * Or will enter MPC standing.
          */
-        if ((int)this->_data->quadruped->fsmMode==GAIT_TRANSITION) {
-            SwitchMode();
-        } else {
+        // if ((int)this->_data->quadruped->fsmMode==GAIT_TRANSITION) {
+        //     SwitchMode();
+        // } else {
             StandLoop();
-        }
-        iter++;
-        break;
-    case FSM_StateName::RL_LOCOMOTION:
-        /* If transfer from trot to walk, gait transition happens and quadruped needs switch mode.
-         * Or will enter MPC standing.
-         */
-        if ((int)this->_data->quadruped->fsmMode==GAIT_TRANSITION) {
-            SwitchMode();
-        } else {
-            StandLoop();
-        }
+            // robot->fsmMode = K_LOCOMOTION;
+            // iter = 0;
+            // this->transitionData.done = true;
+            // this->transitionDuration = 0;
+            // ROS_INFO("transitionData.done");
+            // return true;
+        // }
         iter++;
         break;
     case FSM_StateName::BALANCE_STAND:
@@ -249,22 +187,9 @@ qrTransitionData<T> qrFSMStateLocomotion<T>::Transition()
             this->transitionData.done = false;
         }
         break;
-    case FSM_StateName::PASSIVE:
-        this->TurnOffAllSafetyChecks();
-        this->transitionData.done = true;
-        break;
-    case FSM_StateName::STAND_UP:
-        this->transitionData.done = true;
-        this->transitionData.legCommand = this->_data->legCmd;
-        break;
-    case FSM_StateName::RECOVERY_STAND:
-        this->transitionData.done = true;
-        break;
-    case FSM_StateName::VISION:
-        this->transitionData.done = true;
-        break;
     default:
         printf("[CONTROL FSM] Wrong in transition\n");
+        throw std::runtime_error("191");
     }
 
     return this->transitionData;
@@ -272,7 +197,7 @@ qrTransitionData<T> qrFSMStateLocomotion<T>::Transition()
 
 
 template <typename T>
-bool qrFSMStateLocomotion<T>::SwitchMode()
+bool qrFSMStateRLLocomotion<T>::SwitchMode()
 {   
     qrRobot *robot = this->_data->quadruped;
 
@@ -314,7 +239,7 @@ bool qrFSMStateLocomotion<T>::SwitchMode()
 
 
 template <typename T>
-bool qrFSMStateLocomotion<T>::StandLoop()
+bool qrFSMStateRLLocomotion<T>::StandLoop()
 {    
     /* Similar logic to %SwitchMode(). */
     qrRobot *robot = this->_data->quadruped;
@@ -332,9 +257,13 @@ bool qrFSMStateLocomotion<T>::StandLoop()
         UpdateControllerParams(locomotionController, {0.f, 0.f, 0.f}, 0.f);
         this->_data->desiredStateCommand->stateDes.segment(6, 6) << 0, 0, 0, 0, 0, 0;
         
-        locomotionController->Update();
-        auto [hybridAction, qpSol] = locomotionController->GetAction();
+        locomotionControllerRLWrapper.RLUpdate(false);
+        std::vector<qrMotorCommand> hybridAction = locomotionControllerRLWrapper.GetRLAction();
         this->transitionData.legCommand = std::move(hybridAction);
+        
+        // locomotionController->Update();
+        // auto [hybridAction, qpSol] = locomotionController->GetAction();
+        // this->transitionData.legCommand = std::move(hybridAction);
         if (N == 4) {
             iter = 1000;
         }
@@ -344,18 +273,17 @@ bool qrFSMStateLocomotion<T>::StandLoop()
 
 
 template<typename T>
-bool qrFSMStateLocomotion<T>::LocomotionSafe()
+bool qrFSMStateRLLocomotion<T>::LocomotionSafe()
 {
     return true;
 }
 
 
 template<typename T>
-void qrFSMStateLocomotion<T>::OnExit()
+void qrFSMStateRLLocomotion<T>::OnExit()
 {
     /* Standup state does nothing when exitting */
     iter = 0;
-    std::cout << "Locomotion Exit" << std::endl;
 }
 
-template class qrFSMStateLocomotion<float>;
+template class qrFSMStateRLLocomotion<float>;

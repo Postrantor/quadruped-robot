@@ -59,9 +59,6 @@ void StandUp(qrRobot *robot, float standUpTime, float totalTime, float timeStep)
     // std::cout << "robot->standMotorAngles: \n" << robot->standUpMotorAngles.transpose() << std::endl;
     Eigen::Matrix<float, 12, 1> action;
     // Eigen::Matrix<float, 12, 1> currentAngles = robot->GetMotorAngles();
-    // Visualization2D& vis = robot->stateDataFlow.visualizer;
-    float startTime = timer.GetTimeSinceReset();
-    float endTime = startTime + totalTime;
     for (float t = startTime; t < endTime; t += timeStep) {
         float blendRatio = (t - startTime) / standUpTime;
 

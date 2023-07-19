@@ -103,12 +103,21 @@ FSM_StateName qrFSMStateStandUp<T>::CheckTransition()
     case K_LOCOMOTION:
         this->nextStateName = FSM_StateName::LOCOMOTION;
         break;
-    case LOCOMOTION_STAND:
+    case LOCOMOTION_STAND: {
         this->nextStateName = FSM_StateName::LOCOMOTION;
         break;
+    }
     case GAIT_TRANSITION:
-        this->nextStateName = FSM_StateName::LOCOMOTION;
+    {
+        const Quadruped::RC_MODE ctrlState = this->_data->desiredStateCommand->getJoyCtrlState();
+        if (ctrlState == Quadruped::RC_MODE::RL_TROT) {
+            this->nextStateName = FSM_StateName::RL_LOCOMOTION;
+        } else {
+            this->nextStateName = FSM_StateName::LOCOMOTION;
+        }
+        std::cout << ">>>>>>>>>>>> nextStateName = " <<  int(this->nextStateName)  << std::endl;
         break;
+    }
     case K_VISION:
         this->nextStateName = FSM_StateName::VISION;
         break;
@@ -136,6 +145,10 @@ qrTransitionData<T> qrFSMStateStandUp<T>::Transition()
         this->transitionData.done = true;
         break;
     case FSM_StateName::LOCOMOTION:
+        this->transitionData.done = true;
+        this->transitionData.legCommand = this->_data->legCmd;
+        break;
+    case FSM_StateName::RL_LOCOMOTION:
         this->transitionData.done = true;
         this->transitionData.legCommand = this->_data->legCmd;
         break;

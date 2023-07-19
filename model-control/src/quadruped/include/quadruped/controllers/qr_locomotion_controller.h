@@ -69,7 +69,7 @@ public:
                          qrStanceLegControllerInterface *stanceLegController,
                          qrUserParameters *userParameters);
 
-    ~qrLocomotionController() = default;
+    virtual ~qrLocomotionController() = default;
 
     /**
      * @brief Reset all components in the locomotion controller.
@@ -147,15 +147,19 @@ public:
     qrStanceLegControllerInterface *stanceLegController;
 
     /**
-     * @brief a member indicates whether the locomotion has been stopped
+     * @brief A list of commands that will send to gazebo/real quadrupeds every control loop.
      */
-    bool stop=false;
+    std::vector<qrMotorCommand> action;
 
-    int swingSemaphore = 10000000;
+    /**
+     * @brief Records the time quadruped resets.
+     */
+    double resetTime;
 
-    float stopTick = 0;
-
-private:
+    /**
+     * @brief Records the time since the quadruped resets.
+     */
+    double timeSinceReset;
 
     /**
      * @brief Pointer to Robot.
@@ -166,6 +170,27 @@ private:
      * @brief Pointer to GaitGenerator.
      */
     qrGaitGenerator *gaitGenerator;
+
+
+    /**
+     * @brief Pointer to DesiredStateCommand.
+     */
+    qrDesiredStateCommand* desiredStateCommand;
+
+
+
+    /**
+     * @brief a member indicates whether the locomotion has been stopped
+     */
+    bool stop=false;
+
+    int swingSemaphore = 10000000;
+
+    float stopTick = 0;
+
+private:
+
+
 
     /**
      * @brief Pointer to StateEstimatorContainer.
@@ -182,25 +207,6 @@ private:
      */
     qrPosePlanner *posePlanner;
 
-    /**
-     * @brief Pointer to DesiredStateCommand.
-     */
-    qrDesiredStateCommand* desiredStateCommand;
-
-    /**
-     * @brief A list of commands that will send to gazebo/real quadrupeds every control loop.
-     */
-    std::vector<qrMotorCommand> action;
-
-    /**
-     * @brief Records the time quadruped resets.
-     */
-    double resetTime;
-
-    /**
-     * @brief Records the time since the quadruped resets.
-     */
-    double timeSinceReset;
 
 };
 

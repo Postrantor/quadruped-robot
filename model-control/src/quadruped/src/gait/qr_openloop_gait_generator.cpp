@@ -88,6 +88,7 @@ void qrOpenLoopGaitGenerator::Reset(float currentTime)
     initialLegPhase = Eigen::MatrixXf::Map(&initialLegPhaseList[0], 4, 1);
     contactDetectionPhaseThreshold = config["gait_params"][gait]["contact_detection_phase_threshold"].as<float>();
     waitTime = config["gait_params"]["wait_time"].as<float>();
+    phaseInFullCycle = initialLegPhase; 
 
     for (int legId = 0; legId < initialLegState.size(); legId++) {
         /* when dutyFactor is about 0, this leg stay in air. */
@@ -118,8 +119,8 @@ void qrOpenLoopGaitGenerator::Reset(float currentTime)
     }
 
     qrGaitGenerator::Reset(currentTime);
-    std::cout << "stanceDuration = " << stanceDuration << std::endl;
-    std::cout << "dutyfactor: " << this->dutyFactor << std::endl;
+    // std::cout << "stanceDuration = " << stanceDuration << std::endl;
+    // std::cout << "dutyfactor: " << this->dutyFactor << std::endl;
 }
 
 

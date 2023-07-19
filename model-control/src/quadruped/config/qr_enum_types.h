@@ -80,7 +80,8 @@ enum LocomotionMode {
     VELOCITY_LOCOMOTION,
     POSITION_LOCOMOTION,
     WALK_LOCOMOTION,
-    ADVANCED_TROT
+    ADVANCED_TROT,
+    RL_LOCOMOTION
 };
 
 enum TerrainType {
@@ -100,13 +101,14 @@ enum TwistMode {
 /** @brief  used for remote controll command */
 enum RC_MODE {
     HARD_CODE = 0,
+    RL_TROT, // ON NPU
     JOY_TROT,
     JOY_ADVANCED_TROT,
     JOY_WALK,
-    JOY_STAND,
+    JOY_STAND, // 5
     // ROS_WALK
     // VISUAL,
-    BODY_UP,
+    BODY_UP, // 6
     BODY_DOWN,
     EXIT,
     RC_MODE_ITEMS = EXIT

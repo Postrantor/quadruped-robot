@@ -41,7 +41,7 @@
 #define K_BALANCE_STAND     2
 #define GAIT_TRANSITION     3 // when K_LOCOMOTION
 
-#define K_LOCOMOTION        4
+#define K_LOCOMOTION        4 // contain rl_trot
 #define K_LOCOMOTION_TEST   5
 #define K_RECOVERY_STAND    6
 
@@ -69,6 +69,7 @@ enum class FSM_StateName {
     STAND_DOWN,
     BALANCE_STAND,
     LOCOMOTION,
+    RL_LOCOMOTION,
     RECOVERY_STAND,
     VISION,
     BACKFLIP,
@@ -183,6 +184,8 @@ public:
      * This is a post-control safety check.
      */
     bool checkLegSingularity = false;
+
+    bool enableStateEstimation = true;
 
 protected:
 

@@ -23,7 +23,10 @@
 // SOFTWARE.
 
 #include "quadruped/exec/qr_robot_runner.h"
+
+#ifndef NOT_USE_SIM
 #include "quadruped/ros/qr_control2gazebo_msg.h"
+#endif
 
 #include <ros/package.h>
 
@@ -44,6 +47,8 @@ int main(int argc, char **argv)
     std::cout << "---------ROS node init finished---------" << std::endl;
 
     qrRobot *quadruped = new qrRobotA1(homeDir + "config/a1/a1_robot.yaml");
+    quadruped->networkPath = mainConfig["network_path"].as<std::string>(); // todo
+
     Visualization2D& vis = quadruped->stateDataFlow.visualizer;
     // vis.SetLabelNames({"acc_x", "acc_y", "vx", "vy","yaw_rate"});
     vis.SetLabelNames({"FR0", "FR1", "FR2", "cmd_FR0","cmd_FR1", "cmd_FR2"});
@@ -55,6 +60,7 @@ int main(int argc, char **argv)
     // ros::Rate loop_rate(round(1.0 / quadruped->timeStep)); // 500--1000 Hz
     ros::Rate loop_rate1(1000);
     ros::Rate loop_rate2(500);
+    ros::Rate loop_rate3(333);
     
     ROS_INFO("LocomotionController Init Finished");
     qrLocomotionController* locomotionController = robotRunner.GetLocomotionController();
@@ -138,10 +144,13 @@ int main(int argc, char **argv)
         }
         ros::spinOnce();
         // loop_rate.sleep();
-        if (quadruped->timeStep < 0.0015)
+        if (quadruped->timeStep < 0.0015) {
             loop_rate1.sleep();
-        else 
+        } else  if (quadruped->timeStep < 0.0025) {
             loop_rate2.sleep();
+        } else {
+            loop_rate3.sleep();
+        }
         // ros::Rate(round(1.0 / quadruped->timeStep)).sleep(); // 500--1000 Hz
     	if (!quadruped->useRosTime) {
 	        while (quadruped->GetTimeSinceReset() - startTimeWall < quadruped->timeStep) {}

@@ -22,12 +22,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#ifndef QR_FSM_STATE_LOCOMOTION_H
-#define QR_FSM_STATE_LOCOMOTION_H
+#ifndef RL_FSM_STATE_LOCOMOTION_H
+#define RL_FSM_STATE_LOCOMOTION_H
 
 #include "qr_control_fsm_data.hpp"
-#include "controllers/qr_locomotion_controller.h"
-#include "controllers/wbc/qr_wbc_locomotion_controller.hpp"
+#include "controllers/rl_locomotion_controller.h"
 #include "qr_fsm_state.hpp"
 
 /**
@@ -36,17 +35,17 @@
  * should be independent of controller, gait, and desired trajectory.
  */
 template<typename T>
-class qrFSMStateLocomotion : public qrFSMState<T> {
+class qrFSMStateRLLocomotion : public qrFSMState<T> {
 
 public:
 
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     /**
-     * @brief Constructor of qrFSMStateLocomotion
+     * @brief Constructor of qrFSMStateRLLocomotion
      * @param controlFSMData: pointer to the data this FSM needed
      */
-    qrFSMStateLocomotion(qrControlFSMData<T> *control_fsm_data, Quadruped::qrLocomotionController* locomotionController_);
+    qrFSMStateRLLocomotion(qrControlFSMData<T> *control_fsm_data, Quadruped::qrLocomotionController* locomotionController_);
 
     /**
      * @brief Getter method of locomotionController.
@@ -119,21 +118,16 @@ private:
      */
     Quadruped::qrLocomotionController *locomotionController;
 
-    /**
-     * @brief Pointer to Whole Body Controller.
-     */
-    qrWbcLocomotionController<T> *wbcController;
-
-    /**
-     * @brief Pointer to data needed by Whole Body Controller.
-     */
-    qrWbcCtrlData *wbcData;
-
+    Quadruped::LocomotionControllerRLWrapper locomotionControllerRLWrapper;
     /**
      * @brief Keep tracking of the iterations of the locomotion controller.
      */
     unsigned long iter = 0;
 
+    int count = 0;
+
+    unsigned long iter_ = 0;
+
 };
 
-#endif // QR_FSM_STATE_LOCOMOTION_H
+#endif // RL_FSM_STATE_LOCOMOTION_H

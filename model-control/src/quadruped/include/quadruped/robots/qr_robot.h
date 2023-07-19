@@ -677,7 +677,8 @@ public:
     std::unordered_map<int, std::string> modeMap = {{0, "velocity"},
                                                     {1, "position"},
                                                     {2, "walk"},
-                                                    {3, "advanced_trot"}};
+                                                    {3, "advanced_trot"},
+                                                    {4, "rl_trot"}};
 
     /**
      * @brief Current finite state machine mode.
@@ -686,6 +687,8 @@ public:
 
     int lastMotorControlMode = MotorMode::POSITION_MODE;
     Eigen::Matrix<float, 12, 5> lastMotorCommands = Eigen::Matrix<float, 12, 5>::Zero();
+    std::string networkPath = "";
+
 };
 
 } // Namespace Quadruped

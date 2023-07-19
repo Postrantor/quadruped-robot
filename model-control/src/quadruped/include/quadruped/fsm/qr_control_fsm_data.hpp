@@ -67,6 +67,8 @@ struct qrControlFSMData {
    */
   std::vector<Quadruped::qrMotorCommand> legCmd;
 
+  std::string networkPath;
+
 };
 
 template struct qrControlFSMData<float>;

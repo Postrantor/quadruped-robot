@@ -355,14 +355,15 @@ void Quadruped::qrDesiredStateCommand::Update()
                 std::cout << "joyCtrlState = " << (int)joyCtrlState << std::endl;
 
             } else if (joyCtrlState == RC_MODE::JOY_STAND) {
-                joyCtrlState = RC_MODE::JOY_ADVANCED_TROT;
+                // joyCtrlState = RC_MODE::JOY_ADVANCED_TROT;
+                joyCtrlState = RC_MODE::RL_TROT;
             } else {
                 joyCtrlState = static_cast<RC_MODE>((joyCtrlState+1) %
                                             (RC_MODE::RC_MODE_ITEMS+1));
                 if (joyCtrlState == RC_MODE::HARD_CODE) {
                     joyCtrlState = static_cast<RC_MODE>(joyCtrlState+1);
                 } else if (joyCtrlState > RC_MODE::JOY_ADVANCED_TROT) {
-                    joyCtrlState = RC_MODE::JOY_TROT;
+                    joyCtrlState = RC_MODE::RL_TROT;  //TODO
                 }
             }
         } else {
@@ -397,6 +398,9 @@ void Quadruped::qrDesiredStateCommand::Update()
         filteredVel = filteredVel * (1.0 - filterFactor) +  Vec3<float>(joyCmdVx, joyCmdVy, joyCmdVz) * filterFactor;
         filteredOmega = filteredOmega * (1.0 - filterFactor) + Vec3<float>(joyCmdRollRate, joyCmdPitchRate, joyCmdYawRate) * filterFactor;
     } else if (joyCtrlState == RC_MODE::JOY_ADVANCED_TROT) {
+        filteredVel = filteredVel * (1.0 - filterFactor) +  Vec3<float>(joyCmdVx, joyCmdVy, joyCmdVz) * filterFactor;
+        filteredOmega = filteredOmega * (1.0 - filterFactor) + Vec3<float>(joyCmdRollRate, joyCmdPitchRate, joyCmdYawRate) * filterFactor;
+    } else if (joyCtrlState == RC_MODE::RL_TROT) {
         filteredVel = filteredVel * (1.0 - filterFactor) +  Vec3<float>(joyCmdVx, joyCmdVy, joyCmdVz) * filterFactor;
         filteredOmega = filteredOmega * (1.0 - filterFactor) + Vec3<float>(joyCmdRollRate, joyCmdPitchRate, joyCmdYawRate) * filterFactor;
     } else if (joyCtrlState == RC_MODE::JOY_WALK) {
