@@ -126,9 +126,9 @@ void qrControlFSM<T>::RunFSM(std::vector<Quadruped::qrMotorCommand>& hybridActio
                 operatingMode = FSM_OperatingMode::TRANSITIONING;
             } else {
                 // Execute normal behaviour of the state.
-                MITTimer TT;
+                // MITTimer TT;
                 currentState->Run();
-                printf("Run TIME: %.3f [ms]\n", TT.getMs()); 
+                // printf("Run TIME: %.3f [ms]\n", TT.getMs()); 
             }
         }
 

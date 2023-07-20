@@ -44,6 +44,8 @@ int main(int argc, char **argv)
     std::cout << "---------ROS node init finished---------" << std::endl;
 
     qrRobot *quadruped = new qrRobotLite2(homeDir + "config/lite3/lite3_robot.yaml");
+    quadruped->networkPath = mainConfig["network_path"].as<std::string>(); // todo
+
     Visualization2D& vis = quadruped->stateDataFlow.visualizer;
     vis.SetLabelNames({"p", "contact", "allow", "leg","curLeg", "mpc_contact", "desLeg"});
     
@@ -54,6 +56,7 @@ int main(int argc, char **argv)
     // ros::Rate loop_rate(round(1.0 / quadruped->timeStep)); // 500--1000 Hz
     ros::Rate loop_rate1(1000);
     ros::Rate loop_rate2(500);
+    ros::Rate loop_rate3(333);
     
     // ROS_INFO("LocomotionController Init Finished");
     qrLocomotionController* locomotionController = robotRunner.GetLocomotionController();
@@ -106,7 +109,9 @@ int main(int argc, char **argv)
         // locomotionController->Update();
         // auto [hybridAction, qpSol] = locomotionController->GetAction();
         // quadruped->Step(MotorCommand::convertToMatix(hybridAction), HYBRID_MODE);
-        
+        if (desiredStateCommand->getJoyCtrlState() == RC_MODE::EXIT) {
+            break;
+        }
         robotRunner.Update();
         robotRunner.Step();
         // quadruped->ReceiveObservation();
@@ -149,10 +154,13 @@ int main(int argc, char **argv)
         // }
         ros::spinOnce();
         // loop_rate.sleep();
-        if (quadruped->timeStep < 0.0015)
+        if (quadruped->timeStep < 0.0015) {
             loop_rate1.sleep();
-        else 
+        } else  if (quadruped->timeStep < 0.0025) {
             loop_rate2.sleep();
+        } else {
+            loop_rate3.sleep();
+        }
         // ros::Rate(round(1.0 / quadruped->timeStep)).sleep(); // 500--1000 Hz
     	if (!quadruped->useRosTime) {
 	        while (quadruped->GetTimeSinceReset() - startTimeWall < quadruped->timeStep) {}

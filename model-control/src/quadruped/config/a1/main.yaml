@@ -1,6 +1,6 @@
 name: a1_robot
 
-network_path: /root/quadruped-robot/a1.om  # ./a1.onnx
+network_path: /root/model-control/a1.om  # ./a1.onnx
 speed_update_mode: 0 # 0: const, 1: ros cmd_vel
 const_twist:
   linear: [0., 0., 0.]

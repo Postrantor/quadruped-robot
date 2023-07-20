@@ -401,8 +401,8 @@ void Quadruped::qrDesiredStateCommand::Update()
         filteredVel = filteredVel * (1.0 - filterFactor) +  Vec3<float>(joyCmdVx, joyCmdVy, joyCmdVz) * filterFactor;
         filteredOmega = filteredOmega * (1.0 - filterFactor) + Vec3<float>(joyCmdRollRate, joyCmdPitchRate, joyCmdYawRate) * filterFactor;
     } else if (joyCtrlState == RC_MODE::RL_TROT) {
-        filteredVel = filteredVel * (1.0 - filterFactor) +  Vec3<float>(joyCmdVx, joyCmdVy, joyCmdVz) * filterFactor;
-        filteredOmega = filteredOmega * (1.0 - filterFactor) + Vec3<float>(joyCmdRollRate, joyCmdPitchRate, joyCmdYawRate) * filterFactor;
+        filteredVel = filteredVel * (1.0 - filterFactor*2) +  Vec3<float>(joyCmdVx, joyCmdVy, joyCmdVz) * filterFactor*2;
+        filteredOmega = filteredOmega * (1.0 - filterFactor*2) + Vec3<float>(joyCmdRollRate, joyCmdPitchRate, joyCmdYawRate) * filterFactor*2;
     } else if (joyCtrlState == RC_MODE::JOY_WALK) {
         filteredVel = filteredVel * (1.0 - filterFactor) +  Vec3<float>(joyCmdVx, joyCmdVy, joyCmdVz) * filterFactor;
         filteredOmega = filteredOmega * (1.0 - filterFactor) + Vec3<float>(joyCmdRollRate, joyCmdPitchRate, joyCmdYawRate) * filterFactor;

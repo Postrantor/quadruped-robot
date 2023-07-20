@@ -58,7 +58,7 @@ MPCStanceLegController::MPCStanceLegController(
 
     Reset(0);
 
-    std::vector<float> QIN = param["stance_leg_params"][controlModeStr]["Q"].as<std::vector<float>>();
+    std::vector<float> QIN = param["stance_leg_params"]["advanced_trot"]["Q"].as<std::vector<float>>();
     for (u8 i(0); i < 12; ++i) {
         Q[i] = QIN[i];
     }

@@ -77,14 +77,17 @@ public:
      */
     std::vector<qrMotorCommand> GetRLAction();
 
-    const float MaxHorizontalOffset = 0.05; // 0.05
-    const float  MaxClearance = 0.15; // 0.15
+
 
     qrLocomotionController* locomotionController;
     qrRobot *robot;
 
 private:
-
+    float MaxHorizontalOffset = 0.05;
+    float  MaxClearance = 0.15;
+    std::vector<float> kps;
+    std::vector<float> kds;
+    
     std::string net_model_dir;
     const int PROPRIOCEPTION_SIZE = 133; // Proprioceptive
     const int EXTEROCEPTION_SIZE = 187; // Exteroceptive
@@ -95,6 +98,7 @@ private:
     std::vector<float> obs_history;
     Vec12<float> residualAngle;
     Vec4<float> deltaPhi;
+    Vec4<float> phi;
 
     Vec12<float> target_joint_angles;
     Eigen::Matrix<float, 4, 3> foot_target_position_in_hip_frame;

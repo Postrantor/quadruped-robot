@@ -111,12 +111,12 @@ qrRobotRunner::qrRobotRunner(qrRobot* quadrupedIn, std::string& homeDir, ros::No
     quadruped->timeStep = 1.0 / userParameters.controlFrequency;
     
     quadruped->ReceiveObservation();
-    quadruped->ReceiveObservation();
-    quadruped->ReceiveObservation();
-    if (quadruped->robotName == "lite3") {
-        Action::ShinkLeg(quadruped, 2.0f, 0.001);
-    }
-    Action::StandUp(quadruped, 2.0f, 4.f, 0.001);
+    // quadruped->ReceiveObservation();
+    // quadruped->ReceiveObservation();
+    // if (quadruped->robotName == "lite3") {
+    //     Action::ShinkLeg(quadruped, 2.0f, 0.001);
+    // }
+    // Action::StandUp(quadruped, 2.0f, 4.f, 0.001);
     // Action::KeepStand(quadruped, 10,  0.001);
     //Action::ControlFoot(quadruped, nullptr, 15, 0.001);
     
@@ -133,12 +133,14 @@ qrRobotRunner::qrRobotRunner(qrRobot* quadrupedIn, std::string& homeDir, ros::No
                                                         "config/" + quadruped->robotName + "/terrain.yaml", 
                                                         homeDir); 
     controlFSM = new qrControlFSM<float>(quadruped, stateEstimators, gaitGenerator, desiredStateCommand, &userParameters);    
-    // quadruped->ReceiveObservation();
-    // quadruped->ReceiveObservation();
-    // if (quadruped->robotName == "lite3") {
-    //     Action::ShinkLeg(quadruped, 2.0f, 0.001);
-    // }
-    // Action::StandUp(quadruped, 2.0f, 4.f, 0.001);
+    
+    quadruped->ReceiveObservation();
+    quadruped->ReceiveObservation();
+    if (quadruped->robotName == "lite3") {
+        Action::ShinkLeg(quadruped, 2.0f, 0.001);
+    }
+    Action::StandUp(quadruped, 2.0f, 4.f, 0.001);
+
     resetTime = quadruped->GetTimeSinceReset();
     stateEstimators->Reset();
     // gaitGenerator->Reset(resetTime);

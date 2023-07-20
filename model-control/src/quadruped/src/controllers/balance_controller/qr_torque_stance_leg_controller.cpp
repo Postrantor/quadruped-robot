@@ -67,16 +67,18 @@ void TorqueStanceLegController::Reset(float currentTime_)
     currentTime = currentTime_;
 
     controlModeStr = robot->GetControlMode();
-    vector<float> v = param["stance_leg_params"][controlModeStr]["KD"].as<vector<float>>();
-    this->KD = Eigen::MatrixXf::Map(&v[0], 6, 1);
-    v = param["stance_leg_params"][controlModeStr]["KP"].as<vector<float>>();
-    this->KP = Eigen::MatrixXf::Map(&v[0], 6, 1);
-    v = param["stance_leg_params"][controlModeStr]["max_ddq"].as<vector<float>>();
-    this->maxDdq = Eigen::MatrixXf::Map(&v[0], 6, 1);
-    v = param["stance_leg_params"][controlModeStr]["min_ddq"].as<vector<float>>();
-    this->minDdq = Eigen::MatrixXf::Map(&v[0], 6, 1);
-    v = param["stance_leg_params"][controlModeStr]["acc_weight"].as<vector<float>>();
-    this->accWeight = Eigen::MatrixXf::Map(&v[0], 6, 1);
+    if (controlModeStr != "rl_trot") { 
+        vector<float> v = param["stance_leg_params"][controlModeStr]["KD"].as<vector<float>>();
+        this->KD = Eigen::MatrixXf::Map(&v[0], 6, 1);
+        v = param["stance_leg_params"][controlModeStr]["KP"].as<vector<float>>();
+        this->KP = Eigen::MatrixXf::Map(&v[0], 6, 1);
+        v = param["stance_leg_params"][controlModeStr]["max_ddq"].as<vector<float>>();
+        this->maxDdq = Eigen::MatrixXf::Map(&v[0], 6, 1);
+        v = param["stance_leg_params"][controlModeStr]["min_ddq"].as<vector<float>>();
+        this->minDdq = Eigen::MatrixXf::Map(&v[0], 6, 1);
+        v = param["stance_leg_params"][controlModeStr]["acc_weight"].as<vector<float>>();
+        this->accWeight = Eigen::MatrixXf::Map(&v[0], 6, 1);
+    }
 }
 
 

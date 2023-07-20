@@ -134,7 +134,7 @@ list(APPEND includePath "${qpOASES_DIR}/include")
 
 # library xpp
 set(XPP_LIBS)
-if (NOT ${USE_SIM})
+if (${USE_SIM})
     set(XPP_DIR ${PROJECT_SOURCE_DIR}/../xpp)
     list(APPEND includePath ${XPP_DIR}/xpp_states/include ${XPP_DIR}/xpp_msgs/include)
     list(APPEND XPP_LIBS xpp_states xpp_vis)
@@ -166,13 +166,22 @@ list(APPEND includePath include/quadruped src)
 # add source files
 file(GLOB_RECURSE sources "src/*.cpp")
 if (NOT ${USE_SIM})
-list(REMOVE_ITEM includePath "include/quadruped/robots/qr_robot_sim.h" 
-                            "include/quadruped/robots/qr_lite2_sim.h" 
-                            "include/quadruped/robots/qr_lite3_sim.h")
+list(REMOVE_ITEM includePath "include/quadruped/robots/qr_robot_sim.h"
+                             "include/quadruped/robots/qr_a1_sim.h"
+                             "include/quadruped/robots/qr_aliengo_sim.h"
+                             "include/quadruped/robots/qr_lite2_sim.h"
+                             "include/quadruped/robots/qr_lite3_sim.h"
+                             )
+set(filtered_sources ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_sim.cpp
+                    ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_a1_sim.cpp
+                    ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_aliengo_sim.cpp
+                    ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_lite2_sim.cpp
+                    ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_lite3_sim.cpp)
+list(REMOVE_ITEM sources ${filtered_sources})
+message("${filtered_sources}") 
+message("${PROJECT_SOURCE_DIR}/src/robots/qr_robot_sim.cpp")
+message("//////////////////////////////////////: , ${sources}")
 
-list(REMOVE_ITEM sources   "src/robots/qr_robot_sim.cpp" 
-                            "src/robots/qr_lite2_sim.cpp" 
-                            "src/robots/qr_lite3_sim.cpp")
 endif()
 
 # add include files

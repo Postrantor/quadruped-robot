@@ -236,7 +236,12 @@ LocomotionControllerRLWrapper::LocomotionControllerRLWrapper(qrLocomotionControl
     cpg_scale = 1;
     height_scale = 5;
     obs_history.reserve(NUM_HISTORY_STEPS * 320);
-    // Reset();
+    auto trot_info = locomotionController_->GetStanceLegController()->param["stance_leg_params"]["rl_trot"];
+    kps = trot_info["KP"].as<std::vector<float>>();
+    kds = trot_info["KD"].as<std::vector<float>>();
+    MaxClearance = trot_info["max_clearance"].as<float>();
+    MaxHorizontalOffset = trot_info["max_horizontal_offset"].as<float>();
+    assertm(kps.size() == 12 && kds.size() == 12, "size not 12!");
 }
 
 void LocomotionControllerRLWrapper::Reset()
@@ -251,6 +256,7 @@ void LocomotionControllerRLWrapper::Reset()
     
     target_joint_angles.setZero();
     deltaPhi.setZero();
+    phi.setZero();
     residualAngle.setZero();
     proprioceptiveObs.setZero();
     exteroceptiveObs.setZero();
@@ -500,9 +506,12 @@ void LocomotionControllerRLWrapper::CollectProprioceptiveObs()
      -0.0812504   0.736395   -1.68194  0.0730327   0.707148   -1.71823          
      0          0          0          0          1          1          1          1          0          0          0          0        1.4
     */
+    Vec3<float> v = robot->baseVelocityInBaseFrame;
+    if (robot->robotName == "lite3")
+        v[0] = 0; // todo
     proprioceptiveObs <<  command * command_scale,
                         robot->baseRollPitchYaw * rpy_scale,
-                        robot->baseVelocityInBaseFrame * v_scale,
+                        v * v_scale,
                         robot->baseRollPitchYawRate * w_scale,
                         dof_pos * dp_scale,
                         dof_v * dv_scale,
@@ -527,7 +536,7 @@ void LocomotionControllerRLWrapper::PMTGStep()
     // Eigen::Map<Eigen::MatrixXf> delta_phi(delta_phi_,4, 1);;
 
     // std::cout << gaitGenerator->phaseInFullCycle << std::endl;
-    Vec4<float> phi = 2 * M_PI * locomotionController->gaitGenerator->phaseInFullCycle + deltaPhi;
+    phi = 2 * M_PI * locomotionController->gaitGenerator->phaseInFullCycle + deltaPhi;
     // phi = phi.unaryExpr([](const float x) { return fmod(x, 3.1415f*2);});
     // std::cout << "phi = " << phi.transpose() << std::endl;
     cpg_info << deltaPhi, phi.array().cos(), phi.array().sin(), gaitFreq;
@@ -547,6 +556,12 @@ void LocomotionControllerRLWrapper::PMTGStep()
 
     foot_target_position_in_hip_frame.setZero();
     foot_target_position_in_hip_frame.col(2) = factor.cwiseProduct(is_swing.cast<float>() * MaxClearance).array() - robot->bodyHeight;
+    if (robot->robotName == "lite3" && (command[0] < -5  ||  robot->baseRollPitchYaw[1] < -0.05 ) ) {
+        foot_target_position_in_hip_frame(2, 2) -= 0.02;
+        foot_target_position_in_hip_frame(3, 2) -= 0.02;
+        // foot_target_position_in_hip_frame(2, 0) -= 0.02;
+        // foot_target_position_in_hip_frame(3, 0) -= 0.02;
+    }
     foot_target_position_in_hip_frame.col(0) = -MaxHorizontalOffset * sin_swing_phi.cwiseProduct(is_swing.cast<float>());
     Mat3<float> RT = robotics::math::coordinateRotation(robotics::math::CoordinateAxis::X, robot->baseRollPitchYaw[0]) *
                      robotics::math::coordinateRotation(robotics::math::CoordinateAxis::Y, robot->baseRollPitchYaw[1]);
@@ -566,16 +581,52 @@ void LocomotionControllerRLWrapper::PMTGStep()
 std::vector<qrMotorCommand> LocomotionControllerRLWrapper::GetRLAction()
 {
     std::vector<qrMotorCommand> action;
-    // target_joint_angles << 0, 0.8 , -1.6,
-    //                         0, 0.8 , -1.6,
-    //                         0, 0.8 , -1.6,
-    //                         0, 0.8 , -1.6;
     target_joint_angles = target_joint_angles.cwiseMax(-3.0f).cwiseMin(3.0f);
-    
+
     for (int jointId(0); jointId < NumMotor; ++jointId) {
-        float kp=20;
-        // if (jointId < 6) kp=0;
-        action.push_back({target_joint_angles[jointId], kp, 0, 0.5, 0});
+        float kp = kps[jointId];
+        float p = target_joint_angles[jointId];
+        float tua = 0;
+        if (robot->robotName == "lite3") {
+            if (command[0] < 0.0) {
+                // if (jointId == 7 || jointId == 10) {
+                //     p += 0.13;
+                // }
+                if (jointId == 8 || jointId == 11) {
+                    p += 0.13;
+                }
+            }
+            // if (common_step_counter < 250) {
+            //     p[8] += 0.2
+            //     p[11] += 0.2
+            // }
+            float phi_ = locomotionController->gaitGenerator->phaseInFullCycle[jointId/3]; //phi[jointId/3];
+            // phi_ = fmod(phi_ + 6.283, 6.283);
+            float sin_phi = std::sin(phi_ / 1.2);
+            if (phi_ < 0.6)
+                sin_phi = std::sin(phi_*2*301415 / 1.2);
+            else
+                sin_phi = -std::sin((phi_ - 0.6)*2*301415 / 0.8);
+            
+            
+            float ratio = 1.0;
+            if (sin_phi > 0) {
+                ratio *= 3;
+            }
+            if (jointId == 2 || jointId == 5) {
+                kp = 18 + 2 * ratio * sin_phi;
+            } else if (jointId == 8 || jointId == 11) {
+                kp = 21 + 2 * ratio * sin_phi;
+            } else if(jointId == 1 || jointId == 4) {
+                kp = 18 + 2 * ratio * sin_phi;
+            } else if (jointId == 7 || jointId == 10) {
+                kp = 21 + 2 * ratio * sin_phi;
+            } else {
+                ;
+            }
+            
+        }
+        action.push_back({p, kp, 0, kds[jointId], tua});
     }
     return action;
 }

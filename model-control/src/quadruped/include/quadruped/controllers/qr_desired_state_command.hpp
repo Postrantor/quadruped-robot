@@ -323,27 +323,27 @@ private:
     /**
      * @brief Min linear velocity on X Axis for the desired state.
      */
-    const float MIN_VELX = -0.15f;
+    const float MIN_VELX = -0.2f;
 
     /**
      * @brief Max linear velocity on Y Axis for the desired state.
      */
-    const float MAX_VELY = 0.1f;
+    const float MAX_VELY = 0.2f;
 
     /**
      * @brief Min linear velocity on Y Axis for the desired state.
      */
-    const float MIN_VELY = -0.1f;
+    const float MIN_VELY = -0.2f;
 
     /**
      * @brief Max yaw velocity for the desired state.
      */
-    const float MAX_YAWRATE = 0.2f;
+    const float MAX_YAWRATE = 0.4f;
 
     /**
      * @brief Min yaw velocity for the desired state.
      */
-    const float MIN_YAWRATE = -0.2f;
+    const float MIN_YAWRATE = -0.4f;
 
     /**
      * @brief Max roll velocity for the desired state.

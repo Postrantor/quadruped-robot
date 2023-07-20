@@ -49,6 +49,8 @@ void ShinkLeg(qrRobot *robot, float totalTime, float timeStep)
 void StandUp(qrRobot *robot, float standUpTime, float totalTime, float timeStep)
 {
     qrTimer timer;
+    float startTime = timer.GetTimeSinceReset();
+    float endTime = startTime + totalTime;
     Eigen::Matrix<float, 12, 1> motorAnglesBeforeStandUP = robot->GetMotorAngles();
     Eigen::Matrix<float, 12, 1>  diff = motorAnglesBeforeStandUP - robot->lastMotorCommands.col(0);
     if (robot->lastMotorControlMode == MotorMode::POSITION_MODE && diff.cwiseAbs().maxCoeff() < 0.15) { // use last action for smoothness
