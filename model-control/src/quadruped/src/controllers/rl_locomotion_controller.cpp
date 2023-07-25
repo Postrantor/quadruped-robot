@@ -24,6 +24,18 @@
 
 #include "controllers/rl_locomotion_controller.h"
 
+std::vector<std::string> split (const std::string &s, char delim) {
+    std::vector<std::string> result;
+    std::stringstream ss (s);
+    std::string item;
+
+    while (getline(ss, item, delim)) {
+        result.push_back (item);
+    }
+
+    return result;
+}
+
 #if USE_NPU // OM
 static int32_t deviceId = 0;
 static uint32_t modelId;
@@ -46,19 +58,6 @@ static aclmdlDataset *outputDataSet;
 static aclDataBuffer *outputDataBuffer;
 static aclmdlDesc *modelDesc;
 
-
-std::vector<std::string> split (const std::string &s, char delim) {
-    std::vector<std::string> result;
-    std::stringstream ss (s);
-    std::string item;
-
-    while (getline (ss, item, delim)) {
-        result.push_back (item);
-    }
-
-    return result;
-}
-
 void InitResource()
 {
     //指定当前进程或线程中用于运算的Device，同时隐式创建默认Context。同步接口。
@@ -76,10 +75,10 @@ void LoadModel(const char* modelPath)
 
 void CreateHostData()
 {
-    dataSize = 320 * sizeof(float);
+    dataSize = Quadruped::OBS_SIZE * sizeof(float);
     aclError ret = aclrtMallocHost(&hostData, dataSize);
     // hostData = malloc(dataSize);
-    dataSize1 = 40 * dataSize;
+    dataSize1 = Quadruped::HISTORY_STEPS * dataSize;
     ret = aclrtMallocHost(&hostData1, dataSize1);
     // hostData1 = malloc(dataSize1);
 }
@@ -132,7 +131,10 @@ void CreateModelOutput()
     outputDataSet = aclmdlCreateDataset();
     // 获取模型输出数据需占用的内存大小，单位为Byte
     outputDataSize = aclmdlGetOutputSizeByIndex(modelDesc, 0);
-    // printf("outputDataSize = %lu\n", outputDataSize);
+    printf("outputDataSize = %lu\n", outputDataSize);
+    if (outputDataSize == 0) {
+        throw std::runtime_error("om model is not right!");
+    }
     // 申请输出内存
     ret = aclrtMalloc(&outputDeviceData, outputDataSize, ACL_MEM_MALLOC_HUGE_FIRST);
     
@@ -235,7 +237,7 @@ LocomotionControllerRLWrapper::LocomotionControllerRLWrapper(qrLocomotionControl
     dv_scale = 0.1;
     cpg_scale = 1;
     height_scale = 5;
-    obs_history.reserve(NUM_HISTORY_STEPS * 320);
+    obs_history.reserve(HISTORY_STEPS * OBS_SIZE);
     auto trot_info = locomotionController_->GetStanceLegController()->param["stance_leg_params"]["rl_trot"];
     kps = trot_info["KP"].as<std::vector<float>>();
     kds = trot_info["KD"].as<std::vector<float>>();
@@ -267,9 +269,11 @@ void LocomotionControllerRLWrapper::Reset()
 
 LocomotionControllerRLWrapper::~LocomotionControllerRLWrapper()
 {
+    #if USE_NPU
     UnloadModel();
     UnloadData();
     DestroyResource();
+    #endif
 }
 
 
@@ -314,27 +318,22 @@ void LocomotionControllerRLWrapper::RLUpdate(bool enableInference)
     if (enableInference) {
         if (allowUpdateObs) {
             CollectProprioceptiveObs(); // proprioceptiveObs
-            
-            total_obs << proprioceptiveObs, 
-                        exteroceptiveObs;
+            // total_obs << proprioceptiveObs,
+            //             exteroceptiveObs;
+
             // allowUpdateObs = false;
         }
         // MITTimer tik;
-        Inference(total_obs);
+        Inference(proprioceptiveObs); // total_obs
         // printf("Inference TIME: %.3f [ms]\n", tik.getMs()); 
         
     }
-
+    
     // pmtg update, not swing controllers
     locomotionController->gaitGenerator->Update(locomotionController->timeSinceReset);
     target_joint_angles.setZero();
     PMTGStep();
-    /*
-    -0.331181   0.98929 -0.239799  
-    0.357972   1.98558 -0.847333  
-    0.188387   2.77172  -1.35047  
-    0.365737   2.31064  -1.36795
-    */
+
     // std::cout << "target_joint = " << target_joint_angles.transpose() << std::endl;
     if (deque_dof_p_target.size() < 2) {
         Vec12<float> swaped_target_joint_angles = target_joint_angles;
@@ -344,14 +343,14 @@ void LocomotionControllerRLWrapper::RLUpdate(bool enableInference)
 }
 
 
-void LocomotionControllerRLWrapper::Inference(Eigen::Matrix<float, 320, 1>& obs)
+void LocomotionControllerRLWrapper::Inference(Eigen::Matrix<float, OBS_SIZE, 1>& obs)
 {
     if (obs_history.empty()) {
-        Eigen::Matrix<float, 12800, 1> obs_history_data = obs.replicate<40,1>();
+        Eigen::Matrix<float, HISTORY_SIZE, 1> obs_history_data = obs.replicate<HISTORY_STEPS,1>();
         obs_history.insert(obs_history.end(), obs_history_data.data(),  obs_history_data.data() + obs_history_data.size());
     } else {
         auto it = obs_history.begin();
-        obs_history.erase(it, it+320);
+        obs_history.erase(it, it+OBS_SIZE);
         obs_history.insert(obs_history.end(), obs.data(), obs.data()+obs.size());
     }
     // pretty_print(obs_history.data() + 320*38, "obs_his[-2]", 320);
@@ -368,9 +367,9 @@ void LocomotionControllerRLWrapper::Inference(Eigen::Matrix<float, 320, 1>& obs)
     
     #else
     // std::cout << "dof p = " << robot->GetMotorAngles().transpose() << std::endl;
-    std::vector<int64_t> input0_node_dims = {1, 320};
-    std::vector<float> input0_tensor_values(obs.data(), obs.data() + 320);
-    std::vector<int64_t> input1_node_dims = {1, 320*40};
+    std::vector<int64_t> input0_node_dims = {1, OBS_SIZE};
+    std::vector<float> input0_tensor_values(obs.data(), obs.data() + OBS_SIZE);
+    std::vector<int64_t> input1_node_dims = {1, HISTORY_SIZE};
     // std::cout << "obs = " << obs.block<133, 1>(0,0).transpose() << std::endl;
 
     // std::vector<float> input1_tensor_values(obs_history.data(), obs_history.data() + obs_history.rows() * obs_history.cols());
@@ -385,8 +384,8 @@ void LocomotionControllerRLWrapper::Inference(Eigen::Matrix<float, 320, 1>& obs)
     // Ort::MemoryInfo memory_info = Ort::MemoryInfo::CreateCpu(OrtAllocatorType::OrtArenaAllocator, OrtMemType::OrtMemTypeDefault);
     // Ort::Value input0_tensor = Ort::Value::CreateTensor<float>(memory_info, input0_tensor_values.data(), 320, input0_node_dims.data(), input0_node_dims.size());
     // Ort::Value input1_tensor = Ort::Value::CreateTensor<float>(memory_info, obs_history.data(), 320*40, input1_node_dims.data(), input1_node_dims.size());
-    input_tensor.emplace_back(Ort::Value::CreateTensor<float>(memory_info, input0_tensor_values.data(), 320, input0_node_dims.data(), input0_node_dims.size()));
-    input_tensor.emplace_back(Ort::Value::CreateTensor<float>(memory_info, obs_history.data(), 320*40, input1_node_dims.data(), input1_node_dims.size()));
+    input_tensor.emplace_back(Ort::Value::CreateTensor<float>(memory_info, input0_tensor_values.data(), OBS_SIZE, input0_node_dims.data(), input0_node_dims.size()));
+    input_tensor.emplace_back(Ort::Value::CreateTensor<float>(memory_info, obs_history.data(), HISTORY_SIZE, input1_node_dims.data(), input1_node_dims.size()));
     Ort::Value output_tensor = Ort::Value::CreateTensor<float>(memory_info, results_.data(), results_.size(),
                                                      output_shape_.data(), output_shape_.size());
 
@@ -439,8 +438,8 @@ void LocomotionControllerRLWrapper::Inference(Eigen::Matrix<float, 320, 1>& obs)
     // memcpy(residualAngle, results_.data() + 4, 12*sizeof(float));
 
     // std::cout << "results_  = ";
-    // for (float ii : results_) {
-    //     std::cout << " " << ii;
+    // for (int i=0; i<16; ++i) {
+    //     std::cout << " " <<  results_[i];
     // }
     // std::cout <<'\n';
 
@@ -507,8 +506,8 @@ void LocomotionControllerRLWrapper::CollectProprioceptiveObs()
      0          0          0          0          1          1          1          1          0          0          0          0        1.4
     */
     Vec3<float> v = robot->baseVelocityInBaseFrame;
-    if (robot->robotName == "lite3")
-        v[0] = 0; // todo
+    // if (robot->robotName == "lite3")
+    //     v[0] = 0; // todo
     proprioceptiveObs <<  command * command_scale,
                         robot->baseRollPitchYaw * rpy_scale,
                         v * v_scale,
@@ -556,12 +555,12 @@ void LocomotionControllerRLWrapper::PMTGStep()
 
     foot_target_position_in_hip_frame.setZero();
     foot_target_position_in_hip_frame.col(2) = factor.cwiseProduct(is_swing.cast<float>() * MaxClearance).array() - robot->bodyHeight;
-    if (robot->robotName == "lite3" && (command[0] < -5  ||  robot->baseRollPitchYaw[1] < -0.05 ) ) {
-        foot_target_position_in_hip_frame(2, 2) -= 0.02;
-        foot_target_position_in_hip_frame(3, 2) -= 0.02;
-        // foot_target_position_in_hip_frame(2, 0) -= 0.02;
-        // foot_target_position_in_hip_frame(3, 0) -= 0.02;
-    }
+    // if (robot->robotName == "lite3" && (command[0] < -5  ||  robot->baseRollPitchYaw[1] < -0.05 ) ) {
+    //     foot_target_position_in_hip_frame(2, 2) -= 0.02;
+    //     foot_target_position_in_hip_frame(3, 2) -= 0.02;
+    //     // foot_target_position_in_hip_frame(2, 0) -= 0.02;
+    //     // foot_target_position_in_hip_frame(3, 0) -= 0.02;
+    // }
     foot_target_position_in_hip_frame.col(0) = -MaxHorizontalOffset * sin_swing_phi.cwiseProduct(is_swing.cast<float>());
     Mat3<float> RT = robotics::math::coordinateRotation(robotics::math::CoordinateAxis::X, robot->baseRollPitchYaw[0]) *
                      robotics::math::coordinateRotation(robotics::math::CoordinateAxis::Y, robot->baseRollPitchYaw[1]);
@@ -587,45 +586,45 @@ std::vector<qrMotorCommand> LocomotionControllerRLWrapper::GetRLAction()
         float kp = kps[jointId];
         float p = target_joint_angles[jointId];
         float tua = 0;
-        if (robot->robotName == "lite3") {
-            if (command[0] < 0.0) {
-                // if (jointId == 7 || jointId == 10) {
-                //     p += 0.13;
-                // }
-                if (jointId == 8 || jointId == 11) {
-                    p += 0.13;
-                }
-            }
-            // if (common_step_counter < 250) {
-            //     p[8] += 0.2
-            //     p[11] += 0.2
-            // }
-            float phi_ = locomotionController->gaitGenerator->phaseInFullCycle[jointId/3]; //phi[jointId/3];
-            // phi_ = fmod(phi_ + 6.283, 6.283);
-            float sin_phi = std::sin(phi_ / 1.2);
-            if (phi_ < 0.6)
-                sin_phi = std::sin(phi_*2*301415 / 1.2);
-            else
-                sin_phi = -std::sin((phi_ - 0.6)*2*301415 / 0.8);
+        // if (robot->robotName == "lite3") {
+        //     if (command[0] < 0.0) {
+        //         // if (jointId == 7 || jointId == 10) {
+        //         //     p += 0.13;
+        //         // }
+        //         if (jointId == 8 || jointId == 11) {
+        //             p += 0.13;
+        //         }
+        //     }
+        //     // if (common_step_counter < 250) {
+        //     //     p[8] += 0.2
+        //     //     p[11] += 0.2
+        //     // }
+        //     float phi_ = locomotionController->gaitGenerator->phaseInFullCycle[jointId/3]; //phi[jointId/3];
+        //     // phi_ = fmod(phi_ + 6.283, 6.283);
+        //     float sin_phi = std::sin(phi_ / 1.2);
+        //     if (phi_ < 0.6)
+        //         sin_phi = std::sin(phi_*2*301415 / 1.2);
+        //     else
+        //         sin_phi = -std::sin((phi_ - 0.6)*2*301415 / 0.8);
             
             
-            float ratio = 1.0;
-            if (sin_phi > 0) {
-                ratio *= 3;
-            }
-            if (jointId == 2 || jointId == 5) {
-                kp = 18 + 2 * ratio * sin_phi;
-            } else if (jointId == 8 || jointId == 11) {
-                kp = 21 + 2 * ratio * sin_phi;
-            } else if(jointId == 1 || jointId == 4) {
-                kp = 18 + 2 * ratio * sin_phi;
-            } else if (jointId == 7 || jointId == 10) {
-                kp = 21 + 2 * ratio * sin_phi;
-            } else {
-                ;
-            }
+        //     float ratio = 1.0;
+        //     if (sin_phi > 0) {
+        //         ratio *= 3;
+        //     }
+        //     if (jointId == 2 || jointId == 5) {
+        //         kp = 18 + 2 * ratio * sin_phi;
+        //     } else if (jointId == 8 || jointId == 11) {
+        //         kp = 21 + 2 * ratio * sin_phi;
+        //     } else if(jointId == 1 || jointId == 4) {
+        //         kp = 18 + 2 * ratio * sin_phi;
+        //     } else if (jointId == 7 || jointId == 10) {
+        //         kp = 21 + 2 * ratio * sin_phi;
+        //     } else {
+        //         ;
+        //     }
             
-        }
+        // }
         action.push_back({p, kp, 0, kds[jointId], tua});
     }
     return action;

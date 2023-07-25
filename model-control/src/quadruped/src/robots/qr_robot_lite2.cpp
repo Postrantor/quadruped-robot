@@ -141,25 +141,25 @@ qrRobotLite2::qrRobotLite2(std::string configFilePath)
     lastResetTime = GetTimeSinceReset();
     initComplete = true;
 
-    // lowState_lite2 = robotInterface.ReceiveObservation();
-    // lite2Sender.startWork();
-    lite2Sender.init();
-    lite2Receiver.startWork();
-    // lite2Sender.control_get(ABLE);
-    lite2Sender.robot_state_init();
-    long long count = 0;
+    // // lowState_lite2 = robotInterface.ReceiveObservation();
+    // // lite2Sender.startWork();
+    // lite2Sender.init();
+    // lite2Receiver.startWork();
+    // // lite2Sender.control_get(ABLE);
+    // lite2Sender.robot_state_init();
+    // long long count = 0;
     
-    while (1) {
-        // ((RobotLite2*)quadruped)->lite2Sender.control_get(ABLE);
-        ReceiveObservation();
-        count++;
-        std::cout << "count = " << count << ",  " << baseRollPitchYaw.transpose() << std::endl;
-        if (abs(baseRollPitchYaw[1]) > 1e-5) break;
-        usleep(1000);
-    }
+    // while (1) {
+    //     // ((RobotLite2*)quadruped)->lite2Sender.control_get(ABLE);
+    //     ReceiveObservation();
+    //     count++;
+    //     std::cout << "count = " << count << ",  " << baseRollPitchYaw.transpose() << std::endl;
+    //     if (abs(baseRollPitchYaw[1]) > 1e-5) break;
+    //     usleep(1000);
+    // }
 
-    yawOffset = baseRollPitchYaw[2];
-    std::cout << "yawOffset: " << yawOffset << std::endl;
+    // yawOffset = baseRollPitchYaw[2];
+    // std::cout << "yawOffset: " << yawOffset << std::endl;
     std::cout << "-------RobotLite2 init Complete-------" << std::endl;
     // sleep(2);
     // save robot data into npy format

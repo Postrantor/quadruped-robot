@@ -35,6 +35,12 @@
 
 namespace Quadruped {
 
+static constexpr int const& PROPRIOCEPTION_SIZE = 133; // Proprioceptive
+static constexpr int const& EXTEROCEPTION_SIZE = 0; // Exteroceptive
+static constexpr int const& OBS_SIZE = 133; // PROPRIOCEPTION_SIZE + EXTEROCEPTION_SIZE
+static constexpr int const& HISTORY_STEPS = 40;
+static constexpr int const& HISTORY_SIZE = 5320; // 12800
+    
 class LocomotionControllerRLWrapper{
 
 public:
@@ -67,7 +73,7 @@ public:
 
     void CollectProprioceptiveObs();
     
-    void Inference(Eigen::Matrix<float, 320, 1>& obs);
+    void Inference(Eigen::Matrix<float, OBS_SIZE, 1>& obs);
 
     void PMTGStep();
 
@@ -89,12 +95,9 @@ private:
     std::vector<float> kds;
     
     std::string net_model_dir;
-    const int PROPRIOCEPTION_SIZE = 133; // Proprioceptive
-    const int EXTEROCEPTION_SIZE = 187; // Exteroceptive
-    const int NUM_HISTORY_STEPS = 40;
-    Eigen::Matrix<float, 133, 1> proprioceptiveObs;
-    Eigen::Matrix<float, 187, 1> exteroceptiveObs;
-    Eigen::Matrix<float, 320, 1> total_obs;
+    Eigen::Matrix<float, PROPRIOCEPTION_SIZE, 1> proprioceptiveObs;
+    Eigen::Matrix<float, EXTEROCEPTION_SIZE, 1> exteroceptiveObs;
+    Eigen::Matrix<float, OBS_SIZE, 1> total_obs;
     std::vector<float> obs_history;
     Vec12<float> residualAngle;
     Vec4<float> deltaPhi;
@@ -120,7 +123,7 @@ private:
 
     #if USE_ONNX
     Ort::Env onnxEnv;
-    Ort::Session onnxSession(nullptr);
+    Ort::Session onnxSession{nullptr};
     Ort::AllocatorWithDefaultOptions onnxAllocator;
     #endif
 };

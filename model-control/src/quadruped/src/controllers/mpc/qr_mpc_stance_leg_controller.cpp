@@ -361,11 +361,11 @@ void MPCStanceLegController::UpdateMPC(qrRobot *robot)
         Vec3<float> omega_des(0, 0, yawTurnRate);
         float pitch_offset = 0;
         if (desiredStateCommand->stateDes(6, 0) > 0.05) {
-            pitch_offset = -0.2;
+            pitch_offset = -0.15;
         }
         /* Initial trajectory: desired roll pitch yaw, pose, angular velosity and linear velocity. */
         float trajInitial[12] = {rpyComp[0],   rpyComp[1] + pitch_offset,   yawDesTrue,
-                                 xStart + 0.02f *0,       yStart,       bodyHeight,
+                                 xStart,       yStart,       bodyHeight,
                                  omega_des[0], omega_des[1], omega_des[2],
                                  vDesWorld[0], vDesWorld[1], 0.f};
         

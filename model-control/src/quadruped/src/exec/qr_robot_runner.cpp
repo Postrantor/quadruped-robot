@@ -134,9 +134,28 @@ qrRobotRunner::qrRobotRunner(qrRobot* quadrupedIn, std::string& homeDir, ros::No
                                                         homeDir); 
     controlFSM = new qrControlFSM<float>(quadruped, stateEstimators, gaitGenerator, desiredStateCommand, &userParameters);    
     
-    quadruped->ReceiveObservation();
-    quadruped->ReceiveObservation();
+    // quadruped->ReceiveObservation();
+    // quadruped->ReceiveObservation();
     if (quadruped->robotName == "lite3") {
+        // ((qrRobotLite2*)quadruped)->lite2Receiver.startWork();
+        // ((qrRobotLite2*)quadruped)->lite2Sender.control_get(ABLE);
+        ((qrRobotLite2*)quadruped)->lite2Sender.init();
+        ((qrRobotLite2*)quadruped)->lite2Receiver.startWork();
+        // lite2Sender.control_get(ABLE);
+        ((qrRobotLite2*)quadruped)->lite2Sender.robot_state_init();
+        long long count = 0;
+    
+        while (1) {
+            // ((RobotLite2*)quadruped)->lite2Sender.control_get(ABLE);
+            quadruped->ReceiveObservation();
+            count++;
+            std::cout << "count = " << count << ",  " << quadruped->baseRollPitchYaw.transpose() << std::endl;
+            if (abs(quadruped->baseRollPitchYaw[1]) > 1e-5) break;
+            usleep(1000);
+        }
+
+        quadruped->yawOffset = quadruped->baseRollPitchYaw[2];
+        std::cout << "yawOffset: " << quadruped->yawOffset << std::endl;
         Action::ShinkLeg(quadruped, 2.0f, 0.001);
     }
     Action::StandUp(quadruped, 2.0f, 4.f, 0.001);

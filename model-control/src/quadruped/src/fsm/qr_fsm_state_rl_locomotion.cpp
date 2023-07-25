@@ -103,7 +103,7 @@ void qrFSMStateRLLocomotion<T>::Run()
         count = 0;
         qrFSMState<T>::enableStateEstimation = true;
     } else {
-        qrFSMState<T>::enableStateEstimation = false;
+        qrFSMState<T>::enableStateEstimation = true;
     }
     // if (++iter_ > 30000) {
     //     throw std::logic_error("126");
