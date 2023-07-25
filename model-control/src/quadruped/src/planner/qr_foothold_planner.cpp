@@ -134,9 +134,10 @@ void qrFootholdPlanner::ComputeHeuristicFootHold(std::vector<u8> swingFootIds)
     Vec4<float> side_sign = {-1, 1, -1, 1}; // y-axis
 
     for (u8& legId : swingFootIds) {
-        Vec3<float> hipOffset = abadPosInBaseFrame.col(legId); // hipPositions.col(legId);
+        // Vec3<float> hipOffset = abadPosInBaseFrame.col(legId);
+        Vec3<float> hipOffset = hipPositions.col(legId);
         Vec3<float> twistingVector = {-hipOffset[1], hipOffset[0], 0.f};
-        Vec3<float> hipHorizontalVelocity = comVelocity + w.cross(hipOffset); // yawDot * twistingVector; // in base frame
+        Vec3<float> hipHorizontalVelocity = comVelocity + yawDot * twistingVector; // in base frame,  w.cross(hipOffset);
         hipHorizontalVelocity = dR * hipHorizontalVelocity; // in control frame
         hipHorizontalVelocity[2] = 0.f;
         Vec3<float> targetHipHorizontalVelocity = desiredSpeed + desiredTwistingSpeed * twistingVector; // in control frame
@@ -194,39 +195,45 @@ void qrFootholdPlanner::ComputeHeuristicFootHold(std::vector<u8> swingFootIds)
                         - swingKp.cwiseProduct(targetHipHorizontalVelocity - hipHorizontalVelocity);
                         // -Vec3<float>(pitchCorrect, rollCorrect, 0)
             } else {
-                // dP = dR.transpose() * (targetHipHorizontalVelocity * gaitGenerator->stanceDuration[legId] / 2.0
-                //         - swingKp.cwiseProduct(targetHipHorizontalVelocity - hipHorizontalVelocity)
-                //     );
-                dP = dR.transpose() * (targetHipHorizontalVelocity * swingRemainTime
+                dP = dR.transpose() * (targetHipHorizontalVelocity * gaitGenerator->stanceDuration[legId] / 2.0
                         - swingKp.cwiseProduct(targetHipHorizontalVelocity - hipHorizontalVelocity)
                     );
+                // dP = dR.transpose() * (targetHipHorizontalVelocity * swingRemainTime
+                //         - swingKp.cwiseProduct(targetHipHorizontalVelocity - hipHorizontalVelocity)
+                //     );
                 // dP.setZero(); 
             }
+            // if (legId == 2)
+            //     std::cout << "dP = " << dP.transpose() << std::endl;
             // Clip
             const float dPthresold = 0.2f;
             dP[0] = clip(dP[0], -dPthresold, dPthresold);
             // dP[1] = clip(dP[1], -0.15f, 0.15f);
             dP[1] = clip(dP[1], -dPthresold, dPthresold);
-            dP[2] = 0;
+            dP[2] = 0; 
             // dP.setZero();
             Vec3<float> rpy = robot->GetBaseRollPitchYaw();
             Vec4<float> interleave_y = hipLen * side_sign;
             Mat3<float> rollR = robotics::math::coordinateRotation(CoordinateAxis::X, rpy[0]); // abad->hip offset vector
-        
+
             footTargetPosition = dP
-                    + Vec3<float>(hipOffset[0], hipOffset[1], 0)
-                    + rollR * Vec3<float>{0, interleave_y[legId], 0}
+                    + hipPositions.col(legId)
+                    // + Vec3<float>(hipOffset[0], hipOffset[1], 0)
+                    // + rollR * Vec3<float>{0, interleave_y[legId], 0}
                         //  - robotBaseR.transpose() * desiredHeight;
                         // - desiredHeight;
                     ;
-            if (desiredStateCommand->stateDes(6,0)< -0.01) {
-                footTargetPosition(0,2) -= 0.02;
-                footTargetPosition(0,3) -= 0.02;
-            }
+            
             if (legId < 2) {
+                if (desiredStateCommand->stateDes(6,0) > 0.05) {
+                    footTargetPosition[2] -= 0.01;
+                }
                 footTargetPosition -=  robotBaseR.transpose() * desiredHeight;
             } else {
-                footTargetPosition -=  robotBaseR.transpose() * (desiredHeight /*+ Vec3<float>(0,0,0.02)*/);
+                if (desiredStateCommand->stateDes(6,0) > 0.05) {
+                    footTargetPosition[2] += 0.01;
+                }
+                footTargetPosition -=  robotBaseR.transpose() * (desiredHeight + Vec3<float>(0,0,0.02));
             }
             // } else {
             //     footTargetPosition = desiredFootholds.col(legId);

@@ -684,6 +684,8 @@ public:
      */
     int fsmMode = 4;
 
+    int lastMotorControlMode = MotorMode::POSITION_MODE;
+    Eigen::Matrix<float, 12, 5> lastMotorCommands = Eigen::Matrix<float, 12, 5>::Zero();
 };
 
 } // Namespace Quadruped

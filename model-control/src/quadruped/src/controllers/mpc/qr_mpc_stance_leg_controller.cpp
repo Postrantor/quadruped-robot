@@ -267,7 +267,10 @@ void MPCStanceLegController::Run(std::map<int, qrMotorCommand> &legCommand, int 
         t = gaitGenerator->phaseInFullCycle[1] + (1 - dutyF);
     }
     t *= 2.0f;
-
+    float factor1 = 1.0;
+    if (desiredStateCommand->getJoyCtrlState() == RC_MODE::JOY_STAND) {
+        factor1 = 0;
+    }
     /* Update desired position and linear velocity in world frame by Spline. */
     Vec12<float> baseStartState = footholdPlanner->firstSwingBaseState;
     for (u8 axis(0); axis < 2; ++axis) {
@@ -275,8 +278,8 @@ void MPCStanceLegController::Run(std::map<int, qrMotorCommand> &legCommand, int 
         auto ePoint = robotics::math::qrSpline::Point(comDestination[axis], vDesWorld[axis], 0.05);
         res.x = (1 - t) * sPoint.x + t * ePoint.x;
         res.xd = ePoint.xd;
-        posDesiredinWorld[axis] = res.x;
-        vDesWorld[axis] = res.xd;
+        posDesiredinWorld[axis] = factor1*res.x;
+        vDesWorld[axis] = factor1*res.xd;
     }
 
     /* Update MPC table. */
@@ -307,7 +310,7 @@ void MPCStanceLegController::Run(std::map<int, qrMotorCommand> &legCommand, int 
     if (useWBC) {
 
         /* In one iteration, MPC or WBC is conducted to ensure the time per iteration. */
-        seResult.wbcData.allowAfterMPC = !mpcUpdated;
+        seResult.wbcData.allowAfterMPC = true; // !mpcUpdated;
 
         Vec3<float> offsetP = seResult.baseRMat * Vec3<float>(0.018f, 0, 0);
         seResult.wbcData.pBody_des[0] = posDesiredinWorld[0] + offsetP[0];
@@ -356,9 +359,12 @@ void MPCStanceLegController::UpdateMPC(qrRobot *robot)
         posDesiredinWorld[1] = yStart;
 
         Vec3<float> omega_des(0, 0, yawTurnRate);
-
+        float pitch_offset = 0;
+        if (desiredStateCommand->stateDes(6, 0) > 0.05) {
+            pitch_offset = -0.15;
+        }
         /* Initial trajectory: desired roll pitch yaw, pose, angular velosity and linear velocity. */
-        float trajInitial[12] = {rpyComp[0],   rpyComp[1],   yawDesTrue,
+        float trajInitial[12] = {rpyComp[0],   rpyComp[1] + pitch_offset,   yawDesTrue,
                                  xStart,       yStart,       bodyHeight,
                                  omega_des[0], omega_des[1], omega_des[2],
                                  vDesWorld[0], vDesWorld[1], 0.f};

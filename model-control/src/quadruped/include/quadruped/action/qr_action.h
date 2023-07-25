@@ -36,6 +36,8 @@
 namespace Quadruped {
 
 namespace Action {
+    
+    void ShinkLeg(qrRobot *robot, float totalTime, float timeStep);
 
     /**
      * @brief stand up action function.

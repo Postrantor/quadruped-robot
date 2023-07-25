@@ -1,6 +1,6 @@
 name: lite3
 gait_params:
-  wait_time: 0.3
+  wait_time: 0.1
   gait: "advanced_trot"
   trot:
     # stance_duration: [ 0.23, 0.23, 0.23, 0.23 ]

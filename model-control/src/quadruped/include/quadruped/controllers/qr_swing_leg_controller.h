@@ -234,6 +234,11 @@ public:
      * @brief Same as foot_pos_target_last_time. Will be removed in the future.
      */
     Eigen::Matrix<float, 3, 4> foot_pos_rel_last_time;
+
+    Eigen::Matrix<float,3,4> foot_forces_kin;
+    Eigen::Matrix<float,3,4> foot_pos_error;
+    Eigen::Matrix<float,3,4> foot_vel_error;
+
 };
 
 } // namespace Quadruped

@@ -115,8 +115,10 @@ qrRobotRunner::qrRobotRunner(qrRobot* quadrupedIn, std::string& homeDir, ros::No
     quadruped->ReceiveObservation();
     quadruped->ReceiveObservation();
     quadruped->ReceiveObservation();
-    // Action::SitDown(quadruped, 3, 0.001);
-    Action::StandUp(quadruped, 4.f, 5.f, 0.001);
+    if (quadruped->robotName == "lite3") {
+        Action::ShinkLeg(quadruped, 2.0f, 0.001);
+    }
+    Action::StandUp(quadruped, 2.0f, 4.f, 0.001);
     // Action::KeepStand(quadruped, 10,  0.001);
     //Action::ControlFoot(quadruped, nullptr, 15, 0.001);
     
@@ -157,23 +159,47 @@ bool qrRobotRunner::Update()
 
 bool qrRobotRunner::Step()
 {
-    Visualization2D& vis = quadruped->stateDataFlow.visualizer;
-    auto swingController = controlFSM->GetLocomotionController()->GetSwingLegController();
-    auto torqueController = controlFSM->GetLocomotionController()->GetStanceLegController();
+    // Visualization2D& vis = quadruped->stateDataFlow.visualizer;
+    // auto swingController = controlFSM->GetLocomotionController()->GetSwingLegController();
+    // auto torqueController = controlFSM->GetLocomotionController()->GetStanceLegController();
 
-    Vec4<float> f = quadruped->GetFootForce();
-    Vec3<float> w = quadruped->GetBaseRollPitchYawRate();
-    Vec3<float> rpy = quadruped->GetBaseRollPitchYaw();
-    Vec3<float> V = quadruped->GetBaseVelocityInBaseFrame();
-    auto footPositionB =  quadruped->GetFootPositionsInBaseFrame();
-    // auto footPositionW =  quadruped->GetFootPositionsInWorldFrame();
-    // auto& fullModel = quadruped->model;
-    auto motorV = quadruped->GetMotorVelocities();
-    auto motorA = quadruped->GetMotorAngles();
-    auto foot_pos_target_last_time = swingController->foot_pos_target_last_time;
-    auto mpcContacts = torqueController->contacts;
-    // auto motorddq = quadruped->motorddq;
-    float t = quadruped->GetTimeSinceReset();
+    // Vec4<float> f = quadruped->GetFootForce();
+    // Vec4<bool> fb = quadruped->GetFootContact();
+    // Vec3<float> w = quadruped->GetBaseRollPitchYawRate();
+    // Vec3<float> rpy = quadruped->GetBaseRollPitchYaw();
+    // Vec3<float> V = quadruped->GetBaseVelocityInBaseFrame();
+    // auto footPositionB =  quadruped->GetFootPositionsInBaseFrame();
+    // // auto footPositionW =  quadruped->GetFootPositionsInWorldFrame();
+    // // auto& fullModel = quadruped->model;
+    // auto motorV = quadruped->GetMotorVelocities();
+    // auto motorA = quadruped->GetMotorAngles();
+    // auto foot_pos_target_last_time = swingController->foot_pos_target_last_time;
+    // auto mpcContacts = torqueController->contacts;
+    // // auto motorddq = quadruped->motorddq;
+    // float t = quadruped->GetTimeSinceReset();
+    // if (t > 20 && t < 50) {
+    //     vis.datax.push_back(t);
+    //     vis.datay1.push_back(hybridAction[10].p); // motorA[0]);
+    //     // vis.datay2.push_back(motorA[10]);
+    //     vis.datay2.push_back(fb[3]);
+    //     // vis.datay3.push_back(foot_pos_target_last_time(2,0));
+    //     vis.datay3.push_back(gaitGenerator->allowSwitchLegState.cast<int>().sum() -2);
+    //     vis.datay4.push_back(gaitGenerator->legState[3]);
+    //     vis.datay5.push_back(gaitGenerator->curLegState[3] + 0.4);
+
+    //     // vis.datay5.push_back(motorV[2]);
+    //     // vis.datay5.push_back(f[3]);
+    //     // vis.datay5.push_back(quadruped->basePosition[2]);
+    //     vis.datay6.push_back(mpcContacts[3]+0.2);
+    //     vis.datay7.push_back(gaitGenerator->desiredLegState[3]+0.1);
+    //     // vis.datay6.push_back(foot_pos_target_last_time(2, 2) * 10);
+    //     // vis.datay3.push_back(gaitGenerator->desiredLegState[1]);
+    //     // vis.datay4.push_back(footPositionB(0, 0));//gaitGenerator->normalizedPhase[0]);
+    //     // vis.datay5.push_back(footPositionB(1, 0));//gaitGenerator->normalizedPhase[0]);
+    //     // vis.datay6.push_back(footPositionB(2, 0));//gaitGenerator->normalizedPhase[0]);
+    //     // vis.datay5.push_back(V[2]); // fullModel._pGC[Quadruped::linkID::HL][2]
+    // }
+    
     
     quadruped->Step(qrMotorCommand::convertToMatix(hybridAction), HYBRID_MODE);
     return 1;

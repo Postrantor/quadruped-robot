@@ -28,21 +28,41 @@ namespace Quadruped {
 
 namespace Action {
 
+void ShinkLeg(qrRobot *robot, float totalTime, float timeStep)
+{
+    qrTimer timer;
+    Eigen::Matrix<float, 12, 1> motorAnglesBeforeStandUP = robot->GetMotorAngles();
+    Eigen::Matrix<float, 12, 1> action;
+    Eigen::Matrix<float, 12, 1> shrinked_motor_angles;
+    shrinked_motor_angles << 0, 2.0, -2.6, 0, 2.0, -2.6, 0, 2.0, -2.6, 0, 2.0, -2.6;
+    float startTime = timer.GetTimeSinceReset();
+    
+    for (float t = 0.0f; t < totalTime; t += timeStep) {
+        float blendRatio = t / totalTime;
+        action = blendRatio * shrinked_motor_angles + (1 - blendRatio) * motorAnglesBeforeStandUP;
+        robot->Step(action, MotorMode::POSITION_MODE);
+        while (timer.GetTimeSinceReset() - startTime < t + timeStep) {}
+    }
+}
+
+
 void StandUp(qrRobot *robot, float standUpTime, float totalTime, float timeStep)
 {
     qrTimer timer;
-    float startTime = timer.GetTimeSinceReset();// robot->GetTimeSinceReset();
-    float endTime = startTime + standUpTime;
     Eigen::Matrix<float, 12, 1> motorAnglesBeforeStandUP = robot->GetMotorAngles();
-    std::cout << "motorAnglesBeforeStandUP: \n" << motorAnglesBeforeStandUP.transpose() << std::endl;
+    Eigen::Matrix<float, 12, 1>  diff = motorAnglesBeforeStandUP - robot->lastMotorCommands.col(0);
+    if (robot->lastMotorControlMode == MotorMode::POSITION_MODE && diff.cwiseAbs().maxCoeff() < 0.15) { // use last action for smoothness
+        motorAnglesBeforeStandUP = robot->lastMotorCommands.col(0);
+    }
+    // std::cout << "motorAnglesBeforeStandUP: \n" << motorAnglesBeforeStandUP.transpose() << std::endl;
     std::cout << "---------------------Standing Up---------------------" << std::endl;
-    std::cout << "robot->standMotorAngles: \n" << robot->standUpMotorAngles.transpose() << std::endl;
+    // std::cout << "robot->standMotorAngles: \n" << robot->standUpMotorAngles.transpose() << std::endl;
     Eigen::Matrix<float, 12, 1> action;
-    Eigen::Matrix<float, 12, 1> currentAngles = robot->GetMotorAngles();
-
-    Visualization2D& vis = robot->stateDataFlow.visualizer;
-
-  for (float t = startTime; t < totalTime; t += timeStep) {
+    // Eigen::Matrix<float, 12, 1> currentAngles = robot->GetMotorAngles();
+    // Visualization2D& vis = robot->stateDataFlow.visualizer;
+    float startTime = timer.GetTimeSinceReset();
+    float endTime = startTime + totalTime;
+    for (float t = startTime; t < endTime; t += timeStep) {
         float blendRatio = (t - startTime) / standUpTime;
 
         if (blendRatio < 1.0f) {
@@ -68,9 +88,9 @@ void StandUp(qrRobot *robot, float standUpTime, float totalTime, float timeStep)
         } else {
             robot->Step(robot->standUpMotorAngles, MotorMode::POSITION_MODE);
         }
-    while (timer.GetTimeSinceReset() < t + timeStep) {}
+        while (timer.GetTimeSinceReset() < t + timeStep) {}
     }
-    std::cout << "robot->GetMotorAngles: \n" << robot->GetMotorAngles().transpose() << std::endl;
+    // std::cout << "robot->GetMotorAngles: \n" << robot->GetMotorAngles().transpose() << std::endl;
     std::cout << "---------------------Stand Up Finished---------------------" << std::endl;
 }
 

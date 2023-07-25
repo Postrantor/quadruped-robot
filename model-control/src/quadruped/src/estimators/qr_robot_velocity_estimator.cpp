@@ -76,15 +76,15 @@ float qrRobotVelocityEstimator::ComputeDeltaTime(uint32_t tick)
 void qrRobotVelocityEstimator::Update(float currentTime)
 {
     Vec3<float> filtedAcc = AccFilter.CalculateAverage(robot->stateDataFlow.baseLinearAcceleration);
-    robot->stateDataFlow.baseLinearAcceleration = filtedAcc; // todo
+    robot->stateDataFlow.baseLinearAcceleration = filtedAcc;
 
     Vec3<float> rpyRate = robot->GetBaseRollPitchYawRate();
-    // Propagate current state estimate with new accelerometer reading."""
+    // Propagate current state estimate with new accelerometer reading.
     float deltaTime = ComputeDeltaTime(robot->GetTick());
-    Vec3<float> sensorAcc = robot->baseAccInBaseFrame; //todo
+    Vec3<float> sensorAcc = robot->baseAccInBaseFrame;
     Quat<float> baseOrientation = robot->GetBaseOrientation(); // w,x,y,z
     Mat3<float> rotMat = robotics::math::quaternionToRotationMatrix(baseOrientation).transpose();
-    Vec3<float> calibratedAcc = rotMat * sensorAcc;
+    Vec3<float> calibratedAcc = rotMat * sensorAcc; // R*a, IMU acceleration
     calibratedAcc[2] -= 9.81;
     double deltaV[3] = {calibratedAcc[0] * deltaTime, calibratedAcc[1] * deltaTime, calibratedAcc[2] * deltaTime};
     // Correct estimation using contact legs
@@ -92,7 +92,7 @@ void qrRobotVelocityEstimator::Update(float currentTime)
     const Vec4<bool>& footContact = robot->GetFootContact();
     Eigen::Matrix<float,3,4> footPInBaseFrame = robot->GetFootPositionsInBaseFrame();
     Eigen::Matrix<float,3,4> footVInBaseFrame = robot->stateDataFlow.footVelocitiesInBaseFrame; // foot relative to body
-    /* compute observed foot vleocity in base frame and get its average */
+    // Compute observed foot vleocity in base frame and get its average
     for (int legId = 0; legId < 4; ++legId) {
         // if (footContact[leg_id] && gaitGenerator->desiredLegState[legId] == LegState::STANCE) {
         if (footContact[legId]) {

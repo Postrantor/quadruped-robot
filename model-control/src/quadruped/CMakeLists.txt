@@ -11,7 +11,7 @@ ADD_COMPILE_OPTIONS(-D_useros)
 # ADD_COMPILE_OPTIONS(-DQPOASES_AVOID_LA_NAMING_CONFLICTS)
 
 option(USE_GO1                            "WHICH ROBOT"                     OFF)
-option(USE_BLAS                            "USE MKL BLAS"                   ON)
+option(USE_BLAS                            "USE MKL BLAS"                   OFF)
 
 
 EXECUTE_PROCESS( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE ARCHITECTURE )

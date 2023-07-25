@@ -24,7 +24,7 @@
 
 #include "quadruped/exec/qr_robot_runner.h"
 #include "quadruped/ros/qr_control2gazebo_msg.h"
-
+#include <thread>
 #include <ros/package.h>
 
 using namespace std;
@@ -45,9 +45,9 @@ int main(int argc, char **argv)
 
     qrRobot *quadruped = new qrRobotLite2(homeDir + "config/lite3/lite3_robot.yaml");
     Visualization2D& vis = quadruped->stateDataFlow.visualizer;
-    vis.SetLabelNames({"FL0", "FL1", "FL2", "cmd_FL0","cmd_FL1", "cmd_FL2"});
+    vis.SetLabelNames({"p", "contact", "allow", "leg","curLeg", "mpc_contact", "desLeg"});
     
-    std::cout << "BaseOrientation:\n" << quadruped->GetBaseOrientation().transpose() << std::endl;
+    // std::cout << "BaseOrientation:\n" << quadruped->GetBaseOrientation().transpose() << std::endl;
     
     qrRobotRunner robotRunner(quadruped, homeDir, nh);
 
@@ -55,17 +55,19 @@ int main(int argc, char **argv)
     ros::Rate loop_rate1(1000);
     ros::Rate loop_rate2(500);
     
-    ROS_INFO("LocomotionController Init Finished");
+    // ROS_INFO("LocomotionController Init Finished");
     qrLocomotionController* locomotionController = robotRunner.GetLocomotionController();
     qrStateEstimatorContainer* stateEstimators = robotRunner.GetStateEstimator();
     qrDesiredStateCommand* desiredStateCommand = robotRunner.GetDesiredStateCommand();
-    std::cout << "---------LocomotionController Reset Finished---------" << std::endl;
+
+    std::thread t(&qrDesiredStateCommand::RecvSocket, desiredStateCommand);
+
+    // std::cout << "---------LocomotionController Reset Finished---------" << std::endl;
     // ros module init
     // RobotOdometryEstimator *legOdom = new RobotOdometryEstimator(quadruped, nh);
     qrCmdVelReceiver *cmdVelReceiver = new qrCmdVelReceiver(nh, privateNh);
     // SLAMPoseReceiver *slamPoseReceiver = new SLAMPoseReceiver(nh, privateNh);
     // SwitchModeReceiver *switchModeReceiver = new SwitchModeReceiver(nh, privateNh);
-    // ROS_INFO("ROS Modules Init Finished");
     // Controller2GazeboMsg *controller2gazeboMsg = new Controller2GazeboMsg(quadruped, locomotionController, nh);
     ROS_INFO("ROS Modules Init Finished");
         
@@ -80,11 +82,10 @@ int main(int argc, char **argv)
     Vec3<float> desiredSpeed(0,0,0);
     float desiredTwistingSpeed = 0;
 
-
     // Action::SitDown(quadruped, 3, 0.001); 
     Action::StandUp(quadruped, 3.f, 5.f, 0.001);
     // ((RobotLite2*)quadruped)->lite3Sender.control_get(ABLE);
-    std::cout << quadruped->GetBaseRollPitchYaw() << std::endl;
+    // std::cout << quadruped->GetBaseRollPitchYaw() << std::endl;
     while (ros::ok() && currentTime - startTime < MAX_TIME_SECONDS) {
         startTimeWall = quadruped->GetTimeSinceReset();
         // switchMode = switchModeReceiver->GetSwitchMode();
@@ -166,7 +167,8 @@ int main(int argc, char **argv)
         // }
         vis.Show();
     }
-
+    
+    t.join(); // 等待新线程结束
     ros::shutdown();
     return 0;
 }

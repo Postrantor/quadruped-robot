@@ -26,6 +26,10 @@
 #define QR_DESIRED_STATE_COMMAND_H
 
 #include <iostream>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 
 #include <ros/ros.h>
 #include <sensor_msgs/Joy.h>
@@ -73,6 +77,8 @@ public:
      * @param joy_msg: joy command message from ROS joy_node
      */
     void JoyCallback(const sensor_msgs::Joy::ConstPtr &joy_msg);
+
+    int RecvSocket();
 
     /**
      * @brief Getter method of member joyCtrlState.
@@ -144,6 +150,9 @@ public:
      * @brief Desired footstep target position, expressed in world frame.
      */
     Eigen::Matrix<float, 3, 4> footTargetPositionsInWorldFrame;
+
+    char data_buffer[4*3]; // 1024
+    int socket_value[3] = {0, 0, 0};
 
 private:
 

@@ -33,7 +33,7 @@ qrRobot::qrRobot(): timer(useRosTime)
     gyroFilter = qrMovingWindowFilter<float, 3>(5);
     rpyFilter = qrMovingWindowFilter<float, 3>(5);
     quatFilter = qrMovingWindowFilter<float, 4>(5);
-    motorVFilter = qrMovingWindowFilter<float, 12>(20);
+    motorVFilter = qrMovingWindowFilter<float, 12>(5);
 }
 
 

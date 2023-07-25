@@ -1,7 +1,7 @@
 name: lite3
 urdf_path: src/simulation/robots/lite3_description/urdf/robot.urdf
 robot_params:
-  total_mass: 12.72
+  total_mass: 14 # 12.72
   # total_inertia: [ 0.24, 0, 0, 0, 0.80, 0, 0, 0, 1.0 ] 
   total_inertia: [ 0.24, 0, 0, 0, 1.0, 0, 0, 0, 1.0 ] 
   body_mass: 7.5 # 5.298
@@ -30,31 +30,32 @@ robot_params:
   advanced_trot:
     # com_offset: [ -0.04, -0.025, 0. ]
     # com_offset: [ -0.035, -0.015, 0.0 ] # mpc
-    com_offset: [ -0.04, -0.015, 0.0 ] # wbc
+    # com_offset: [ -0.04, -0.0, 0.0 ] # wbc,no cann logo
+    com_offset: [ -0.03, -0.01, 0.0 ] # wbc, have cann logo
   
-  hip_offset: [ [ 0.1745, -0.062, 0. ],
-                [ 0.1745, 0.062, 0. ],
-                [ -0.1745, -0.062, 0. ],
-                [ -0.1745, 0.062, 0. ] ]
+  hip_offset: [ [ 0.18, -0.062, 0. ],
+                [ 0.18, 0.062, 0. ],
+                [ -0.175, -0.062, 0. ],
+                [ -0.175, 0.062, 0. ] ] # have cann logo
                 
-  # hip_offset: [ [ 0.18, -0.062, 0. ],
-  #               [ 0.18, 0.062, 0. ],
-  #               [ -0.17, -0.062, 0. ],
-  #               [ -0.17, 0.062, 0. ] ] # for WBC
-  default_hip_positions: [ [ 0.1745, -0.16, 0 ],
-                           [ 0.1745, 0.16, 0 ],
-                           [ -0.1745, -0.16, 0 ],
-                           [ -0.1745, 0.16, 0 ] ] # only used for VELOCITY_LOCOMOTION
+  # hip_offset: [ [ 0.19, -0.062, 0. ],
+  #               [ 0.19, 0.062, 0. ],
+  #               [ -0.16, -0.062, 0. ],
+  #               [ -0.16, 0.062, 0. ] ] # for WBC, no cann logo
+  default_hip_positions: [ [ 0.18, -0.16, 0 ],
+                           [ 0.18, 0.16, 0 ],
+                           [ -0.175, -0.17, 0 ],
+                           [ -0.175, 0.17, 0 ] ] # only used for VELOCITY_LOCOMOTION
   
   default_standup_angle:
     ab: 0.0
-    hip: 0.82 # 2.0 #0.82
-    knee: -1.5
+    hip: 0.723 # 0.82
+    knee: -1.445  # -1.5
 
   default_sitdown_angle:
-    ab: -0.167136
-    hip: 0.934969
-    knee: -2.54468
+    ab: 0.2
+    hip: 1.0
+    knee: -2.7
 
 motor_params:
   joint_directions: [ -1,-1,-1, -1,-1,-1, -1,-1,-1, -1,-1,-1 ]

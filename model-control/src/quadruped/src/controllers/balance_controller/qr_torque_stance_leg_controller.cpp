@@ -231,6 +231,7 @@ void TorqueStanceLegController::UpdateDesCommand()
     /* Setup current robot states according to locomotion mode. */
     switch (robot->controlParams["mode"]) {
     case LocomotionMode::VELOCITY_LOCOMOTION:
+    {
         /* Be carefure that VELOCITY_LOCOMOTION in base frame, but robot height is in world frame. */
         computeForceInWorldFrame = false;
 
@@ -266,8 +267,9 @@ void TorqueStanceLegController::UpdateDesCommand()
             }
         }
         break;
-
+    }
     case LocomotionMode::ADVANCED_TROT:
+    {
         if (computeForceInWorldFrame) {
             /* Recommand to set computeForceInWorldFrame to true. */
             /* Transform all CoM states into world frame. */
@@ -293,15 +295,17 @@ void TorqueStanceLegController::UpdateDesCommand()
             }
         }
         break;
-
+    }
     case LocomotionMode::WALK_LOCOMOTION:
+    {
         /* Transform all CoM states into world frame. */
         robotComPosition = robot->GetBasePosition();
         robotComVelocity = robotics::math::invertRigidTransform({0,0,0}, robotComOrientation, robotComVelocity); // in world frame
         robotComRpyRate = robotics::math::invertRigidTransform({0,0,0}, robotComOrientation, robotComRpyRate); // in world frame
         break;
-
+    }
     case LocomotionMode::POSITION_LOCOMOTION:
+    {
         /* Transform CoM position into base frame.
          * POSITION_LOCOMOTION does not need other transformations.
          * Be careful that setting robotComPosition[2] to a value in world frame is just for calculation
@@ -309,7 +313,7 @@ void TorqueStanceLegController::UpdateDesCommand()
         computeForceInWorldFrame = false;
         robotComPosition = {0., 0., robot->basePosition[2]};
         break;
-
+    }
     default:
         throw std::domain_error("no such LocomotionMode");
     }
@@ -321,7 +325,7 @@ void TorqueStanceLegController::UpdateDesCommand()
     /* Setup desired robot pose, twist according to different mode. */
     switch (robot->controlParams["mode"]) {
     case LocomotionMode::VELOCITY_LOCOMOTION:
-
+    {
         desiredComPosition << 0.f, 0.f, desiredBodyHeight;
 
         /* If quadruped has a roll or yaw, then make it back to zero position.
@@ -341,8 +345,9 @@ void TorqueStanceLegController::UpdateDesCommand()
             desiredComVelocity = robotics::math::invertRigidTransform({0, 0, 0}, robotComOrientation, desiredComVelocity); // in world frame
         }
         break;
-
+    }
     case LocomotionMode::ADVANCED_TROT:
+    {
         if (computeForceInWorldFrame) {
             /* MPC uses comAdjuster to get desired CoM position and transform it into world frame. */
             auto &comAdjPosInBaseFrame = comAdjuster->GetComPosInBaseFrame();
@@ -398,10 +403,10 @@ void TorqueStanceLegController::UpdateDesCommand()
             desiredComAngularVelocity = {0.f, 0.f, desiredTwistingSpeed};
         }
         break;
-
+    }
     case LocomotionMode::WALK_LOCOMOTION:
+    {
         for (int i = 0; i < NumLeg; ++i) {
-
             float phase = gaitGenerator->normalizedPhase[i];
 
             if ((contacts[i] && gaitGenerator->desiredLegState[i] == SubLegState::UNLOAD_FORCE && phase > 3.0f / 4)
@@ -431,8 +436,9 @@ void TorqueStanceLegController::UpdateDesCommand()
         desiredComAngularVelocity = twist.tail(3);
 
         break;
-
+    }
     case LocomotionMode::POSITION_LOCOMOTION:
+    {
         /* POSITION_LOCOMOTION uses comAdjuster to get desired CoM position in base frame. */
         auto &comAdjPosInBaseFrame = comAdjuster->GetComPosInBaseFrame();
 
@@ -445,6 +451,7 @@ void TorqueStanceLegController::UpdateDesCommand()
         desiredComRpy = footholdPlanner->GetDesiredComPose().tail(3);
         desiredComAngularVelocity = {0.f, 0.f, 0.f};
         break;
+    }
     }
 
     /* Calculate change on position and velocity. */

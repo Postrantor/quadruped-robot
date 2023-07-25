@@ -119,6 +119,8 @@ qrRobotLite2::qrRobotLite2(std::string configFilePath)
     standUpKneeAngle = robotConfig["robot_params"]["default_standup_angle"]["knee"].as<float>();
     defaultStandUpAngle << standUpAbAngle, standUpHipAngle, standUpKneeAngle;
     standUpMotorAngles << defaultStandUpAngle, defaultStandUpAngle, defaultStandUpAngle, defaultStandUpAngle;
+    standUpMotorAngles[7] += 0.15;
+    standUpMotorAngles[10] += 0.15;
 
     float sitDownAbAngle, sitDownHipAngle, sitDownKneeAngle;
     sitDownAbAngle = robotConfig["robot_params"]["default_sitdown_angle"]["ab"].as<float>();
@@ -126,6 +128,8 @@ qrRobotLite2::qrRobotLite2(std::string configFilePath)
     sitDownKneeAngle = robotConfig["robot_params"]["default_sitdown_angle"]["knee"].as<float>();
     Eigen::Matrix<float, 3, 1> defaultSitDownAngle(sitDownAbAngle, sitDownHipAngle, sitDownKneeAngle);
     sitDownMotorAngles << defaultSitDownAngle, defaultSitDownAngle, defaultSitDownAngle, defaultSitDownAngle;
+    sitDownMotorAngles[0] *= -1.f;
+    sitDownMotorAngles[6] *= -1.f;
 
     controlParams["mode"] = robotConfig["controller_params"]["mode"].as<int>();
     Reset(); // reset com_offset
@@ -248,10 +252,12 @@ void qrRobotLite2::ApplyAction(const Eigen::MatrixXf &motorCommands, MotorMode m
 {
     // std::array<float, 60> motorCommandsArray = {0};
     RobotCmd motorCommandsArray;
-    float t = GetTimeSinceReset();
+    // float t = GetTimeSinceReset();
 
     if (motorControlMode == POSITION_MODE) {
         Eigen::Matrix<float, 12, 1> motorCommandsShaped = motorCommands;
+        lastMotorCommands.col(0) << motorCommandsShaped;
+
         motorCommandsShaped = jointDirection.cwiseProduct(motorCommandsShaped) - jointOffset;
         
         for (int motorId = 0; motorId < NumMotor; motorId++) {
@@ -276,6 +282,8 @@ void qrRobotLite2::ApplyAction(const Eigen::MatrixXf &motorCommands, MotorMode m
             motorCommandsArray.joint_cmd[motorId_].kd = motorKds[motorId];
             motorCommandsArray.joint_cmd[motorId_].tor = 0;
         }
+        lastMotorControlMode = POSITION_MODE;
+
     } else if (motorControlMode == TORQUE_MODE) {
         Eigen::Matrix<float, 12, 1> motorCommandsShaped = motorCommands;
         motorCommandsShaped = jointDirection.cwiseProduct(motorCommandsShaped);
@@ -308,8 +316,12 @@ void qrRobotLite2::ApplyAction(const Eigen::MatrixXf &motorCommands, MotorMode m
             motorCommandsArray.joint_cmd[motorId_].kd = 0;
             motorCommandsArray.joint_cmd[motorId_].tor = tau;
         }
+        lastMotorControlMode = TORQUE_MODE;
+    
     } else if (motorControlMode == HYBRID_MODE) {
         Eigen::Matrix<float, 5, 12> motorCommandsShaped = motorCommands;
+        lastMotorCommands.col(0) = motorCommandsShaped.row(0);
+
         Eigen::Matrix<float, 12, 1> angles = motorCommandsShaped.row(POSITION).transpose();
         motorCommandsShaped.row(POSITION) = (jointDirection.cwiseProduct(angles) - jointOffset).transpose();
         Eigen::Matrix<float, 12, 1> vels = motorCommandsShaped.row(VELOCITY).transpose();
@@ -325,6 +337,7 @@ void qrRobotLite2::ApplyAction(const Eigen::MatrixXf &motorCommands, MotorMode m
             motorCommandsArray.joint_cmd[motorId_].kd = motorCommandsShaped(KD, motorId);
             motorCommandsArray.joint_cmd[motorId_].tor = motorCommandsShaped(TORQUE, motorId);
         }
+        lastMotorControlMode = HYBRID_MODE;
     }
     // robotInterface.SendCommand(motorCommandsArray);
     lite2Sender.set_send(motorCommandsArray); // todo
@@ -391,17 +404,17 @@ bool qrRobotLite2::BuildDynamicModel()
     // spatial inertias of leg links
     Mat3<float> abadRotationalInertia = linkInertias[0];
     Vec3<float> abadCOM(linksComPos[0][0],linksComPos[0][1],linksComPos[0][2]);
-    std::cout << "abadCOM=" << abadCOM << std::endl;
-    std::cout << "linkMasses[0]=" << linkMasses[0] << std::endl;
-    std::cout << "abadRotationalInertia=" << abadRotationalInertia << std::endl;
+    // std::cout << "abadCOM=" << abadCOM << std::endl;
+    // std::cout << "linkMasses[0]=" << linkMasses[0] << std::endl;
+    // std::cout << "abadRotationalInertia=" << abadRotationalInertia << std::endl;
     SpatialInertia<float> abadInertia(linkMasses[0], abadCOM, abadRotationalInertia);
 
     Mat3<float> hipRotationalInertia = linkInertias[1];
     // Vec3<float> hipCOM(-0.003237, -0.022327, -0.027326); // a1. left, for right filp y-axis value.
     Vec3<float> hipCOM(linksComPos[1][0],linksComPos[1][1],linksComPos[1][2]);
     SpatialInertia<float> hipInertia(linkMasses[1], hipCOM, hipRotationalInertia);
-    std::cout << "linkMasses[1]=" << linkMasses[1] << std::endl;
-    std::cout << "hipRotationalInertia=" << hipRotationalInertia << std::endl;
+    // std::cout << "linkMasses[1]=" << linkMasses[1] << std::endl;
+    // std::cout << "hipRotationalInertia=" << hipRotationalInertia << std::endl;
     
     Mat3<float> kneeRotationalInertia, kneeRotationalInertiaRotated;
     kneeRotationalInertiaRotated = linkInertias[2];
@@ -409,8 +422,8 @@ bool qrRobotLite2::BuildDynamicModel()
     
     Vec3<float> kneeCOM(linksComPos[2][0],linksComPos[2][1],linksComPos[2][2]);
     SpatialInertia<float> kneeInertia(linkMasses[2], kneeCOM, kneeRotationalInertia);
-    std::cout << "linkMasses[2]=" << linkMasses[2] << std::endl;
-    std::cout << "kneeRotationalInertia=" << kneeRotationalInertia << std::endl;
+    // std::cout << "linkMasses[2]=" << linkMasses[2] << std::endl;
+    // std::cout << "kneeRotationalInertia=" << kneeRotationalInertia << std::endl;
     
     // rotors
     Vec3<float> rotorCOM(0, 0, 0);
@@ -428,7 +441,7 @@ bool qrRobotLite2::BuildDynamicModel()
     // body
     Mat3<float> bodyRotationalInertia = bodyInertia;
     Vec3<float> bodyCOM = comOffset;
-    std::cout << "totalMass = " << totalMass << ", bodyMass = " << bodyMass << std::endl;
+    // std::cout << "totalMass = " << totalMass << ", bodyMass = " << bodyMass << std::endl;
     SpatialInertia<float> bodyInertia_(bodyMass, bodyCOM, bodyRotationalInertia);
     
     const int baseID = 5;

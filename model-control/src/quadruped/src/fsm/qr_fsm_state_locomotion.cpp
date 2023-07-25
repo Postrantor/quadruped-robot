@@ -140,7 +140,7 @@ void qrFSMStateLocomotion<T>::Run()
     if (this->_data->quadruped->controlParams["mode"] == LocomotionMode::ADVANCED_TROT) {
 
         /* Add a compensation torque to hip joints in MPC. */
-        float tua_ = 0.9, tua = 0;
+        float tua_ = -0.8, tua = 0;
         for (int motorId(0); motorId < NumMotor; ++motorId) {
             if (motorId % 3 == 0) {
                 tua = tua_ * pow(-1, (motorId / 3 + 1) % 2);
