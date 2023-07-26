@@ -143,14 +143,11 @@ void qrControlFSM<T>::RunFSM(std::vector<Quadruped::qrMotorCommand>& hybridActio
 
             /* After the transitioning(some transition requires duration), current state will set %done to true. */
             if (transitionData.done) {
-                // std::cout << "132 ---------------" << std::endl;
                 /* Exit the current state. */
                 currentState->OnExit();
                 /* Enter next state */
                 currentState = nextState;
-                // std::cout << "138 ---------------" << std::endl;
                 currentState->OnEnter();
-                // std::cout << "140 ---------------" << std::endl;  
                 operatingMode = FSM_OperatingMode::NORMAL;
             }
         } else {
@@ -214,7 +211,7 @@ qrFSMState<T> *qrControlFSM<T>::GetNextState(FSM_StateName stateName)
 
         case FSM_StateName::LOCOMOTION:
             return statesList.locomotion;
-        
+
         case FSM_StateName::RL_LOCOMOTION:
             return statesList.rlLocomotion;
 

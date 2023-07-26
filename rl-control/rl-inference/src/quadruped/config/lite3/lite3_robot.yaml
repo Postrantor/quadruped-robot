@@ -86,13 +86,6 @@ motor_params:
   hip_d: 0.8
   knee_p: 80
   knee_d: 0.8
-  
-  # abad_p: 60
-  # abad_d: 1.0
-  # hip_p: 100
-  # hip_d: 1.0
-  # knee_p: 100
-  # knee_d: 1.0
 
 controller_params:
   # mode: 0 # VEL_MODE

@@ -332,10 +332,6 @@ void qrRobotLite2::ApplyAction(const Eigen::MatrixXf &motorCommands, MotorMode m
         
         for (int motorId = 0; motorId < NumMotor; motorId++) {
             int motorId_ = (motorId/3)%2 == 0? motorId+3: motorId-3;
-            // if (motorId == 10) {
-            //     printf("p = %.2f, Kp = %.1f, v=%.2f Kd=%.1f, f=%.2f\n",motorCommandsShaped(POSITION, motorId), motorCommandsShaped(KP, motorId), 
-            //     motorCommandsShaped(VELOCITY, motorId), motorCommandsShaped(KD, motorId), motorCommandsShaped(TORQUE, motorId));
-            // }
             motorCommandsArray.joint_cmd[motorId_].pos = motorCommandsShaped(POSITION, motorId);
             motorCommandsArray.joint_cmd[motorId_].kp = motorCommandsShaped(KP, motorId);
             motorCommandsArray.joint_cmd[motorId_].vel = motorCommandsShaped(VELOCITY, motorId);

@@ -159,7 +159,7 @@ void MPCRobotState::print()
 
 void SetupProblem(double dt, int horizon, double frictionCoeff, double fMax, double totalMass, float *inertia, float *weights, float alpha)
 {
-    printf("SetupProblem: f_max = %f, mass = %f, horizon = %d\n", fMax, totalMass, horizon);
+    // printf("SetupProblem: f_max = %f, mass = %f, horizon = %d\n", fMax, totalMass, horizon);
     problemConfig.totalMass = totalMass;
     problemConfig.horizon    = horizon;
     problemConfig.fMax      = fMax;

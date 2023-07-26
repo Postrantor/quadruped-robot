@@ -368,16 +368,7 @@ void MPCStanceLegController::UpdateMPC(qrRobot *robot)
                                  xStart,       yStart,       bodyHeight,
                                  omega_des[0], omega_des[1], omega_des[2],
                                  vDesWorld[0], vDesWorld[1], 0.f};
-        
-        // std::cout << "traj = :\n";
-        // for (int i=0; i<12; ++i) {
-        //     std::cout << trajInitial[i] << ",  ";
-        // }
-        // std::cout << std::endl;
 
-        // auto footBase = robot->GetFootPositionsInBaseFrame();
-        // std::cout << robot->GetBaseRollPitchYaw() << ", \n" << footBase << ", \n" << robot->GetBaseRollPitchYawRate() << ", \n" << robot->GetBaseVelocityInBaseFrame() << std::endl;
-        // std::cout << "f = " << footBase.colwise() - robot->comOffset << std::endl;
         /* Predict the future state by accmulating the velocity. */
         for (int i = 0; i < horizonLength; ++i) {
             for (int j = 0; j < 12; ++j) trajAll[12 * i + j] = trajInitial[j];

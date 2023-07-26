@@ -31,6 +31,7 @@ namespace Action {
 void ShinkLeg(qrRobot *robot, float totalTime, float timeStep)
 {
     qrTimer timer;
+    robot->ReceiveObservation();
     Eigen::Matrix<float, 12, 1> motorAnglesBeforeStandUP = robot->GetMotorAngles();
     Eigen::Matrix<float, 12, 1> action;
     Eigen::Matrix<float, 12, 1> shrinked_motor_angles;
@@ -49,17 +50,14 @@ void ShinkLeg(qrRobot *robot, float totalTime, float timeStep)
 void StandUp(qrRobot *robot, float standUpTime, float totalTime, float timeStep)
 {
     qrTimer timer;
+    robot->ReceiveObservation();
     Eigen::Matrix<float, 12, 1> motorAnglesBeforeStandUP = robot->GetMotorAngles();
     Eigen::Matrix<float, 12, 1>  diff = motorAnglesBeforeStandUP - robot->lastMotorCommands.col(0);
     if (robot->lastMotorControlMode == MotorMode::POSITION_MODE && diff.cwiseAbs().maxCoeff() < 0.15) { // use last action for smoothness
         motorAnglesBeforeStandUP = robot->lastMotorCommands.col(0);
     }
-    // std::cout << "motorAnglesBeforeStandUP: \n" << motorAnglesBeforeStandUP.transpose() << std::endl;
     std::cout << "---------------------Standing Up---------------------" << std::endl;
-    // std::cout << "robot->standMotorAngles: \n" << robot->standUpMotorAngles.transpose() << std::endl;
     Eigen::Matrix<float, 12, 1> action;
-    // Eigen::Matrix<float, 12, 1> currentAngles = robot->GetMotorAngles();
-    // Visualization2D& vis = robot->stateDataFlow.visualizer;
     float startTime = timer.GetTimeSinceReset();
     float endTime = startTime + totalTime;
     for (float t = startTime; t < endTime; t += timeStep) {
@@ -68,29 +66,11 @@ void StandUp(qrRobot *robot, float standUpTime, float totalTime, float timeStep)
         if (blendRatio < 1.0f) {
             action = blendRatio * robot->standUpMotorAngles + (1 - blendRatio) * motorAnglesBeforeStandUP;
             robot->Step(action, MotorMode::POSITION_MODE);
-            // vis.datay5.push_back(action[2]);
-            //currentAngles = robot->GetMotorAngles();
-
-             /// stand up by torque
-             //action = 60.0f * (action - currentAngles) + 0.45f * (- robot->GetMotorVelocities());
-             //action = action.cwiseMax(-15.0f).cwiseMin(15.0f);
-             //obot->Step(action, MotorMode::TORQUE_MODE);
-
-            /*
-        vis.datax.push_back(t);
-            vis.datay1.push_back(currentAngles[0]);
-            vis.datay2.push_back(currentAngles[1]);
-            vis.datay3.push_back(currentAngles[2]);
-            vis.datay4.push_back(action[0]);
-            //vis.datay5.push_back(action[1]);
-            vis.datay6.push_back(action[2]);
-            */
         } else {
             robot->Step(robot->standUpMotorAngles, MotorMode::POSITION_MODE);
         }
         while (timer.GetTimeSinceReset() < t + timeStep) {}
     }
-    // std::cout << "robot->GetMotorAngles: \n" << robot->GetMotorAngles().transpose() << std::endl;
     std::cout << "---------------------Stand Up Finished---------------------" << std::endl;
 }
 

@@ -203,14 +203,12 @@ void qrFootholdPlanner::ComputeHeuristicFootHold(std::vector<u8> swingFootIds)
                 //     );
                 // dP.setZero(); 
             }
-            // if (legId == 2)
-            //     std::cout << "dP = " << dP.transpose() << std::endl;
             // Clip
             const float dPthresold = 0.2f;
             dP[0] = clip(dP[0], -dPthresold, dPthresold);
             // dP[1] = clip(dP[1], -0.15f, 0.15f);
             dP[1] = clip(dP[1], -dPthresold, dPthresold);
-            dP[2] = 0; 
+            dP[2] = 0;
             // dP.setZero();
             Vec3<float> rpy = robot->GetBaseRollPitchYaw();
             Vec4<float> interleave_y = hipLen * side_sign;

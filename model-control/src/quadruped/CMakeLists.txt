@@ -160,7 +160,3 @@ if(${USE_GO1})
 else() #A1 & AligenGo
     target_link_libraries(quadruped PUBLIC robot_interface)
 endif()
-
-# if (${USE_BLAS})
-#    target_link_libraries(quadruped PUBLIC ${BLAS_LIBRARIES})
-# endif()

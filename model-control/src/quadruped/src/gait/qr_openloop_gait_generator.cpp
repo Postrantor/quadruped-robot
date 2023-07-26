@@ -118,8 +118,8 @@ void qrOpenLoopGaitGenerator::Reset(float currentTime)
     }
 
     qrGaitGenerator::Reset(currentTime);
-    std::cout << "stanceDuration = " << stanceDuration << std::endl;
-    std::cout << "dutyfactor: " << this->dutyFactor << std::endl;
+    // std::cout << "stanceDuration = " << stanceDuration << std::endl;
+    // std::cout << "dutyfactor: " << this->dutyFactor << std::endl;
 }
 
 

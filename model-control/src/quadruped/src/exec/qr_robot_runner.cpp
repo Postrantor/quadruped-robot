@@ -36,7 +36,7 @@ qrLocomotionController *SetUpController(
     qrStateEstimatorContainer* stateEstimators,
     qrUserParameters* userParameters,
     std::string& homeDir)
-{    
+{
     qrComAdjuster *comAdjuster = new qrComAdjuster(quadruped, gaitGenerator, stateEstimators->GetRobotEstimator());
     std::cout << "init comAdjuster finish\n" << std::endl;
 
@@ -81,7 +81,6 @@ qrLocomotionController *SetUpController(
     std::cout << "init locomotionController finish\n" << std::endl;
 
     return locomotionController;
-
 }
 
 

@@ -367,9 +367,7 @@ map<int, Matrix<float, 5, 1>> qrRaibertSwingLegController::GetAction()
 
             footTargetPosition = footholdPlanner->desiredFootholds.col(legId);
             phase = footholdPlanner->phase[legId];
-
             float H = 0.1;
-
 
             Vec3<float> footTargetPositionInWorldFrame = robotics::math::invertRigidTransform(robot->basePosition, robotComOrientation, footTargetPosition);
             desiredStateCommand->footTargetPositionsInWorldFrame.col(legId) = footTargetPositionInWorldFrame;

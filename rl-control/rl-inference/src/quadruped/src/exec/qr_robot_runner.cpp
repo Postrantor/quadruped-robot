@@ -67,6 +67,7 @@ qrLocomotionController *SetUpController(
                                                                                        + "/stance_leg_controller.yaml");
 
     std::cout << "init stanceLegController finish\n" << std::endl;
+
     qrLocomotionController *locomotionController = new qrLocomotionController(quadruped,
                                                             gaitGenerator,
                                                             desiredStateCommand,
@@ -76,7 +77,7 @@ qrLocomotionController *SetUpController(
                                                             swingLegController,
                                                             stanceLegController,
                                                             userParameters);
-    
+
     std::cout << "init locomotionController finish\n" << std::endl;
 
     return locomotionController;

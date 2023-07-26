@@ -48,7 +48,6 @@ qrControlFSM<T>::qrControlFSM(
     safetyChecker = new qrSafetyChecker<T>(&data);
 
     Initialize();
-
     printf("FSM Init Finished");
 }
 
@@ -72,7 +71,7 @@ void qrControlFSM<T>::RunFSM(std::vector<Quadruped::qrMotorCommand>& hybridActio
     if(data.desiredStateCommand->getJoyCtrlStateChangeRequest()) {
         
         const Quadruped::RC_MODE ctrlState = data.desiredStateCommand->getJoyCtrlState();
-        std::cout<< "[CONTROL FSM]: control mode = "<< ctrlState <<std::endl;
+        std::cout<< "[RunFSM]: RC_MODE = "<< ctrlState <<std::endl;
         if (ctrlState == Quadruped::RC_MODE::JOY_TROT ||
             ctrlState == Quadruped::RC_MODE::JOY_ADVANCED_TROT ||
             ctrlState == Quadruped::RC_MODE::JOY_WALK ||
@@ -124,10 +123,8 @@ void qrControlFSM<T>::RunFSM(std::vector<Quadruped::qrMotorCommand>& hybridActio
 
             /* After the transitioning(some transition requires duration), current state will set %done to true. */
             if (transitionData.done) {
-
                 /* Exit the current state. */
                 currentState->OnExit();
-
                 /* Enter next state */
                 currentState = nextState;
                 currentState->OnEnter();
