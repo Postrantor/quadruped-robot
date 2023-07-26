@@ -220,9 +220,11 @@ void qrRaibertSwingLegController::Update(float current_time)
 
     default: { // velocity / position / advanced_trot
         for (u8 legId(0); legId < NumLeg; ++legId) {
-            int tempState = gaitGenerator->legState[legId];
-
-            if ((gaitGenerator->curLegState[legId] == LegState::STANCE && gaitGenerator->allowSwitchLegState[legId])
+            int tempState = gaitGenerator->curLegState[legId];
+            if (robot->isSim) {
+                tempState = gaitGenerator->legState[legId];
+            }
+            if ((tempState == LegState::STANCE && gaitGenerator->allowSwitchLegState[legId])
                     || gaitGenerator->legState[legId] == LegState::EARLY_CONTACT) {
                 continue;
             } else {
@@ -392,7 +394,7 @@ map<int, Matrix<float, 5, 1>> qrRaibertSwingLegController::GetAction()
             foot_pos_rel_last_time.col(legId) = footPositionsInBaseFrame.col(legId);
 
             Vec3<float> foot_vel_target = footVelocityInBaseFrame;//(footPositionInBaseFrame - foot_pos_target_last_time.col(legId)) / 0.002;
-            if (phase > 0.2 && phase < 0.9) {
+            if (!(robot->isSim) && phase > 0.2 && phase < 0.9) {
                 footPositionInBaseFrame[2] = foot_pos_target_last_time(2, legId) - robotics::math::clip(foot_pos_target_last_time(2, legId)-footPositionInBaseFrame[2], -0.002f, 0.002f);
             }
             foot_pos_target_last_time.col(legId) = footPositionInBaseFrame;
@@ -436,38 +438,39 @@ map<int, Matrix<float, 5, 1>> qrRaibertSwingLegController::GetAction()
     Matrix<float, 12, 1> kps, kds;
     kps = robot->GetMotorKps();
     kds = robot->GetMotorKdp();
-
-    // force contrl by PD computation
-    for (int singleLegId(0); singleLegId<NumLeg; ++singleLegId) {
-        bool flag = false;
-        auto find_it = std::find(swingFootIds.begin(), swingFootIds.end(), singleLegId);
-        if (find_it != swingFootIds.end()){
-            flag = true;
-        }
-        // flag = (gaitGenerator->legState[singleLegId] == LegState::SWING) // for trot up to slope,  // in velocity mode
-        //             || (gaitGenerator->curLegState[singleLegId] == LegState::SWING && !gaitGenerator->allowSwitchLegState[singleLegId]); // for gait schedule mode 
-        if (flag) {
-            // std::cout << t << ", id = " << singleLegId << ", ep = " << foot_pos_error.col(singleLegId).transpose() << ", ev = " <<  foot_vel_error.col(singleLegId).transpose() << std::endl;
-            foot_forces_kin.col(singleLegId) = foot_pos_error.block<3, 1>(0, singleLegId).cwiseProduct(kps.segment(3*singleLegId,3))/2.0 + // 40, 4
-                                            foot_vel_error.block<3, 1>(0, singleLegId).cwiseProduct(kds.segment(3*singleLegId,3))/1.0; // 5, 10, 2
-            // if (singleLegId == 0) {
-            //     vis.datax.push_back(count);
-            //     vis.datay1.push_back(foot_forces_kin(2,0));
-            //     vis.datay5.push_back(foot_pos_error(2,0));
-            //     vis.datay2.push_back(foot_vel_error(2,0));
-            //     vis.datay3.push_back(desiredFootPositionsInBaseFrame(2,0));
-            //     vis.datay4.push_back(footPositionsInBaseFrame(2, 0));
-            // }
-            Mat3<float> jac = stateData.footJvs[singleLegId];
-            Vec3<float> joint_torques = jac.lu().solve(foot_forces_kin.col(singleLegId));
+    if (!(robot->isSim)) {
+        // force contrl by PD computation
+        for (int singleLegId(0); singleLegId<NumLeg; ++singleLegId) {
+            bool flag = false;
+            auto find_it = std::find(swingFootIds.begin(), swingFootIds.end(), singleLegId);
+            if (find_it != swingFootIds.end()){
+                flag = true;
+            }
+            // flag = (gaitGenerator->legState[singleLegId] == LegState::SWING) // for trot up to slope,  // in velocity mode
+            //             || (gaitGenerator->curLegState[singleLegId] == LegState::SWING && !gaitGenerator->allowSwitchLegState[singleLegId]); // for gait schedule mode 
+            if (flag) {
+                // std::cout << t << ", id = " << singleLegId << ", ep = " << foot_pos_error.col(singleLegId).transpose() << ", ev = " <<  foot_vel_error.col(singleLegId).transpose() << std::endl;
+                foot_forces_kin.col(singleLegId) = foot_pos_error.block<3, 1>(0, singleLegId).cwiseProduct(kps.segment(3*singleLegId,3))/2.0 + // 40, 4
+                                                foot_vel_error.block<3, 1>(0, singleLegId).cwiseProduct(kds.segment(3*singleLegId,3))/1.0; // 5, 10, 2
+                // if (singleLegId == 0) {
+                //     vis.datax.push_back(count);
+                //     vis.datay1.push_back(foot_forces_kin(2,0));
+                //     vis.datay5.push_back(foot_pos_error(2,0));
+                //     vis.datay2.push_back(foot_vel_error(2,0));
+                //     vis.datay3.push_back(desiredFootPositionsInBaseFrame(2,0));
+                //     vis.datay4.push_back(footPositionsInBaseFrame(2, 0));
+                // }
+                Mat3<float> jac = stateData.footJvs[singleLegId];
+                Vec3<float> joint_torques = jac.lu().solve(foot_forces_kin.col(singleLegId));
+                
+                joint_torques = joint_torques.cwiseMax(-20).cwiseMin(20);
+                // lastLegTorque.col(singleLegId) = joint_torques;
+                
+                actions[3*singleLegId] << 0, 0, 0, 0, joint_torques[0];
+                actions[3*singleLegId+1] << 0, 0, 0, 0, joint_torques[1];
+                actions[3*singleLegId+2] << 0, 0, 0, 0, joint_torques[2];
             
-            joint_torques = joint_torques.cwiseMax(-20).cwiseMin(20);
-            // lastLegTorque.col(singleLegId) = joint_torques;
-            
-            actions[3*singleLegId] << 0, 0, 0, 0, joint_torques[0];
-            actions[3*singleLegId+1] << 0, 0, 0, 0, joint_torques[1];
-            actions[3*singleLegId+2] << 0, 0, 0, 0, joint_torques[2];
-        
+            }
         }
     }
 
@@ -502,8 +505,11 @@ map<int, Matrix<float, 5, 1>> qrRaibertSwingLegController::GetAction()
         }
 
         if (flag) {
-            // actions[it->first] << std::get<0>(posVelId), kps[it->first], std::get<1>(posVelId),kds[it->first], 0;
-            actions[it->first] << std::get<0>(posVelId), 6 /*kps[it->first]*/, std::get<1>(posVelId), 0.5 /*kds[it->first]*/, actions[it->first][4];
+            if (robot->isSim) {
+                actions[it->first] << std::get<0>(posVelId), kps[it->first], std::get<1>(posVelId),kds[it->first], 0;
+            } else {
+                actions[it->first] << std::get<0>(posVelId), 6, std::get<1>(posVelId), 0.5, actions[it->first][4];
+            }
         }
     }
 

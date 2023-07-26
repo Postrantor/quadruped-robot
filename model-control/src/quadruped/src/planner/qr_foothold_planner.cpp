@@ -195,22 +195,23 @@ void qrFootholdPlanner::ComputeHeuristicFootHold(std::vector<u8> swingFootIds)
                         - swingKp.cwiseProduct(targetHipHorizontalVelocity - hipHorizontalVelocity);
                         // -Vec3<float>(pitchCorrect, rollCorrect, 0)
             } else {
-                dP = dR.transpose() * (targetHipHorizontalVelocity * gaitGenerator->stanceDuration[legId] / 2.0
+                if (!robot->isSim) {
+                    dP = dR.transpose() * (targetHipHorizontalVelocity * gaitGenerator->stanceDuration[legId] / 2.0
+                            - swingKp.cwiseProduct(targetHipHorizontalVelocity - hipHorizontalVelocity)
+                        );
+                } else {
+                    dP = dR.transpose() * (targetHipHorizontalVelocity * swingRemainTime
                         - swingKp.cwiseProduct(targetHipHorizontalVelocity - hipHorizontalVelocity)
-                    );
-                // dP = dR.transpose() * (targetHipHorizontalVelocity * swingRemainTime
-                //         - swingKp.cwiseProduct(targetHipHorizontalVelocity - hipHorizontalVelocity)
-                //     );
+                        );
+                }
                 // dP.setZero(); 
             }
-            // if (legId == 2)
-            //     std::cout << "dP = " << dP.transpose() << std::endl;
             // Clip
             const float dPthresold = 0.2f;
             dP[0] = clip(dP[0], -dPthresold, dPthresold);
             // dP[1] = clip(dP[1], -0.15f, 0.15f);
             dP[1] = clip(dP[1], -dPthresold, dPthresold);
-            dP[2] = 0; 
+            dP[2] = 0;
             // dP.setZero();
             Vec3<float> rpy = robot->GetBaseRollPitchYaw();
             Vec4<float> interleave_y = hipLen * side_sign;
@@ -223,20 +224,24 @@ void qrFootholdPlanner::ComputeHeuristicFootHold(std::vector<u8> swingFootIds)
                         //  - robotBaseR.transpose() * desiredHeight;
                         // - desiredHeight;
                     ;
-            
-            if (legId < 2) {
-                if (desiredStateCommand->stateDes(6,0) > 0.05) {
-                    footTargetPosition[2] -= 0.01;
-                }
-                footTargetPosition -=  robotBaseR.transpose() * desiredHeight;
-            } else {
-                if (desiredStateCommand->stateDes(6,0) > 0.05) {
-                    footTargetPosition[2] += 0.01;
-                }
-                footTargetPosition -=  robotBaseR.transpose() * (desiredHeight + Vec3<float>(0,0,0.02));
+            if (robot->isSim && desiredStateCommand->stateDes(6,0)< -0.01) {
+                footTargetPosition(0,2) -= 0.02;
+                footTargetPosition(0,3) -= 0.02;
             }
+            // if (robot->isSim) {
+            //     footTargetPosition -= robotBaseR.transpose() * desiredHeight;
             // } else {
-            //     footTargetPosition = desiredFootholds.col(legId);
+                if (legId < 2) {
+                    if (desiredStateCommand->stateDes(6,0) > 0.05) {
+                        footTargetPosition[2] -= 0.01;
+                    }
+                    footTargetPosition -=  robotBaseR.transpose() * desiredHeight;
+                } else {
+                    if (desiredStateCommand->stateDes(6,0) > 0.05) {
+                        footTargetPosition[2] += 0.01;
+                    }
+                    footTargetPosition -=  robotBaseR.transpose() * (desiredHeight + Vec3<float>(0,0,0.02));
+                }
             // }
             phase[legId] = gaitGenerator->normalizedPhase(legId);
         }

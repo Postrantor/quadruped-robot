@@ -214,6 +214,7 @@ Quadruped::qrDesiredStateCommand::qrDesiredStateCommand(ros::NodeHandle &nhIn, q
     prevJoyCtrlState = RC_MODE::JOY_STAND;
 
     joycmdBodyHeight = robotIn->bodyHeight;
+    isSim = robotIn->isSim;
     joyCmdVz = joyCmdVx = joyCmdVy = 0;
     joyCmdYawRate = joyCmdRollRate = joyCmdPitchRate = 0;
 
@@ -433,7 +434,7 @@ void Quadruped::qrDesiredStateCommand::Update()
     stateDes(11) = clip(filteredOmega[2], MIN_YAWRATE, MAX_YAWRATE);
 
     /* A compensate for walking back, experientially. */
-    // if (stateDes(6) < -0.01)
+    // if (isSim && stateDes(6) < -0.01)
     //     stateDes(2) = joycmdBodyHeight * 0.85; // 0.37 * 0.7 = 0.26, 0.28 * 0.7 = 0.196; 0.28;                                     // Z position height
 
 }

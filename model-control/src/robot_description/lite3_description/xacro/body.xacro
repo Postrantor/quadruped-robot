@@ -38,7 +38,7 @@
         <inertia ixx="0.00014538" ixy="8.1579E-07" ixz="-1.264E-05" iyy="0.00024024" iyz="1.3443E-06" izz="0.00013038" />
       </inertial>
       <visual>
-        <origin rpy="1.5708 0 1.5708" xyz="-0.231 -0.55 0.09"/>
+        <origin rpy="1.5708 0 1.5708" xyz="-0.231 -0.5625 0.08"/>
         <geometry>
           <mesh filename="package://lite3_description/meshes/FL_HIP.dae" />
         </geometry>
@@ -60,7 +60,7 @@
         <inertia ixx="0.001" ixy="-2.5E-06" ixz="-1.12E-04" iyy="0.00116" iyz="3.75E-07" izz="2.68E-04" />
       </inertial>
       <visual>
-        <origin rpy="-2.0 0 1.5708" xyz="0.24 -0.66 0.021"/>
+        <origin rpy="-2.0 0 1.5708" xyz="0.265 -0.66 0.011"/>
         <geometry>
           <mesh filename="package://lite3_description/meshes/L_THIGH.dae" />
         </geometry>
@@ -88,6 +88,7 @@
         <inertia ixx="6.68E-04" ixy="-1.24E-08" ixz="6.91E-06" iyy="6.86E-04" iyz="5.65E-09" izz="3.155E-05" />
       </inertial>
       <visual>
+      <origin xyz="0 0 -0.03"/>
         <geometry>
           <mesh filename="package://lite3_description/meshes/SHANK.dae" />
         </geometry>
@@ -95,7 +96,7 @@
       <collision>
         <origin xyz="0 0 -0.09"/>
         <geometry>
-          <box size="0.02 0.02 0.18"/>
+          <box size="0.02 0.02 0.20"/>
         </geometry>
       </collision>
     </link>
@@ -121,7 +122,7 @@
     </link>
 
     <joint name="FL_Ankle" type="fixed">
-      <origin xyz="0 0 -0.20"/>
+      <origin xyz="0 0 -0.21"/>
       <parent link="FL_SHANK" />
       <child link="FL_FOOT" />
     </joint>
@@ -133,7 +134,7 @@
         <inertia ixx="0.00014538" ixy="-8.1551E-07" ixz="-1.2639E-05" iyy="0.00024024" iyz="-1.3441E-06" izz="0.00013038" />
       </inertial>
       <visual>
-        <origin rpy="1.5708 0 1.5708" xyz="-0.231 -0.46 0.085"/>
+        <origin rpy="1.5708 0 1.5708" xyz="-0.231 -0.446 0.0835"/>
         <geometry>
           <mesh filename="package://lite3_description/meshes/FR_HIP.dae" />
         </geometry>
@@ -155,7 +156,8 @@
         <inertia ixx="0.001" ixy="2.5E-06" ixz="-1.12E-04" iyy="0.00116" iyz="-3.75E-07" izz="2.68E-04" />
       </inertial>
       <visual>
-        <origin rpy="-2.0 0 1.5708" xyz="0.24 -0.35 0.021"/>
+        <origin rpy="-2.0 0 1.5708" xyz="0.265 -0.35 0.011"/>
+
         <geometry>
           <mesh filename="package://lite3_description/meshes/R_THIGH.dae" />
         </geometry>
@@ -183,6 +185,7 @@
         <inertia ixx="6.68E-04" ixy="-1.24E-08" ixz="6.91E-06" iyy="6.86E-04" iyz="5.65E-09" izz="3.155E-05" />
       </inertial>
       <visual>
+      <origin xyz="0 0 -0.03"/>
         <geometry>
           <mesh filename="package://lite3_description/meshes/SHANK.dae" />
         </geometry>
@@ -190,7 +193,7 @@
       <collision>
         <origin xyz="0 0 -0.09"/>
         <geometry>
-          <box size="0.02 0.02 0.18"/>
+          <box size="0.02 0.02 0.20"/>
         </geometry>
       </collision>
     </link>
@@ -216,7 +219,7 @@
     </link>
 
     <joint name="FR_Ankle" type="fixed">
-      <origin xyz="0 0 -0.20"/>
+      <origin xyz="0 0 -0.21"/>
       <parent link="FR_SHANK" />
       <child link="FR_FOOT" />
     </joint>
@@ -228,7 +231,8 @@
         <inertia ixx="0.00014538" ixy="-8.1585E-07" ixz="1.2639E-05" iyy="0.00024024" iyz="1.3444E-06" izz="0.00013038" />
       </inertial>
       <visual>
-        <origin rpy="1.5708 0 1.5708" xyz="0.12 -0.55 0.09"/>
+        <origin rpy="1.5708 0 1.5708" xyz="0.12 -0.5625 0.09"/>
+        <!-- <origin rpy="1.5708 0 1.5708" xyz="-0.231 -0.5625 0.08"/> -->
         <geometry>
           <mesh filename="package://lite3_description/meshes/HL_HIP.dae" />
         </geometry>
@@ -250,7 +254,7 @@
         <inertia ixx="0.001" ixy="-2.5E-06" ixz="-1.12E-04" iyy="0.00116" iyz="3.75E-07" izz="2.68E-04" />
       </inertial>
       <visual>
-        <origin rpy="-2.0 0 1.5708" xyz="0.24 -0.66 0.021"/>
+        <origin rpy="-2.0 0 1.5708" xyz="0.27 -0.66 0.011"/>
         <geometry>
           <mesh filename="package://lite3_description/meshes/L_THIGH.dae" />
         </geometry>
@@ -278,6 +282,7 @@
         <inertia ixx="6.68E-04" ixy="-1.24E-08" ixz="6.91E-06" iyy="6.86E-04" iyz="5.65E-09" izz="3.155E-05" />
       </inertial>
       <visual>
+      <origin xyz="0 0 -0.03"/>
         <geometry>
           <mesh filename="package://lite3_description/meshes/SHANK.dae" />
         </geometry>
@@ -285,7 +290,7 @@
       <collision>
         <origin xyz="0 0 -0.09"/>
         <geometry>
-          <box size="0.02 0.02 0.18"/>
+          <box size="0.02 0.02 0.20"/>
         </geometry>
       </collision>
     </link>
@@ -311,7 +316,7 @@
     </link>
 
     <joint name="HL_Ankle" type="fixed">
-      <origin xyz="0 0 -0.20"/>
+      <origin xyz="0 0 -0.21"/>
       <parent link="HL_SHANK" />
       <child link="HL_FOOT" />
     </joint>
@@ -323,7 +328,7 @@
         <inertia ixx="0.00014538" ixy="8.1545E-07" ixz="1.2639E-05" iyy="0.00024024" iyz="-1.344E-06" izz="0.00013038" />
       </inertial>
       <visual>
-        <origin rpy="1.5708 0 1.5708" xyz="0.12 -0.46 0.09"/>
+        <origin rpy="1.5708 0 1.5708" xyz="0.13 -0.445 0.09"/>
         <geometry>
           <mesh filename="package://lite3_description/meshes/HR_HIP.dae" />
         </geometry>
@@ -345,7 +350,7 @@
         <inertia ixx="0.001" ixy="2.5E-06" ixz="-1.12E-04" iyy="0.00116" iyz="-3.75E-07" izz="2.68E-04" />
       </inertial>
       <visual>
-        <origin rpy="-2.0 0 1.5708" xyz="0.24 -0.35 0.021"/>
+        <origin rpy="-2.0 0 1.5708" xyz="0.27 -0.35 0.013"/>
         <geometry>
           <mesh filename="package://lite3_description/meshes/R_THIGH.dae" />
         </geometry>
@@ -373,6 +378,7 @@
         <inertia ixx="6.68E-04" ixy="-1.24E-08" ixz="6.91E-06" iyy="6.86E-04" iyz="5.65E-09" izz="3.155E-05" />
       </inertial>
       <visual>
+        <origin xyz="0 0 -0.03"/>
         <geometry>
           <mesh filename="package://lite3_description/meshes/SHANK.dae" />
         </geometry>
@@ -380,7 +386,7 @@
       <collision>
         <origin xyz="0 0 -0.09"/>
         <geometry>
-          <box size="0.02 0.02 0.18"/>
+          <box size="0.02 0.02 0.20"/>
         </geometry>
       </collision>
     </link>
@@ -406,7 +412,7 @@
     </link>
 
     <joint name="HR_Ankle" type="fixed">
-      <origin xyz="0 0 -0.20"/>
+      <origin xyz="0 0 -0.21"/>
       <parent link="HR_SHANK" />
       <child link="HR_FOOT" />
     </joint>

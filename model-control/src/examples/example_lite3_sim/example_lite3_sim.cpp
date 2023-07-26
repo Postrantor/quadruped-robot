@@ -214,13 +214,13 @@ int main(int argc, char **argv)
 
     while (ros::ok() && currentTime - startTime < MAX_TIME_SECONDS) {
         startTimeWall = quadruped->GetTimeSinceReset();
-        if (count % 3 ==0) {
-            GetComPositionInWorldFrame(quadruped, baseStateClient);
-            Vec3<float> robotComRpyRate = quadruped->GetBaseRollPitchYawRate();
-            Vec4<float> footForces = quadruped->GetFootForce();
-            Vec3<float> rpy = quadruped->GetBaseRollPitchYaw();
-            Vec3<float> robotComVelocity = stateEstimators->GetRobotEstimator()->GetEstimatedVelocity();  // base frame
-        }
+        // if (count % 3 ==0) {
+        //     GetComPositionInWorldFrame(quadruped, baseStateClient);
+        //     Vec3<float> robotComRpyRate = quadruped->GetBaseRollPitchYawRate();
+        //     Vec4<float> footForces = quadruped->GetFootForce();
+        //     Vec3<float> rpy = quadruped->GetBaseRollPitchYaw();
+        //     Vec3<float> robotComVelocity = stateEstimators->GetRobotEstimator()->GetEstimatedVelocity();  // base frame
+        // } 
 
         robotRunner.Update();
         robotRunner.Step();

@@ -233,6 +233,8 @@ private:
      */
     bool gaitSwitch = false;
 
+    bool isSim;
+
     /**
      * @brief desired body height.
      * Now it is a constant.
