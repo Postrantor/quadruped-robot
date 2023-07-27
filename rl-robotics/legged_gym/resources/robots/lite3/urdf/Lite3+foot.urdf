@@ -109,7 +109,7 @@
   </link>
 
   <joint name="FL_Knee_joint" type="revolute">
-    <origin xyz="0 0 -0.20" />
+    <origin xyz="0.0 0 -0.18" />
     <parent link="FL_THIGH" />
     <child link="FL_SHANK" />
     <axis xyz="0 1 0" />
@@ -229,7 +229,7 @@
   </link>
 
   <joint name="FR_Knee_joint" type="revolute">
-    <origin xyz="0 0 -0.20" />
+    <origin xyz="0 0 -0.18" />
     <parent link="FR_THIGH" />
     <child link="FR_SHANK" />
     <axis xyz="0 1 0" />
@@ -369,7 +369,7 @@
   </link>
 
   <joint name="HL_Knee_joint" type="revolute">
-    <origin xyz="0 0 -0.20" />
+    <origin xyz="0 0 -0.18" />
     <parent link="HL_THIGH" />
     <child link="HL_SHANK" />
     <axis xyz="0 1 0" />
@@ -470,7 +470,7 @@
   </link>
 
   <joint name="HR_Knee_joint" type="revolute">
-    <origin xyz="0 0 -0.20" />
+    <origin xyz="0 0 -0.18" />
     <parent link="HR_THIGH" />
     <child link="HR_SHANK" />
     <axis xyz="0 1 0" />
