@@ -282,6 +282,8 @@ class LeggedRobotCfgPPO(BaseConfig):
         init_noise_std = 1.0
         actor_hidden_dims = [512, 256, 128]
         critic_hidden_dims = [512, 256, 128]
+        adaptation_hidden_dims=[256, 32]
+        encoder_latent_dims=18
         activation = 'elu'  # can be elu, relu, selu, crelu, lrelu, tanh, sigmoid
 
     class algorithm:

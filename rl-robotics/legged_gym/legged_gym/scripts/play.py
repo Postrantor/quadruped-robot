@@ -132,9 +132,11 @@ def play(args):
 
     # export policy as a jit module (used to run it from C++)
     if EXPORT_POLICY:
-        path = os.path.join(LEGGED_GYM_ROOT_DIR, 'logs', train_cfg.runner.experiment_name, 'exported', 'policies')
-        export_policy_as_jit(ppo_runner.alg.actor_critic, path)
-        print('Exported policy as jit script to: ', path)
+        from legged_gym.utils.pytorch_to_onnx import load_model, export_onnx
+        actor_critic = ppo_runner.alg.actor_critic
+        actor = load_model(actor_critic, env_cfg.env, train_cfg.policy)
+        export_onnx(actor, env_cfg.env)
+        print("ONNX export finished.")
 
     robot_index = 0  # which robot is used for logging
     joint_index = 1  # which joint is used for logging (0:hip,1:thigh,2:calf)
