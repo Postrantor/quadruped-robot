@@ -30,17 +30,18 @@ include_directories(
 )
 
 add_executable(example_a1_real example_a1_real/example_a1_real.cpp)
-#add_executable(example_a1_sim example_a1_sim/example_a1_sim.cpp)
-
-#add_executable(example_lite3_sim example_lite3_sim/example_lite3_sim.cpp)
-add_executable(example_lite3_real example_lite3_real/example_lite3_real.cpp)
-
-#add_executable(example_keyboard example_keyboard/example_keyboard.cpp)
 target_link_libraries(example_a1_real ${catkin_LIBRARIES} ${ASCENDCL_LIB})
-#target_link_libraries(example_a1_sim ${catkin_LIBRARIES})
 
-#target_link_libraries(example_lite3_sim ${catkin_LIBRARIES})
+add_executable(example_lite3_real example_lite3_real/example_lite3_real.cpp)
 target_link_libraries(example_lite3_real ${catkin_LIBRARIES} ${ASCENDCL_LIB})
 
-#target_link_libraries(example_keyboard ${catkin_LIBRARIES})
+# add_executable(example_keyboard example_keyboard/example_keyboard.cpp)
+# target_link_libraries(example_keyboard ${catkin_LIBRARIES})
 
+if (${USE_SIM})
+    add_executable(example_a1_sim example_a1_sim/example_a1_sim.cpp)
+    target_link_libraries(example_a1_sim ${catkin_LIBRARIES})
+
+    add_executable(example_lite3_sim example_lite3_sim/example_lite3_sim.cpp)
+    target_link_libraries(example_lite3_sim ${catkin_LIBRARIES})
+endif()

@@ -504,9 +504,9 @@ map<int, Matrix<float, 5, 1>> qrRaibertSwingLegController::GetAction()
                 actions[it->first] << std::get<0>(posVelId), kps[it->first], std::get<1>(posVelId),kds[it->first], 0;
             } else {
                 float kp = 6.0;
-                if (robot->controlParams["mode"] ==  LocomotionMode::VELOCITY_LOCOMOTION) {
-                    kp = 15;
-                }
+                // if (robot->controlParams["mode"] ==  LocomotionMode::VELOCITY_LOCOMOTION) {
+                //     kp = 15;
+                // }
                 actions[it->first] << std::get<0>(posVelId), kp, std::get<1>(posVelId), 0.5, actions[it->first][4];
             }
         }

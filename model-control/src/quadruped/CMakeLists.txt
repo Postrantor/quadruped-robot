@@ -12,6 +12,15 @@ ADD_COMPILE_OPTIONS(-D_useros)
 
 option(USE_GO1                            "WHICH ROBOT"                     OFF)
 option(USE_BLAS                            "USE MKL BLAS"                   OFF)
+option(USE_SIM                            "USE Simulation"                  ON)
+
+if (NOT ${USE_SIM})
+    message("not use sim >>>>>>>>>>>>>>>>>>>>>>>")
+    add_definitions(-DNOT_USE_SIM)
+endif()
+
+set(includePath)
+set(linkPath)
 
 
 EXECUTE_PROCESS( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE ARCHITECTURE )
@@ -27,8 +36,6 @@ else()
 endif()
 
 
-set(includePath)
-set(linkPath)
 
 list(APPEND includePath "/usr/include/eigen3")
 
@@ -99,9 +106,12 @@ list(APPEND includePath "${qpOASES_DIR}")
 list(APPEND includePath "${qpOASES_DIR}/include")
 
 # library xpp
-set(XPP_DIR ${PROJECT_SOURCE_DIR}/../xpp)
-list(APPEND includePath ${XPP_DIR}/xpp_states/include
-                    ${XPP_DIR}/xpp_msgs/include)
+set(XPP_LIBS)
+if (${USE_SIM})
+    set(XPP_DIR ${PROJECT_SOURCE_DIR}/../xpp)
+    list(APPEND includePath ${XPP_DIR}/xpp_states/include ${XPP_DIR}/xpp_msgs/include)
+    list(APPEND XPP_LIBS xpp_states xpp_vis)
+endif()
 
 # ROS
 find_package(catkin REQUIRED COMPONENTS
@@ -128,6 +138,24 @@ list(APPEND includePath include/quadruped src)
 
 # add source files
 file(GLOB_RECURSE sources "src/*.cpp")
+if (NOT ${USE_SIM})
+list(REMOVE_ITEM includePath "include/quadruped/robots/qr_robot_sim.h"
+                             "include/quadruped/robots/qr_a1_sim.h"
+                             "include/quadruped/robots/qr_aliengo_sim.h"
+                             "include/quadruped/robots/qr_lite2_sim.h"
+                             "include/quadruped/robots/qr_lite3_sim.h"
+                             )
+set(filtered_sources ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_sim.cpp
+                    ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_a1_sim.cpp
+                    ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_aliengo_sim.cpp
+                    ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_lite2_sim.cpp
+                    ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_lite3_sim.cpp)
+list(REMOVE_ITEM sources ${filtered_sources})
+message("${filtered_sources}") 
+message("${PROJECT_SOURCE_DIR}/src/robots/qr_robot_sim.cpp")
+message("//////////////////////////////////////: , ${sources}")
+
+endif()
 
 # add include files
 list(APPEND includePath "config/")
@@ -147,9 +175,9 @@ target_link_libraries(quadruped PUBLIC
     ${catkin_LIBRARIES}
     ${BLAS_LIBRARIES}
     ${UNITREE_SDK_LIB}
+    ${XPP_LIBS}
     deeprobotics_legged_sdk
     lcm tinynurbs::tinynurbs
-    xpp_states xpp_vis
     MITAMD quadprog qpOASES)
 
 add_dependencies(quadruped ${catkin_EXPORTED_TARGETS})

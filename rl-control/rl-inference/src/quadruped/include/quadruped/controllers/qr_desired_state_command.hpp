@@ -328,12 +328,12 @@ private:
     /**
      * @brief Max linear velocity on Y Axis for the desired state.
      */
-    const float MAX_VELY = 0.2f;
+    const float MAX_VELY = 0.1f;
 
     /**
      * @brief Min linear velocity on Y Axis for the desired state.
      */
-    const float MIN_VELY = -0.2f;
+    const float MIN_VELY = -0.1f;
 
     /**
      * @brief Max yaw velocity for the desired state.
