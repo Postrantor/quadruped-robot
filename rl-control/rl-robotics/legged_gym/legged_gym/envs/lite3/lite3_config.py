@@ -55,7 +55,7 @@ class Lite3RoughCfg(LeggedRobotCfg):
 
     class env(LeggedRobotCfg.env):
         num_envs = 4096
-        num_observations = 133
+        num_observations = 320
         num_privileged_obs = 54  # if not None a priviledge_obs_buf will be returned by step() (critic obs for assymetric training). None is returned otherwise
         num_observation_history = 40
         episode_length_s = 20  # episode length in seconds
@@ -64,8 +64,8 @@ class Lite3RoughCfg(LeggedRobotCfg):
     class control(LeggedRobotCfg.control):
         # PD Drive parameters:
         control_type = 'P'
-        stiffness = {'joint': 27.0}  # 27 20 17, # [N*m/rad]
-        damping = {'joint': 1.0}  # 1.0 0.7 [N*m*s/rad]
+        stiffness = {'joint': 20.0}  # 27 20 17, # [N*m/rad]
+        damping = {'joint': 0.7}  # 1.0 0.7 [N*m*s/rad]
         # action scale: target angle = actionScale * action + defaultAngle
         action_scale = 0.25
         # decimation: Number of control action updates @ sim DT per policy DT
@@ -162,7 +162,7 @@ class Lite3RoughCfg(LeggedRobotCfg):
         # terrain_proportions = [0.15, 0.15, 0.15, 0.0, 0.2, 0.2, 0.15]
         terrain_proportions = [0.2, 0.2, 0, 0.0, 0.2, 0.2, 0.2]
         # rough terrain only:
-        measure_heights = False
+        measure_heights = True
 
     class domain_rand(LeggedRobotCfg.domain_rand):
         randomize_friction = True
