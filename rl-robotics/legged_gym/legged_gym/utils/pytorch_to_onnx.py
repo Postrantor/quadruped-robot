@@ -85,13 +85,13 @@ def load_model(model, env_cfg, policy_cfg):
     actor.adaptation_module.load_state_dict(model.adaptation_module.state_dict())
     return actor
 
-def export_onnx(model, env_cfg):
+def export_onnx(model, env_cfg, path):
     dummy_input_obs = torch.randn(1, env_cfg.num_observations)
     dummy_input_history_obs = torch.randn(1, env_cfg.num_observation_history * env_cfg.num_observations)
     dummy_output = model(dummy_input_obs, dummy_input_history_obs)
 
     torch.onnx.export(model,
                       args=(dummy_input_obs, dummy_input_history_obs),
-                      f="model.onnx",
+                      f=path,
                       input_names=["input_1", "input_2"],
                       output_names=["output_1"])

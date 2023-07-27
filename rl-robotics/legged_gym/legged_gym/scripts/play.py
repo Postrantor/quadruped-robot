@@ -135,8 +135,14 @@ def play(args):
         from legged_gym.utils.pytorch_to_onnx import load_model, export_onnx
         actor_critic = ppo_runner.alg.actor_critic
         actor = load_model(actor_critic, env_cfg.env, train_cfg.policy)
-        export_onnx(actor, env_cfg.env)
+        path = os.path.join(LEGGED_GYM_ROOT_DIR, 'logs', train_cfg.runner.experiment_name, 'exported')
+        if not os.path.exists(path):
+            os.mkdir(path)
+        export_onnx_file =  os.path.join(path, args.checkpoint.split(".")[0] + ".onnx")
+        print("exported onnx file path: ", export_onnx_file)
+        export_onnx(actor, env_cfg.env, export_onnx_file)
         print("ONNX export finished.")
+        exit()
 
     robot_index = 0  # which robot is used for logging
     joint_index = 1  # which joint is used for logging (0:hip,1:thigh,2:calf)
@@ -210,7 +216,7 @@ def play(args):
 
 
 if __name__ == '__main__':
-    EXPORT_POLICY = False
+    EXPORT_POLICY = True
     RECORD_FRAMES = False
     MOVE_CAMERA = False
     args = get_args()
