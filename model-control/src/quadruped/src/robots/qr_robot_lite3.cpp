@@ -22,7 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "robots/qr_robot_lite2.h"
+#include "robots/qr_robot_lite3.h"
 
 
 using std::cout;

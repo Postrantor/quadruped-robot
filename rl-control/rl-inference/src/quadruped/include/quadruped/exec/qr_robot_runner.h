@@ -33,7 +33,7 @@
 #include "robots/qr_robot_go1.h"
 #include "robots/qr_robot_a1_sim.h"
 #include "robots/qr_robot_lite2_sim.h"
-#include "robots/qr_robot_lite2.h"
+#include "robots/qr_robot_lite3.h"
 #include "robots/qr_robot_sim.h"
 
 #include "estimators/qr_state_estimator_container.h"
