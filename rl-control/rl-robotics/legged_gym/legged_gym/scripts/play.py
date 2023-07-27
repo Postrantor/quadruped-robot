@@ -132,13 +132,17 @@ def play(args):
 
     # export policy as a jit module (used to run it from C++)
     if EXPORT_POLICY:
-        from legged_gym.utils.isaacgym_utils import load_model, export_onnx
+        from legged_gym.utils.pytorch_to_onnx import load_model, export_onnx
         actor_critic = ppo_runner.alg.actor_critic
         actor = load_model(actor_critic, env_cfg.env, train_cfg.policy)
-        export_onnx(actor, env_cfg.env)
-        # path = os.path.join(LEGGED_GYM_ROOT_DIR, 'logs', train_cfg.runner.experiment_name, 'exported', 'policies')
-        # export_policy_as_jit(ppo_runner.alg.actor_critic, path)
-        # print('Exported policy as jit script to: ', path)
+        path = os.path.join(LEGGED_GYM_ROOT_DIR, 'logs', train_cfg.runner.experiment_name, 'exported')
+        if not os.path.exists(path):
+            os.mkdir(path)
+        export_onnx_file = os.path.join(path, args.checkpoint.split(".")[0] + ".onnx")
+        print("exported onnx file path: ", export_onnx_file)
+        export_onnx(actor, env_cfg.env, export_onnx_file)
+        print("ONNX export finished.")
+        exit()
 
     robot_index = 0  # which robot is used for logging
     joint_index = 1  # which joint is used for logging (0:hip,1:thigh,2:calf)
@@ -197,10 +201,7 @@ def play(args):
                     actions = policy([obs.numpy(), obs_history.numpy()])
                     actions = torch.tensor(actions[0])
                 else:
-                    # obs = torch.tensor([[0,            0,            0,    0.0217929,   -0.0324193,    -0.194732,    0.0138816,  0.000653666,    0.0101663,  -0.00335708,   0.00630824, -0.00516862,   0.0386866,     0.777694,    -1.64688,   -0.0991187,     0.771542,    -1.66605,   0.0404145,    0.870703 ,     -1.6173 ,   0.0269711,    0.737195,    -1.67571, -0.00965831,   0.0366587,    0.0372596,    0.0200464,    0.017385,   0.0302627,   -0.0172991, -0.00081559,    0.0701408, 0.000686813 ,   0.0192737,    0.0920759,    0.0386866,     0.777694,    -1.64688,   -0.0991187,     0.771542,    -1.66605,   0.0404145,    0.870703 ,     -1.6173 ,   0.0269711,    0.737195,    -1.67571,   0.0386866,     0.777694,    -1.64688,   -0.0991187,     0.771542,    -1.66605,   0.0404145,    0.870703 ,     -1.6173 ,   0.0269711,    0.737195,    -1.67571,   0.0386866,     0.777694,    -1.64688,   -0.0991187,     0.771542,    -1.66605,   0.0404145,    0.870703 ,     -1.6173 ,   0.0269711,    0.737195,    -1.67571, -0.00965831,   0.0366587,    0.0372596,    0.0200464,    0.017385,   0.0302627,   -0.0172991, -0.00081559,    0.0701408, 0.000686813 ,   0.0192737,    0.0920759,-0.00965831,   0.0366587,    0.0372596,    0.0200464,    0.017385,   0.0302627,   -0.0172991, -0.00081559,    0.0701408, 0.000686813 ,   0.0192737,    0.0920759,    0.0386866,     0.777694,    -1.64688,   -0.0991187,     0.771542,    -1.66605,   0.0404145,    0.870703 ,     -1.6173 ,   0.0269711,    0.737195,    -1.67571,   0.0386866,     0.777694,    -1.64688,   -0.0991187,     0.771542,     -1.66605,    0.0404145,     0.870703,      -1.6173,    0.0269711,     0.737195,     -1.67571,            0,            0,            0,            0,            1,           -1,           -1,            1,            0, -8.74228e-08, -8.74228e-08,            0,          1.5]+[0.0]*187], dtype=torch.float, device='cuda:0')
-                    # obs_history = obs.repeat(1, 40)
                     actions = policy(obs, obs_history)
-                    # print("actions = ", actions) # 0.3148, -0.1182,  0.1751,  0.0161, -0.3786,  0.6925,  0.8514,  0.5081, 0.4497,  1.6869, -0.1258,  0.8765,  1.3893,  0.1068,  0.5145,  0.3317
             obs_dict, rews, dones, infos = env.step(actions)
             obs, privileged_obs, obs_history = obs_dict["obs"], obs_dict["privileged_obs"], obs_dict["obs_history"]
             if RECORD_FRAMES:

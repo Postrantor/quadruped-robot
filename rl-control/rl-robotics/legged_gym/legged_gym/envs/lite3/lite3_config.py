@@ -74,7 +74,7 @@ class Lite3RoughCfg(LeggedRobotCfg):
         use_actuator_network = False
 
     class asset(LeggedRobotCfg.asset):
-        file = '{LEGGED_GYM_ROOT_DIR}/resources/robots/lite3/urdf/Lite3+foot.urdf'  # a1_unitree.urdf
+        file = '{LEGGED_GYM_ROOT_DIR}/resources/robots/lite3/urdf/Lite3+foot.urdf'
         name = "lite3"
         foot_name = "FOOT"
         shoulder_name = "shoulder"
