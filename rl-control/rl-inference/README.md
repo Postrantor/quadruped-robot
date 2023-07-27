@@ -13,7 +13,11 @@ Appropriately sized neural networks are able to be deployed on CPU, Ascend NPU o
 -  For those having Ascend NPU, `om` model is recommended. 
 1. Follow the offical [guidance](https://www.hiascend.com/document/detail/zh/canncommercial/62RC1/overview/index.html) to set up the enviroment for Atlas 200I A2 device if you have a fresh SD-card.
 2. Since Unbuntu 22 does not support ROS1 noetic via apt tool, one needs to compile it from sources. This [tutorial](https://blog.csdn.net/Drknown/article/details/128701624) introduces ROS1 installation.
-3. Download the pre-trained models into `${PROJECT_DIR}/rl-control/rl-inference/` from the URL [om model for DeepRobotics Lite3](https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Atlas%20200I%20DK%20A2/DevKit/models/23.0.RC2/lite3_133.om)
+3. Download the pre-trained models into `${PROJECT_DIR}/rl-control/rl-inference/` from the two URLs:
+    
+    [om model for Lite3](https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Atlas%20200I%20DK%20A2/DevKit/models/23.0.RC2/lite3_133.om)
+
+    [pt model for Lite3](https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Atlas%20200I%20DK%20A2/DevKit/models/23.0.RC2/lite3_133.pt)
 
 -  For those only having CPU(x86 or arm) device, the `onnx` model is runnable. You can follow this [website](https://stackoverflow.com/questions/63420533/setting-up-onnx-runtime-on-ubuntu-20-04-c-api) to install ONNX-Runtime firstly.
 

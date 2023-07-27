@@ -485,9 +485,9 @@ map<int, Matrix<float, 5, 1>> qrRaibertSwingLegController::GetAction()
             case LocomotionMode::POSITION_LOCOMOTION: {
                 flag = (gaitGenerator->legState[singleLegId] == LegState::SWING);
             } break;
-            case LocomotionMode::VELOCITY_LOCOMOTION: {
-                flag = (gaitGenerator->desiredLegState[singleLegId] == LegState::SWING);
-            } break;
+            // case LocomotionMode::VELOCITY_LOCOMOTION: {
+            //     flag = (gaitGenerator->desiredLegState[singleLegId] == LegState::SWING);
+            // } break;
             default: {
                 auto find_it = std::find(swingFootIds.begin(), swingFootIds.end(), singleLegId);
                 if (find_it != swingFootIds.end()){
@@ -500,8 +500,15 @@ map<int, Matrix<float, 5, 1>> qrRaibertSwingLegController::GetAction()
         }
 
         if (flag) {
-            // actions[it->first] << std::get<0>(posVelId), kps[it->first], std::get<1>(posVelId),kds[it->first], 0;
-            actions[it->first] << std::get<0>(posVelId), 6 /*kps[it->first]*/, std::get<1>(posVelId), 0.5 /*kds[it->first]*/, actions[it->first][4];
+            if (robot->isSim) {
+                actions[it->first] << std::get<0>(posVelId), kps[it->first], std::get<1>(posVelId),kds[it->first], 0;
+            } else {
+                float kp = 6.0;
+                if (robot->controlParams["mode"] ==  LocomotionMode::VELOCITY_LOCOMOTION) {
+                    kp = 15;
+                }
+                actions[it->first] << std::get<0>(posVelId), kp, std::get<1>(posVelId), 0.5, actions[it->first][4];
+            }
         }
     }
 

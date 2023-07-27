@@ -23,7 +23,7 @@ robot_params:
 
   links_com_pos: [[-0.0047, -0.0091, -0.0018], [-0.00523, -0.0216, -0.0273], [0.00585, 0, -0.12]] # for FL leg
 
-  body_height: 0.27
+  body_height: 0.29
 
   abad_location: [0.1745, 0.062, 0]
 
@@ -45,17 +45,18 @@ robot_params:
     # com_offset: [ -0.01, 0.003, 0.000515 ] # mpc/walk
 
   advanced_trot:
-    com_offset: [ -0.012, -0.000, 0.0] # [ -0.01, -0.03, 0 ] # simulation mpc
+    com_offset: [ -0.02, -0.000, 0.0] # [ -0.01, -0.03, 0 ] # simulation mpc
 
   hip_offset: [ [ 0.175, -0.062, 0. ],
                 [ 0.175, 0.062, 0. ],
                 [ -0.175, -0.062, 0. ],
                 [ -0.175, 0.062, 0. ] ]
-
-  default_hip_positions: [ [ 0.1745, -0.15, 0 ],
-                           [ 0.1745, 0.15, 0 ],
-                           [ -0.1745, -0.15, 0 ],
-                           [ -0.1745, 0.15, 0 ] ]
+                
+  default_hip_positions: [[ 0.1745, -0.16, 0 ],
+                          [ 0.1745, 0.16, 0 ],
+                          [ -0.1745, -0.16, 0 ],
+                          [ -0.1745, 0.16, 0 ] ]
+  
   default_standup_angle:
     ab: 0.0
     hip: 0.86 # 2.0 #0.82

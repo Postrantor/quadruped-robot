@@ -4,7 +4,7 @@
     <visual> 
       <origin rpy="1.5708 0 1.5708" xyz="-0.05 -0.5 0.08"/> 
       <geometry> 
-        <mesh filename="../meshes/TORSO.dae" /> 
+        <mesh filename="package://lite3_description/meshes/TORSO.dae" /> 
       </geometry> 
     </visual> 
     <collision> 
