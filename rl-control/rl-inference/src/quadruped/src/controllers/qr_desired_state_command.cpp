@@ -364,6 +364,8 @@ void Quadruped::qrDesiredStateCommand::Update()
                     joyCtrlState = static_cast<RC_MODE>(joyCtrlState+1);
                 } else if (joyCtrlState > RC_MODE::JOY_ADVANCED_TROT) {
                     joyCtrlState = RC_MODE::RL_TROT;  //TODO
+                } else if (joyCtrlState == RC_MODE::JOY_TROT) {
+                    joyCtrlState = RC_MODE::RL_TROT;
                 }
             }
         } else {

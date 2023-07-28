@@ -138,12 +138,12 @@ qrRobotRunner::qrRobotRunner(qrRobot* quadrupedIn, std::string& homeDir, ros::No
     // quadruped->ReceiveObservation();
     // quadruped->ReceiveObservation();
     if (quadruped->robotName == "lite3") {
-        // ((qrRobotLite2*)quadruped)->lite2Receiver.startWork();
-        // ((qrRobotLite2*)quadruped)->lite2Sender.control_get(ABLE);
-        ((qrRobotLite2*)quadruped)->lite2Sender.init();
-        ((qrRobotLite2*)quadruped)->lite2Receiver.startWork();
+        // ((qrRobotLite3*)quadruped)->lite2Receiver.startWork();
+        // ((qrRobotLite3*)quadruped)->lite2Sender.control_get(ABLE);
+        ((qrRobotLite3*)quadruped)->lite2Sender.init();
+        ((qrRobotLite3*)quadruped)->lite2Receiver.startWork();
         // lite2Sender.control_get(ABLE);
-        ((qrRobotLite2*)quadruped)->lite2Sender.robot_state_init();
+        ((qrRobotLite3*)quadruped)->lite2Sender.robot_state_init();
         long long count = 0;
     
         while (1) {

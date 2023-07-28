@@ -1,78 +1,54 @@
+import copy
 import torch
 import torch.nn as nn
+from rsl_rl.modules.actor import Actor
 
 
-class Actor(nn.Module):
-    is_recurrent = False
+class PolicyExporterLSTM(torch.nn.Module):
+    def __init__(self, actor_critic):
+        super().__init__()
+        self.actor = copy.deepcopy(actor_critic.actor)
+        self.is_recurrent = actor_critic.is_recurrent
+        self.memory = copy.deepcopy(actor_critic.memory_a.rnn)
+        self.memory.cpu()
+        self.register_buffer(
+            f'hidden_state',
+            torch.zeros(self.memory.num_layers, 1, self.memory.hidden_size))
+        self.register_buffer(
+            f'cell_state',
+            torch.zeros(self.memory.num_layers, 1, self.memory.hidden_size))
 
-    def __init__(self, num_obs,
-                 num_obs_history,
-                 num_actions,
-                 actor_hidden_dims=[256, 256, 256],
-                 adaptation_hidden_dims=[256, 32],
-                 encoder_latent_dims=18,
-                 activation='elu',
-                 **kwargs):
-        if kwargs:
-            print("Actor.__init__ got unexpected arguments, which will be ignored: " + str(
-                [key for key in kwargs.keys()]))
-        super(Actor, self).__init__()
+    def forward(self, x):
+        out, (h, c) = self.memory(x.unsqueeze(0),
+                                  (self.hidden_state, self.cell_state))
+        self.hidden_state[:] = h
+        self.cell_state[:] = c
+        return self.actor(out.squeeze(0))
 
-        activation = get_activation(activation)
+    @torch.jit.export
+    def reset_memory(self):
+        self.hidden_state[:] = 0.
+        self.cell_state[:] = 0.
 
-        # Adaptation module
-        adaptation_module_layers = []
-        adaptation_module_layers.append(nn.Linear(num_obs_history, adaptation_hidden_dims[0]))
-        adaptation_module_layers.append(activation)
-        for l in range(len(adaptation_hidden_dims)):
-            if l == len(adaptation_hidden_dims) - 1:
-                adaptation_module_layers.append(nn.Linear(adaptation_hidden_dims[l], encoder_latent_dims))
-            else:
-                adaptation_module_layers.append(nn.Linear(adaptation_hidden_dims[l], adaptation_hidden_dims[l + 1]))
-                adaptation_module_layers.append(activation)
-        self.adaptation_module = nn.Sequential(*adaptation_module_layers)
-        self.add_module(f"adaptation_module", self.adaptation_module)
-
-        latent_dim = int(torch.tensor(encoder_latent_dims))
-
-        mlp_input_dim_a = num_obs + latent_dim
-
-        # Policy
-        actor_layers = []
-        actor_layers.append(nn.Linear(mlp_input_dim_a, actor_hidden_dims[0]))
-        actor_layers.append(activation)
-        for l in range(len(actor_hidden_dims)):
-            if l == len(actor_hidden_dims) - 1:
-                actor_layers.append(nn.Linear(actor_hidden_dims[l], num_actions))
-            else:
-                actor_layers.append(nn.Linear(actor_hidden_dims[l], actor_hidden_dims[l + 1]))
-                actor_layers.append(activation)
-        self.actor = nn.Sequential(*actor_layers)
-
-    def forward(self, observations, observation_history):
-        latent = self.adaptation_module(observation_history)
-        actions_mean = self.actor(torch.cat((observations, latent), dim=-1))
-        return actions_mean
+    def export(self, path):
+        os.makedirs(path, exist_ok=True)
+        path = os.path.join(path, 'policy_lstm_1.pt')
+        self.to('cpu')
+        traced_script_module = torch.jit.script(self)
+        traced_script_module.save(path)
 
 
-def get_activation(act_name):
-    if act_name == "elu":
-        return nn.ELU()
-    elif act_name == "selu":
-        return nn.SELU()
-    elif act_name == "relu":
-        return nn.ReLU()
-    elif act_name == "crelu":
-        return nn.ReLU()
-    elif act_name == "lrelu":
-        return nn.LeakyReLU()
-    elif act_name == "tanh":
-        return nn.Tanh()
-    elif act_name == "sigmoid":
-        return nn.Sigmoid()
+def export_policy_as_jit(actor_critic, path):
+    if hasattr(actor_critic, 'memory_a'):
+        # assumes LSTM: TODO add GRU
+        exporter = PolicyExporterLSTM(actor_critic)
+        exporter.export(path)
     else:
-        print("invalid activation function!")
-        return None
+        os.makedirs(path, exist_ok=True)
+        path = os.path.join(path, 'policy_1.pt')
+        model = copy.deepcopy(actor_critic.actor).to('cpu')
+        traced_script_module = torch.jit.script(model)
+        traced_script_module.save(path)
 
 def load_model(model, env_cfg, policy_cfg):
     actor = Actor(env_cfg.num_observations,

@@ -29,11 +29,11 @@ namespace Quadruped {
 
 qrRobot::qrRobot(): timer(useRosTime)
 {
-    accFilter = qrMovingWindowFilter<float, 3>(5);
-    gyroFilter = qrMovingWindowFilter<float, 3>(5);
-    rpyFilter = qrMovingWindowFilter<float, 3>(5);
-    quatFilter = qrMovingWindowFilter<float, 4>(5);
-    motorVFilter = qrMovingWindowFilter<float, 12>(5);
+    accFilter = qrMovingWindowFilter<float, 3>(1);
+    gyroFilter = qrMovingWindowFilter<float, 3>(1);
+    rpyFilter = qrMovingWindowFilter<float, 3>(1);
+    quatFilter = qrMovingWindowFilter<float, 4>(1);
+    motorVFilter = qrMovingWindowFilter<float, 12>(1);
 }
 
 

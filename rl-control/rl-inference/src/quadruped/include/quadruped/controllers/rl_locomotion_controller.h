@@ -36,10 +36,10 @@
 namespace Quadruped {
 
 static constexpr int const& PROPRIOCEPTION_SIZE = 133; // Proprioceptive
-static constexpr int const& EXTEROCEPTION_SIZE = 0; // Exteroceptive
-static constexpr int const& OBS_SIZE = 133; // PROPRIOCEPTION_SIZE + EXTEROCEPTION_SIZE
+static constexpr int const& EXTEROCEPTION_SIZE = 187; // Exteroceptive
+static constexpr int const& OBS_SIZE = PROPRIOCEPTION_SIZE + EXTEROCEPTION_SIZE;
 static constexpr int const& HISTORY_STEPS = 40;
-static constexpr int const& HISTORY_SIZE = 5320; // 12800
+static constexpr int const& HISTORY_SIZE = HISTORY_STEPS * OBS_SIZE; // 12800, 5320
     
 class LocomotionControllerRLWrapper{
 

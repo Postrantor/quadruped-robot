@@ -31,7 +31,7 @@ using std::endl;
 
 namespace Quadruped {
 
-qrRobotLite2::qrRobotLite2(std::string configFilePath)
+qrRobotLite3::qrRobotLite3(std::string configFilePath)
 {
     baseOrientation << 1.f, 0.f, 0.f, 0.f;
     baseRollPitchYaw << 0.f, 0.f, 0.f;
@@ -169,7 +169,7 @@ qrRobotLite2::qrRobotLite2(std::string configFilePath)
 }
 
 
-void qrRobotLite2::ReceiveObservation()
+void qrRobotLite3::ReceiveObservation()
 {
     RobotState& state = lite2Receiver.get_recv();
     // lowState_lite2 = state;
@@ -248,7 +248,7 @@ void qrRobotLite2::ReceiveObservation()
 }
 
 
-void qrRobotLite2::ApplyAction(const Eigen::MatrixXf &motorCommands, MotorMode motorControlMode)
+void qrRobotLite3::ApplyAction(const Eigen::MatrixXf &motorCommands, MotorMode motorControlMode)
 {
     // std::array<float, 60> motorCommandsArray = {0};
     RobotCmd motorCommandsArray;
@@ -344,7 +344,7 @@ void qrRobotLite2::ApplyAction(const Eigen::MatrixXf &motorCommands, MotorMode m
 }
 
 
-void qrRobotLite2::ApplyAction(const std::vector<qrMotorCommand> &motorCommands, MotorMode motorControlMode)
+void qrRobotLite3::ApplyAction(const std::vector<qrMotorCommand> &motorCommands, MotorMode motorControlMode)
 {
     std::array<float, 60> motorCommandsArray = {0};
     for (int motorId = 0; motorId < NumMotor; motorId++) {
@@ -358,7 +358,7 @@ void qrRobotLite2::ApplyAction(const std::vector<qrMotorCommand> &motorCommands,
 }
 
 
-void qrRobotLite2::Step(const Eigen::MatrixXf &action, MotorMode motorControlMode)
+void qrRobotLite3::Step(const Eigen::MatrixXf &action, MotorMode motorControlMode)
 {
     // ReceiveObservation();
     ApplyAction(action, motorControlMode);
@@ -366,7 +366,7 @@ void qrRobotLite2::Step(const Eigen::MatrixXf &action, MotorMode motorControlMod
 }
 
 
-bool qrRobotLite2::BuildDynamicModel()
+bool qrRobotLite3::BuildDynamicModel()
 {
     // we assume the cheetah's body (not including rotors) can be modeled as a
     // uniformly distributed box.

@@ -317,16 +317,16 @@ void LocomotionControllerRLWrapper::RLUpdate(bool enableInference)
     }
     if (enableInference) {
         if (allowUpdateObs) {
-            CollectProprioceptiveObs(); // proprioceptiveObs
-            // total_obs << proprioceptiveObs,
-            //             exteroceptiveObs;
+            CollectProprioceptiveObs();
+            total_obs << proprioceptiveObs,
+                        exteroceptiveObs;
 
             // allowUpdateObs = false;
         }
         // MITTimer tik;
-        Inference(proprioceptiveObs); // total_obs
-        // printf("Inference TIME: %.3f [ms]\n", tik.getMs()); 
-        
+        // Inference(proprioceptiveObs);
+        Inference(total_obs);
+        // printf("Inference TIME: %.3f [ms]\n", tik.getMs());   
     }
     
     // pmtg update, not swing controllers

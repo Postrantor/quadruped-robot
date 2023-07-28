@@ -30,7 +30,6 @@
 # Copyright (c) 2023, HUAWEI TECHNOLOGIES
 
 import os
-
 currentdir = os.path.dirname(os.path.abspath(__file__))
 legged_gym_dir = os.path.dirname(os.path.dirname(currentdir))
 isaacgym_dir = os.path.join(os.path.dirname(legged_gym_dir), "isaacgym/python")
@@ -48,7 +47,6 @@ from legged_gym.utils import get_args, Logger, register
 def play(args):
     if not "real" in args.task:
         import isaacgym
-        from legged_gym.utils.isaacgym_utils import export_policy_as_jit
     from legged_gym.utils.task_registry import task_registry
     from legged_gym import LEGGED_GYM_ROOT_DIR
     import torch

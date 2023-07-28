@@ -32,17 +32,17 @@
 
 namespace Quadruped {
 
-class qrRobotLite2: public qrRobot {
+class qrRobotLite3: public qrRobot {
 
 public:
 
     /**
-     * @brief Constructor method of class qrRobotLite2.
+     * @brief Constructor method of class qrRobotLite3.
      * @param config_file_path: the path to config file.
      */
-    qrRobotLite2(std::string configFilePath);
+    qrRobotLite3(std::string configFilePath);
 
-    ~qrRobotLite2() = default;
+    ~qrRobotLite3() = default;
 
     /**
      * @see qrRobot::ReceiveObservation

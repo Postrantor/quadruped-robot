@@ -1,7 +1,7 @@
 controlFrequency: 1000 # hz
 
 # ground estimator
-filterWindowSize: 50
+filterWindowSize: 20 # 50
 
 # velocity estimator
 ## in sim
@@ -16,7 +16,7 @@ initialVariance: 0.1
 movingWindowFilterSize: 120
 
 # swing controller
-desiredHeight: 0.29 # 0.31
+desiredHeight: 0.31 # {0.29, 0.31}
 desiredSpeed: [0., 0., 0.]
 desiredTwistingSpeed: 0.
 footClearance: 0.01

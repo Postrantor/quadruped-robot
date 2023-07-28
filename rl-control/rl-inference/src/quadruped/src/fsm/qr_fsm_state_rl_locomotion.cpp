@@ -95,16 +95,17 @@ void qrFSMStateRLLocomotion<T>::Run()
      * Save the commands into FSM Data structure.
      */
     // std::cout << "iter >>>>>>>>>>>>>>>>>>>> " << iter_ << ", " << qrFSMState<T>::enableStateEstimation << std::endl;
-    locomotionControllerRLWrapper.RLUpdate(qrFSMState<T>::enableStateEstimation);
+    locomotionControllerRLWrapper.RLUpdate(count==0);
     std::vector<qrMotorCommand> hybridAction = locomotionControllerRLWrapper.GetRLAction();
     this->_data->legCmd = std::move(hybridAction);
     
     if (++count > 3) {
         count = 0;
-        qrFSMState<T>::enableStateEstimation = true;
-    } else {
-        qrFSMState<T>::enableStateEstimation = true;
+        // qrFSMState<T>::enableStateEstimation = true;
     }
+    // else {
+    //     qrFSMState<T>::enableStateEstimation = true;
+    // }
     // if (++iter_ > 30000) {
     //     throw std::logic_error("126");
     // }

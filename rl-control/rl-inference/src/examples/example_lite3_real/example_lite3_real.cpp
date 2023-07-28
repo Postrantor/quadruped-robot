@@ -43,7 +43,7 @@ int main(int argc, char **argv)
     
     std::cout << "---------ROS node init finished---------" << std::endl;
 
-    qrRobot *quadruped = new qrRobotLite2(homeDir + "config/lite3/lite3_robot.yaml");
+    qrRobot *quadruped = new qrRobotLite3(homeDir + "config/lite3/lite3_robot.yaml");
     quadruped->networkPath = mainConfig["network_path"].as<std::string>(); // todo
 
     Visualization2D& vis = quadruped->stateDataFlow.visualizer;

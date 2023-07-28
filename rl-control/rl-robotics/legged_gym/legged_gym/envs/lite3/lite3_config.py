@@ -35,7 +35,7 @@ from legged_gym.envs.base.legged_robot_config import LeggedRobotCfg, LeggedRobot
 class Lite3RoughCfg(LeggedRobotCfg):
 
     class init_state(LeggedRobotCfg.init_state):
-        pos = [0.0, 0.0, 0.4]  # x,y,z [m]
+        pos = [0.0, 0.0, 0.38]  # x,y,z [m]
         default_joint_angles = { # = target angles [rad] when action = 0.0
             'FL_HipX_joint': 0.,
             'FR_HipX_joint': 0.,
@@ -55,7 +55,7 @@ class Lite3RoughCfg(LeggedRobotCfg):
 
     class env(LeggedRobotCfg.env):
         num_envs = 4096
-        num_observations = 320
+        num_observations = 320  # {133, 320}
         num_privileged_obs = 54  # if not None a priviledge_obs_buf will be returned by step() (critic obs for assymetric training). None is returned otherwise
         num_observation_history = 40
         episode_length_s = 20  # episode length in seconds
@@ -64,7 +64,7 @@ class Lite3RoughCfg(LeggedRobotCfg):
     class control(LeggedRobotCfg.control):
         # PD Drive parameters:
         control_type = 'P'
-        stiffness = {'joint': 20.0}  # 27 20 17, # [N*m/rad]
+        stiffness = {'joint': 20.0}  # 27 20 17 # [N*m/rad]
         damping = {'joint': 0.7}  # 1.0 0.7 [N*m*s/rad]
         # action scale: target angle = actionScale * action + defaultAngle
         action_scale = 0.25
@@ -90,10 +90,10 @@ class Lite3RoughCfg(LeggedRobotCfg):
         base_height_target = 0.31
         still_all = True
         only_positive_rewards = False
-        pitch_roll_factor = [2, 1]
+        pitch_roll_factor = [1, 1]
 
         class scales(LeggedRobotCfg.rewards.scales):
-            lin_vel_z = -5.0 # -2.0
+            lin_vel_z = -5.0  # -2.0
             ang_vel_xy = -0.5 * 2
             orientation = -5.0
             base_height = -1.0
@@ -146,7 +146,7 @@ class Lite3RoughCfg(LeggedRobotCfg):
             heading = [-3.14, 3.14]
 
     class terrain(LeggedRobotCfg.terrain):
-        mesh_type = 'plane'  # none, plane, heightfield or trimesh
+        mesh_type = 'trimesh'  # none, plane, heightfield or trimesh
         dummy_normal = True
         random_reset = True
         curriculum = True
@@ -170,7 +170,7 @@ class Lite3RoughCfg(LeggedRobotCfg):
         randomize_base_mass = True
         added_mass_range = [-3., 3.]
         randomize_com_offset = True
-        com_offset_range = [[-0.07, 0.00], [-0.03, 0.03], [-0.03, 0.03]]
+        com_offset_range = [[-0.05, 0.01], [-0.03, 0.03], [-0.03, 0.03]]
         randomize_motor_strength = True
         motor_strength_range = [0.8, 1.2]
         randomize_Kp_factor = True
