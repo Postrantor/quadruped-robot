@@ -1,55 +1,68 @@
-# legged-ego-planner
+# Overview
 
-## Introduction
-This is a modified version of ego-planner for legged robot, which is a lightweight gradient-based local planner without ESDF construction. It significantly reduces computation time compared to some state-of-the-art methods.
-<p align="center">
-  <img src="src/docs/tracking.gif" width="800" />
-</p>
+This repository implements local obstacle avoidance and navigation tasks for quadruped robots based on traditional QP controllers and Ego-planner.
 
-## Software architecture
-This repository consists of below directories:
-- ego_planner: The modified version of ego-planner for legged robot.
-- legged_real: The path following node which publish the velocity commands for real robot.
+![1690627750459](image/README/overview.png)
 
+# Install
 
-## Prepare environment 
-For environment preparation, please refer to [EGO-Planner](https://github.com/ZJU-FAST-Lab/ego-planner) to install related dependencies. Then compile the workspace.
+```bash
+sudo apt install libyaml-cpp-dev
+sudo apt install libeigen3-dev
+sudo apt install liblcm-dev
+sudo apt install libglm-dev
+sudo apt-get install libarmadillo-dev
+
+sudo apt-get install ros-noetic-controller-interface  ros-noetic-gazebo-ros-control ros-noetic-joint-state-controller ros-noetic-effort-controllers ros-noetic-joint-trajectory-controller
 ```
+
+# Build
+
+```bash
+git clone  https://gitee.com/HUAWEI-ASCEND/quadruped-robot.git
 cd legged-ego-planner
 catkin_make
 ```
 
-
 # Usage
 
-### View the results in rviz
-- Download the [rosbag](https://ascend-devkit-tool.obs.cn-south-1.myhuaweicloud.com/CANN/tracking.bag) for test.
-    
-- Launch the planner and play the rosbag. 
-```
+Terminal 1: Start gazebo, load simulation environment and robot
+
+```bash
 source devel/setup.bash
-roslaunch ego_planner run_in_exp.launch
-roslaunch ego_planner rviz.launch
-rosbag play tracking.bag
+roslaunch unitree_gazebo normal.launch
 ```
 
-### Run on real legged robot
-For real robot deployment, there are some other modules needed.
-* Point cloud or depth image from lidar or depth camera need to be published to construct the grid map.
-* An odometry or localization module is needed to provide the pose of the robot.
+Terminal 2: Start robot control
 
-Please check the `odom_topic` `cloud_topic` `depth_topic` in `run_in_exp.launch` for more details.
-```
+```bash
 source devel/setup.bash
-roslaunch ego_planner run_in_exp.launch
-roslaunch ego_planner rviz.launch
-roslaunch legged_real trace.launch
+cd  src/robots/src/ascend-quadruped-cpp
+rosrun ascend_quadruped_cpp a1_sim  2>/dev/null
 ```
 
-## Acknowledgements
+Terminal 3: Start ego-planner
+
+```bash
+source devel/setup.bash
+roslaunch ego_planner run_in_sim.launch 2>/dev/null
+```
+
+Terminal 4: Start Rviz
+
+```bash
+source devel/setup.bash
+roslaunch ego_planner  rviz.launch 2>/dev/null
+```
+
+Click '2D Nav Goal' in rviz, give the target point, and then the robot will move along the planned local trajectory to the target point
+
+# Acknowledgements
+
 - This work extends [EGO-Planner](https://github.com/ZJU-FAST-Lab/ego-planner) to legged robot navigation.
 
-## Communication
+# Communication
+
 If you have any question, please join our discussion group by scanning the following wechat QR code.
 
-<img src="src/docs/QR-code.jpg" alt="QR" title="" width="200" align=center />
+<img src="image/QR-code.jpg" alt="QR" title="" width="200" align=center />
