@@ -29,7 +29,8 @@ pip3 install transformations matplotlib gym tensorboard cupy
 5. Download the pre-trained models into `${PROJECT_DIR}/legged_gym/logs/[rough_a1 | rough_lite3]/pre-trained` from the following URLs. 
 - [Ascend offline model (*.om) for Unitree A1](https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Atlas%20200I%20DK%20A2/DevKit/models/23.0.RC1/cann/A1_deploy.om)
 - [Pytorch model for Unitree A1](https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Atlas%20200I%20DK%20A2/DevKit/models/23.0.RC1/cann/A1.pt)
-- [Pytorch model for DeepRobotics Lite3](https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Atlas%20200I%20DK%20A2/DevKit/models/23.0.RC1/cann/Lite3.pt)
+- [Ascend offline model (*.om) for Lite3](https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Atlas%20200I%20DK%20A2/DevKit/models/23.0.RC2/lite3_320.om)
+- [Pytorch model for DeepRobotics Lite3](https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Atlas%20200I%20DK%20A2/DevKit/models/23.0.RC2/lite3_320.pt)
 
 
 6. Compile the robot SDK of Unitree A1 and DeepRobotics Lite3 for real robot deployment.

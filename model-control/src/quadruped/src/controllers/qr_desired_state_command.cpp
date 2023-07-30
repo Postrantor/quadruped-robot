@@ -55,24 +55,24 @@ int Quadruped::qrDesiredStateCommand::RecvSocket()
     while(1) {
         sockaddr_in remoteAddr;
         socklen_t remoteAddrLen = sizeof(remoteAddr);
-        memset(data_buffer, 0, sizeof(data_buffer));
-        int recvLen = recvfrom(sock, data_buffer, sizeof(data_buffer), 0, (sockaddr*)&remoteAddr, &remoteAddrLen);
+        memset(joyData.data_buffer, 0, sizeof(joyData.data_buffer));
+        int recvLen = recvfrom(sock, joyData.data_buffer, sizeof(joyData.data_buffer), 0, (sockaddr*)&remoteAddr, &remoteAddrLen);
         
         // 输出接收到的数据
-        // std::cout << "Received " << recvLen << " bytes from " << inet_ntoa(remoteAddr.sin_addr) << ":" << ntohs(remoteAddr.sin_port) << std::endl;
         for (uint8_t i=0; i<3; ++i) {
-            socket_value[i] = fourCharToInt(data_buffer[i*4+3], data_buffer[i*4+2], data_buffer[i*4+1], data_buffer[i*4]);
+            socket_value[i] = fourCharToInt(joyData.data_buffer[i*4+3], joyData.data_buffer[i*4+2], joyData.data_buffer[i*4+1], joyData.data_buffer[i*4]);
             // printf("original data: --%02x--%02x--%02x--%02x--\n", data_buffer[i*4+3], data_buffer[i*4+2], data_buffer[i*4+1], data_buffer[i*4]);
             // std::cout << socket_value[i] << std::endl;
         }
-     
+        // printf("original data: --%02x--%02x--%02x--%02x--\n", joyData.data_buffer[0*4+3], joyData.data_buffer[0*4+2], joyData.data_buffer[0*4+1], joyData.data_buffer[0*4]);     
         bool flag = (socket_value[0] == 0x21010300 || 
                     socket_value[0] == 0x21010130 || 
                     socket_value[0] == 0x21010131 || 
                     socket_value[0] == 0x21010135 || 
                     socket_value[0] == 0x21010201 || 
                     socket_value[0] == 0x21010307 ||
-                    socket_value[0] == 0x21010402
+                    socket_value[0] == 0x21010402 ||
+                    socket_value[0] == 0x21010406
                 );
         if (flag) {
             joyCmdVz = 0;
@@ -95,19 +95,24 @@ int Quadruped::qrDesiredStateCommand::RecvSocket()
             if (joyCtrlOnRequest || rosCmdRequest) {
                 /* X key. */
                 if (socket_value[0] == 0x21010300) {
-                    ROS_INFO("You have change the gait !!!\n");
-                    if (movementMode == 0) {
-                        movementMode = 1;
+                    if (movementMode > 0) {
+                        movementMode = 2;
+                        ROS_INFO("You have change the gait !!!\n");
+                        joyCtrlStateChangeRequest = true;
+                    } else {
+                        ROS_INFO("dog should be in torque stance mode first !!!\n");
                     }
-                    joyCtrlStateChangeRequest = true;
                 }
 
                 /* User control the robot locomotion direction and velocity. */
-                if (joyCtrlOnRequest) {
+                if (joyCtrlOnRequest && movementMode > 0) {
                     /* Right joy stick up/down. */
+                    // printf("original data: --%02x--%02x--%02x--%02x--\n", joyData.data_buffer[0*4+3], joyData.data_buffer[0*4+2], joyData.data_buffer[0*4+1], joyData.data_buffer[0*4]);
+                    socket_value[1] = joyData.value[1];
+                    // std::cout << "value = " << socket_value[1] << std::endl;
                     if (socket_value[0] == 0x21010130) {
-                        std::cout << "vx = " << socket_value[1]/32768.0 << std::endl;
                         joyCmdVx = socket_value[1]/32768.0 * MAX_VELX;
+                        std::cout << "vx = " << joyCmdVx << std::endl;
                     } else{
                         // joyCmdVx = 0;
                         ;
@@ -115,16 +120,16 @@ int Quadruped::qrDesiredStateCommand::RecvSocket()
 
                     /* Right joy stick horizontal movement. */
                     if (socket_value[0] == 0x21010131) {
-                        std::cout << "vy = " << socket_value[1]/32768.0 << std::endl;
                         joyCmdVy = -socket_value[1]/32768.0 * MAX_VELY;
+                        std::cout << "vy = " << joyCmdVy << std::endl;
                     } else {
                         // joyCmdVy = 0;
                         ;
                     }
                     /* Left joy stick horizontal movement. */
                     if (socket_value[0] == 0x21010135) {
-                        std::cout << "w = " << socket_value[1]/32768.0 << std::endl;
                         joyCmdYawRate = -socket_value[1]/32768.0 * MAX_YAWRATE;
+                        std::cout << "w = " << joyCmdYawRate << std::endl;
                     } else {
                         // joyCmdYawRate = 0;
                         ;
@@ -145,15 +150,18 @@ int Quadruped::qrDesiredStateCommand::RecvSocket()
                 /* If B key is pressed, the quadruped will stop troting and stand by MPC controller. */
                 if (socket_value[0] == 0x21010201) {
                     ROS_INFO("You have pressed the stop button!!!!\n");
-                    if (movementMode == 1) {
-                        movementMode = 0;
-                        joyCtrlStateChangeRequest = true;
-                    } else if (movementMode == 0) {
-                        if (bodyUp >= 0) {
-                            // movementMode = 1;
-                            bodyUp = 0;
+                    if (movementMode == 0) {
+                        if (bodyUp > 0) {
+                            movementMode = 1;
                             joyCtrlStateChangeRequest = true;
+                        } else {
+                            ROS_INFO("dog should stand up first!!!!\n");
                         }
+                    } else if (movementMode == 2) {
+                        movementMode = 1;
+                        joyCtrlStateChangeRequest = true;
+                    } else {
+                        ROS_INFO("dog already in torque stance mode!!!!\n");
                     }
                 }
 
@@ -161,26 +169,32 @@ int Quadruped::qrDesiredStateCommand::RecvSocket()
                 * no commands will be sent to quadruped and it will lie on the ground.
                 */
                 if (socket_value[0] == 0x21010307) {
-                    ROS_INFO("You have pressed the exit button!!!!\n");
                     if (movementMode == 0 && bodyUp <= 0) {
+                        ROS_INFO("You have pressed the exit button!!!!\n");
                         joyCmdExit = true;
                         joyCtrlStateChangeRequest = true;
                         joyCtrlOnRequest = false;
+                    } else {
+                        ROS_INFO("Exit button should work in sit down mode!!\n");
                     }
                 }
 
                 /* If Rb key is pressed when quadruped is standing by MPC,
                 * quadruped will switch to position mode and can sit down and stand up with position mode.
                 */
-                if (socket_value[0] == 0x21010402) {
+                if (socket_value[0] == 0x21010402 || socket_value[0] == 0x21010406) {
                     ROS_INFO("You have pressed the up/down button!!!!\n");
                     if (movementMode == 0) {
                         if (bodyUp==0) {
                             bodyUp = 1;
                         } else {
-                            bodyUp = -bodyUp;
+                            bodyUp = bodyUp - 1;
                         }
                         joyCtrlStateChangeRequest = true;
+                    } else {
+                        movementMode = 0;
+                        joyCtrlStateChangeRequest = true;
+                        bodyUp = 1;
                     }
                 }
             }
@@ -211,7 +225,7 @@ Quadruped::qrDesiredStateCommand::qrDesiredStateCommand(ros::NodeHandle &nhIn, q
     legJointdq.setZero();
 
     joyCtrlState = RC_MODE::BODY_UP;
-    prevJoyCtrlState = RC_MODE::JOY_STAND;
+    prevJoyCtrlState = RC_MODE::BODY_DOWN;
 
     joycmdBodyHeight = robotIn->bodyHeight;
     isSim = robotIn->isSim;
@@ -222,14 +236,14 @@ Quadruped::qrDesiredStateCommand::qrDesiredStateCommand(ros::NodeHandle &nhIn, q
     joyCtrlOnRequest = true;
     rosCmdRequest = !joyCtrlOnRequest;
     joyCmdExit = false;
-    bodyUp = 0;
+    bodyUp = 1;
     movementMode = 0;
 
     gamepadCommandSub = nh.subscribe(topicName, 10, &qrDesiredStateCommand::JoyCallback, this);
 
     printf("[Desired State Command] init finish...\n");
         
-    memset(data_buffer, 0, sizeof(data_buffer));
+    memset(joyData.data_buffer, 0, sizeof(joyData.data_buffer));
     
     // 创建新线程并运行ReceiveData函数
     // t = std::thread(Quadruped::RecvSocket);
@@ -260,15 +274,17 @@ void Quadruped::qrDesiredStateCommand::JoyCallback(const sensor_msgs::Joy::Const
     if (joyCtrlOnRequest || rosCmdRequest) {
         /* X key. */
         if (joy_msg->buttons[2] == 1) {
-            ROS_INFO("You have change the gait !!!\n");
-            if (movementMode == 0) {
-                movementMode = 1;
+            if (movementMode > 0) {
+                movementMode = 2;
+                ROS_INFO("You have change the gait !!!\n");
+                joyCtrlStateChangeRequest = true;
+            } else {
+                ROS_INFO("dog should be in torque stance mode first !!!\n");
             }
-            joyCtrlStateChangeRequest = true;
         }
 
         /* User control the robot locomotion direction and velocity. */
-        if (joyCtrlOnRequest) {
+        if (joyCtrlOnRequest && movementMode > 0) {
             /* Right joy stick up/down. */
             joyCmdVx = joy_msg->axes[4] * MAX_VELX;
 
@@ -294,15 +310,18 @@ void Quadruped::qrDesiredStateCommand::JoyCallback(const sensor_msgs::Joy::Const
         /* If B key is pressed, the quadruped will stop troting and stand by MPC controller. */
         if (joy_msg->buttons[1] == 1) {
             ROS_INFO("You have pressed the stop button!!!!\n");
-            if (movementMode == 1) {
-                movementMode = 0;
-                joyCtrlStateChangeRequest = true;
-            } else if (movementMode == 0) {
-                if (bodyUp >= 0) {
-                    // movementMode = 1;
-                    bodyUp = 0;
+            if (movementMode == 0) {
+                if (bodyUp > 0) {
+                    movementMode = 1;
                     joyCtrlStateChangeRequest = true;
+                } else {
+                    ROS_INFO("dog should stand up first!!!!\n");
                 }
+            } else if (movementMode == 2) {
+                movementMode = 1;
+                joyCtrlStateChangeRequest = true;
+            } else {
+                ROS_INFO("dog already in torque stance mode!!!!\n");
             }
         }
 
@@ -310,11 +329,13 @@ void Quadruped::qrDesiredStateCommand::JoyCallback(const sensor_msgs::Joy::Const
          * no commands will be sent to quadruped and it will lie on the ground.
          */
         if (joy_msg->buttons[3] == 1) {
-            ROS_INFO("You have pressed the exit button!!!!\n");
             if (movementMode == 0 && bodyUp <= 0) {
+                ROS_INFO("You have pressed the exit button!!!!\n");
                 joyCmdExit = true;
                 joyCtrlStateChangeRequest = true;
                 joyCtrlOnRequest = false;
+            } else {
+                ROS_INFO("Exit button should work in sit down mode!!\n");
             }
         }
 
@@ -327,9 +348,13 @@ void Quadruped::qrDesiredStateCommand::JoyCallback(const sensor_msgs::Joy::Const
                 if (bodyUp==0) {
                     bodyUp = 1;
                 } else {
-                    bodyUp = -bodyUp;
+                    bodyUp = bodyUp - 1;
                 }
                 joyCtrlStateChangeRequest = true;
+            } else {
+                movementMode = 0;
+                joyCtrlStateChangeRequest = true;
+                bodyUp = 1;
             }
         }
     }
@@ -349,14 +374,12 @@ void Quadruped::qrDesiredStateCommand::Update()
 
         std::cout << "joyCtrlState before = " << (int)joyCtrlState <<", movementMode = " << movementMode<< std::endl;
 
-        if (movementMode > 0) {
+        if (movementMode == 1) {
+            joyCtrlState = RC_MODE::JOY_STAND;
+        } else if (movementMode == 2) {
             /* When the quadruped is troting, check state to stop or convert between advanced trot and FB trot. */
-            if (joyCtrlState == RC_MODE::HARD_CODE ||  joyCtrlState == RC_MODE::BODY_UP) {
-                joyCtrlState = RC_MODE::JOY_STAND;
-                std::cout << "joyCtrlState = " << (int)joyCtrlState << std::endl;
-
-            } else if (joyCtrlState == RC_MODE::JOY_STAND) {
-                joyCtrlState = RC_MODE::JOY_ADVANCED_TROT;
+            if (joyCtrlState == RC_MODE::HARD_CODE) {
+                joyCtrlState = RC_MODE::JOY_TROT;
             } else {
                 joyCtrlState = static_cast<RC_MODE>((joyCtrlState+1) %
                                             (RC_MODE::RC_MODE_ITEMS+1));
@@ -374,13 +397,14 @@ void Quadruped::qrDesiredStateCommand::Update()
             /* If joy commands to exit, then the quadruped sits down, stands up or keep standing/change to MPC standing. */
             if (joyCmdExit) {
                 joyCtrlState = RC_MODE::EXIT;
-            } else if(bodyUp == -1) {
+            } else if(bodyUp == 0) {
                 joyCtrlState = RC_MODE::BODY_DOWN;
             } else  if (bodyUp == 1){
                 joyCtrlState = RC_MODE::BODY_UP;
             } else {
+                throw std::runtime_error("400");
                 /* corresponed to LOCOMOTON_STAND in FSM. */
-                joyCtrlState = RC_MODE::JOY_STAND;
+                // joyCtrlState = RC_MODE::JOY_STAND;
             }
         }
     }

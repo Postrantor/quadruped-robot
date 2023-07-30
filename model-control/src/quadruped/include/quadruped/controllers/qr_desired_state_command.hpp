@@ -41,6 +41,11 @@
 
 
 namespace Quadruped {
+union JOYData
+{
+    int value[3];
+    char data_buffer[12];
+};
 
 class qrDesiredStateCommand {
 
@@ -151,9 +156,9 @@ public:
      */
     Eigen::Matrix<float, 3, 4> footTargetPositionsInWorldFrame;
 
-    char data_buffer[4*3]; // 1024
+    // char data_buffer[4*3]; // 1024
     int socket_value[3] = {0, 0, 0};
-
+    JOYData joyData;
 private:
 
     /**

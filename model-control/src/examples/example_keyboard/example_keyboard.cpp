@@ -9,13 +9,14 @@ int main(int argc, char **argv)
     qrTeleKeyboard *keyboard = new qrTeleKeyboard(nh);
     std::cout << "---------Keyboard start receving---------" << std::endl;
     std::cout << "You can use:\n"
-    "'K'             to switch control mode\n"
-    "'J'             to change the gait\n"
-    "'L'             to stop trot\n"
-    "'I'             to sit down and exit\n\n"
+    // "'k'             to enable/disable control\n"
+    "'l'             to torque-stance\n"
+    "'j'             to change the gait\n"
+    "'u'             to position-stand up/down\n"
+    "'i'             to exit after sit down\n\n"
 
-    "'W' 'A' 'S' 'D' to control the robot's movement\n"
-    "'Q' 'E'         to control the robot's rotation\n\n"
+    "'w' 'a' 's' 'd' to control the robot's movement\n"
+    "'q' 'e'         to control the robot's rotation\n\n"
 
     "'Ctrl+C'        to exit keyboard_control" << std::endl;
     std::thread keyboardTh(&qrTeleKeyboard::run, keyboard);

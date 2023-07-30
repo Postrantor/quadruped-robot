@@ -242,11 +242,11 @@ int main(int argc, char **argv)
             // exit(0);
             break;
         }
-        if (count > 80000) {
-            printf("[268]: count is %d \n", count);
-            break;
-            // exit(0);
-        }
+        // if (count > 80000) {
+        //     printf("[268]: count is %d \n", count);
+        //     break;
+        //     // exit(0);
+        // }
 
         if (quadruped->useRosTime) {
             ros::spinOnce();
