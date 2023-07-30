@@ -224,7 +224,11 @@ void cmdCallback(const ros::TimerEvent &e)
   // ------------ estimation q from traj ------------- // 
 
   control_point_state.header.frame_id = "world";
-  double yaw_estimate_from_traj = atan(vel(1)/vel(0));
+  double yaw_estimate_from_traj = 0, PI = 3.14159;
+  if(vel(0)>0 && vel(1)>0) yaw_estimate_from_traj = atan(vel(1)/(vel(0)+1e-6));
+  else if (vel(0)>0 && vel(1)<0) yaw_estimate_from_traj = atan(vel(1)/(vel(0)+1e-6));
+  else if (vel(0)<0 && vel(1)>0) yaw_estimate_from_traj = atan(vel(1)/(vel(0)+1e-6)) + PI;
+  else if (vel(0)<0 && vel(1)<0) yaw_estimate_from_traj = atan(vel(1)/(vel(0)+1e-6)) - PI;
   Eigen::Vector3d eulerAngle(yaw_estimate_from_traj,0,0);
   Eigen::AngleAxisd rollAngle(Eigen::AngleAxisd(eulerAngle(2),Eigen::Vector3d::UnitX()));
   Eigen::AngleAxisd pitchAngle(Eigen::AngleAxisd(eulerAngle(1),Eigen::Vector3d::UnitY()));

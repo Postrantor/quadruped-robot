@@ -127,7 +127,7 @@ int main(int argc, char **argv) {
                                                "RR_calf_controller"};
     startControllers(nh, "/a1_gazebo/controller_manager/switch_controller", controllerList);
 
-    ros::AsyncSpinner spinner(1); // one threads
+    ros::AsyncSpinner spinner(4); // one threads
     spinner.start();
     std::cout << "---------ROS node init finished---------" << std::endl;
 
