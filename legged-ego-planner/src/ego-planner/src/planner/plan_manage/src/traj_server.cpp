@@ -101,7 +101,7 @@ void bsplineCallback(ego_planner::BsplineConstPtr msg)
 std::pair<double, double> calculate_yaw(double t_cur, Eigen::Vector3d &pos, ros::Time &time_now, ros::Time &time_last)
 {
   constexpr double PI = 3.1415926;
-  constexpr double YAW_DOT_MAX_PER_SEC = PI*0.5;
+  constexpr double YAW_DOT_MAX_PER_SEC = PI * 0.25;
   std::pair<double, double> yaw_yawdot(0, 0);
   double yaw = 0;
   double yawdot = 0;
@@ -112,8 +112,12 @@ std::pair<double, double> calculate_yaw(double t_cur, Eigen::Vector3d &pos, ros:
   double yaw_robot = tf::getYaw(odom_Pose.orientation);
 
   double yaw_diff = yaw_control_point- yaw_robot;
+  if (yaw_diff > PI) yaw_diff = yaw_diff - 2 * PI;
+  else if (yaw_diff < -PI) yaw_diff = yaw_diff + 2 * PI;
   yaw_yawdot.first = yaw_diff;
   yaw_yawdot.second = yaw_diff/t_cur;
+  if (yaw_yawdot.second > YAW_DOT_MAX_PER_SEC) yaw_yawdot.second = YAW_DOT_MAX_PER_SEC;
+  else if (yaw_yawdot.second < -YAW_DOT_MAX_PER_SEC) yaw_yawdot.second = -YAW_DOT_MAX_PER_SEC;
 
   cout << "yaw_control_point yaw_robot yaw_diff" << yaw_control_point << " " <<yaw_robot << " " <<yaw_diff << endl;
   return yaw_yawdot;
@@ -160,7 +164,7 @@ void cmdCallback(const ros::TimerEvent &e)
   ros::Time time_now = ros::Time::now();
   // double t_cur = (time_now - start_time_).toSec();
   // double t_cur = 1.3;
-  double t_cur = 1.2;
+  double t_cur = 2;
 
   // double t_cur = 0.08;
 
@@ -225,10 +229,9 @@ void cmdCallback(const ros::TimerEvent &e)
 
   control_point_state.header.frame_id = "world";
   double yaw_estimate_from_traj = 0, PI = 3.14159;
-  if(vel(0)>0 && vel(1)>0) yaw_estimate_from_traj = atan(vel(1)/(vel(0)+1e-6));
-  else if (vel(0)>0 && vel(1)<0) yaw_estimate_from_traj = atan(vel(1)/(vel(0)+1e-6));
-  else if (vel(0)<0 && vel(1)>0) yaw_estimate_from_traj = atan(vel(1)/(vel(0)+1e-6)) + PI;
+  if (vel(0)<0 && vel(1)>0) yaw_estimate_from_traj = atan(vel(1)/(vel(0)+1e-6)) + PI;
   else if (vel(0)<0 && vel(1)<0) yaw_estimate_from_traj = atan(vel(1)/(vel(0)+1e-6)) - PI;
+  else yaw_estimate_from_traj = atan(vel(1)/(vel(0)+1e-6));
   Eigen::Vector3d eulerAngle(yaw_estimate_from_traj,0,0);
   Eigen::AngleAxisd rollAngle(Eigen::AngleAxisd(eulerAngle(2),Eigen::Vector3d::UnitX()));
   Eigen::AngleAxisd pitchAngle(Eigen::AngleAxisd(eulerAngle(1),Eigen::Vector3d::UnitY()));
