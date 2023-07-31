@@ -13,7 +13,7 @@ sudo apt install liblcm-dev
 sudo apt install libglm-dev
 sudo apt-get install libarmadillo-dev
 
-sudo apt-get install ros-noetic-controller-interface  ros-noetic-gazebo-ros-control ros-noetic-joint-state-controller ros-noetic-effort-controllers ros-noetic-joint-trajectory-controller
+sudo apt-get install ros-noetic-controller-interface  ros-noetic-gazebo-ros-control ros-noetic-joint-state-controller ros-noetic-joint-state-publisher ros-noetic-robot-state-publisher ros-noetic-controller-manager ros-noetic-effort-controllers ros-noetic-joint-trajectory-controller
 ```
 
 # Build
