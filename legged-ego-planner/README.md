@@ -30,7 +30,7 @@ Terminal 1: Start gazebo, load simulation environment and robot
 
 ```bash
 source devel/setup.bash
-roslaunch unitree_gazebo normal.launch
+taskset -c 0,1,2 roslaunch unitree_gazebo normal.launch
 ```
 
 Terminal 2: Start robot control
@@ -38,21 +38,21 @@ Terminal 2: Start robot control
 ```bash
 source devel/setup.bash
 cd  src/robots/src/ascend-quadruped-cpp
-rosrun ascend_quadruped_cpp a1_sim  2>/dev/null
+taskset -c 3,4,5 rosrun ascend_quadruped_cpp a1_sim  2>/dev/null
 ```
 
 Terminal 3: Start ego-planner
 
 ```bash
 source devel/setup.bash
-roslaunch ego_planner run_in_sim.launch 2>/dev/null
+taskset -c 6,7 roslaunch ego_planner run_in_sim.launch 2>/dev/null
 ```
 
 Terminal 4: Start Rviz
 
 ```bash
 source devel/setup.bash
-roslaunch ego_planner  rviz.launch 2>/dev/null
+taskset -c 6,7 roslaunch ego_planner  rviz.launch 2>/dev/null
 ```
 
 Click '2D Nav Goal' in rviz, give the target point, and then the robot will move along the planned local trajectory to the target point
