@@ -101,11 +101,11 @@ void RaibertSwingLegController::Update(float currentTime)
     for (int legId = 0; legId < newLegState.size(); legId++) {
         if (newLegState(legId) == LegState::SWING && newLegState(legId) != lastLegState(legId)) {
             phaseSwitchFootLocalPos.col(legId) = robot->GetFootPositionsInBaseFrame().col(legId);
-            cout << "-------------------------------------------------------------------------" << endl;
-            std::cout << "[SwingLegController::Update] LegState Change \n" << std::endl;
-            std::cout << "[SwingLegController::Update] legId: " << legId << std::endl;
-            std::cout << "[SwingLegController::Update] phaseSwitchFootLocalPos.col(legId): \n"
-                      << phaseSwitchFootLocalPos.col(legId) << std::endl;
+            // cout << "-------------------------------------------------------------------------" << endl;
+            // std::cout << "[SwingLegController::Update] LegState Change \n" << std::endl;
+            // std::cout << "[SwingLegController::Update] legId: " << legId << std::endl;
+            // std::cout << "[SwingLegController::Update] phaseSwitchFootLocalPos.col(legId): \n"
+            //           << phaseSwitchFootLocalPos.col(legId) << std::endl;
             if (robot->controlParams["mode"] == LocomotionMode::POSITION_LOCOMOTION) {
                 phaseSwitchFootGlobalPos.col(legId) = robot->GetFootPositionsInWorldFrame().col(legId);
                 std::cout << "[SwingLegController::Update] phaseSwitchFootGlobalPos.col(legId): \n"
