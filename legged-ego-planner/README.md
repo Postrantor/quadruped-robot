@@ -1,6 +1,8 @@
 # Overview
 
-This repository implements local obstacle avoidance and navigation tasks for quadruped robots based on traditional QP controllers and Ego-planner.
+This repository implements local obstacle avoidance and navigation tasks for quadruped robots based on traditional VMC controllers and Ego-planner.
+
+This branch have been tested in **ROS Noetic** under **Ubuntu 20.04**. Some users report it can run in **ROS Melodic** under **Ubuntu 18.04**. To ensure optimal performance, we recommend testing this branch in **ROS Noetic** under **Ubuntu 20.04**.
 
 ![1690627750459](image/README/overview.png)
 
@@ -21,12 +23,12 @@ sudo apt-get install ros-noetic-controller-interface  ros-noetic-gazebo-ros-cont
 ```bash
 git clone  https://gitee.com/HUAWEI-ASCEND/quadruped-robot.git
 cd legged-ego-planner
-catkin_make
+catkin_make -DCMAKE_BUILD_TYPE=Release
 ```
 
 # Usage
 
-Terminal 1: Start gazebo, load simulation environment and robot
+Terminal 1: Start gazebo, load simulation environment and robot, you can change the gazebo world by modify the arg named `wname` in `legged-ego-planner/src/robots/src/simulation/unitree_gazebo/launch/normal.launch` to other world, such as `earth`, etc.
 
 ```bash
 source devel/setup.bash
