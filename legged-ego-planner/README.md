@@ -28,7 +28,7 @@ catkin_make -DCMAKE_BUILD_TYPE=Release
 
 # Usage
 
-Terminal 1: Start gazebo, load simulation environment and robot, you can change the gazebo world by modify the arg named `wname` in `legged-ego-planner/src/robots/src/simulation/unitree_gazebo/launch/normal.launch` to other world, such as `earth`, etc.
+Terminal 1: Start gazebo, load simulation environment and robot. In order to make the system run more smoothly, it's better to modify the argument `wname` in `legged-ego-planner/src/robots/src/simulation/unitree_gazebo/launch/normal.launch` from `forest` to `earth`.
 
 ```bash
 source devel/setup.bash
