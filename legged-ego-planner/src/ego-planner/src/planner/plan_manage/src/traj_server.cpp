@@ -144,6 +144,8 @@ void cmdCallback(const ros::TimerEvent &e)
     // cout << "velocity: " << robotVelocity_BASE_frame.linear.x << "  " << robotVelocity_BASE_frame.linear.y << "  " << robotVelocity_BASE_frame.angular.z <<endl;
     return ;
   }
+  
+
   ros::Time time_now = ros::Time::now();
   // double t_cur = (time_now - start_time_).toSec();
   double t_cur = 1.3;
@@ -302,9 +304,23 @@ void cmdCallback(const ros::TimerEvent &e)
   // robotVelocity_BASE_frame.angular.y = 0;
   // robotVelocity_BASE_frame.angular.z = 0;
 
+  // if(goFlag_==-1)
+  // {
+  // cout << "no new message flag come" << endl;
+  // robotVelocity_BASE_frame.linear.x = 0;
+  // robotVelocity_BASE_frame.linear.y = 0;
+  // robotVelocity_BASE_frame.linear.z = 0;
+
+  // robotVelocity_BASE_frame.angular.x = 0;
+  // robotVelocity_BASE_frame.angular.y = 0;
+  // robotVelocity_BASE_frame.angular.z = 0;
+
+  // }
+
   cout << "velocity: " << robotVelocity_BASE_frame.linear.x << "  " << robotVelocity_BASE_frame.linear.y << "  " << robotVelocity_BASE_frame.angular.z <<endl;
 
   pos_vel_pub.publish(robotVelocity_BASE_frame);
+  // goFlag_ = -1;
 
 }
 
