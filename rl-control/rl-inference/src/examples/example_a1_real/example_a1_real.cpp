@@ -28,6 +28,8 @@
 #include "quadruped/ros/qr_control2gazebo_msg.h"
 #endif
 
+#include "quadruped/ros/qr_height_receiver.h"
+
 #include <ros/package.h>
 
 using namespace std;
@@ -69,7 +71,8 @@ int main(int argc, char **argv)
     std::cout << "---------LocomotionController Reset Finished---------" << std::endl;
     // ros module init
     // RobotOdometryEstimator *legOdom = new RobotOdometryEstimator(quadruped, nh);
-    qrCmdVelReceiver *cmdVelReceiver = new qrCmdVelReceiver(nh, privateNh);
+    // qrCmdVelReceiver *cmdVelReceiver = new qrCmdVelReceiver(nh, privateNh);
+    qrHeightReceiver *heightReceiver = new qrHeightReceiver(nh, quadruped, stateEstimators->GetGroundEstimator());
     // SLAMPoseReceiver *slamPoseReceiver = new SLAMPoseReceiver(nh, privateNh);
     // SwitchModeReceiver *switchModeReceiver = new SwitchModeReceiver(nh, privateNh);
     // ROS_INFO("ROS Modules Init Finished");
@@ -120,7 +123,7 @@ int main(int argc, char **argv)
         //ros
         // legOdom->PublishOdometry();
         // controller2gazeboMsg->PublishGazeboStateCallback();
-
+        heightReceiver->PubCallback();
         currentTime = quadruped->GetTimeSinceReset();
         avgCost += (currentTime - startTimeWall);
         // vis.datax.push_back(startTimeWall);
@@ -157,8 +160,12 @@ int main(int argc, char **argv)
 	    }
         count++;
     }
-
-    quadruped->Step(Eigen::Matrix<float, 5, 12>::Zero(), MotorMode::HYBRID_MODE);
+    
+    Eigen::Matrix<float, 5, 12> cmd = Eigen::Matrix<float, 5, 12>::Zero();
+    for (int i=0; i < 12; ++i) {
+        cmd(3, i) = 4.0f;
+    } 
+    quadruped->Step(cmd, MotorMode::HYBRID_MODE);
     if (count > 2000) {
         // for (int i=0; i < 4; ++i) {
         //     vis.sa[i].PrintStatistics();

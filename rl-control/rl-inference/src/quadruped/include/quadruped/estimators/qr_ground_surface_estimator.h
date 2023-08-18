@@ -288,7 +288,9 @@ public:
      * @brief Yaml node of the foothold planner config file.
     */
     YAML::Node footStepperConfig;
-
+    
+    DVec<float> terrainHeights;
+    int HeightPointNum = 0;
 };
 
 } // Namespace Quadruped

@@ -28,6 +28,7 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <mutex>
 #include <unordered_map>
 #include <Eigen/Dense>
 #include <yaml-cpp/yaml.h>
@@ -689,6 +690,7 @@ public:
     Eigen::Matrix<float, 12, 5> lastMotorCommands = Eigen::Matrix<float, 12, 5>::Zero();
     std::string networkPath = "";
 
+    std::mutex mapMutex_;
 };
 
 } // Namespace Quadruped

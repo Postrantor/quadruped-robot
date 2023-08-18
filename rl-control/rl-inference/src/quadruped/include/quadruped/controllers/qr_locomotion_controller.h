@@ -128,6 +128,10 @@ public:
         return posePlanner;
     }
 
+    qrStateEstimatorContainer *GetStateEstimator() {
+        return stateEstimator;
+    }
+
     /**
      * @brief get current time since reset of the robot
      * @return time since reset of the robot
@@ -189,9 +193,6 @@ public:
     float stopTick = 0;
 
 private:
-
-
-
     /**
      * @brief Pointer to StateEstimatorContainer.
      */

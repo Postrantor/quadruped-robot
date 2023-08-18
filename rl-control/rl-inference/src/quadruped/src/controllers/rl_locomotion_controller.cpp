@@ -50,12 +50,17 @@ static void *outputHostData = nullptr;
 static size_t outputDataSize = 0;
 static void *outputDeviceData = nullptr;
 
+static void *outputHostData1 = nullptr;
+static size_t outputDataSize1 = 0;
+static void *outputDeviceData1 = nullptr;
+
 static aclmdlDataset *inputDataSet;
 static aclDataBuffer *inputDataBuffer;
 static aclmdlDataset *inputDataSet1;
 static aclDataBuffer *inputDataBuffer1;
 static aclmdlDataset *outputDataSet;
 static aclDataBuffer *outputDataBuffer;
+static aclDataBuffer *outputDataBuffer1;
 static aclmdlDesc *modelDesc;
 
 void InitResource()
@@ -78,8 +83,10 @@ void CreateHostData()
     dataSize = Quadruped::OBS_SIZE * sizeof(float);
     aclError ret = aclrtMallocHost(&hostData, dataSize);
     // hostData = malloc(dataSize);
-    dataSize1 = Quadruped::HISTORY_STEPS * dataSize;
+    // dataSize1 = Quadruped::HISTORY_STEPS * dataSize;
+    dataSize1 = 128 * sizeof(float); // todo
     ret = aclrtMallocHost(&hostData1, dataSize1);
+    memset(hostData1, 0, dataSize1);
     // hostData1 = malloc(dataSize1);
 }
 
@@ -131,15 +138,22 @@ void CreateModelOutput()
     outputDataSet = aclmdlCreateDataset();
     // 获取模型输出数据需占用的内存大小，单位为Byte
     outputDataSize = aclmdlGetOutputSizeByIndex(modelDesc, 0);
+    outputDataSize1 = aclmdlGetOutputSizeByIndex(modelDesc, 1);
+
     printf("outputDataSize = %lu\n", outputDataSize);
-    if (outputDataSize == 0) {
+    printf("outputDataSize1 = %lu\n", outputDataSize1);
+    
+    if (outputDataSize == 0 || outputDataSize1 == 0) {
         throw std::runtime_error("om model is not right!");
     }
     // 申请输出内存
-    ret = aclrtMalloc(&outputDeviceData, outputDataSize, ACL_MEM_MALLOC_HUGE_FIRST);
-    
+    ret = aclrtMalloc(&outputDeviceData, outputDataSize, ACL_MEM_MALLOC_HUGE_FIRST);    
     outputDataBuffer = aclCreateDataBuffer(outputDeviceData, outputDataSize);
     ret = aclmdlAddDatasetBuffer(outputDataSet, outputDataBuffer);
+
+    ret = aclrtMalloc(&outputDeviceData1, outputDataSize1, ACL_MEM_MALLOC_HUGE_FIRST);
+    outputDataBuffer1 = aclCreateDataBuffer(outputDeviceData1, outputDataSize1);
+    ret = aclmdlAddDatasetBuffer(outputDataSet, outputDataBuffer1);
 }
 
 void ACLInference()
@@ -157,7 +171,11 @@ void ACLInference()
     if (outputHostData == nullptr) {
         ret = aclrtMallocHost(&outputHostData, outputDataSize);
     }
+    if (outputHostData1 == nullptr) {
+        ret = aclrtMallocHost(&outputHostData1, outputDataSize1);
+    }
     ret = aclrtMemcpy(outputHostData, outputDataSize, outputDeviceData, outputDataSize, ACL_MEMCPY_DEVICE_TO_HOST);
+    ret = aclrtMemcpy(hostData1, outputDataSize1, outputDeviceData1, outputDataSize1, ACL_MEMCPY_DEVICE_TO_HOST);
 }
 
 void UnloadModel()
@@ -194,6 +212,14 @@ void UnloadData()
     outputDeviceData = nullptr;
     aclDestroyDataBuffer(outputDataBuffer);
     outputDataBuffer = nullptr;
+
+    ret = aclrtFreeHost(outputHostData1);
+    outputHostData1 = nullptr;
+    ret = aclrtFree(outputDeviceData1);
+    outputDeviceData1 = nullptr;
+    aclDestroyDataBuffer(outputDataBuffer1);
+    outputDataBuffer1 = nullptr;
+
     aclmdlDestroyDataset(outputDataSet);
     outputDataSet = nullptr;
 }
@@ -244,6 +270,9 @@ LocomotionControllerRLWrapper::LocomotionControllerRLWrapper(qrLocomotionControl
     MaxClearance = trot_info["max_clearance"].as<float>();
     MaxHorizontalOffset = trot_info["max_horizontal_offset"].as<float>();
     assertm(kps.size() == 12 && kds.size() == 12, "size not 12!");
+    auto groundEstimator = locomotionController->GetStateEstimator()->GetGroundEstimator();
+    groundEstimator->terrainHeights = DVec<float>::Zero(EXTEROCEPTION_SIZE);
+    groundEstimator->HeightPointNum = EXTEROCEPTION_SIZE;
 }
 
 void LocomotionControllerRLWrapper::Reset()
@@ -318,8 +347,15 @@ void LocomotionControllerRLWrapper::RLUpdate(bool enableInference)
     if (enableInference) {
         if (allowUpdateObs) {
             CollectProprioceptiveObs();
+            auto groundEstimator = locomotionController->GetStateEstimator()->GetGroundEstimator();
+            {
+                std::lock_guard<std::mutex> lock(robot->mapMutex_);
+                exteroceptiveObs << groundEstimator->terrainHeights;
+            }
+            // exteroceptiveObs = (exteroceptiveObs - robot->bodyHeight).cwiseMin(-1).cwiseMax(1.0) * 5;
+            // pretty_print(exteroceptiveObs.data(), "height", 187);
             total_obs << proprioceptiveObs,
-                        exteroceptiveObs;
+                        exteroceptiveObs.array() - 0.f;   // base_z(28) - terrain_height(0) - target_height(28) == 0
 
             // allowUpdateObs = false;
         }
@@ -345,22 +381,23 @@ void LocomotionControllerRLWrapper::RLUpdate(bool enableInference)
 
 void LocomotionControllerRLWrapper::Inference(Eigen::Matrix<float, OBS_SIZE, 1>& obs)
 {
-    if (obs_history.empty()) {
-        Eigen::Matrix<float, HISTORY_SIZE, 1> obs_history_data = obs.replicate<HISTORY_STEPS,1>();
-        obs_history.insert(obs_history.end(), obs_history_data.data(),  obs_history_data.data() + obs_history_data.size());
-    } else {
-        auto it = obs_history.begin();
-        obs_history.erase(it, it+OBS_SIZE);
-        obs_history.insert(obs_history.end(), obs.data(), obs.data()+obs.size());
-    }
+    // if (obs_history.empty()) {
+    //     Eigen::Matrix<float, HISTORY_SIZE, 1> obs_history_data = obs.replicate<HISTORY_STEPS,1>();
+    //     obs_history.insert(obs_history.end(), obs_history_data.data(),  obs_history_data.data() + obs_history_data.size());
+    // } else {
+    //     auto it = obs_history.begin();
+    //     obs_history.erase(it, it+OBS_SIZE);
+    //     obs_history.insert(obs_history.end(), obs.data(), obs.data()+obs.size());
+    // }
     // pretty_print(obs_history.data() + 320*38, "obs_his[-2]", 320);
     // pretty_print(obs_history.data() + 320*39, "obs_his[-1]", 320);
     // std::cout << "obs_his[-2] = " << obs_history.block<1, 320>(0, 320*38) << std::endl;
     // std::cout << "obs_his[-1] = " << obs_history.block<1, 320>(0, 320*39) << std::endl;
-    
+    // pretty_print(obs.data(), "obs ", 320);
+
     #if USE_NPU
     memcpy(hostData, obs.data(), dataSize);
-    memcpy(hostData1, obs_history.data(), dataSize1);
+    // memcpy(hostData1, obs_history.data(), dataSize1);
     CopyDataFromHostToDevice();
     ACLInference();
     float* results_ = reinterpret_cast<float*>(outputHostData);
@@ -439,10 +476,11 @@ void LocomotionControllerRLWrapper::Inference(Eigen::Matrix<float, OBS_SIZE, 1>&
 
     // std::cout << "results_  = ";
     // for (int i=0; i<16; ++i) {
-    //     std::cout << " " <<  results_[i];
+    //     std::cout <<  results_[i] << ", ";
     // }
     // std::cout <<'\n';
-
+    // float* hh = reinterpret_cast<float*>(hostData1);
+    // pretty_print(hh, "hidden_out", 128);
 }
 
 void LocomotionControllerRLWrapper::CollectProprioceptiveObs()
