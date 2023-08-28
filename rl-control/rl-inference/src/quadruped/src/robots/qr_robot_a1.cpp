@@ -248,7 +248,7 @@ void qrRobotA1::ApplyAction(const std::vector<qrMotorCommand> &motorCommands, Mo
 
 void qrRobotA1::Step(const Eigen::MatrixXf &action, MotorMode motorControlMode)
 {
-    ReceiveObservation();
+    // ReceiveObservation();
     ApplyAction(action, motorControlMode);
 }
 

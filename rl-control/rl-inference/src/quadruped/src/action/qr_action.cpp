@@ -39,6 +39,7 @@ void ShinkLeg(qrRobot *robot, float totalTime, float timeStep)
     float startTime = timer.GetTimeSinceReset();
     
     for (float t = 0.0f; t < totalTime; t += timeStep) {
+        robot->ReceiveObservation();
         float blendRatio = t / totalTime;
         action = blendRatio * shrinked_motor_angles + (1 - blendRatio) * motorAnglesBeforeStandUP;
         robot->Step(action, MotorMode::POSITION_MODE);
@@ -61,8 +62,8 @@ void StandUp(qrRobot *robot, float standUpTime, float totalTime, float timeStep)
     float startTime = timer.GetTimeSinceReset();
     float endTime = startTime + totalTime;
     for (float t = startTime; t < endTime; t += timeStep) {
+        robot->ReceiveObservation();
         float blendRatio = (t - startTime) / standUpTime;
-
         if (blendRatio < 1.0f) {
             action = blendRatio * robot->standUpMotorAngles + (1 - blendRatio) * motorAnglesBeforeStandUP;
             robot->Step(action, MotorMode::POSITION_MODE);
@@ -86,6 +87,7 @@ void SitDown(qrRobot *robot, float sitDownTime, float timeStep)
     std::cout << "---------------------Sit down ---------------------" << std::endl;
 
     for (float t = startTime; t < endTime; t += timeStep) {
+        robot->ReceiveObservation();
         float blendRatio = (t - startTime) / sitDownTime;
         Eigen::Matrix<float, 12, 1> action;
         action = blendRatio * robot->sitDownMotorAngles + (1 - blendRatio) * motorAnglesBeforeSitDown;
@@ -109,6 +111,7 @@ void KeepStand(qrRobot *robot, float KeepStandTime, float timeStep)
     motorAnglesAfterKeepStand[5] = -2.4;
     Eigen::Matrix<float, 12, 1> motorAngles;
     for (float t = startTime; t < endTime; t += timeStep) {
+        robot->ReceiveObservation();
         float blendRatio = (t - startTime) / KeepStandTime;
         motorAngles = blendRatio * motorAnglesAfterKeepStand + (1 - blendRatio) * motorAnglesBeforeKeepStand;
 
@@ -152,6 +155,7 @@ void ControlFoot(qrRobot *robot, qrLocomotionController *locomotionController, f
     Visualization2D& vis = robot->stateDataFlow.visualizer;
 
     while (currentTime - startTime < walkTime) {
+        robot->ReceiveObservation();
         startTimeWall = timer.GetTimeSinceReset();
         // locomotionController->Update();
         // Move the legs in a sinusoidal curve
@@ -179,7 +183,7 @@ void ControlFoot(qrRobot *robot, qrLocomotionController *locomotionController, f
         action = 60.0f * (action - motor_angles) + 0.5f * ( des_vel- robot->GetMotorVelocities());
         action = action.cwiseMax(-10.0f).cwiseMin(10.0f);
         robot->Step(action, MotorMode::TORQUE_MODE);
-    //robot->Step(action, MotorMode::POSITION_MODE);
+        //robot->Step(action, MotorMode::POSITION_MODE);
 
         vis.datax.push_back(startTimeWall);
         vis.datay1.push_back(motor_angles[0]);
@@ -189,7 +193,7 @@ void ControlFoot(qrRobot *robot, qrLocomotionController *locomotionController, f
         //vis.datay5.push_back(action[1]);
         vis.datay6.push_back(action[2]);
         printf("t = %f, des_ang = %f, recv_ang = %f\n", startTimeWall,  action[1], motor_angles[1]);
-    // auto [hybridAction, qpSol] = locomotionController->GetAction();
+        // auto [hybridAction, qpSol] = locomotionController->GetAction();
         // robot->Step(MotorCommand::convertToMatix(hybridAction), MotorMode::HYBRID_MODE);
         currentTime = timer.GetTimeSinceReset();
         total_time += currentTime - startTimeWall;

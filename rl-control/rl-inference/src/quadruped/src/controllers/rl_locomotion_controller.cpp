@@ -681,7 +681,7 @@ void LocomotionControllerRLWrapper::PMTGStep()
     // Vec4<float> swing_phi = locomotionController->gaitGenerator->normalizedPhase;  // [0,1)
     Vec4<float> swing_phi = (phi + deltaPhi) / M_2PI;  // [0, 1)
     swing_phi = swing_phi.unaryExpr([](const float x) { return fmod(x, 1.0f);});
-    std::cout << swing_phi.transpose() << std::endl;
+    // std::cout << swing_phi.transpose() << std::endl;
     float dutyFactor = locomotionController->gaitGenerator->dutyFactor[0];
     is_swing = (swing_phi.array() >= dutyFactor);
     swing_phi = (swing_phi.array() - dutyFactor) / (1.0f - dutyFactor);

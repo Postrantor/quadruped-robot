@@ -112,7 +112,7 @@ qrRobotRunner::qrRobotRunner(qrRobot* quadrupedIn, std::string& homeDir, ros::No
     desiredStateCommand->b_fixedCommand = (twistMode > 0);
     quadruped->timeStep = 1.0 / userParameters.controlFrequency;
     
-    quadruped->ReceiveObservation();
+    // quadruped->ReceiveObservation();
     // quadruped->ReceiveObservation();
     // quadruped->ReceiveObservation();
     // if (quadruped->robotName == "lite3") {
@@ -174,6 +174,7 @@ qrRobotRunner::qrRobotRunner(qrRobot* quadrupedIn, std::string& homeDir, ros::No
 
 bool qrRobotRunner::Update()
 {
+    quadruped->ReceiveObservation();
     // printf("enableStateEstimation = %d\n", controlFSM->currentState->enableStateEstimation);
     if (controlFSM->currentState->enableStateEstimation) {
 

@@ -54,8 +54,6 @@ int main(int argc, char **argv)
     // vis.SetLabelNames({"acc_x", "acc_y", "vx", "vy","yaw_rate"});
     vis.SetLabelNames({"FR0", "FR1", "FR2", "cmd_FR0","cmd_FR1", "cmd_FR2"});
 
-    std::cout << "BaseOrientation:\n" << quadruped->GetBaseOrientation().transpose() << std::endl;
-
     qrRobotRunner robotRunner(quadruped, homeDir, nh);
 
     ros::Rate loop_rate1(1000);
@@ -89,9 +87,9 @@ int main(int argc, char **argv)
     float desiredTwistingSpeed = 0;
 
     // Action::SitDown(quadruped, 3, 0.001); 
-    Action::StandUp(quadruped, 3.f, 5.f, 0.001);
-    // ((RobotLite2*)quadruped)->lite3Sender.control_get(ABLE);
+    // Action::StandUp(quadruped, 3.f, 5.f, 0.001);
     std::cout << quadruped->GetBaseRollPitchYaw() << std::endl;
+    
     while (ros::ok() && currentTime - startTime < MAX_TIME_SECONDS) {
         startTimeWall = quadruped->GetTimeSinceReset();
         // switchMode = switchModeReceiver->GetSwitchMode();
