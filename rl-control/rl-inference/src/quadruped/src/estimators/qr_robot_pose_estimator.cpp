@@ -139,30 +139,30 @@ void qrRobotPoseEstimator::ComputePose(float deltaTime)
     const Vec3<float> &estimatedVelocity = velocityEstimator->GetEstimatedVelocity();
     const Vec3<float> &baseRollPitchYawRate = velocityEstimator->GetEstimatedAngularVelocity();
     const Vec3<float> &baseRollPitchYaw = robot->GetBaseRollPitchYaw();
-    float vX = estimatedVelocity[0];
-    float vY = estimatedVelocity[1];
-    float vZ = estimatedVelocity[2];
-    float vTheta = baseRollPitchYawRate[2];
-    float x = estimatedPose[0];
-    float y = estimatedPose[1];
-    float theta = estimatedPose[5];
+    double vX = estimatedVelocity[0];
+    double vY = estimatedVelocity[1];
+    double vZ = estimatedVelocity[2];
+    double vTheta = baseRollPitchYawRate[2];
+    double x = estimatedPose[0];
+    double y = estimatedPose[1];
+    double theta = estimatedPose[5];
      /* compute odometry in a typical way given the velocities of the robot */
-    float deltaT = deltaTime; //(currentTime - lastTime).toSec();
-    float deltaX = (vX * cos(theta) - vY * sin(theta)) * deltaT;
-    float deltaY = (vX * sin(theta) + vY * cos(theta)) * deltaT;
-    float deltaTheta = vTheta * deltaT;
+    double deltaT = deltaTime; //(currentTime - lastTime).toSec();
+    double deltaX = (vX * cos(theta) - vY * sin(theta)) * deltaT;
+    double deltaY = (vX * sin(theta) + vY * cos(theta)) * deltaT;
+    double deltaTheta = vTheta * deltaT;
 
     x += deltaX;// * 1.1f; // sensor error, 1.1 is empirical factor
     y += deltaY;// * 1.1f;
     robot->absoluteHight += vZ*deltaT;
     theta += deltaTheta;
     /* update robot position */
-    estimatedPose[0] = x;
-    estimatedPose[1] = y;
-    estimatedPose[5] = theta;
+    estimatedPose[0] = float(x);
+    estimatedPose[1] = float(y);
+    estimatedPose[5] = float(theta);
 
-    robot->basePosition[0] = x;
-    robot->basePosition[1] = y;
+    robot->basePosition[0] = float(x);
+    robot->basePosition[1] = float(y);
 }
 
 } // Namespace Quadruped

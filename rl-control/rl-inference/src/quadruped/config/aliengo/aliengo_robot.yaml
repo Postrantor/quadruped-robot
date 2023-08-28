@@ -21,9 +21,9 @@ robot_params:
                 #-0.022191 -0.015144 -1.5e-05
                 # -0.005607 0.003877 -0.048199
                 # 0.002781 6.3e-05 -0.142518
-  body_height: 0.37
+  body_height: 0.40 # 0.37
   abad_location: [0.2399, 0.015, 0]
-  hip_l: 0.083
+  hip_l: 0.09 # 0.083
   upper_l: 0.25
   lower_l: 0.25
 
@@ -39,30 +39,31 @@ robot_params:
     # com_offset: [ 0.0, 0.00195, 0.000515 ] # yh-mpc
     # com_offset: [ -0.01, 0., 0. ]
     com_offset: [ 0.02, -0.005, 0.03 ] # have a arm
+  rl_trot:
+    com_offset: [ -0.0, 0.00, 0.00]
   
-  hip_offset: [ [ 0.2399, -0.051, 0. ],
-                [ 0.2399, 0.051, 0. ],
-                [ -0.2399, -0.051, 0. ],
-                [ -0.2399, 0.051, 0. ] ]
-  default_hip_positions: [ [ 0.24, -0.135, 0 ],
-                           [ 0.24, 0.135, 0 ],
-                           [ -0.25, -0.135, 0 ],
-                           [ -0.25, 0.135, 0 ] ]
+  # hip_offset: [ [ 0.2399, -0.051, 0. ],
+  #               [ 0.2399, 0.051, 0. ],
+  #               [ -0.2399, -0.051, 0. ],
+  #               [ -0.2399, 0.051, 0. ] ]
   # default_hip_positions: [ [ 0.24, -0.135, 0 ],
   #                          [ 0.24, 0.135, 0 ],
-  #                          [ -0.24, -0.135, 0 ],
-  #                          [ -0.24, 0.135, 0 ] ]
-  
+  #                          [ -0.25, -0.135, 0 ],
+  #                          [ -0.25, 0.135, 0 ] ]
+  hip_offset: [ [ 0.24, -0.047, 0. ],
+                [ 0.24, 0.047, 0. ],
+                [ -0.24, -0.047, 0. ],
+                [ -0.24, 0.047, 0. ] ]
+  default_hip_positions: [ [ 0.24, -0.14, 0 ],
+                           [ 0.24, 0.14, 0 ],
+                           [ -0.24, -0.14, 0 ],
+                           [ -0.24, 0.14, 0 ] ]
+
   default_standup_angle:
     ab: 0
     hip: 0.9
     knee: -1.8
 
-  # default_sitdown_angle:
-  #   ab: -0.167136
-  #   hip: 0.934969
-  #   knee: -2.54468
-  
   default_sitdown_angle:
     ab: -0.
     hip: 1.2
@@ -74,13 +75,6 @@ motor_params:
   joint_directions: [ 1,1,1, 1,1,1, 1,1,1, 1,1,1 ]
   joint_offsets: [ 0,0,0, 0,0,0, 0,0,0, 0,0,0 ]
   stand_angle: [ 0,0.67,-1.25 ]
-
-  # abad_p: 140.0
-  # abad_d: 1.0
-  # hip_p: 150.0
-  # hip_d: 2.0
-  # knee_p: 150.0
-  # knee_d: 2.0
 
   
   abad_p: 200.0
@@ -95,5 +89,6 @@ controller_params:
   # mode: 1 # POS_MODE
   # mode: 2 # WALK_LOCOMOTION
   mode: 3 # ADVANCED_TROT
+  # mode: 4 # RL_TROT
 
 is_sim: false

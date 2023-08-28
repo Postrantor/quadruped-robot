@@ -38,7 +38,7 @@ qrHeightReceiver::qrHeightReceiver(ros::NodeHandle &nhIn, qrRobot *robotIn, qrGr
 
     ROS_INFO("terrain height topic: %s", heightTopic.c_str());
     heightSub = nh.subscribe(heightTopic, 2, &qrHeightReceiver::HeightCallback, this);
-    rpyPub = nh.advertise<std_msgs::Float32MultiArray>("/rpy_pub", 10);
+    rpyPub = nh.advertise<std_msgs::Float32MultiArray>("/rpy_topic", 10);
 }
 
 
@@ -52,7 +52,7 @@ void qrHeightReceiver::HeightCallback(const std_msgs::Float32MultiArray::ConstPt
     }
     // std::cout << surfaceEstimator->terrainHeights[0] << std::endl;
     // terrainHeights = Eigen::Map<Eigen::Matrix<float, 187, 1>>(input->data);
-    ROS_INFO_STREAM("[HeightCallback] received height samples");
+    // ROS_INFO_STREAM("[HeightCallback] received height samples");
 }
 
 void qrHeightReceiver::PubCallback()

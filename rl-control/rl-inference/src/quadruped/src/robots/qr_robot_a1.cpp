@@ -128,10 +128,13 @@ qrRobotA1::qrRobotA1(std::string configFilePath)
     ResetTimer();
     lastResetTime = GetTimeSinceReset();
     initComplete = true;
-
-    lowState = robotInterface.ReceiveObservation();
-    yawOffset = lowState.imu.rpy[2];
-
+    yawOffset = 0;
+    int i = 0;
+    while (abs(yawOffset) < 0.0001) {
+        lowState = robotInterface.ReceiveObservation();
+        yawOffset = lowState.imu.rpy[2];
+        if ( ++i > 100) exit(0);
+    }
     std::cout << "yawOffset: " << yawOffset << std::endl;
     std::cout << "-------RobotA1 init Complete-------" << std::endl;
 }
@@ -180,7 +183,7 @@ void qrRobotA1::ReceiveObservation()
     footForce << force[0], force[1], force[2], force[3];
     for (int footId = 0; footId < NumLeg; footId++) {
         // 20 is contact threshold
-        if (footForce[footId] >= 15) { // 20
+        if (footForce[footId] >= 20) { // 20, 15
             footContact[footId] = true;
         } else {
             footContact[footId] = false;

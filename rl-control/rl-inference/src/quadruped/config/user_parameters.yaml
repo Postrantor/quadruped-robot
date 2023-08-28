@@ -13,10 +13,10 @@ filterWindowSize: 20 # 50
 accelerometerVariance: 0.1
 sensorVariance: 0.1
 initialVariance: 0.1
-movingWindowFilterSize: 120
+movingWindowFilterSize: 20 # 120
 
 # swing controller
-desiredHeight: 0.31 # {0.29, 0.31}
+desiredHeight: 0.4 # {0.29, 0.31}
 desiredSpeed: [0., 0., 0.]
 desiredTwistingSpeed: 0.
 footClearance: 0.01

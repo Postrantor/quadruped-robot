@@ -55,7 +55,7 @@ public:
     ros::NodeHandle &nh;
     ros::Subscriber heightSub;
     ros::Publisher rpyPub;
-    std::string heightTopic = "/height_receiver";
+    std::string heightTopic = "/heights_arr_topic";
 
 private:
     qrRobot* robot;

@@ -109,6 +109,7 @@ qrRobotRunner::qrRobotRunner(qrRobot* quadrupedIn, std::string& homeDir, ros::No
     userParameters.desiredTwistingSpeed = desiredTwistingSpeed;
     desiredStateCommand->vDesInBodyFrame = desiredSpeed;
     desiredStateCommand->wDesInBodyFrame << 0,0, desiredTwistingSpeed;
+    desiredStateCommand->b_fixedCommand = (twistMode > 0);
     quadruped->timeStep = 1.0 / userParameters.controlFrequency;
     
     quadruped->ReceiveObservation();

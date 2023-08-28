@@ -59,7 +59,6 @@ int main(int argc, char **argv)
 
     qrRobotRunner robotRunner(quadruped, homeDir, nh);
 
-    // ros::Rate loop_rate(round(1.0 / quadruped->timeStep)); // 500--1000 Hz
     ros::Rate loop_rate1(1000);
     ros::Rate loop_rate2(500);
     ros::Rate loop_rate3(333);

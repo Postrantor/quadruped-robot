@@ -3,7 +3,7 @@ Copyright (c) 2020, Unitree Robotics.Co.Ltd. All rights reserved.
 Use of this source code is governed by the MPL-2.0 license, see LICENSE.
 ************************************************************************/
 
-#include "unitree_legged_sdk/unitree_interface.h"
+#include "unitree_legged_sdk/cpp_interface.h"
 #include <array>
 #include <math.h>
 

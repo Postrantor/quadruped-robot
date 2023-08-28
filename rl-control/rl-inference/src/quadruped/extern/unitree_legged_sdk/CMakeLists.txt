@@ -25,5 +25,5 @@ set(CMAKE_CXX_FLAGS "-O3")
 
 #add_subdirectory(pybind11)
 #pybind11_add_module(robot_interface python_interface.cpp)
-add_library(robot_interface SHARED unitree_interface.cpp)
+add_library(robot_interface SHARED cpp_interface.cpp)
 target_link_libraries(robot_interface ${EXTRA_LIBS})

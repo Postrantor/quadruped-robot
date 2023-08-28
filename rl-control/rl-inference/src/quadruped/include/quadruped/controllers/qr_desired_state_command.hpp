@@ -102,6 +102,8 @@ public:
       joyCtrlStateChangeRequest = request;
     }
 
+    bool b_fixedCommand = false;
+
     /**
      * @brief Desired linear velocity expressed in body frame.
      */
@@ -328,12 +330,12 @@ private:
     /**
      * @brief Max linear velocity on Y Axis for the desired state.
      */
-    const float MAX_VELY = 0.5f;
+    const float MAX_VELY = 0.4f;
 
     /**
      * @brief Min linear velocity on Y Axis for the desired state.
      */
-    const float MIN_VELY = -0.5f;
+    const float MIN_VELY = -0.4f;
 
     /**
      * @brief Max yaw velocity for the desired state.

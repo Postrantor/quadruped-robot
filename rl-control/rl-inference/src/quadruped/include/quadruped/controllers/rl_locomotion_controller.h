@@ -35,10 +35,11 @@
 
 namespace Quadruped {
 
-static constexpr int const& PROPRIOCEPTION_SIZE = 133; // Proprioceptive
-static constexpr int const& EXTEROCEPTION_SIZE = 187; // Exteroceptive
+static constexpr int const& PROPRIOCEPTION_SIZE = 132; // Proprioceptive
+static constexpr int const& EXTEROCEPTION_SIZE = 143; // Exteroceptive
 static constexpr int const& OBS_SIZE = PROPRIOCEPTION_SIZE + EXTEROCEPTION_SIZE;
-static constexpr int const& HISTORY_STEPS = 40;
+static constexpr int const& HIDDEN_STATE_SHAPE = 128; // {2, 1, 64};
+static constexpr int const& HISTORY_STEPS = 0;
 static constexpr int const& HISTORY_SIZE = HISTORY_STEPS * OBS_SIZE; // 12800, 5320
     
 class LocomotionControllerRLWrapper{
@@ -104,6 +105,7 @@ private:
     Vec4<float> phi;
 
     Vec12<float> target_joint_angles;
+    Vec12<float> last_target_joint_angles;
     Eigen::Matrix<float, 4, 3> foot_target_position_in_hip_frame;
 
     bool allowUpdateObs = true;
@@ -111,7 +113,7 @@ private:
     Vec3<float> command;
     float command_scale, rpy_scale, v_scale, w_scale, dp_scale, dv_scale, cpg_scale, height_scale;
     float gaitFreq;
-    Eigen::Matrix<float, 13, 1> cpg_info;
+    Eigen::Matrix<float, 12, 1> cpg_info;
 
     Eigen::Matrix<float, 12*3, 1> dof_p_history;
     Eigen::Matrix<float, 12*2, 1> dof_v_history;

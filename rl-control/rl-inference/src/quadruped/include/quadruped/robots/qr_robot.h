@@ -44,7 +44,7 @@
 #include "controllers/qr_state_dataflow.h"
 #include "dynamics/floating_base_model.hpp"
 
-#include "unitree_legged_sdk/unitree_interface.h"
+#include "unitree_legged_sdk/cpp_interface.h"
 
 
 namespace Quadruped {

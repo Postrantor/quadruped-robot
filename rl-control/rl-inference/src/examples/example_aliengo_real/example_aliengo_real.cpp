@@ -22,15 +22,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include "exec/runtime.h"
-#include "ros/control2gazebo_msg.h"
+#include "quadruped/exec/qr_robot_runner.h"
+
+#ifndef NOT_USE_SIM
+#include "quadruped/ros/qr_control2gazebo_msg.h"
+#endif
+
+#include "quadruped/ros/qr_height_receiver.h"
+
+#include <ros/package.h>
 
 using namespace std;
 using namespace Quadruped;
 
 int main(int argc, char **argv)
 {
-    std::string homeDir = GetHomeDir();
+    std::string homeDir = ros::package::getPath("quadruped") + "/";
     std::string robotName = "aliengo";
     YAML::Node mainConfig = YAML::LoadFile(homeDir + "config/aliengo/main.yaml");
     int twistMode = mainConfig["speed_update_mode"].as<int>();
@@ -40,21 +47,30 @@ int main(int argc, char **argv)
     ros::NodeHandle privateNh("~");
     std::cout << "---------ROS node init finished---------" << std::endl;
 
-    Robot *quadruped = new RobotA1(homeDir + "config/aliengo/aliengo_robot.yaml");
-    quadruped->ReceiveObservation();
+    qrRobot *quadruped = new qrRobotA1(homeDir + "config/aliengo/aliengo_robot.yaml");
+    quadruped->networkPath = mainConfig["network_path"].as<std::string>(); // todo
+
+    Visualization2D& vis = quadruped->stateDataFlow.visualizer;
+    // vis.SetLabelNames({"acc_x", "acc_y", "vx", "vy","yaw_rate"});
+    vis.SetLabelNames({"FR0", "FR1", "FR2", "cmd_FR0","cmd_FR1", "cmd_FR2"});
+
     std::cout << "BaseOrientation:\n" << quadruped->GetBaseOrientation().transpose() << std::endl;
-    RobotRunner robotRunner(quadruped, homeDir, nh);
+
+    qrRobotRunner robotRunner(quadruped, homeDir, nh);
 
     ros::Rate loop_rate1(1000);
     ros::Rate loop_rate2(500);
+    ros::Rate loop_rate3(333);
     
-    LocomotionController* locomotionController = robotRunner.GetLocomotionController();
-    StateEstimatorContainer<float>* stateEstimators = robotRunner.GetStateEstimator();
-    DesiredStateCommand* desiredStateCommand = robotRunner.GetDesiredStateCommand();
-    auto& vis = quadruped->stateDataFlow.visualizer;
+    ROS_INFO("LocomotionController Init Finished");
+    qrLocomotionController* locomotionController = robotRunner.GetLocomotionController();
+    qrStateEstimatorContainer* stateEstimators = robotRunner.GetStateEstimator();
+    qrDesiredStateCommand* desiredStateCommand = robotRunner.GetDesiredStateCommand();
+    std::cout << "---------LocomotionController Reset Finished---------" << std::endl;
     // ros module init
     // RobotOdometryEstimator *legOdom = new RobotOdometryEstimator(quadruped, nh);
-    // CmdVelReceiver *cmdVelReceiver = new CmdVelReceiver(nh, privateNh);
+    // qrCmdVelReceiver *cmdVelReceiver = new qrCmdVelReceiver(nh, privateNh);
+    qrHeightReceiver *heightReceiver = new qrHeightReceiver(nh, quadruped, stateEstimators->GetGroundEstimator());
     // SLAMPoseReceiver *slamPoseReceiver = new SLAMPoseReceiver(nh, privateNh);
     // SwitchModeReceiver *switchModeReceiver = new SwitchModeReceiver(nh, privateNh);
     // ROS_INFO("ROS Modules Init Finished");
@@ -63,7 +79,6 @@ int main(int argc, char **argv)
     
     float startTime = quadruped->GetTimeSinceReset();
     ROS_INFO("TimeSinceReset: %f", startTime);
-    
     float currentTime = startTime;
     float startTimeWall = startTime;
     float avgCost = 0.f;
@@ -72,34 +87,45 @@ int main(int argc, char **argv)
     ROS_INFO("start control loop....");
     Vec3<float> desiredSpeed(0,0,0);
     float desiredTwistingSpeed = 0;
+
+    // Action::SitDown(quadruped, 3, 0.001); 
+    Action::StandUp(quadruped, 3.f, 5.f, 0.001);
+    // ((RobotLite2*)quadruped)->lite3Sender.control_get(ABLE);
+    std::cout << quadruped->GetBaseRollPitchYaw() << std::endl;
     while (ros::ok() && currentTime - startTime < MAX_TIME_SECONDS) {
         startTimeWall = quadruped->GetTimeSinceReset();
-        // switchMode = switchModeReceiver->GetSwitchMode();        
-        // if (desiredStateCommand->rosCmdRequest) {
-        //     desiredSpeed = cmdVelReceiver->GetLinearVelocity();
-        //     desiredTwistingSpeed = cmdVelReceiver->GetAngularVelocity();
-        //     desiredStateCommand->filteredVel = desiredSpeed;
-        //     desiredStateCommand->filteredOmega << 0, 0, desiredTwistingSpeed;
-        // }
+        // switchMode = switchModeReceiver->GetSwitchMode();
+//        if (desiredStateCommand->rosCmdRequest) { //twistMode == TwistMode::ROS) {
+//            desiredSpeed = cmdVelReceiver->GetLinearVelocity();
+//            desiredTwistingSpeed = cmdVelReceiver->GetAngularVelocity();
+//            desiredStateCommand->vDesInBodyFrame = desiredSpeed;
+//            desiredStateCommand->wDesInBodyFrame << 0, 0, desiredTwistingSpeed;
+//        }
         // if (switchMode != 2 && quadruped->controlParams["mode"] != switchMode) {
         //     SwitchMode(quadruped, locomotionController, desiredSpeed, desiredTwistingSpeed, switchMode, startTimeWall);
         // }
         // UpdateControllerParams(locomotionController,
-        //                         desiredSpeed,
+        //                            desiredSpeed,
         //                            desiredTwistingSpeed);
+        
+        // // quadruped->RecordData(count%20000);
         // locomotionController->Update();
-        // auto[hybridAction, qpSol] = locomotionController->GetAction();
+        // auto [hybridAction, qpSol] = locomotionController->GetAction();
         // quadruped->Step(MotorCommand::convertToMatix(hybridAction), HYBRID_MODE);
+        
         robotRunner.Update();
         robotRunner.Step();
+        // quadruped->ReceiveObservation();
 
         //ros
         // legOdom->PublishOdometry();
         // controller2gazeboMsg->PublishGazeboStateCallback();
-
+        heightReceiver->PubCallback();
         currentTime = quadruped->GetTimeSinceReset();
         avgCost += (currentTime - startTimeWall);
-            
+        // vis.datax.push_back(startTimeWall);
+        // vis.datay1.push_back(0);
+
         if ((count+1) % 1000==0) {
             printf("avg time cost = %f [ms]\n", avgCost);
             avgCost = 0.;
@@ -107,8 +133,8 @@ int main(int argc, char **argv)
         
         if (quadruped->stateDataFlow.heightInControlFrame < 0.05
             // quadruped->basePosition[2]<0.1 
-            // || quadruped->basePosition[0] > 1.5
-            || quadruped->basePosition[2]>0.5 || abs(quadruped->baseRollPitchYaw[0]) > 0.8f 
+            // || quadruped->basePosition[0] > 2.0
+            || quadruped->basePosition[2] > 0.5 || abs(quadruped->baseRollPitchYaw[0]) > 0.8f 
             || abs(quadruped->baseRollPitchYaw[1]) > 0.8f) {
             printf("[main] exit(0)\n");
             cout << "H in Control Frame = " << quadruped->stateDataFlow.heightInControlFrame << endl;
@@ -116,33 +142,34 @@ int main(int argc, char **argv)
             cout << "base rpy:" << quadruped->baseRollPitchYaw<<endl;
             break;
         }
-        if (count >= 1000000-1) {
-            printf("[268]: count is %d \n", count);
-            break;
-        }
-
         ros::spinOnce();
         // loop_rate.sleep();
-        if (quadruped->timeStep< 0.0015)
+        if (quadruped->timeStep < 0.0015) {
             loop_rate1.sleep();
-        else 
+        } else  if (quadruped->timeStep < 0.0025) {
             loop_rate2.sleep();
+        } else {
+            loop_rate3.sleep();
+        }
         // ros::Rate(round(1.0 / quadruped->timeStep)).sleep(); // 500--1000 Hz
     	if (!quadruped->useRosTime) {
 	        while (quadruped->GetTimeSinceReset() - startTimeWall < quadruped->timeStep) {}
 	    }
         count++;
     }
-
-    quadruped->Step(Eigen::Matrix<float, 5, 12>::Zero(), MotorMode::HYBRID_MODE);
-    if (count > 3000) {
-        for (int i=0; i <=3; ++i) {
-            vis.sa[i].PrintStatistics();
-        }
-        // vis.Show();
+    
+    Eigen::Matrix<float, 5, 12> cmd = Eigen::Matrix<float, 5, 12>::Zero();
+    for (int i=0; i < 12; ++i) {
+        cmd(3, i) = 4.0f;
+    } 
+    quadruped->Step(cmd, MotorMode::HYBRID_MODE);
+    if (count > 2000) {
+        // for (int i=0; i < 4; ++i) {
+        //     vis.sa[i].PrintStatistics();
+        // }
+        vis.Show();
     }
 
     ros::shutdown();
     return 0;
 }
-

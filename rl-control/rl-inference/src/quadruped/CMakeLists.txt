@@ -90,11 +90,17 @@ if(${USE_GO1})
     list(APPEND linkPath ${CMAKE_CURRENT_BINARY_DIR}/extern/unitree_legged_sdk_3.5)
     list(APPEND linkPath ${UNITREE_SDK_GO1_DIR}/lib)
 else() #A1 & AligenGo
-    set(UNITREE_SDK_DIR ${PROJECT_SOURCE_DIR}/extern/unitree_legged_sdk)
+    # set(UNITREE_SDK_DIR ${PROJECT_SOURCE_DIR}/extern/unitree_legged_sdk)
+    # add_subdirectory(${UNITREE_SDK_DIR})
+    # list(APPEND includePath "${UNITREE_SDK_DIR}/include")
+    # list(APPEND linkPath ${CMAKE_CURRENT_BINARY_DIR}/extern/unitree_legged_sdk)
+    # list(APPEND linkPath ${UNITREE_SDK_DIR}/lib)
+
+    set(UNITREE_SDK_DIR ${PROJECT_SOURCE_DIR}/extern/aliengo_sdk)
     add_subdirectory(${UNITREE_SDK_DIR})
     list(APPEND includePath "${UNITREE_SDK_DIR}/include")
-    list(APPEND linkPath ${CMAKE_CURRENT_BINARY_DIR}/extern/unitree_legged_sdk)
-    list(APPEND linkPath ${UNITREE_SDK_DIR}/lib)
+    list(APPEND linkPath ${UNITREE_SDK_DIR}/lib/cpp/arm64)
+    set(UNITREE_SDK_LIB unitree_legged_sdk.so)
 endif()
 
 # Deeprobotics SDK

@@ -84,7 +84,7 @@ void CreateHostData()
     aclError ret = aclrtMallocHost(&hostData, dataSize);
     // hostData = malloc(dataSize);
     // dataSize1 = Quadruped::HISTORY_STEPS * dataSize;
-    dataSize1 = 128 * sizeof(float); // todo
+    dataSize1 = Quadruped::HIDDEN_STATE_SHAPE * sizeof(float); // todo
     ret = aclrtMallocHost(&hostData1, dataSize1);
     memset(hostData1, 0, dataSize1);
     // hostData1 = malloc(dataSize1);
@@ -271,7 +271,7 @@ LocomotionControllerRLWrapper::LocomotionControllerRLWrapper(qrLocomotionControl
     MaxHorizontalOffset = trot_info["max_horizontal_offset"].as<float>();
     assertm(kps.size() == 12 && kds.size() == 12, "size not 12!");
     auto groundEstimator = locomotionController->GetStateEstimator()->GetGroundEstimator();
-    groundEstimator->terrainHeights = DVec<float>::Zero(EXTEROCEPTION_SIZE);
+    groundEstimator->terrainHeights = DVec<float>::Zero(EXTEROCEPTION_SIZE).array() - robot->bodyHeight;
     groundEstimator->HeightPointNum = EXTEROCEPTION_SIZE;
 }
 
@@ -285,10 +285,12 @@ void LocomotionControllerRLWrapper::Reset()
     obs_history.clear();
     gaitFreq = 1.f/locomotionController->gaitGenerator->fullCyclePeriod[0];
     
-    target_joint_angles.setZero();
+    target_joint_angles = robot->GetMotorAngles();
+    last_target_joint_angles = target_joint_angles;
     deltaPhi.setZero();
     phi.setZero();
     residualAngle.setZero();
+    cpg_info.setZero();
     proprioceptiveObs.setZero();
     exteroceptiveObs.setZero();
     total_obs.setZero();
@@ -352,13 +354,15 @@ void LocomotionControllerRLWrapper::RLUpdate(bool enableInference)
                 std::lock_guard<std::mutex> lock(robot->mapMutex_);
                 exteroceptiveObs << groundEstimator->terrainHeights;
             }
-            // exteroceptiveObs = (exteroceptiveObs - robot->bodyHeight).cwiseMin(-1).cwiseMax(1.0) * 5;
-            // pretty_print(exteroceptiveObs.data(), "height", 187);
+            // pretty_print(exteroceptiveObs.data(), "height", 143);
+            // exteroceptiveObs = (-exteroceptiveObs.array() - robot->bodyHeight).cwiseMin(1.0f).cwiseMax(-1.0f) * 5.0f;
+            Eigen::Matrix<float, 143, 1> exteroceptiveObs_ = ((-exteroceptiveObs.array() - robot->bodyHeight).cwiseMin(1.0f).cwiseMax(-1.0f)) * 5.0f;
             total_obs << proprioceptiveObs,
-                        exteroceptiveObs.array() - 0.f;   // base_z(28) - terrain_height(0) - target_height(28) == 0
-
+                        exteroceptiveObs_;   // base_z(28) - terrain_height(0) - target_height(28) == 0
+            total_obs = total_obs.cwiseMin(100.0f).cwiseMax(-100.0f);
             // allowUpdateObs = false;
         }
+        // throw std::runtime_error("");
         // MITTimer tik;
         // Inference(proprioceptiveObs);
         Inference(total_obs);
@@ -394,7 +398,84 @@ void LocomotionControllerRLWrapper::Inference(Eigen::Matrix<float, OBS_SIZE, 1>&
     // std::cout << "obs_his[-2] = " << obs_history.block<1, 320>(0, 320*38) << std::endl;
     // std::cout << "obs_his[-1] = " << obs_history.block<1, 320>(0, 320*39) << std::endl;
     // pretty_print(obs.data(), "obs ", 320);
-
+    /*
+    obs = {1.5747e-03, -7.8125e-04, -5.8594e-03,  1.8238e-01, -4.6672e-01,
+         -1.0978e+00,  1.6725e-01, -1.1056e-01, -6.8312e-02,  2.8527e-01,
+         -7.2883e-01, -2.0524e-01, -1.3120e-02,  1.0330e+00, -1.5259e+00,
+          8.9698e-03,  1.1578e+00, -1.6124e+00, -9.5045e-02,  9.9663e-01,
+         -1.4580e+00,  5.2848e-02,  9.7290e-01, -1.2282e+00,  1.5062e-01,
+         -1.3964e-02,  1.4604e-01, -1.0156e-01,  2.9791e-01, -2.9859e-01,
+         -4.7007e-02,  2.8724e-02, -8.3792e-01, -2.9766e-02,  1.0121e-01,
+         -2.3148e-01, -8.9971e-03,  1.0139e+00, -1.5822e+00, -2.7290e-02,
+          9.7610e-01, -1.5449e+00, -8.8065e-02,  8.9442e-01, -1.1683e+00,
+          1.7554e-02,  9.5829e-01, -1.3295e+00, -1.2036e-02,  1.0199e+00,
+         -1.5530e+00, -1.1417e-02,  1.0294e+00, -1.5429e+00, -9.9722e-02,
+          9.3287e-01, -1.2560e+00,  4.8275e-02,  9.0644e-01, -1.1900e+00,
+         -1.0732e-02,  1.0270e+00, -1.5303e+00,  6.9969e-03,  1.0955e+00,
+         -1.5645e+00, -9.8327e-02,  9.7252e-01, -1.3572e+00,  4.8849e-02,
+          9.4362e-01, -1.2122e+00, -5.1088e-02,  5.4649e-02,  2.3962e-01,
+          7.0563e-02,  4.7741e-01,  4.0959e-02, -5.2085e-02,  2.3425e-01,
+         -5.6096e-01,  3.0416e-01, -3.3646e-01,  9.3315e-01,  4.0935e-02,
+          5.1144e-02,  1.3760e-01,  1.4211e-01,  4.9205e-01, -1.3614e-01,
+          1.9835e-02,  2.3156e-01, -6.7703e-01,  3.2061e-02,  3.4048e-01,
+         -3.1673e-01, -1.2675e-01,  1.1060e+00, -1.3114e+00, -5.6781e-03,
+          1.1827e+00, -1.5071e+00, -7.6504e-02,  9.8102e-01, -1.4008e+00,
+          1.7368e-01,  7.9931e-01, -9.7886e-01, -1.1742e-01,  1.1309e+00,
+         -1.2378e+00,  1.3212e-02,  1.2136e+00, -1.6014e+00, -6.7814e-02,
+          1.0741e+00, -1.5139e+00,  1.7531e-01,  6.9872e-01, -8.9311e-01,
+          3.8094e-01, -3.8094e-01, -3.8094e-01,  3.8094e-01,  9.2460e-01,
+         -9.2460e-01, -9.2460e-01,  9.2460e-01,  9.7625e-02,  9.2541e-02,
+          8.1922e-02,  6.0974e-02, -5.9488e-01, -5.3818e-01, -1.2538e+00,
+         -1.3380e+00, -5.6445e-01, -6.5340e-01, -6.4886e-01, -3.9213e-02,
+         -8.7370e-01, -8.9617e-01, -4.9307e-02,  1.4449e-01, -6.7460e-02,
+         -6.5065e-01, -5.5799e-01, -1.7357e+00, -6.3701e-01, -5.1333e-01,
+         -5.7443e-01, -6.2618e-01, -5.3612e-01, -1.1705e+00, -1.1702e+00,
+         -2.4041e-04, -7.6009e-04,  1.8524e-02, -6.8126e-01, -1.3347e+00,
+         -1.3571e+00, -4.8356e-01, -5.6271e-01, -5.8255e-01, -6.3765e-01,
+         -6.5186e-01, -7.0117e-01, -9.4320e-01, -6.8022e-01, -6.4050e-01,
+         -6.2021e-01, -1.1848e+00, -5.9365e-01, -1.3410e+00, -6.1471e-01,
+         -5.2135e-01, -6.6144e-01, -6.7628e-01, -5.2992e-01, -6.0584e-01,
+         -6.1523e-01, -6.3889e-01, -6.2319e-01, -5.1445e-01, -1.2638e+00,
+         -1.1236e+00, -1.1414e+00, -1.2259e+00, -4.8705e-01, -5.0204e-01,
+         -4.9825e-01, -5.6193e-01, -6.3322e-01, -5.9252e-01, -5.4995e-01,
+         -5.9487e-01, -5.4780e-01, -1.1006e+00, -1.1965e+00, -1.1165e+00,
+         -1.1775e+00, -1.2156e+00, -1.2569e+00, -1.2276e+00, -5.9349e-01,
+         -6.3688e-01, -5.8989e-01, -4.9277e-01, -4.9057e-01, -4.9373e-01,
+         -1.4985e+00, -1.2175e+00, -1.4613e+00, -1.5374e+00, -1.4959e+00,
+         -1.4579e+00, -1.2573e+00, -1.2528e+00, -1.0877e+00, -1.2542e+00,
+         -6.3108e-01, -4.8544e-01, -5.0131e-01, -1.2783e+00, -1.2062e+00,
+         -1.9825e+00, -1.4407e+00, -1.5331e+00, -1.5637e+00, -1.1606e+00,
+         -1.2807e+00, -1.1717e+00, -1.2221e+00, -1.1530e+00, -1.2193e+00,
+         -1.2441e+00, -1.2457e+00, -1.2277e+00, -1.1981e+00, -1.2315e+00,
+         -1.1914e+00, -1.1184e+00, -1.2478e+00, -1.2171e+00, -1.2674e+00,
+         -1.2113e+00, -1.2115e+00, -1.2587e+00, -1.1903e+00, -1.7691e+00,
+         -1.8528e+00, -1.8552e+00, -1.2176e+00, -1.1080e+00, -1.9274e-01,
+         -1.2819e+00, -1.1792e+00, -1.1507e+00, -1.1346e+00, -1.1626e+00,
+         -1.1483e+00, -1.2141e+00, -1.8432e+00, -1.8172e+00, -1.8792e+00,
+         -1.8261e+00, -1.7643e+00, -1.8290e+00, -1.1713e+00, -1.1256e+00,
+         -1.1589e+00, -1.2383e+00, -1.0949e+00, -1.6245e+00, -1.1669e+00};
+float hidden_in[128] =  {0.8327, -0.8999, -0.7501, -0.9952, -0.0696,  0.8797, -0.9177,
+           0.2112,  0.9388, -0.9223, -0.5601,  0.9903, -0.9658, -0.1764,
+          -0.6863,  0.7493, -0.5518, -0.2353, -0.8992, -0.6925,  0.8761,
+          -0.7666, -0.6408,  0.9769,  0.7269, -0.5649,  0.5947,  0.3303,
+          -0.7822, -0.8669, -0.1637, -0.9392, -0.3707, -0.3579, -0.9180,
+          -0.6912,  0.8736, -0.9365,  0.9207, -0.5751,  0.9999,  0.7648,
+          -0.2993, -0.1901, -0.5864,  0.4090,  0.9555,  0.9892,  0.8783,
+          -0.0426, -0.8656,  0.1147,  0.7653, -0.7304,  0.2588,  0.9529,
+           0.4207,  0.3001,  0.7679, -0.9997, -0.6457, -0.9868, -0.7148,
+           0.9956, 
+           0.3298,  0.0791,  0.7823,  0.8456,  0.0028,  0.0929,  0.7230,
+           0.1295, -0.4938,  0.6961,  0.7341, -0.2483, -0.6045, -0.1099,
+          -0.7488,  0.6993, -0.0846, -0.6155,  0.5900,  0.9779,  0.0063,
+           0.0763, -0.7838, -0.1750, -0.4818,  0.3035,  0.0497, -0.2518,
+           0.5834, -0.0377, -0.1172, -0.8095,  0.0745, -0.0398,  0.3334,
+           0.2593, -0.8448, -0.2936, -0.0348,  0.6226,  0.8629,  0.8301,
+          -0.5369,  0.2855,  0.2740, -0.3121,  0.6887, -0.6715, -0.5822,
+          -0.6477, -0.5251,  0.5556,  0.2249,  0.9228, -0.0780,  0.6538,
+           0.6973, -0.0033,  0.1060,  0.5159, -0.6059,  0.3579,  0.1591,
+          -0.7522};
+    */
+    // memcpy(hostData1, hidden_in, 128*sizeof(float));
     #if USE_NPU
     memcpy(hostData, obs.data(), dataSize);
     // memcpy(hostData1, obs_history.data(), dataSize1);
@@ -481,6 +562,7 @@ void LocomotionControllerRLWrapper::Inference(Eigen::Matrix<float, OBS_SIZE, 1>&
     // std::cout <<'\n';
     // float* hh = reinterpret_cast<float*>(hostData1);
     // pretty_print(hh, "hidden_out", 128);
+    // throw std::runtime_error("");
 }
 
 void LocomotionControllerRLWrapper::CollectProprioceptiveObs()
@@ -489,6 +571,20 @@ void LocomotionControllerRLWrapper::CollectProprioceptiveObs()
     command << stateDes(6),
                stateDes(7),
                stateDes(11); 
+    
+    if (locomotionController->desiredStateCommand->b_fixedCommand) {
+        float x = robot->basePosition[0];
+        float y = robot->basePosition[1];
+        command[0] = locomotionController->desiredStateCommand->vDesInBodyFrame[0];
+        command[1] = std::max(-0.2f, std::min(0.2f, 2.0f * (0.f- y)));
+        command[2] = std::max(-0.3f, std::min(0.3f, 3.0f * (0.f - robot->baseRollPitchYaw[2])));
+        if (std::abs(stateDes(6)) > 0.01 || std::abs(stateDes(7)) > 0.01 || std::abs(stateDes(11)) > 0.01) {
+            command << stateDes(6),
+                        stateDes(7),
+                        stateDes(11);             
+        }
+    }
+    
     Vec12<float> dof_pos = robot->GetMotorAngles();
     Vec12<float> dof_v = robot->GetMotorVelocities();
     SwapFourLeg(dof_pos); 
@@ -544,8 +640,7 @@ void LocomotionControllerRLWrapper::CollectProprioceptiveObs()
      0          0          0          0          1          1          1          1          0          0          0          0        1.4
     */
     Vec3<float> v = robot->baseVelocityInBaseFrame;
-    // if (robot->robotName == "lite3")
-    //     v[0] = 0; // todo
+
     proprioceptiveObs <<  command * command_scale,
                         robot->baseRollPitchYaw * rpy_scale,
                         v * v_scale,
@@ -557,8 +652,8 @@ void LocomotionControllerRLWrapper::CollectProprioceptiveObs()
                         dof_p_target_history * dp_scale, // 
                         cpg_info[1] * cpg_scale, cpg_info[0] * cpg_scale, cpg_info[3] * cpg_scale, cpg_info[2] * cpg_scale,
                         cpg_info[5] * cpg_scale, cpg_info[4] * cpg_scale, cpg_info[7] * cpg_scale, cpg_info[6] * cpg_scale,
-                        cpg_info[9] * cpg_scale, cpg_info[8] * cpg_scale, cpg_info[11] * cpg_scale, cpg_info[10] * cpg_scale,
-                        cpg_info[12] * cpg_scale;  // 13
+                        cpg_info[9] * cpg_scale, cpg_info[8] * cpg_scale, cpg_info[11] * cpg_scale, cpg_info[10] * cpg_scale;
+                        // cpg_info[12] * cpg_scale;  // 13
 
     // std::cout << "proprioceptiveObs= " << proprioceptiveObs.transpose() << std::endl;
 }
@@ -572,16 +667,32 @@ void LocomotionControllerRLWrapper::PMTGStep()
     // Eigen::Map<Eigen::MatrixXf> residual_angle(residual_angle_,12, 1);;
     // Eigen::Map<Eigen::MatrixXf> delta_phi(delta_phi_,4, 1);;
 
-    // std::cout << gaitGenerator->phaseInFullCycle << std::endl;
-    phi = 2 * M_PI * locomotionController->gaitGenerator->phaseInFullCycle + deltaPhi;
+    // phi = 2 * M_PI * locomotionController->gaitGenerator->phaseInFullCycle + deltaPhi;
     // phi = phi.unaryExpr([](const float x) { return fmod(x, 3.1415f*2);});
-    // std::cout << "phi = " << phi.transpose() << std::endl;
-    cpg_info << deltaPhi, phi.array().cos(), phi.array().sin(), gaitFreq;
+    // cpg_info << deltaPhi, phi.array().cos(), phi.array().sin(), gaitFreq; // todo
+    phi = 2 * M_PI * locomotionController->gaitGenerator->phaseInFullCycle;
+    // cpg_info << phi.array().sin(), phi.array().cos(), deltaPhi;
+    cpg_info << deltaPhi.array() / 6.283f, phi.array().cos(), phi.array().sin(); // todo
+
 
     Vec4<bool> is_swing = locomotionController->gaitGenerator->desiredLegState.cwiseEqual(0); //swing:0, stance: 1
     // is_swing.setZero();
     // std::cout << "is_swing = " << is_swing.transpose() << std::endl;
-    Vec4<float> swing_phi = locomotionController->gaitGenerator->normalizedPhase;  // [0,1)
+    // Vec4<float> swing_phi = locomotionController->gaitGenerator->normalizedPhase;  // [0,1)
+    Vec4<float> swing_phi = (phi + deltaPhi) / M_2PI;  // [0, 1)
+    swing_phi = swing_phi.unaryExpr([](const float x) { return fmod(x, 1.0f);});
+    std::cout << swing_phi.transpose() << std::endl;
+    float dutyFactor = locomotionController->gaitGenerator->dutyFactor[0];
+    is_swing = (swing_phi.array() >= dutyFactor);
+    swing_phi = (swing_phi.array() - dutyFactor) / (1.0f - dutyFactor);
+     
+    //
+    // robot->baseRollPitchYaw << 0.1975, -0.3091, -2.0145;
+    // phi <<   2.1931, 5.1913,5.4037,2.1377; 
+    // swing_phi << -0.6274,0.5656,  0.6501, -0.6495;
+    // is_swing << false, true,   true, false;
+    //
+
     Vec4<float> sin_swing_phi = (swing_phi * M_2PI).array().sin();
     // std::cout << "sin_swing_phi = " <<  sin_swing_phi.transpose() << std::endl;
     Vec4<float> factor{0,0,0,0};
@@ -593,13 +704,8 @@ void LocomotionControllerRLWrapper::PMTGStep()
 
     foot_target_position_in_hip_frame.setZero();
     foot_target_position_in_hip_frame.col(2) = factor.cwiseProduct(is_swing.cast<float>() * MaxClearance).array() - robot->bodyHeight;
-    // if (robot->robotName == "lite3" && (command[0] < -5  ||  robot->baseRollPitchYaw[1] < -0.05 ) ) {
-    //     foot_target_position_in_hip_frame(2, 2) -= 0.02;
-    //     foot_target_position_in_hip_frame(3, 2) -= 0.02;
-    //     // foot_target_position_in_hip_frame(2, 0) -= 0.02;
-    //     // foot_target_position_in_hip_frame(3, 0) -= 0.02;
-    // }
     foot_target_position_in_hip_frame.col(0) = -MaxHorizontalOffset * sin_swing_phi.cwiseProduct(is_swing.cast<float>());
+    foot_target_position_in_hip_frame.col(0) *= 2.0f;
     Mat3<float> RT = robotics::math::coordinateRotation(robotics::math::CoordinateAxis::X, robot->baseRollPitchYaw[0]) *
                      robotics::math::coordinateRotation(robotics::math::CoordinateAxis::Y, robot->baseRollPitchYaw[1]);
     Eigen::Matrix<float, 4, 3> foot_target_position_in_base_frame = robot->defaultHipPosition.transpose() +  foot_target_position_in_hip_frame * RT.transpose();  // WORLD --> BASE  [0.185, 0.135, 0]
@@ -612,59 +718,29 @@ void LocomotionControllerRLWrapper::PMTGStep()
             target_joint_angles(joint_idx[j]) = target_joint_angles_per_leg(j) + residualAngle(joint_idx[j]);
         }
     }
-    
+    // pretty_print(target_joint_angles.data(), "target_joint_angles", 12);
 }
 
 std::vector<qrMotorCommand> LocomotionControllerRLWrapper::GetRLAction()
 {
     std::vector<qrMotorCommand> action;
     target_joint_angles = target_joint_angles.cwiseMax(-3.0f).cwiseMin(3.0f);
+    float tua = 0;
 
     for (int jointId(0); jointId < NumMotor; ++jointId) {
         float kp = kps[jointId];
-        float p = target_joint_angles[jointId];
-        float tua = 0;
-        // if (robot->robotName == "lite3") {
-        //     if (command[0] < 0.0) {
-        //         // if (jointId == 7 || jointId == 10) {
-        //         //     p += 0.13;
-        //         // }
-        //         if (jointId == 8 || jointId == 11) {
-        //             p += 0.13;
-        //         }
-        //     }
-        //     // if (common_step_counter < 250) {
-        //     //     p[8] += 0.2
-        //     //     p[11] += 0.2
-        //     // }
-        //     float phi_ = locomotionController->gaitGenerator->phaseInFullCycle[jointId/3]; //phi[jointId/3];
-        //     // phi_ = fmod(phi_ + 6.283, 6.283);
-        //     float sin_phi = std::sin(phi_ / 1.2);
-        //     if (phi_ < 0.6)
-        //         sin_phi = std::sin(phi_*2*301415 / 1.2);
-        //     else
-        //         sin_phi = -std::sin((phi_ - 0.6)*2*301415 / 0.8);
-            
-            
-        //     float ratio = 1.0;
-        //     if (sin_phi > 0) {
-        //         ratio *= 3;
-        //     }
-        //     if (jointId == 2 || jointId == 5) {
-        //         kp = 18 + 2 * ratio * sin_phi;
-        //     } else if (jointId == 8 || jointId == 11) {
-        //         kp = 21 + 2 * ratio * sin_phi;
-        //     } else if(jointId == 1 || jointId == 4) {
-        //         kp = 18 + 2 * ratio * sin_phi;
-        //     } else if (jointId == 7 || jointId == 10) {
-        //         kp = 21 + 2 * ratio * sin_phi;
-        //     } else {
-        //         ;
-        //     }
-            
-        // }
+        float& p = target_joint_angles(jointId);
+        float old_p = last_target_joint_angles(jointId);
+        
+        if (p - old_p > 0.06) {
+            p = old_p + 0.06;
+        } else if (p - old_p < -0.06) {
+            p = old_p - 0.06;
+        }
         action.push_back({p, kp, 0, kds[jointId], tua});
     }
+    last_target_joint_angles = target_joint_angles;
+
     return action;
 }
 
