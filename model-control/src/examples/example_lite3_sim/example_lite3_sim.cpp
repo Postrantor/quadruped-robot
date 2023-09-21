@@ -1,46 +1,22 @@
-// The MIT License
-
-// Copyright (c) 2022
-// Robot Motion and Vision Laboratory at East China Normal University
-// Contact: tophill.robotics@gmail.com
-
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-
 #include "quadruped/exec/qr_robot_runner.h"
 #include "quadruped/robots/qr_robot_lite3_sim.h"
-#include "quadruped/ros/qr_control2gazebo_msg.h"
 #include "quadruped/robots/qr_robot_sim.h"
+#include "quadruped/ros/qr_control2gazebo_msg.h"
 
 #include <gazebo_msgs/ModelState.h>
-#include <gazebo_msgs/SetModelState.h>
 #include <gazebo_msgs/SetModelConfiguration.h>
+#include <gazebo_msgs/SetModelState.h>
 #include <gazebo_msgs/SetPhysicsProperties.h>
 #include <std_srvs/Empty.h>
 
 #include <controller_manager/controller_manager.h>
+#include <controller_manager_msgs/ControllerState.h>
 #include <controller_manager_msgs/ListControllerTypes.h>
 #include <controller_manager_msgs/ListControllers.h>
-#include <controller_manager_msgs/ReloadControllerLibraries.h>
 #include <controller_manager_msgs/LoadController.h>
-#include <controller_manager_msgs/UnloadController.h>
+#include <controller_manager_msgs/ReloadControllerLibraries.h>
 #include <controller_manager_msgs/SwitchController.h>
-#include <controller_manager_msgs/ControllerState.h>
+#include <controller_manager_msgs/UnloadController.h>
 
 using namespace std;
 using namespace Quadruped;
@@ -62,9 +38,9 @@ bool ResetRobot(ros::ServiceClient &modelStateClient, ros::ServiceClient &jointS
     model_twist.angular.x = 0.0;
     model_twist.angular.y = 0.0;
     model_twist.angular.z = 0.0;
-    model_pose.position.x =0; // 4.5
-    model_pose.position.y =0;
-    model_pose.position.z =0.3; // 1.3, 0.3
+    model_pose.position.x = 0; // 4.5
+    model_pose.position.y = 0;
+    model_pose.position.z = 0.3; // 1.3, 0.3
     model_pose.orientation.w = 1;
     model_pose.orientation.x = 0;
     model_pose.orientation.y = 0;
@@ -76,18 +52,18 @@ bool ResetRobot(ros::ServiceClient &modelStateClient, ros::ServiceClient &jointS
     setmodelstate.request.model_state = modelState;
     setjointstate.request.model_name = "lite3_gazebo";
     setjointstate.request.urdf_param_name = "robot_description";
-    setjointstate.request.joint_names = {"FR_HipX","FR_HipY", "FR_Knee",
-                                         "FL_HipX","FL_HipY", "FL_Knee",
-                                         "HR_HipX","HR_HipY", "HR_Knee",
-                                         "HL_HipX","HL_HipY", "HL_Knee"};
+    setjointstate.request.joint_names = {"FR_HipX", "FR_HipY", "FR_Knee",
+                                         "FL_HipX", "FL_HipY", "FL_Knee",
+                                         "HR_HipX", "HR_HipY", "HR_Knee",
+                                         "HL_HipX", "HL_HipY", "HL_Knee"};
     double hip_angle = 0.167136;
     double thigh_angle = -0.934969;
     double calf_angle = 2.54468;
 
-    setjointstate.request.joint_positions = {-hip_angle,thigh_angle,calf_angle,
-                                             hip_angle,thigh_angle,calf_angle,
-                                             -hip_angle,thigh_angle,calf_angle,
-                                             hip_angle,thigh_angle,calf_angle};
+    setjointstate.request.joint_positions = {-hip_angle, thigh_angle, calf_angle,
+                                             hip_angle, thigh_angle, calf_angle,
+                                             -hip_angle, thigh_angle, calf_angle,
+                                             hip_angle, thigh_angle, calf_angle};
 
     ros::service::waitForService("/gazebo/set_model_state", -1);
     modelStateClient.call(setmodelstate);
@@ -96,32 +72,37 @@ bool ResetRobot(ros::ServiceClient &modelStateClient, ros::ServiceClient &jointS
     {
         ROS_INFO("BRILLIANT!!!");
         return true;
-    } else
+    }
+    else
     {
         ROS_ERROR("Failed to set joints");
         return false;
     }
 }
 
-void GetComPositionInWorldFrame(qrRobot* quadruped, ros::ServiceClient& baseStateClient)
+void GetComPositionInWorldFrame(qrRobot *quadruped, ros::ServiceClient &baseStateClient)
 {
     gazebo_msgs::GetLinkState gls_request;
-    if (baseStateClient.exists()) {
+    if (baseStateClient.exists())
+    {
         gls_request.request.link_name = std::string("lite3_gazebo::TORSO");
-        gls_request.request.reference_frame=std::string("world");
+        gls_request.request.reference_frame = std::string("world");
         // ros::service::waitForService("/gazebo/get_link_state", -1);
         baseStateClient.call(gls_request);
-        if (!gls_request.response.success) {
-                ROS_INFO("Get Gazebo link state not success!\n");
+        if (!gls_request.response.success)
+        {
+            ROS_INFO("Get Gazebo link state not success!\n");
         }
-    } else {
+    }
+    else
+    {
         ROS_INFO("Get Gazebo link state goes wrong!\n");
     }
 
-    const auto & pose_ = gls_request.response.link_state.pose;
-    const auto & twist_ = gls_request.response.link_state.twist;
+    const auto &pose_ = gls_request.response.link_state.pose;
+    const auto &twist_ = gls_request.response.link_state.twist;
     Vec3<double> posIn = {pose_.position.x, pose_.position.y, pose_.position.z};
-    Quat<double> OrientationIn = {pose_.orientation.w,pose_.orientation.x,pose_.orientation.y,pose_.orientation.z};
+    Quat<double> OrientationIn = {pose_.orientation.w, pose_.orientation.x, pose_.orientation.y, pose_.orientation.z};
     Vec3<double> vIn = {twist_.linear.x, twist_.linear.y, twist_.linear.z};
 
     quadruped->gazeboBasePosition = posIn.cast<float>();
@@ -133,7 +114,6 @@ void GetComPositionInWorldFrame(qrRobot* quadruped, ros::ServiceClient& baseStat
     // std::cout << "gazeboBasePos = " << quadruped->gazeboBasePosition << "\n" <<
     //               "gazeboBaseOri = " << quadruped->gazeboBaseOrientation << std::endl;
 }
-
 
 int main(int argc, char **argv)
 {
@@ -159,12 +139,13 @@ int main(int argc, char **argv)
     // qrRobot *quadruped = new qrRobotLite3Sim(nh, privateNh, homeDir + "config/lite3_sim/robot.yaml");
     std::cout << "robot created........" << std::endl;
 
-    quadruped->Step(Eigen::Matrix<float,5,12>::Zero(), HYBRID_MODE);
+    quadruped->Step(Eigen::Matrix<float, 5, 12>::Zero(), HYBRID_MODE);
     quadruped->ReceiveObservation();
-    std::cout << "BaseOrientation:\n" << quadruped->GetBaseOrientation().transpose() << std::endl;
+    std::cout << "BaseOrientation:\n"
+              << quadruped->GetBaseOrientation().transpose() << std::endl;
     //
-    Visualization2D& vis = quadruped->stateDataFlow.visualizer;
-    vis.SetLabelNames({"pitch", "H", "vx in world", "vy in world","vz in world"});
+    Visualization2D &vis = quadruped->stateDataFlow.visualizer;
+    vis.SetLabelNames({"pitch", "H", "vx in world", "vy in world", "vz in world"});
 
     qrRobotRunner robotRunner(quadruped, homeDir, nh);
     // ros::Rate loop_rate(round(1.0 / quadruped->timeStep)); // 500--1000 Hz
@@ -173,8 +154,8 @@ int main(int argc, char **argv)
     ROS_INFO("loop rate %f\n", round(1.0 / quadruped->timeStep));
 
     ROS_INFO("LocomotionController Init Finished");
-    qrLocomotionController* locomotionController = robotRunner.GetLocomotionController();
-    qrStateEstimatorContainer* stateEstimators = robotRunner.GetStateEstimator();
+    qrLocomotionController *locomotionController = robotRunner.GetLocomotionController();
+    qrStateEstimatorContainer *stateEstimators = robotRunner.GetStateEstimator();
 
     /* ros module init */
     ros::ServiceClient baseStateClient = nh.serviceClient<gazebo_msgs::GetLinkState>("/gazebo/get_link_state");
@@ -189,15 +170,16 @@ int main(int argc, char **argv)
     float startTime = quadruped->GetTimeSinceReset();
     float currentTime = startTime;
     float startTimeWall = startTime;
-    Eigen::Matrix<float,12,1> angles = quadruped->GetMotorAngles();
-    Eigen::Matrix<float,12,1> stancemotorAngles = angles;
-    Eigen::Matrix<float,12,1> motorAnglesAfterKeepStand = angles;
-    for (int legId =0; legId<4; ++legId) {
-        motorAnglesAfterKeepStand[3*legId + 0] = 0.;
-        motorAnglesAfterKeepStand[3*legId + 1] = 1.2;
-        motorAnglesAfterKeepStand[3*legId + 2] = -2.4;
+    Eigen::Matrix<float, 12, 1> angles = quadruped->GetMotorAngles();
+    Eigen::Matrix<float, 12, 1> stancemotorAngles = angles;
+    Eigen::Matrix<float, 12, 1> motorAnglesAfterKeepStand = angles;
+    for (int legId = 0; legId < 4; ++legId)
+    {
+        motorAnglesAfterKeepStand[3 * legId + 0] = 0.;
+        motorAnglesAfterKeepStand[3 * legId + 1] = 1.2;
+        motorAnglesAfterKeepStand[3 * legId + 2] = -2.4;
     }
-    Eigen::Matrix<float,12,1> motorAngles;
+    Eigen::Matrix<float, 12, 1> motorAngles;
     Eigen::Matrix<float, 12, 1> kps, kds;
     kps = quadruped->GetMotorKps();
     kds = quadruped->GetMotorKdp();
@@ -207,12 +189,13 @@ int main(int argc, char **argv)
     ROS_INFO("start control loop....");
     int switchMode;
     int count = 0;
-    float avgCost=0;
+    float avgCost = 0;
     const int n = 10000;
 
     qrTimer timer_main;
 
-    while (ros::ok() && currentTime - startTime < MAX_TIME_SECONDS) {
+    while (ros::ok() && currentTime - startTime < MAX_TIME_SECONDS)
+    {
         startTimeWall = quadruped->GetTimeSinceReset();
         // if (count % 3 ==0) {
         //     GetComPositionInWorldFrame(quadruped, baseStateClient);
@@ -220,22 +203,20 @@ int main(int argc, char **argv)
         //     Vec4<float> footForces = quadruped->GetFootForce();
         //     Vec3<float> rpy = quadruped->GetBaseRollPitchYaw();
         //     Vec3<float> robotComVelocity = stateEstimators->GetRobotEstimator()->GetEstimatedVelocity();  // base frame
-        // } 
+        // }
 
         robotRunner.Update();
         robotRunner.Step();
 
         currentTime = quadruped->GetTimeSinceReset();
         avgCost += (currentTime - startTimeWall);
-        if ((count+1) % 1000==0) {
+        if ((count + 1) % 1000 == 0)
+        {
             printf("avg time cost = %f [ms]\n", avgCost);
             avgCost = 0.;
-
         }
-        if (quadruped->basePosition[2] < 0.10
-            || quadruped->stateDataFlow.heightInControlFrame < 0.05
-            || quadruped->basePosition[2]>0.40 || abs(quadruped->baseRollPitchYaw[0]) > 0.6
-        ) {
+        if (quadruped->basePosition[2] < 0.10 || quadruped->stateDataFlow.heightInControlFrame < 0.05 || quadruped->basePosition[2] > 0.40 || abs(quadruped->baseRollPitchYaw[0]) > 0.6)
+        {
             ROS_ERROR("The dog is going down, main function exit.");
             cout << "base pos:" << quadruped->basePosition << endl;
             cout << "base rpy:" << quadruped->GetBaseRollPitchYaw() << endl;
@@ -248,23 +229,28 @@ int main(int argc, char **argv)
         //     // exit(0);
         // }
 
-        if (quadruped->useRosTime) {
+        if (quadruped->useRosTime)
+        {
             ros::spinOnce();
             // loop_rate.sleep();
-            if (quadruped->timeStep< 0.0015)
+            if (quadruped->timeStep < 0.0015)
                 loop_rate1.sleep();
             else
                 loop_rate2.sleep();
 
             // std::cout << "[ros time] = " << ros::Time::now() << std::endl;
-        } else {
-            while (quadruped->GetTimeSinceReset() - startTimeWall < quadruped->timeStep) {}
+        }
+        else
+        {
+            while (quadruped->GetTimeSinceReset() - startTimeWall < quadruped->timeStep)
+            {
+            }
         }
 
         count++;
     }
 
-    //quadruped->stateDataFlow.visualizer.Show();
+    // quadruped->stateDataFlow.visualizer.Show();
 
     // if (count > 20000) {
     //     quadruped->stateDataFlow.visualizer.Show();
