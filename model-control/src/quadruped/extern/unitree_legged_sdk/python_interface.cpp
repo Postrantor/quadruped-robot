@@ -12,10 +12,10 @@ Use of this source code is governed by the MPL-2.0 license, see LICENSE.
 
 using namespace UNITREE_LEGGED_SDK;
 
-class RobotInterface
-{
+class RobotInterface {
 public:
-    RobotInterface() : safe(LeggedType::A1), udp(LOWLEVEL){
+    RobotInterface() : safe(LeggedType::A1), udp(LOWLEVEL)
+    {
         // InitEnvironment();
     }
     LowState ReceiveObservation();
@@ -28,13 +28,15 @@ public:
     LowCmd cmd = {0};
 };
 
-LowState RobotInterface::ReceiveObservation() {
+LowState RobotInterface::ReceiveObservation()
+{
     udp.Recv();
     udp.GetRecv(state);
     return state;
 }
 
-void RobotInterface::SendCommand(std::array<float, 60> motorcmd) {
+void RobotInterface::SendCommand(std::array<float, 60> motorcmd)
+{
     cmd.levelFlag = 0xff;
     for (int motor_id = 0; motor_id < 12; motor_id++) {
         cmd.motorCmd[motor_id].mode = 0x0A;
@@ -53,7 +55,8 @@ namespace py = pybind11;
 
 // TODO: Expose all of comm.h and the RobotInterface Class.
 
-PYBIND11_MODULE(robot_interface, m) {
+PYBIND11_MODULE(robot_interface, m)
+{
     m.doc() = R"pbdoc(
           A1 Robot Interface Python Bindings
           -----------------------
@@ -196,12 +199,11 @@ PYBIND11_MODULE(robot_interface, m) {
         .def("receive_observation", &RobotInterface::ReceiveObservation)
         .def("send_command", &RobotInterface::SendCommand);
 
-    #ifdef VERSION_INFO
-      m.attr("__version__") = VERSION_INFO;
-    #else
-      m.attr("__version__") = "dev";
-    #endif
+#ifdef VERSION_INFO
+    m.attr("__version__") = VERSION_INFO;
+#else
+    m.attr("__version__") = "dev";
+#endif
 
-      m.attr("TEST") = py::int_(int(42));
-
+    m.attr("TEST") = py::int_(int(42));
 }

@@ -2,27 +2,28 @@
 
 #if defined(__linux__) || defined(__APPLE__)
 #include <arpa/inet.h>
+#include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <netdb.h>
 #elif _WIN32
 #include <winsock32.h>
 #endif
 
-#include <string>
-#include <functional>
 #include <cerrno>
+#include <functional>
+#include <string>
 
-#define FDR_UNUSED(expr){ (void)(expr); } 
-#define FDR_ON_ERROR std::function<void(int, std::string)> onError = [](int errorCode, std::string errorMessage){FDR_UNUSED(errorCode); FDR_UNUSED(errorMessage)}
+#define FDR_UNUSED(expr) \
+    {                    \
+        (void)(expr);    \
+    }
+#define FDR_ON_ERROR std::function<void(int, std::string)> onError = [](int errorCode, std::string errorMessage) {FDR_UNUSED(errorCode); FDR_UNUSED(errorMessage) }
 
-class BaseSocket
-{
-// Definitions
+class BaseSocket {
+    // Definitions
 public:
-    enum SocketType
-    {
+    enum SocketType {
         TCP = SOCK_STREAM,
         UDP = SOCK_DGRAM
     };
@@ -38,33 +39,30 @@ protected:
         inet_ntop(AF_INET, &(addr.sin_addr), ip, INET_ADDRSTRLEN);
 
         return std::string(ip);
-    }  
+    }
 
     BaseSocket(FDR_ON_ERROR, SocketType sockType = TCP, int socketId = -1)
     {
-        if (socketId < 0)
-        {
-            if ((this->sock = socket(AF_INET, sockType, 0)) < 0)
-            {
+        if (socketId < 0) {
+            if ((this->sock = socket(AF_INET, sockType, 0)) < 0) {
                 onError(errno, "Socket creating error.");
             }
-        }
-        else
-        {
+        } else {
             this->sock = socketId;
         }
     }
 
-// Methods
+    // Methods
 public:
-    virtual void Close() {
-        if(isClosed) return;
+    virtual void Close()
+    {
+        if (isClosed) return;
 
         isClosed = true;
         close(this->sock);
     }
 
-    std::string remoteAddress() {return ipToString(this->address);}
-    int remotePort() {return ntohs(this->address.sin_port);}
+    std::string remoteAddress() { return ipToString(this->address); }
+    int remotePort() { return ntohs(this->address.sin_port); }
     int fileDescriptor() const { return this->sock; }
 };

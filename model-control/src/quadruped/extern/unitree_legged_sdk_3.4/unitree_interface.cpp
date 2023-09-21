@@ -2,13 +2,15 @@
 
 using namespace UNITREE_LEGGED_SDK;
 
-LowState RobotInterface::ReceiveObservation() {
+LowState RobotInterface::ReceiveObservation()
+{
     udp.GetRecv(state);
     // printf("[%u]: state.imu.rpy = %f %f %f\n", state.tick, state.imu.rpy[0],state.imu.rpy[1],state.imu.rpy[2]);
     return state;
 }
 
-void RobotInterface::SendCommand(std::array<float, 60> motorcmd) {
+void RobotInterface::SendCommand(std::array<float, 60> motorcmd)
+{
     cmd.levelFlag = 0xff;
     for (int motor_id = 0; motor_id < 12; motor_id++) {
         cmd.motorCmd[motor_id].mode = 0x0A;
@@ -24,7 +26,6 @@ void RobotInterface::SendCommand(std::array<float, 60> motorcmd) {
     udp.SetSend(cmd);
 }
 
-
 // int main()
 // {
 //     RobotInterface robotInterface;
@@ -33,11 +34,11 @@ void RobotInterface::SendCommand(std::array<float, 60> motorcmd) {
 //     LoopFunc loop_control("control_loop", robotInterface.dt, boost::bind(&RobotInterface::ReceiveObservation, &robotInterface));
 //     LoopFunc loop_udpSend("udp_send",     robotInterface.dt, 2, boost::bind(&RobotInterface::UDPSend, &robotInterface));
 //     LoopFunc loop_udpRecv("udp_recv",     robotInterface.dt, 2, boost::bind(&RobotInterface::UDPRecv, &robotInterface));
-    
+
 //     loop_udpSend.start();
 //     loop_udpRecv.start();
 //     loop_control.start();
-    
+
 //     while(1){
 //     //     robotInterface.ReceiveObservation();
 //         sleep(10);

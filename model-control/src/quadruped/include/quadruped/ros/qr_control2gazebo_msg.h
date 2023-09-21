@@ -26,21 +26,20 @@
 #ifndef QR_CONTROL2GAZEBO_MSG_H_
 #define QR_CONTROL2GAZEBO_MSG_H_
 
-#include <ros/ros.h>
-#include <ros/advertise_options.h>
-#include <geometry_msgs/Pose.h>
-#include <sensor_msgs/JointState.h>
 #include <gazebo_msgs/GetLinkState.h>
+#include <geometry_msgs/Pose.h>
+#include <ros/advertise_options.h>
+#include <ros/ros.h>
+#include <sensor_msgs/JointState.h>
 #include <tf/transform_broadcaster.h>
 
-#include "xpp_msgs/topic_names.h"
-#include "xpp_msgs/TerrainInfo.h"
+#include "controllers/qr_locomotion_controller.h"
 #include "xpp_msgs/RobotParameters.h"
 #include "xpp_msgs/RobotStateCartesian.h"
+#include "xpp_msgs/TerrainInfo.h"
+#include "xpp_msgs/topic_names.h"
 #include "xpp_states/convert.h"
 #include "xpp_states/robot_state_cartesian.h"
-#include "controllers/qr_locomotion_controller.h"
-
 
 namespace Quadruped {
 
@@ -48,46 +47,43 @@ namespace Quadruped {
  * @brief Collect messages from gazebo and transpond to visualization module.
  */
 class qrController2GazeboMsg {
-
 public:
+  qrController2GazeboMsg(
+      qrRobot *robotIn, qrLocomotionController *locomotionController, ros::NodeHandle &nhIn);
 
-    qrController2GazeboMsg(qrRobot *robotIn, qrLocomotionController *locomotionController, ros::NodeHandle &nhIn);
-
-    void PublishGazeboStateCallback();
+  void PublishGazeboStateCallback();
 
 private:
+  qrRobot *robot;
 
-    qrRobot *robot;
+  qrLocomotionController *locomotionController;
 
-    qrLocomotionController *locomotionController;
+  qrPosePlanner *posePlanner;
 
-    qrPosePlanner *posePlanner;
+  ros::NodeHandle &nh;
 
-    ros::NodeHandle &nh;
+  ros::Publisher gazeboStatePublish;
 
-    ros::Publisher gazeboStatePublish;
+  ros::Publisher gazeboParamPublish;
 
-    ros::Publisher gazeboParamPublish;
+  ros::Publisher posePlannerPublish;
 
-    ros::Publisher posePlannerPublish;
+  ros::ServiceClient baseStateClient;
 
-    ros::ServiceClient baseStateClient;
+  tf::TransformBroadcaster desiredPoseFramebr;
 
-    tf::TransformBroadcaster desiredPoseFramebr;
+  tf::Transform transform;
 
-    tf::Transform transform;
+  Vec3<float> rIB;
 
-    Vec3<float> rIB;
+  Quat<float> quat;
 
-    Quat<float> quat;
+  ros::Time currentTime;
 
-    ros::Time currentTime;
-
-    ros::Time lastTime;
-
+  ros::Time lastTime;
 };
 
-} // Namespace Quadruped
+}  // Namespace Quadruped
 
-#endif // QR_CONTROL2GAZEBO_MSG_H_
+#endif  // QR_CONTROL2GAZEBO_MSG_H_
 #endif

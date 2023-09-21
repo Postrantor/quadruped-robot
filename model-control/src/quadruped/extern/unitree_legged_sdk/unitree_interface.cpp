@@ -7,16 +7,17 @@ Use of this source code is governed by the MPL-2.0 license, see LICENSE.
 #include <array>
 #include <math.h>
 
-
 using namespace UNITREE_LEGGED_SDK;
 
-LowState RobotInterface::ReceiveObservation() {
+LowState RobotInterface::ReceiveObservation()
+{
     udp.Recv();
     udp.GetRecv(state);
     return state;
 }
 
-void RobotInterface::SendCommand(std::array<float, 60> motorcmd) {
+void RobotInterface::SendCommand(std::array<float, 60> motorcmd)
+{
     cmd.levelFlag = 0xff;
     for (int motor_id = 0; motor_id < 12; motor_id++) {
         cmd.motorCmd[motor_id].mode = 0x0A;

@@ -9,10 +9,7 @@
  * 
  */
 
-
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-
-
-#endif  // PARSE_CMD_H_
+#endif// PARSE_CMD_H_

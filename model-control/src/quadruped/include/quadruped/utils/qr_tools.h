@@ -25,18 +25,17 @@
 #ifndef QR_TOOLS_H
 #define QR_TOOLS_H
 
-#include <iostream>
-#include <iomanip>
-#include <string>
 #include <limits.h>
-#include <unistd.h>
-#include <termios.h>
-
 #include <ros/ros.h>
+#include <termios.h>
+#include <unistd.h>
 
-#include "utils/qr_visualization.h"
+#include <iomanip>
+#include <iostream>
+#include <string>
+
 #include "utils/qr_print.hpp"
-
+#include "utils/qr_visualization.h"
 
 namespace robotics {
 
@@ -52,9 +51,9 @@ std::string GetExePath();
  */
 int getch1();
 
-} // Namespace utils
+}  // Namespace utils
 
-} // Namespace robotics
+}  // Namespace robotics
 
 #ifdef _useros
 /**
@@ -68,4 +67,4 @@ std::string GetHomeDir(std::string homeName = "quadruped-robot/");
 std::string GetHomeDir(std::string homeName = "quadruped-robot/");
 #endif
 
-#endif // QR_TOOLS_H
+#endif  // QR_TOOLS_H

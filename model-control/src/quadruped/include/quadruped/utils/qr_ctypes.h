@@ -28,7 +28,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-
 /* Short version of the stdint default integer types. */
 typedef uint64_t u64;
 

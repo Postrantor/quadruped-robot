@@ -25,18 +25,16 @@
 #ifndef QR_CONTROL_FSM_DATA_H
 #define QR_CONTROL_FSM_DATA_H
 
+#include "controllers/qr_desired_state_command.hpp"
+#include "estimators/qr_state_estimator_container.h"
 #include "gait/qr_gait.h"
 #include "robots/qr_robot.h"
-#include "estimators/qr_state_estimator_container.h"
-#include "controllers/qr_desired_state_command.hpp"
 
-
-/** 
- * @brief ControlFSMData 
+/**
+ * @brief ControlFSMData
  */
 template <typename T>
 struct qrControlFSMData {
-
   /**
    * @brief Pointer to Robot.
    */
@@ -66,9 +64,8 @@ struct qrControlFSMData {
    * @brief The motor commands calculated in this control loop.
    */
   std::vector<Quadruped::qrMotorCommand> legCmd;
-
 };
 
 template struct qrControlFSMData<float>;
 
-#endif // QR_CONTROL_FSM_DATA_H
+#endif  // QR_CONTROL_FSM_DATA_H

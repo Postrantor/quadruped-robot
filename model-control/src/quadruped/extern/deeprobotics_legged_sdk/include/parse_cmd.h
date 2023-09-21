@@ -9,38 +9,37 @@
  * 
  */
 
-
 #ifndef PARSE_CMD_H_
 #define PARSE_CMD_H_
 
-#include <iostream>
-#include <cmath>
-#include <stdint.h>
 #include <array>
-#include <thread>
-#include <unistd.h>
-#include <time.h>
 #include <chrono>
-#include <sys/timerfd.h>
+#include <cmath>
+#include <iostream>
+#include <stdint.h>
 #include <sys/epoll.h>
+#include <sys/timerfd.h>
+#include <thread>
+#include <time.h>
+#include <unistd.h>
 
+#include "command_list.h"
 #include "robot_types.h"
 #include "udpserver.hpp"
-#include "command_list.h"
 #define LOCAL_PORT 43897
 
 #define JOINT_POS_CMD 0x0902
 #define JOINT_VEL_CMD 0x0903
 #define JOINT_TOR_CMD 0x0904
 
-class ParseCMD{
-  private:
+class ParseCMD {
+private:
     RobotState state_rec;
-  public:
+
+public:
     void startWork();
     void work();
-    RobotState& get_recv();
+    RobotState &get_recv();
 };
 
-
-#endif  // PARSE_CMD_H_
+#endif// PARSE_CMD_H_

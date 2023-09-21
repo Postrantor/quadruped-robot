@@ -12,21 +12,22 @@
 #ifndef COMMAND_LIST_H_
 #define COMMAND_LIST_H_
 
-#include <deque>
 #include "command.h"
+#include <deque>
 class CommandList {
-  private:
-    std::deque<Command*> command_list_;
+private:
+    std::deque<Command *> command_list_;
     pthread_mutex_t mutex_;
     /// config list max size
     size_t list_capacity_;
-  public:
+
+public:
     CommandList();
     virtual ~CommandList();
 
-    uint32_t set_command(Command* command);
-    uint32_t get_command_front(Command& command);
-    uint32_t get_command_back(Command& command);
+    uint32_t set_command(Command *command);
+    uint32_t get_command_front(Command &command);
+    uint32_t get_command_back(Command &command);
 };
 
-#endif  // COMMAND_H_
+#endif// COMMAND_H_

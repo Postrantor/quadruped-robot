@@ -25,29 +25,28 @@
 #ifndef QR_ROBOT_RUNNER_H
 #define QR_ROBOT_RUNNER_H
 
-#include <iostream>
-#include <typeinfo>
 #include <yaml-cpp/yaml.h>
 
+#include <iostream>
+#include <typeinfo>
+
+#include "action/qr_action.h"
+#include "controllers/qr_locomotion_controller.h"
+#include "estimators/qr_state_estimator_container.h"
+#include "fsm/qr_control_fsm.hpp"
+#include "planner/qr_com_adjuster.h"
+#include "planner/qr_foothold_planner.h"
+#include "planner/qr_pose_planner.h"
 #include "robots/qr_robot_a1.h"
-#include "robots/qr_robot_go1.h"
 #include "robots/qr_robot_a1_sim.h"
+#include "robots/qr_robot_go1.h"
 #include "robots/qr_robot_lite2_sim.h"
 #include "robots/qr_robot_lite3.h"
 #include "robots/qr_robot_sim.h"
-
-#include "estimators/qr_state_estimator_container.h"
-#include "controllers/qr_locomotion_controller.h"
-#include "planner/qr_com_adjuster.h"
-#include "planner/qr_pose_planner.h"
-#include "planner/qr_foothold_planner.h"
-#include "action/qr_action.h"
 #include "ros/qr_cmd_vel_receiver.h"
 #include "ros/qr_switch_mode_receiver.h"
-#include "utils/qr_tools.h"
 #include "utils/physics_transform.h"
-#include "fsm/qr_control_fsm.hpp"
-
+#include "utils/qr_tools.h"
 
 using namespace Quadruped;
 
@@ -56,65 +55,58 @@ using namespace Quadruped;
  * @param quadruped : pointer to A1Robot.
  * @return pointer to LocomotionController.
  */
-qrLocomotionController *SetUpController(qrRobot *quadruped, qrGaitGenerator* gaitGenerator,
-                                    qrDesiredStateCommand* desiredStateCommand,
-                                    qrStateEstimatorContainer* stateEstimators, 
-                                    qrUserParameters* userParameters,
-                                    std::string& homeDir);
+qrLocomotionController* SetUpController(
+    qrRobot* quadruped,
+    qrGaitGenerator* gaitGenerator,
+    qrDesiredStateCommand* desiredStateCommand,
+    qrStateEstimatorContainer* stateEstimators,
+    qrUserParameters* userParameters,
+    std::string& homeDir);
 
 /**
  * @brief Setup the desired speed for robot.
  */
-void UpdateControllerParams(qrLocomotionController *controller, Eigen::Vector3f linSpeed, float angSpeed);
-
+void UpdateControllerParams(
+    qrLocomotionController* controller, Eigen::Vector3f linSpeed, float angSpeed);
 
 class qrRobotRunner {
-
 public:
+  qrRobotRunner(qrRobot* quadruped, std::string& homeDir, ros::NodeHandle& nh);
 
-    qrRobotRunner(qrRobot* quadruped, std::string& homeDir, ros::NodeHandle& nh);
+  bool Update();
 
-    bool Update();
+  bool Step();
 
-    bool Step();
+  ~qrRobotRunner();
 
-    ~qrRobotRunner();
+  inline qrLocomotionController* GetLocomotionController() {
+    return controlFSM->GetLocomotionController();
+  }
 
-    inline qrLocomotionController* GetLocomotionController() {
-        return  controlFSM->GetLocomotionController();
-    }
+  inline qrStateEstimatorContainer* GetStateEstimator() { return stateEstimators; }
 
-    inline qrStateEstimatorContainer* GetStateEstimator() {
-        return  stateEstimators;
-    }
+  inline qrDesiredStateCommand* GetDesiredStateCommand() { return desiredStateCommand; }
 
-    inline qrDesiredStateCommand* GetDesiredStateCommand() {
-      return desiredStateCommand;
-    }
+  inline qrGaitGenerator* GetGaitGenerator() { return gaitGenerator; }
 
-    inline qrGaitGenerator* GetGaitGenerator() {
-      return gaitGenerator;
-    }
 private:
+  qrRobot* quadruped;
 
-    qrRobot* quadruped;
+  qrGaitGenerator* gaitGenerator;
 
-    qrGaitGenerator* gaitGenerator;
+  qrUserParameters userParameters;
 
-    qrUserParameters userParameters;
+  qrStateEstimatorContainer* stateEstimators;
 
-    qrStateEstimatorContainer* stateEstimators;
+  qrDesiredStateCommand* desiredStateCommand;
 
-    qrDesiredStateCommand* desiredStateCommand;
+  qrControlFSM<float>* controlFSM;
 
-    qrControlFSM<float>* controlFSM;
+  float resetTime;
 
-    float resetTime;
+  float timeSinceReset;
 
-    float timeSinceReset;
-
-    std::vector<qrMotorCommand> hybridAction;
-
+  std::vector<qrMotorCommand> hybridAction;
 };
 
-#endif //QR_ROBOT_RUNNER_H
+#endif  // QR_ROBOT_RUNNER_H
