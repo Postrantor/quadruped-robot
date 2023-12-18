@@ -95,9 +95,9 @@ SITDOWN_MOTOR_ANGLES = np.array([0.0, 0.93, -2.6] * NUM_LEGS)
 
 
 def foot_position_in_hip_frame_to_joint_angle(foot_position, l_hip_sign=1):
-    l_up = 0.2
-    l_low = 0.2
-    l_hip = 0.08505 * l_hip_sign
+    l_up = UPPER_LEG_LENGTH
+    l_low = LOWER_LEG_LENGTH
+    l_hip = HIP_LENGTH * l_hip_sign
     x, y, z = foot_position[0], foot_position[1], foot_position[2]
     theta_knee = -np.arccos(
         np.clip((x**2 + y**2 + z**2 - l_hip**2 - l_low**2 - l_up**2) /
@@ -112,9 +112,9 @@ def foot_position_in_hip_frame_to_joint_angle(foot_position, l_hip_sign=1):
 
 def foot_position_in_hip_frame(angles, l_hip_sign=1):
     theta_ab, theta_hip, theta_knee = angles[0], angles[1], angles[2]
-    l_up = 0.2
-    l_low = 0.2
-    l_hip = 0.08505 * l_hip_sign
+    l_up = UPPER_LEG_LENGTH
+    l_low = LOWER_LEG_LENGTH
+    l_hip = HIP_LENGTH * l_hip_sign
     leg_distance = np.sqrt(l_up**2 + l_low**2 +
                            2 * l_up * l_low * np.cos(theta_knee))
     eff_swing = theta_hip + theta_knee / 2
@@ -136,9 +136,9 @@ def analytical_leg_jacobian(leg_angles, leg_id):
     ` leg_angles: a list of 3 numbers for current abduction, hip and knee angle.
       l_hip_sign: whether it's a left (1) or right(-1) leg.
     """
-    l_up = 0.2
-    l_low = 0.2
-    l_hip = 0.08505 * (-1)**(leg_id + 1)
+    l_up = UPPER_LEG_LENGTH
+    l_low = LOWER_LEG_LENGTH
+    l_hip = HIP_LENGTH * (-1)**(leg_id + 1)
 
     t1, t2, t3 = leg_angles[0], leg_angles[1], leg_angles[2]
     l_eff = np.sqrt(l_up**2 + l_low**2 + 2 * l_up * l_low * np.cos(t3))

@@ -613,3 +613,12 @@ def parse_sim_params(args, cfg):
         sim_params.physx.num_threads = args.num_threads
 
     return sim_params
+
+
+def serialize_dof(dof_data):
+    serialized_data = np.zeros(12, dtype=np.float32)
+    serialized_data[0:3] = dof_data[3:6]
+    serialized_data[3:6] = dof_data[0:3]
+    serialized_data[6:9] = dof_data[9:12]
+    serialized_data[9:12] = dof_data[6:9]
+    return serialized_data

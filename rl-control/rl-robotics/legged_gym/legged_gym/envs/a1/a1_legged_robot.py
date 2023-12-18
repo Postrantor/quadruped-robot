@@ -36,7 +36,7 @@ import numpy as np
 import torch
 
 from legged_gym.utils.isaacgym_utils import (to_torch, quat_mul, quat_apply, torch_rand_float, get_axis_params,
-                                             quat_rotate_inverse, get_euler_xyz)
+                                             quat_rotate_inverse, get_euler_xyz, serialize_dof)
 from legged_gym.utils.torch_math import quat_apply_yaw, wrap_to_pi, torch_rand_sqrt_float
 from legged_gym.utils.helpers import class_to_dict, parse_device_str
 from .a1_config import A1RoughCfg
@@ -377,8 +377,8 @@ class A1LeggedRobot:
         return self.obs_buf, self.privileged_obs_buf, self.rew_buf, self.reset_buf, self.extras
 
     def refresh_dof_state_tensor(self):
-        dof_pos = self._serialize_dof(self.robot.GetTrueMotorAngles())
-        dof_vel = self._serialize_dof(self.robot.GetMotorVelocities())
+        dof_pos = serialize_dof(self.robot.GetTrueMotorAngles())
+        dof_vel = serialize_dof(self.robot.GetMotorVelocities())
         self.dof_pos[:] = torch.from_numpy(dof_pos).to(self.device).repeat((self.num_envs, 1))
         self.dof_vel[:] = torch.from_numpy(dof_vel).to(self.device).repeat((self.num_envs, 1))
 
@@ -623,13 +623,13 @@ class A1LeggedRobot:
         if control_type == "T":
             torques = self.p_gains * (actions - self.dof_pos) - self.d_gains * self.dof_vel
             torques = np.clip(torques.squeeze(0).detach().numpy(), -self.torque_limits, self.torque_limits)
-            torques = self._serialize_dof(torques)
+            torques = serialize_dof(torques)
 
             for index in range(len(torques)):
                 self.hybrid_action[5 * index + 4] = torques[index]
         elif control_type == "P":
             positions = actions.detach().cpu().numpy()
-            positions = self._serialize_dof(positions[0])  # only the first robot
+            positions = serialize_dof(positions[0])  # only the first robot
             for index in range(len(positions)):
                 self.hybrid_action[5 * index + 0] = positions[index]  # position
                 self.hybrid_action[5 * index + 1] = self.cfg.control.stiffness['joint']  # Kp
@@ -638,14 +638,6 @@ class A1LeggedRobot:
                 self.hybrid_action[5 * index + 4] = 0  # torque
 
         return self.hybrid_action
-
-    def _serialize_dof(self, dof_data):
-        serialized_data = np.zeros(12, dtype=np.float32)
-        serialized_data[0:3] = dof_data[3:6]
-        serialized_data[3:6] = dof_data[0:3]
-        serialized_data[6:9] = dof_data[9:12]
-        serialized_data[9:12] = dof_data[6:9]
-        return serialized_data
 
     def _parse_cfg(self, cfg):
         self.dt = self.cfg.control.decimation * self.sim_params['sim']['dt']

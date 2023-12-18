@@ -43,13 +43,13 @@ class PMTrajectoryGenerator:
     """
 
     def __init__(
-            self,
-            robot: Any,
-            clock: Any,
-            device: torch.device,
-            num_envs: int,
-            param: Any,
-            task_name='a1',
+        self,
+        robot: Any,
+        clock: Any,
+        device: torch.device,
+        num_envs: int,
+        param: Any,
+        task_name='a1',
     ):
         """
         Initialize the PMTrajectoryGenerator.
@@ -68,12 +68,14 @@ class PMTrajectoryGenerator:
 
         # Import robot parameters based on task_name
         if 'a1' in task_name:
-            from legged_gym.envs.a1.a1_real.robot_utils import (INIT_MOTOR_ANGLES, UPPER_LEG_LENGTH, LOWER_LEG_LENGTH, \
+            from legged_gym.envs.a1.a1_real.robot_utils import (INIT_MOTOR_ANGLES, UPPER_LEG_LENGTH, LOWER_LEG_LENGTH,
                                                                 HIP_LENGTH, HIP_POSITION, COM_OFFSET, HIP_OFFSETS)
         elif 'lite' in task_name:
-            from legged_gym.envs.lite3.lite3_real.robot_utils import (INIT_MOTOR_ANGLES, UPPER_LEG_LENGTH,
-                                                                      LOWER_LEG_LENGTH, \
+            from legged_gym.envs.lite3.lite3_real.robot_utils import (INIT_MOTOR_ANGLES, UPPER_LEG_LENGTH, LOWER_LEG_LENGTH,
                                                                       HIP_LENGTH, HIP_POSITION, COM_OFFSET, HIP_OFFSETS)
+        elif 'go' in task_name:
+            from legged_gym.envs.go2.go2_real.robot_utils import (INIT_MOTOR_ANGLES, UPPER_LEG_LENGTH, LOWER_LEG_LENGTH,
+                                                                  HIP_LENGTH, HIP_POSITION, COM_OFFSET, HIP_OFFSETS)
         else:
             raise Exception("")
 
@@ -118,8 +120,8 @@ class PMTrajectoryGenerator:
         self.clip_workspace_tensor = torch.ones((1, 1, 3), device=self.device, dtype=torch.float) * 0.15
 
         self.l_hip_sign = torch.tensor([1, -1, 1, -1], dtype=torch.float, device=self.device).repeat(self.num_envs, 1)
-        self.base_frequency_tensor = torch.tensor(self.base_frequency, dtype=torch.float, device=self.device).repeat(
-            self.num_envs, 1)
+        self.base_frequency_tensor = torch.tensor(self.base_frequency, dtype=torch.float,
+                                                  device=self.device).repeat(self.num_envs, 1)
 
         self.initial_phase = self.initial_phase.repeat(self.num_envs, 1)
         self.phi = self.initial_phase.clone()
@@ -131,8 +133,7 @@ class PMTrajectoryGenerator:
         self.time_since_reset = torch.zeros(self.num_envs, 1, dtype=torch.float, device=self.device)
 
         self.foot_trajectory = torch.zeros((self.num_envs, 4, 3), dtype=torch.float, device=self.device)
-        self.foot_trajectory_z = torch.zeros((self.num_envs, 4), dtype=torch.float,
-                                             device=self.device) - self.body_height
+        self.foot_trajectory_z = torch.zeros((self.num_envs, 4), dtype=torch.float, device=self.device) - self.body_height
 
         self.com_offset = to_torch(COM_OFFSET, device=self.device)
         self.hip_offsets = to_torch(HIP_OFFSETS, device=self.device)
@@ -162,9 +163,9 @@ class PMTrajectoryGenerator:
             NotImplementedError: If the provided function name is not supported.
         """
         if func_name == 'cubic_up':
-            return lambda x: -16 * x ** 3 + 12 * x ** 2
+            return lambda x: -16 * x**3 + 12 * x**2
         elif func_name == 'cubic_down':
-            return lambda x: 16 * x ** 3 - 36 * x ** 2 + 24 * x - 4
+            return lambda x: 16 * x**3 - 36 * x**2 + 24 * x - 4
         elif func_name == 'linear_down':
             return lambda x: 2.0 - 2.0 * x
         elif func_name == 'sin':
@@ -180,10 +181,8 @@ class PMTrajectoryGenerator:
             index_list (list): A list of indices to reset.
         """
 
-        self.initial_phase[index_list, 0], self.initial_phase[index_list, 1] = self.initial_phase[index_list, 1], \
-                                                                               self.initial_phase[index_list, 0]
-        self.initial_phase[index_list, 2], self.initial_phase[index_list, 3] = self.initial_phase[index_list, 3], \
-                                                                               self.initial_phase[index_list, 2]
+        self.initial_phase[index_list, 0], self.initial_phase[index_list, 1] = self.initial_phase[index_list, 1], self.initial_phase[index_list, 0]
+        self.initial_phase[index_list, 2], self.initial_phase[index_list, 3] = self.initial_phase[index_list, 3], self.initial_phase[index_list, 2]
         self.phi[index_list] = self.initial_phase[index_list]
         self.swing_phi[index_list] = 0
         self.delta_phi[index_list] = 0
@@ -304,8 +303,7 @@ class PMTrajectoryGenerator:
         """
 
         self.time_since_reset = self.clock() - self.reset_time
-        self.phi = ((self.initial_phase + 2 * torch.pi * self.base_frequency *
-                     self.time_since_reset + delta_phi) / torch.pi) % 2 * torch.pi
+        self.phi = ((self.initial_phase + 2 * torch.pi * self.base_frequency * self.time_since_reset + delta_phi) / torch.pi) % 2 * torch.pi
 
         self.delta_phi = delta_phi
         self.cos_phi = torch.cos(self.phi)
@@ -316,11 +314,10 @@ class PMTrajectoryGenerator:
         self.swing_phi = (self.phi / (2 * torch.pi) - self.duty_factor) / (1 - self.duty_factor)  # [0,1)
         factor = torch.where(self.swing_phi < 0.5, self.f_up(self.swing_phi), self.f_down(self.swing_phi))
         self.foot_trajectory[:, :, 2] = factor * (self.is_swing * self.max_clearance) - self.body_height
-        self.foot_trajectory[:, :, 0] = -self.max_horizontal_offset * torch.sin(
-            self.swing_phi * 2 * torch.pi) * self.is_swing
+        self.foot_trajectory[:, :, 0] = -self.max_horizontal_offset * torch.sin(self.swing_phi * 2 * torch.pi) * self.is_swing
 
-    def gen_foot_target_position_in_horizontal_hip_frame(
-            self, delta_phi: Sequence[float], residual_xyz: Sequence[float], **kwargs) -> Sequence[float]:
+    def gen_foot_target_position_in_horizontal_hip_frame(self, delta_phi: Sequence[float], residual_xyz: Sequence[float],
+                                                         **kwargs) -> Sequence[float]:
         """
         Compute the foot target positions in the horizontal hip reference frame.
 
@@ -403,20 +400,17 @@ class PMTrajectoryGenerator:
         l_low = self.LOWER_LEG_LENGTH
         l_hip = self.HIP_LENGTH * self.l_hip_sign
         x, y, z = foot_position[:, :, 0], foot_position[:, :, 1], foot_position[:, :, 2]
-        theta_knee_input = torch.clip(
-            (x ** 2 + y ** 2 + z ** 2 - l_hip ** 2 - l_low ** 2 - l_up ** 2) /
-            (2 * l_low * l_up), -1, 1)
+        theta_knee_input = torch.clip((x**2 + y**2 + z**2 - l_hip**2 - l_low**2 - l_up**2) / (2 * l_low * l_up), -1, 1)
         theta_knee = -torch.arccos(theta_knee_input)
-        l = torch.sqrt(l_up ** 2 + l_low ** 2 +
-                       2 * l_up * l_low * torch.cos(theta_knee))
+        l = torch.sqrt(l_up**2 + l_low**2 + 2 * l_up * l_low * torch.cos(theta_knee))
         theta_hip_input = torch.clip(-x / l, -1, 1)
         theta_hip = torch.arcsin(theta_hip_input) - theta_knee / 2
         c1 = l_hip * y - l * torch.cos(theta_hip + theta_knee / 2) * z
         s1 = l * torch.cos(theta_hip + theta_knee / 2) * y + l_hip * z
         theta_ab = torch.atan2(s1, c1)
 
-        res = torch.cat((theta_ab.unsqueeze(2), theta_hip.unsqueeze(2), theta_knee.unsqueeze(2)), dim=2).reshape(
-            foot_position.shape[0], -1)
+        res = torch.cat((theta_ab.unsqueeze(2), theta_hip.unsqueeze(2), theta_knee.unsqueeze(2)),
+                        dim=2).reshape(foot_position.shape[0], -1)
         return res
 
 
@@ -424,29 +418,17 @@ if __name__ == "__main__":
     num_envs = 4096
     device = torch.device("cuda:0")
 
-    pmtg = PMTrajectoryGenerator(robot=None,
-                                 num_envs=num_envs,
-                                 device=device,
-                                 gait_type='trot')
+    pmtg = PMTrajectoryGenerator(robot=None, num_envs=num_envs, device=device, gait_type='trot')
 
     while True:
-        residual_xyz = torch.zeros(num_envs,
-                                   12,
-                                   dtype=torch.float,
-                                   device=device)
-        residual_angle = torch.zeros(num_envs,
-                                     12,
-                                     dtype=torch.float,
-                                     device=device)
+        residual_xyz = torch.zeros(num_envs, 12, dtype=torch.float, device=device)
+        residual_angle = torch.zeros(num_envs, 12, dtype=torch.float, device=device)
         delta_phi = torch.zeros(num_envs, 4, dtype=torch.float, device=device)
-        base_quat = torch.tensor([0, 0, 0, 1],
-                                 dtype=torch.float,
-                                 device=device).repeat(num_envs, 1)
+        base_quat = torch.tensor([0, 0, 0, 1], dtype=torch.float, device=device).repeat(num_envs, 1)
 
         observation = pmtg.update_observation()
         print("observation: \n", observation)
 
-        joint_angles = pmtg.get_action(delta_phi, residual_xyz, residual_angle,
-                                       base_quat)
+        joint_angles = pmtg.get_action(delta_phi, residual_xyz, residual_angle, base_quat)
         print("joint_angles: \n", joint_angles)
         time.sleep(0.001)

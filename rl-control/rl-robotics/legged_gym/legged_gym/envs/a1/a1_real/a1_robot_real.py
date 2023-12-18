@@ -38,6 +38,7 @@ from absl import logging
 import torch
 from legged_gym.envs.base.motor_config import MotorControlMode
 from legged_gym.envs.a1.a1_real.robot_interface import RobotInterface
+from legged_gym.utils.isaacgym_utils import serialize_dof
 from legged_gym.utils.math import *
 from .robot_utils import *
 
@@ -410,20 +411,12 @@ class A1Robot:
                 self.device), torch.from_numpy(
                     self.GetBaseRollPitchYawRate()).unsqueeze(0).to(
                         self.device),
-             torch.from_numpy(self._serialize_dof(
+             torch.from_numpy(serialize_dof(
                  self._motor_angles)).unsqueeze(0).to(self.device),
-             torch.from_numpy(self._serialize_dof(
+             torch.from_numpy(serialize_dof(
                  self._motor_velocities)).unsqueeze(0).to(self.device),
              torch.tensor(np.array([[is_contact[i] for i in [1, 0, 3, 2]]]),
                           dtype=torch.float,
                           device=self.device)),
             dim=-1)  # 3+3+3+12+12+4=37
         return obs
-
-    def _serialize_dof(self, dof_data):
-        serialized_data = np.zeros(12, dtype=np.float32)
-        serialized_data[0:3] = dof_data[3:6]
-        serialized_data[3:6] = dof_data[0:3]
-        serialized_data[6:9] = dof_data[9:12]
-        serialized_data[9:12] = dof_data[6:9]
-        return serialized_data
