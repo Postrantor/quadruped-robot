@@ -378,6 +378,7 @@ void EGOReplanFSM::goFlagCallback(const ros::TimerEvent &e)
       // }
 
       flag_escape_emergency_ = false;
+      flag_escape_emergency_ = true;
       break;
     }
     }
@@ -458,20 +459,20 @@ void EGOReplanFSM::goFlagCallback(const ros::TimerEvent &e)
           changeFSMExecState(EXEC_TRAJ, "SAFETY");
           return;
         }
-        else
-        {
-          if (t - t_cur < emergency_time_) // 0.8s of emergency time
-          {
-            ROS_WARN("Suddenly discovered obstacles. emergency stop! time=%f", t - t_cur);
-            changeFSMExecState(EMERGENCY_STOP, "SAFETY");
-          }
-          else
-          {
-            //ROS_WARN("current traj in collision, replan.");
-            changeFSMExecState(REPLAN_TRAJ, "SAFETY");
-          }
-          return;
-        }
+        // else
+        // {
+        //   if (t - t_cur < emergency_time_) // 0.8s of emergency time
+        //   {
+        //     ROS_WARN("Suddenly discovered obstacles. emergency stop! time=%f", t - t_cur);
+        //     changeFSMExecState(EMERGENCY_STOP, "SAFETY");
+        //   }
+        //   else
+        //   {
+        //     //ROS_WARN("current traj in collision, replan.");
+        //     changeFSMExecState(REPLAN_TRAJ, "SAFETY");
+        //   }
+        //   return;
+        // }
         break;
       }
     }

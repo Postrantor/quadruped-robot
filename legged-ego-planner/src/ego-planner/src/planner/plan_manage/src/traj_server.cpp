@@ -51,7 +51,7 @@ void goFlagCallback(const std_msgs::Int16::ConstPtr msg);
 
 ros::Publisher control_point_state_pub_;
 nav_msgs::Odometry control_point_state;
-
+double LimitSpeed(const double vel_input,const double upper,const double lower);
 
 void odometryCallback(const nav_msgs::OdometryConstPtr &msg);
 void bsplineCallback(ego_planner::BsplineConstPtr msg)
@@ -101,35 +101,23 @@ void bsplineCallback(ego_planner::BsplineConstPtr msg)
 std::pair<double, double> calculate_yaw(double t_cur, Eigen::Vector3d &pos, ros::Time &time_now, ros::Time &time_last)
 {
   constexpr double PI = 3.1415926;
-  constexpr double YAW_DOT_MAX_PER_SEC = PI*0.5;
   std::pair<double, double> yaw_yawdot(0, 0);
   double yaw = 0;
   double yawdot = 0;
 
-  // cout << "control_point_state.pose.pose.orientation: " << control_point_state.pose.pose.orientation << endl;
-  // cout << "odom_Pose.orientation: " << odom_Pose.orientation << endl;
   double yaw_control_point = tf::getYaw(control_point_state.pose.pose.orientation);
   double yaw_robot = tf::getYaw(odom_Pose.orientation);
 
   double yaw_diff = yaw_control_point- yaw_robot;
+  if (yaw_diff > PI) yaw_diff = yaw_diff - 2 * PI;
+  else if (yaw_diff < -PI) yaw_diff = yaw_diff + 2 * PI;
   yaw_yawdot.first = yaw_diff;
-  yaw_yawdot.second = yaw_diff/t_cur;
+  yaw_yawdot.second = yaw_diff /  t_cur;
 
-  cout << "yaw_control_point yaw_robot yaw_diff" << yaw_control_point << " " <<yaw_robot << " " <<yaw_diff << endl;
+  // cout << "yaw  " << yaw_control_point*180/3.14 << "  " <<yaw_robot*180/3.14 << "  " <<yaw_diff*180/3.14 << endl;
   return yaw_yawdot;
 }
 
-std::pair<double, double> calculate_yaw_new(double t_cur )
-{
-  constexpr double PI = 3.1415926;
-  constexpr double YAW_DOT_MAX_PER_SEC = PI;
-  std::pair<double, double> yaw_yawdot(0, 0);
-  double yaw = 0;
-  double yawdot = 0;
-
-
-  return yaw_yawdot;
-}
 void goFlagCallback(const std_msgs::Int16::ConstPtr msg)
 {
   goFlag_ = msg->data;
@@ -153,16 +141,14 @@ void cmdCallback(const ros::TimerEvent &e)
     robotVelocity_BASE_frame.angular.z = 0;
 
     pos_vel_pub.publish(robotVelocity_BASE_frame);
-    cout << "velocity: " << robotVelocity_BASE_frame.linear.x << "  " << robotVelocity_BASE_frame.linear.y << "  " << robotVelocity_BASE_frame.angular.z <<endl;
-
+    // cout << "velocity: " << robotVelocity_BASE_frame.linear.x << "  " << robotVelocity_BASE_frame.linear.y << "  " << robotVelocity_BASE_frame.angular.z <<endl;
     return ;
   }
+  
+
   ros::Time time_now = ros::Time::now();
   // double t_cur = (time_now - start_time_).toSec();
-  // double t_cur = 1.3;
-  double t_cur = 1.2;
-
-  // double t_cur = 0.08;
+  double t_cur = 1.3;
 
   Eigen::Vector3d pos(Eigen::Vector3d::Zero()), vel(Eigen::Vector3d::Zero()), acc(Eigen::Vector3d::Zero()), pos_f;
   std::pair<double, double> yaw_yawdot(0, 0);
@@ -224,7 +210,10 @@ void cmdCallback(const ros::TimerEvent &e)
   // ------------ estimation q from traj ------------- // 
 
   control_point_state.header.frame_id = "world";
-  double yaw_estimate_from_traj = atan(vel(1)/vel(0));
+  double yaw_estimate_from_traj = 0, PI = 3.14159;
+  if (vel(0)<0 && vel(1)>0) yaw_estimate_from_traj = atan(vel(1)/(vel(0)+1e-6)) + PI;
+  else if (vel(0)<0 && vel(1)<0) yaw_estimate_from_traj = atan(vel(1)/(vel(0)+1e-6)) - PI;
+  else yaw_estimate_from_traj = atan(vel(1)/(vel(0)+1e-6));
   Eigen::Vector3d eulerAngle(yaw_estimate_from_traj,0,0);
   Eigen::AngleAxisd rollAngle(Eigen::AngleAxisd(eulerAngle(2),Eigen::Vector3d::UnitX()));
   Eigen::AngleAxisd pitchAngle(Eigen::AngleAxisd(eulerAngle(1),Eigen::Vector3d::UnitY()));
@@ -290,6 +279,14 @@ void cmdCallback(const ros::TimerEvent &e)
   // robotVelocity_BASE_frame.angular.z = baseAngularVelBodyCur[2]-odom_vel(2);
 
   
+  // robotVelocity_BASE_frame.linear.x = LimitSpeed(baseLinearVelBodyCur[0],0.2,-0.2);
+  // robotVelocity_BASE_frame.linear.y = LimitSpeed(baseLinearVelBodyCur[1],0.2,-0.2);
+  // robotVelocity_BASE_frame.linear.z = 0;
+
+  // robotVelocity_BASE_frame.angular.x = 0;
+  // robotVelocity_BASE_frame.angular.y = 0;
+  // robotVelocity_BASE_frame.angular.z = LimitSpeed(baseAngularVelBodyCur[2],0.1,-0.1);
+
   robotVelocity_BASE_frame.linear.x = baseLinearVelBodyCur[0];
   robotVelocity_BASE_frame.linear.y = baseLinearVelBodyCur[1];
   robotVelocity_BASE_frame.linear.z = 0;
@@ -298,14 +295,6 @@ void cmdCallback(const ros::TimerEvent &e)
   robotVelocity_BASE_frame.angular.y = 0;
   robotVelocity_BASE_frame.angular.z = baseAngularVelBodyCur[2];
 
-  // if(robotVelocity_BASE_frame.linear.x>0.1) robotVelocity_BASE_frame.linear.x=0.1;
-  // if(robotVelocity_BASE_frame.linear.x<-0.1) robotVelocity_BASE_frame.linear.x=-0.1;
-
-  // if(robotVelocity_BASE_frame.linear.y>0.05) robotVelocity_BASE_frame.linear.y=0.05;
-  // if(robotVelocity_BASE_frame.linear.y<-0.05) robotVelocity_BASE_frame.linear.y=-0.05;
-
-  // if(robotVelocity_BASE_frame.angular.z>0.05) robotVelocity_BASE_frame.angular.z=0.05;
-  // if(robotVelocity_BASE_frame.angular.z<-0.05) robotVelocity_BASE_frame.angular.z=-0.05;
 
   // robotVelocity_BASE_frame.linear.x = 0;
   // robotVelocity_BASE_frame.linear.y = 0;
@@ -315,11 +304,23 @@ void cmdCallback(const ros::TimerEvent &e)
   // robotVelocity_BASE_frame.angular.y = 0;
   // robotVelocity_BASE_frame.angular.z = 0;
 
-  // cout << "vel  raw: " << vel(0) << "  " << vel(1) << "  " << yaw_yawdot.second <<endl;
+  // if(goFlag_==-1)
+  // {
+  // cout << "no new message flag come" << endl;
+  // robotVelocity_BASE_frame.linear.x = 0;
+  // robotVelocity_BASE_frame.linear.y = 0;
+  // robotVelocity_BASE_frame.linear.z = 0;
 
-  // cout << "velocity: " << robotVelocity_BASE_frame.linear.x << "  " << robotVelocity_BASE_frame.linear.y << "  " << robotVelocity_BASE_frame.angular.z <<endl;
+  // robotVelocity_BASE_frame.angular.x = 0;
+  // robotVelocity_BASE_frame.angular.y = 0;
+  // robotVelocity_BASE_frame.angular.z = 0;
+
+  // }
+
+  cout << "velocity: " << robotVelocity_BASE_frame.linear.x << "  " << robotVelocity_BASE_frame.linear.y << "  " << robotVelocity_BASE_frame.angular.z <<endl;
 
   pos_vel_pub.publish(robotVelocity_BASE_frame);
+  // goFlag_ = -1;
 
 }
 
@@ -349,6 +350,15 @@ void odometryCallback(const nav_msgs::OdometryConstPtr &msg)
   odom_vel(2) = 0;
 }
 
+double LimitSpeed(const double vel_input,const double upper,const double lower)
+{
+  double vel_output;
+  if(vel_input > upper) vel_output = upper;
+  else if(vel_input < lower) vel_output = lower;
+  else vel_output = vel_input;
+
+  return vel_output;
+}
 
 
 int main(int argc, char **argv)
