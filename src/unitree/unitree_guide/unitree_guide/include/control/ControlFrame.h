@@ -7,16 +7,15 @@
 #include "FSM/FSM.h"
 #include "control/CtrlComponents.h"
 
-class ControlFrame{
+class ControlFrame {
 public:
-	ControlFrame(CtrlComponents *ctrlComp);
-	~ControlFrame(){
-		delete _FSMController;
-	}
-	void run();
+  ControlFrame(CtrlComponents *ctrlComp);
+  ~ControlFrame() { delete _FSMController; }
+  void run();
+
 private:
-	FSM* _FSMController;
-	CtrlComponents *_ctrlComp;
+  FSM *_FSMController;
+  CtrlComponents *_ctrlComp;
 };
 
-#endif  //CONTROLFRAME_H
+#endif  // CONTROLFRAME_H

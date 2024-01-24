@@ -16,24 +16,25 @@
 #include "common/timeMarker.h"
 #include "interface/CmdPanel.h"
 
-class FSMState{
+class FSMState {
 public:
-    FSMState(CtrlComponents *ctrlComp, FSMStateName stateName, std::string stateNameString);
+  FSMState(CtrlComponents *ctrlComp, FSMStateName stateName, std::string stateNameString);
 
-    virtual void enter() = 0;
-    virtual void run() = 0;
-    virtual void exit() = 0;
-    virtual FSMStateName checkChange() {return FSMStateName::INVALID;}
+  virtual void enter() = 0;
+  virtual void run() = 0;
+  virtual void exit() = 0;
+  virtual FSMStateName checkChange() { return FSMStateName::INVALID; }
 
-    FSMStateName _stateName;
-    std::string _stateNameString;
+  FSMStateName _stateName;
+  std::string _stateNameString;
+
 protected:
-    CtrlComponents *_ctrlComp;
-    FSMStateName _nextStateName;
+  CtrlComponents *_ctrlComp;
+  FSMStateName _nextStateName;
 
-    LowlevelCmd *_lowCmd;
-    LowlevelState *_lowState;
-    UserValue _userValue;
+  LowlevelCmd *_lowCmd;
+  LowlevelState *_lowState;
+  UserValue _userValue;
 };
 
 #endif  // FSMSTATE_H

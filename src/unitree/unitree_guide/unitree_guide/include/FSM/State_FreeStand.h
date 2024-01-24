@@ -6,24 +6,25 @@
 
 #include "FSM/FSMState.h"
 
-class State_FreeStand : public FSMState{
+class State_FreeStand : public FSMState {
 public:
-    State_FreeStand(CtrlComponents *ctrlComp);
-    ~State_FreeStand(){}
-    void enter();
-    void run();
-    void exit();
-    FSMStateName checkChange();
-private:
-    Vec3 _initVecOX;
-    Vec34 _initVecXP;
-    float _rowMax, _rowMin;
-    float _pitchMax, _pitchMin;
-    float _yawMax, _yawMin;
-    float _heightMax, _heightMin;
+  State_FreeStand(CtrlComponents *ctrlComp);
+  ~State_FreeStand() {}
+  void enter();
+  void run();
+  void exit();
+  FSMStateName checkChange();
 
-    Vec34 _calcOP(float row, float pitch, float yaw, float height);
-    void _calcCmd(Vec34 vecOP);
+private:
+  Vec3 _initVecOX;
+  Vec34 _initVecXP;
+  float _rowMax, _rowMin;
+  float _pitchMax, _pitchMin;
+  float _yawMax, _yawMin;
+  float _heightMax, _heightMin;
+
+  Vec34 _calcOP(float row, float pitch, float yaw, float height);
+  void _calcCmd(Vec34 vecOP);
 };
 
 #endif  // FREESTAND_H

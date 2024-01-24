@@ -9,28 +9,21 @@
 
 using namespace std;
 
-namespace UNITREE_LEGGED_SDK 
-{
+namespace UNITREE_LEGGED_SDK {
 
-enum class LeggedType { 
-	Aliengo,
-	A1,
-	Go1,
-	B1
-};
-
+enum class LeggedType { Aliengo, A1, Go1, B1 };
 
 string VersionSDK();
-int InitEnvironment();      // memory lock
+int InitEnvironment();  // memory lock
 
 // definition of each leg and joint
-constexpr int FR_ = 0;       // leg index
+constexpr int FR_ = 0;  // leg index
 constexpr int FL_ = 1;
 constexpr int RR_ = 2;
 constexpr int RL_ = 3;
 
-constexpr int FR_0 = 0;      // joint index
-constexpr int FR_1 = 1;      
+constexpr int FR_0 = 0;  // joint index
+constexpr int FR_1 = 1;
 constexpr int FR_2 = 2;
 
 constexpr int FL_0 = 3;
@@ -45,6 +38,6 @@ constexpr int RL_0 = 9;
 constexpr int RL_1 = 10;
 constexpr int RL_2 = 11;
 
-}
+}  // namespace UNITREE_LEGGED_SDK
 
 #endif

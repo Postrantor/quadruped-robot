@@ -4,17 +4,18 @@
 #ifndef LOWPASSFILTER
 #define LOWPASSFILTER
 
-class LPFilter{
+class LPFilter {
 public:
-    LPFilter(double samplePeriod, double cutFrequency);
-    ~LPFilter();
-    void addValue(double newValue);
-    double getValue();
-    void clear();
+  LPFilter(double samplePeriod, double cutFrequency);
+  ~LPFilter();
+  void addValue(double newValue);
+  double getValue();
+  void clear();
+
 private:
-    double _weight;
-    double _pastValue;
-    bool _start;
+  double _weight;
+  double _pastValue;
+  bool _start;
 };
 
 #endif  // LOWPASSFILTER

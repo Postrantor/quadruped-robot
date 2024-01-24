@@ -1,88 +1,144 @@
+---
+tip: translate by baidu@2024-01-23 23:16:05
+---
+
+Packages Version: v3.8.0
+
 # Introduction
-Here are the ROS simulation packages for Unitree robots, You can load robots and joint controllers in Gazebo, so you can perform low-level control (control the torque, position and angular velocity) of the robot joints. Please be aware that the Gazebo simulation cannot do high-level control, namely walking. Aside from these simulation functions, you can also control your real robots in ROS with the [unitree_ros_to_real](https://github.com/unitreerobotics/unitree_ros_to_real) packages. For real robots, you can do high-level and low-level control using our ROS packages.
+
+This package can send control command to real robot from ROS. You can do low-level control(namely control all joints on robot) and high-level control(namely control the walking direction and speed of robot).
+
+> 该软件包可以从 ROS 向真实的机器人发送控制命令。可以进行低级控制(即控制机器人上的所有关节)和高级控制(即机器人的行走方向和速度)。
+
+This version is suitable for unitree_legged_sdk v3.5.1, namely Go1 robot.
 
 ## Packages:
-Robot description: `go1_description`, `a1_description`, `aliengo_description`, `laikago_description`, `z1_description`
 
-Robot and joints controller: `unitree_controller`, `z1_controller`
+Basic message function: `unitree_legged_msgs`
 
-Simulation related: `unitree_gazebo`, `unitree_legged_control`
+The interface between ROS and real robot: `unitree_legged_real`
 
-# Dependencies
-* [ROS](https://www.ros.org/) Melodic or ROS Kinetic (has not been tested)
-* [Gazebo8](http://gazebosim.org/)
-* [unitree_legged_msgs](https://github.com/unitreerobotics/unitree_ros_to_real): `unitree_legged_msgs` is a package under [unitree_ros_to_real](https://github.com/unitreerobotics/unitree_ros_to_real).
+## Environment
+
+We recommand users to run this package in Ubuntu 18.04 and ROS melodic environment
+
+## Dependencies
+
+- [unitree_legged_sdk](https://github.com/unitreerobotics/unitree_legged_sdk/releases)
+
+### Notice
+
+The newest release [v3.8.0](https://github.com/unitreerobotics/unitree_legged_sdk/releases/tag/3.8.0) only supports for robot: Go1.
+
+Check release [v3.3.4](https://github.com/unitreerobotics/unitree_legged_sdk/releases/tag/3.3.4) for A1 support.
+
+# Configuration
+
+Before compiling this package, please download the corresponding unitree_legged_sdk as noted above, and put it to your own workspace's source folder(e.g. `~/catkin_ws/src`). Be careful with the sdk folder name. It should be "unitree_legged_sdk" without version tag.
+
+> 在编译此包之前，请如上所述下载相应的 unitree_legged_sdk，并将其放在您自己工作区的源文件夹中(例如`~/catkin_ws/src`)。注意 sdk 文件夹名称。它应该是“unitree_legged_sdk”，没有版本标记。
+
 # Build
-<!-- If you would like to fully compile the `unitree_ros`, please run the following command to install relative packages. -->
 
-For ROS Melodic:
-```
-sudo apt-get install ros-melodic-controller-interface  ros-melodic-gazebo-ros-control ros-melodic-joint-state-controller ros-melodic-effort-controllers ros-melodic-joint-trajectory-controller
-```
-For ROS Kinetic:
-```
-sudo apt-get install ros-kinetic-controller-manager ros-kinetic-ros-control ros-kinetic-ros-controllers ros-kinetic-joint-state-controller ros-kinetic-effort-controllers ros-kinetic-velocity-controllers ros-kinetic-position-controllers ros-kinetic-robot-controllers ros-kinetic-robot-state-publisher ros-kinetic-gazebo8-ros ros-kinetic-gazebo8-ros-control ros-kinetic-gazebo8-ros-pkgs ros-kinetic-gazebo8-ros-dev
-```
+You can use catkin_make to build ROS packages. First copy the package folder to `~/catkin_ws/src`, then:
 
-And open the file `unitree_gazebo/worlds/stairs.world`. At the end of the file:
-```
-<include>
-    <uri>model:///home/unitree/catkin_ws/src/unitree_ros/unitree_gazebo/worlds/building_editor_models/stairs</uri>
-</include>
-```
-Please change the path of `building_editor_models/stairs` to the real path on your PC.
+> 您可以使用 catkin_make 来构建 ROS 包。首先将包文件夹复制到`~/catkin_ws/src`，然后：
 
-Then you can use catkin_make to build:
-```
+```sh
 cd ~/catkin_ws
 catkin_make
 ```
 
-If you face a dependency problem, you can just run `catkin_make` again.
+# Setup the net connection
 
-# Detail of Packages
-## unitree_legged_control:
-It contains the joints controllers for Gazebo simulation, which allows users to control joints with position, velocity and torque. Refer to "[unitree_ros/unitree_controller/src/servo.cpp](https://github.com/unitreerobotics/unitree_ros/blob/master/unitree_controller/src/servo.cpp)" for joint control examples in different modes.
+First, please connect the network cable between your PC and robot. Then run `ifconfig` in a terminal, you will find your port name. For example, `enx000ec6612921`.
 
-## The description of robots:
-Namely the description of Go1, A1, Aliengo and Laikago. Each package includes mesh, urdf and xacro files of robot. Take Laikago for example, you can check the model in Rviz by:
-```
-roslaunch laikago_description laikago_rviz.launch
-```
+> 首先，请连接电脑和机器人之间的网络电缆。然后在终端中运行“ifconfig”，您会找到您的端口名。例如，`en0002ec6612921'。
 
-## unitree_gazebo & unitree_controller:
-You can launch the Gazebo simulation with the following command:
-```
-roslaunch unitree_gazebo normal.launch rname:=a1 wname:=stairs
-```
-Where the `rname` means robot name, which can be `laikago`, `aliengo`, `a1` or `go1`. The `wname` means world name, which can be `earth`, `space` or `stairs`. And the default value of `rname` is `laikago`, while the default value of `wname` is `earth`. In Gazebo, the robot should be lying on the ground with joints not activated.
+Then, open the `ipconfig.sh` file under the folder `unitree_legged_real`, modify the port name to your own. And run the following commands:
 
-### 1. Stand controller
-After launching the gazebo simulation, you can start to control the robot:
-```
-rosrun unitree_controller unitree_servo
+> 然后，打开文件夹`unitree_legged_real`下的`ipconfig.sh`文件，将端口名修改为自己的端口名。并运行以下命令：
+
+```sh
+sudo chmod +x ipconfig.sh
+sudo ./ipconfig.sh
 ```
 
-And you can add external disturbances, like a push or a kick:
-```
-rosrun unitree_controller unitree_external_force
-```
-### 2. Position and pose publisher
-Here we demonstrated how to control the position and pose of robot without a controller, which should be useful in SLAM or visual development.
+If you run the `ifconfig` again, you will find that port has `inet` and `netmask` now.
 
-Then run the position and pose publisher in another terminal:
-```
-rosrun unitree_controller unitree_move_kinetic
-```
-The robot will turn around the origin, which is the movement under the world coordinate frame. And inside of the source file [move_publisher.cpp](https://github.com/unitreerobotics/unitree_ros/blob/master/unitree_controller/src/move_publisher.cpp), we also provide the method to move using the robot coordinate frame. You can change the value of `def_frame` to `coord::ROBOT` and run the catkin_make again, then the `unitree_move_publisher` will move robot under its own coordinate frame.
+> 如果您再次运行“ifconfig”，您会发现端口现在有“inet”和“netmask”。
 
-## z1_controller
+In order to set your port automatically, you can modify `interfaces`:
 
-You can launch the z1 Gazebo simulation with the following command:
-
-```
-roslaunch unitree_gazebo z1.launch
+```sh
+sudo gedit /etc/network/interfaces
 ```
 
-After launching the gazebo simulation, you can start to control the z1 robot by z1_sdk.  
-see [z1_documentation](https://dev-z1.unitree.com)
+And add the following 4 lines at the end:
+
+```sh
+auto enx000ec6612921
+iface enx000ec6612921 inet static
+address 192.168.123.162
+netmask 255.255.255.0
+```
+
+Where the port name have to be changed to your own.
+
+# Run the package
+
+You can control your real Go1 robot from ROS by this package.
+
+Before you run expamle program, please run command
+
+```sh
+roslaunch unitree_legged_real real.launch ctrl_level:=highlevel
+```
+
+or
+
+```sh
+roslaunch unitree_legged_real real.launch ctrl_level:=lowlevel
+```
+
+It depends which control mode you want to use.
+
+Then, if you want to run high-level control mode, you can run example_walk node like this
+
+> 然后，如果您想运行高级控制模式，可以像这样运行 example_walk 节点
+
+```sh
+rosrun unitree_legged_real ros_example_walk
+```
+
+If you want to run low-level control mode, you can run example_position program node like this
+
+> 如果你想运行低级控制模式，你可以像这样运行 example_position 程序节点
+
+```sh
+rosrun unitree_legged_real ros_example_postion
+```
+
+You can also run the node state_sub to subscribe the feedback information from Go1 robot
+
+> 您还可以运行节点 state_sub 来订阅 Go1 机器人的反馈信息
+
+```sh
+rosrun unitree_legged_real state_sub
+```
+
+You can also run the launch file that enables you control robot via keyboard like you can do in turtlesim package
+
+> 您还可以运行启动文件，使您能够像在 turtlesim 包中一样通过键盘控制机器人
+
+```sh
+roslaunch unitree_legged_real keyboard_control.launch
+```
+
+And before you do the low-level control, please press L2+A to sit the robot down and then press L1+L2+start to make the robot into
+
+> 在进行低级控制之前，请按 L2+A 使机器人坐下，然后按 L1+L2+启动使机器人进入
+
+mode in which you can do joint-level control, finally make sure you hang the robot up before you run low-level control.
+
+> 在这种模式下，你可以进行关节水平控制，最后确保在运行低水平控制之前挂上机器人。

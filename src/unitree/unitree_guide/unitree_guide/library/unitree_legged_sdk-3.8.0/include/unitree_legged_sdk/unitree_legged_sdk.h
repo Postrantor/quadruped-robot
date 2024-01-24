@@ -13,6 +13,6 @@
 #include "joystick.h"
 #include <boost/bind.hpp>
 
-#define UT UNITREE_LEGGED_SDK    //short name
+#define UT UNITREE_LEGGED_SDK  // short name
 
 #endif

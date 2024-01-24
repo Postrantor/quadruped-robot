@@ -439,8 +439,7 @@ Visualization Manager:
       Enabled: true
       Marker Topic: /waypoint_markers
       Name: Marker
-      Namespaces:
-        {}
+      Namespaces: {}
       Queue Size: 100
       Value: true
   Enabled: true

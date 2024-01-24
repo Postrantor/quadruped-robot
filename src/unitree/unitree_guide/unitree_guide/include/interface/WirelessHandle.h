@@ -8,13 +8,14 @@
 #include "interface/CmdPanel.h"
 #include "unitree_legged_sdk/comm.h"
 
-class WirelessHandle : public CmdPanel{
+class WirelessHandle : public CmdPanel {
 public:
-    WirelessHandle();
-    ~WirelessHandle(){}
-    void receiveHandle(UNITREE_LEGGED_SDK::LowState *lowState);
+  WirelessHandle();
+  ~WirelessHandle() {}
+  void receiveHandle(UNITREE_LEGGED_SDK::LowState *lowState);
+
 private:
-    xRockerBtnDataStruct _keyData;
+  xRockerBtnDataStruct _keyData;
 };
 
 #endif  // WIRELESSHANDLE_H
