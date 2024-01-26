@@ -13,8 +13,7 @@
 /*
     UDP critical configuration:
 
-    1. initiativeDisconnect: if need disconnection after connected, another ip/port can access after
-   disconnection
+    1. initiativeDisconnect: if need disconnection after connected, another ip/port can access after disconnection
 
                  /--- block             will block till data come
     2. recvType  ---- block + timeout   will block till data come or timeout
@@ -40,33 +39,18 @@ typedef enum {
 
 // Notice: User defined data(like struct) should add crc(4Byte) at the end.
 class UDP {
-public:
-  UDP(uint8_t level,
-      uint16_t localPort,
-      const char* targetIP,
-      uint16_t targetPort);  // udp use dafault length according to level
+ public:
+  UDP(uint8_t level, uint16_t localPort, const char* targetIP, uint16_t targetPort);  // udp use dafault length according to level
+  UDP(uint16_t localPort, const char* targetIP, uint16_t targetPort,
+      int sendLength, int recvLength, bool initiativeDisconnect = false, RecvEnum recvType = RecvEnum::nonBlock);
   UDP(uint16_t localPort,
-      const char* targetIP,
-      uint16_t targetPort,
-      int sendLength,
-      int recvLength,
-      bool initiativeDisconnect = false,
-      RecvEnum recvType = RecvEnum::nonBlock);
-  UDP(uint16_t localPort,
-      int sendLength,
-      int recvLength,
-      bool initiativeDisconnect = false,
-      RecvEnum recvType = RecvEnum::nonBlock,
-      bool setIpPort = false);
+      int sendLength, int recvLength, bool initiativeDisconnect = false, RecvEnum recvType = RecvEnum::nonBlock, bool setIpPort = false);
   ~UDP();
 
-  void SetIpPort(
-      const char* targetIP, uint16_t targetPort);  // if not indicated at constructor function
-  void SetRecvTimeout(int time);                   // use in RecvEnum::blockTimeout  (unit: ms)
+  void SetIpPort(const char* targetIP, uint16_t targetPort);  // if not indicated at constructor function
+  void SetRecvTimeout(int time);                              // use in RecvEnum::blockTimeout  (unit: ms)
 
-  void SetDisconnectTime(
-      float callback_dt,
-      float disconnectTime);  // initiativeDisconnect = true, disconnect for another IP to connect
+  void SetDisconnectTime(float callback_dt, float disconnectTime);  // initiativeDisconnect = true, disconnect for another IP to connect
   void SetAccessibleTime(float callback_dt, float accessibleTime);  // check if can access data
 
   int Send();
@@ -88,7 +72,7 @@ public:
   uint16_t localPort;
   bool accessible = false;  // can access or not
 
-private:
+ private:
   void init(uint16_t localPort, const char* targetIP = NULL, uint16_t targetPort = 0);
 
   int sockFd;

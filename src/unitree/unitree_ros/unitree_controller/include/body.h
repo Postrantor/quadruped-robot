@@ -24,6 +24,7 @@ void stand();
 void motion_init();
 void sendServoCmd();
 void moveAllPosition(double* jointPositions, double duration);
-}
+
+}  // namespace unitree_model
 
 #endif

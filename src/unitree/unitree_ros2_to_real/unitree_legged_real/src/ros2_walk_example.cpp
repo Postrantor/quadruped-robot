@@ -28,11 +28,9 @@ int main(int argc, char **argv) {
   //     node->create_publisher<ros2_unitree_legged_msgs::msg::HighCmd>("high_cmd",
   //     1);
 
-  auto pub = node->create_publisher<ros2_unitree_legged_msgs::msg::HighCmd>(
-      "high_cmd", 1);
+  auto pub = node->create_publisher<ros2_unitree_legged_msgs::msg::HighCmd>("high_cmd", 1);
 
   while (rclcpp::ok()) {
-
     motiontime += 2;
 
     high_cmd_ros.head[0] = 0xFE;
@@ -99,7 +97,7 @@ int main(int argc, char **argv) {
     if (motiontime > 14000 && motiontime < 18000) {
       high_cmd_ros.mode = 2;
       high_cmd_ros.gait_type = 2;
-      high_cmd_ros.velocity[0] = 0.4f; // -1  ~ +1
+      high_cmd_ros.velocity[0] = 0.4f;  // -1  ~ +1
       high_cmd_ros.yaw_speed = 2;
       high_cmd_ros.foot_raise_height = 0.1;
       // printf("walk\n");
@@ -111,7 +109,7 @@ int main(int argc, char **argv) {
     if (motiontime > 20000 && motiontime < 24000) {
       high_cmd_ros.mode = 2;
       high_cmd_ros.gait_type = 1;
-      high_cmd_ros.velocity[0] = 0.2f; // -1  ~ +1
+      high_cmd_ros.velocity[0] = 0.2f;  // -1  ~ +1
       high_cmd_ros.body_height = 0.1;
       // printf("walk\n");
     }

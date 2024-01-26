@@ -1,5 +1,3 @@
-
-
 cmake_minimum_required(VERSION 3.5)
 project(ros2_unitree_legged_msgs)
 
@@ -16,8 +14,6 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
-
-
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/MotorCmd.msg"
   "msg/MotorState.msg"
@@ -31,7 +27,5 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/HighCmd.msg"
   "msg/HighState.msg"
 )
-
-
 
 ament_package()
