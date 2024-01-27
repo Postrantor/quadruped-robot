@@ -1,6 +1,13 @@
-/**********************************************************************
- Copyright (c) 2020-2023, Unitree Robotics.Co.Ltd. All rights reserved.
-***********************************************************************/
+/**
+ * @file unitree_legged_sdk.h
+ * @author your name (you@domain.com)
+ * @brief
+ * @version 0.1
+ * @date 2024-01-27
+ *
+ * @copyright Copyright (c) 2024
+ *
+ */
 
 #ifndef _UNITREE_LEGGED_SDK_H_
 #define _UNITREE_LEGGED_SDK_H_

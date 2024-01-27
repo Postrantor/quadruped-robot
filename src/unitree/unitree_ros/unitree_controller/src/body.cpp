@@ -18,9 +18,8 @@ unitree_legged_msgs::LowCmd lowCmd;
 unitree_legged_msgs::LowState lowState;
 
 /**
- * @brief
- * these parameters are only for reference.
- * actual patameters need to be debugged if you want to run on real robot.
+ * @brief these parameters are only for reference.
+ * @details actual patameters need to be debugged if you want to run on real robot.
  */
 void paramInit() {
   for (int i = 0; i < 4; i++) {
@@ -45,10 +44,6 @@ void paramInit() {
   }
 }
 
-/**
- * @brief
- *
- */
 void stand() {
   double pos[12] = {0.0,  0.67, -1.3,  //
                     -0.0, 0.67, -1.3,  //

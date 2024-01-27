@@ -20,6 +20,7 @@
 #include "sensor_msgs/Imu.h"
 #include "std_msgs/Bool.h"
 #include "nav_msgs/Odometry.h"
+
 #include "unitree_legged_msgs/LowCmd.h"
 #include "unitree_legged_msgs/LowState.h"
 #include "unitree_legged_msgs/MotorCmd.h"
@@ -36,6 +37,7 @@ class multiThread {
 public:
   multiThread(string rname) {
     robot_name = rname;
+
     imu_sub = nm.subscribe("/trunk_imu", 1, &multiThread::imuCallback, this);
     footForce_sub[0] =
         nm.subscribe("/visual/FR_foot_contact/the_force", 1, &multiThread::FRfootCallback, this);
@@ -262,9 +264,7 @@ int main(int argc, char** argv) {
   motion_init();
 
   while (ros::ok()) {
-    /*
-    control logic
-    */
+    // control logic //
     lowState_pub.publish(lowState);
     sendServoCmd();
   }

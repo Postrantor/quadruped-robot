@@ -1,32 +1,50 @@
+/**
+ * @file ros2_udp.cpp
+ * @author your name (you@domain.com)
+ * @brief
+ * @version 0.1
+ * @date 2024-01-28
+ *
+ * @copyright Copyright (c) 2024
+ *
+ */
+
+#include <iostream>
 #include "convert.h"
+#include "unitree_legged_sdk/unitree_legged_sdk.h"
+
 #include "rclcpp/rclcpp.hpp"
 #include "ros2_unitree_legged_msgs/msg/high_cmd.hpp"
 #include "ros2_unitree_legged_msgs/msg/high_state.hpp"
 #include "ros2_unitree_legged_msgs/msg/low_cmd.hpp"
 #include "ros2_unitree_legged_msgs/msg/low_state.hpp"
-#include "unitree_legged_sdk/unitree_legged_sdk.h"
 
-using namespace UNITREE_LEGGED_SDK;
 class Custom {
 public:
-  UDP low_udp;
-  UDP high_udp;
+  UNITREE_LEGGED_SDK::UDP low_udp;
+  UNITREE_LEGGED_SDK::UDP high_udp;
 
-  HighCmd high_cmd = {0};
-  HighState high_state = {0};
+  UNITREE_LEGGED_SDK::HighCmd high_cmd = {0};
+  UNITREE_LEGGED_SDK::HighState high_state = {0};
 
-  LowCmd low_cmd = {0};
-  LowState low_state = {0};
+  UNITREE_LEGGED_SDK::LowCmd low_cmd = {0};
+  UNITREE_LEGGED_SDK::LowState low_state = {0};
 
 public:
   Custom()
-      : low_udp(LOWLEVEL),
-        high_udp(8090, "192.168.123.161", 8082, sizeof(HighCmd), sizeof(HighState)) {
+      : low_udp(UNITREE_LEGGED_SDK::LOWLEVEL),
+        high_udp(
+            8090,
+            "192.168.123.161",
+            8082,
+            sizeof(UNITREE_LEGGED_SDK::HighCmd),
+            sizeof(UNITREE_LEGGED_SDK::HighState)) {
     high_udp.InitCmdData(high_cmd);
     low_udp.InitCmdData(low_cmd);
   }
 };
 
+//
 Custom custom;
 
 rclcpp::Subscription<ros2_unitree_legged_msgs::msg::HighCmd>::SharedPtr sub_high;

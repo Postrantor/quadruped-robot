@@ -9,11 +9,12 @@
  *
  */
 
-#include <ros/ros.h>
-#include <geometry_msgs/Wrench.h>
 #include <signal.h>
 #include <termios.h>
 #include <stdio.h>
+
+#include <ros/ros.h>
+#include <geometry_msgs/Wrench.h>
 
 #define KEYCODE_UP 0x41
 #define KEYCODE_DOWN 0x42
@@ -21,12 +22,9 @@
 #define KEYCODE_RIGHT 0x43
 #define KEYCODE_SPACE 0x20
 
-int mode = 1;  // pulsed mode or continuous mode
+// pulsed mode or continuous mode
+int mode = 1;
 
-/**
- * @brief
- *
- */
 class teleForceCmd {
 public:
   teleForceCmd();
@@ -63,9 +61,11 @@ void quit(int sig) {
 
 int main(int argc, char** argv) {
   ros::init(argc, argv, "external_force");
+
   teleForceCmd remote;
   signal(SIGINT, quit);
   remote.keyLoop();
+
   return (0);
 }
 
@@ -92,10 +92,10 @@ void teleForceCmd::keyLoop() {
   raw.c_cc[VEOF] = 2;
   tcsetattr(kfd, TCSANOW, &raw);
 
-  puts("Reading from keyboard");
+  puts("reading from keyboard");
   puts("---------------------------");
-  puts("Use 'Space' to change mode, default is Pulsed mode:");
-  puts("Use 'Up/Down/Left/Right' to change direction");
+  puts("use 'space' to change mode, default is pulsed mode:");
+  puts("use 'up/down/left/right' to change direction");
 
   for (;;) {
     // get the next event from the keyboard

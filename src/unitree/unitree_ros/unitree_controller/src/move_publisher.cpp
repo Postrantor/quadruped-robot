@@ -1,11 +1,23 @@
-#include <ros/ros.h>
-#include <gazebo_msgs/ModelState.h>
-#include <gazebo_msgs/SetModelState.h>
-#include <string>
+/**
+ * @file move_publisher.cpp
+ * @author your name (you@domain.com)
+ * @brief
+ * @version 0.1
+ * @date 2024-01-28
+ *
+ * @copyright Copyright (c) 2024
+ *
+ */
+
 #include <stdio.h>
-#include <tf/transform_datatypes.h>
 #include <math.h>
 #include <iostream>
+#include <string>
+
+#include "ros/ros.h"
+#include "gazebo_msgs/ModelState.h"
+#include "gazebo_msgs/SetModelState.h"
+#include "tf/transform_datatypes.h"
 
 int main(int argc, char **argv) {
   enum coord { WORLD, ROBOT };

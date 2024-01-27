@@ -1,6 +1,13 @@
-/**********************************************************************
- Copyright (c) 2020-2023, Unitree Robotics.Co.Ltd. All rights reserved.
-***********************************************************************/
+/**
+ * @file example_walk.cpp
+ * @author your name (you@domain.com)
+ * @brief
+ * @version 0.1
+ * @date 2024-01-28
+ *
+ * @copyright Copyright (c) 2024
+ *
+ */
 
 #include "unitree_legged_sdk/unitree_legged_sdk.h"
 #include <math.h>
@@ -12,18 +19,19 @@ using namespace UNITREE_LEGGED_SDK;
 
 class Custom {
 public:
-  Custom(uint8_t level) : safe(LeggedType::Go1), udp(level, 8090, "192.168.123.161", 8082) {
+  Custom(uint8_t level)
+      : safe(UNITREE_LEGGED_SDK::LeggedType::Go1), udp(level, 8090, "192.168.123.161", 8082) {
     udp.InitCmdData(cmd);
   }
   void UDPRecv();
   void UDPSend();
   void RobotControl();
 
-  Safety safe;
-  UDP udp;
-  HighCmd cmd = {0};
-  HighState state = {0};
-  int motiontime = 0;
+  UNITREE_LEGGED_SDK::Safety safe;
+  UNITREE_LEGGED_SDK::UDP udp;
+  UNITREE_LEGGED_SDK::HighCmd cmd = {0};
+  UNITREE_LEGGED_SDK::HighState state = {0};
+  int motion_time = 0;
   float dt = 0.002;  // 0.001~0.01
 };
 
@@ -32,10 +40,13 @@ void Custom::UDPRecv() { udp.Recv(); }
 void Custom::UDPSend() { udp.Send(); }
 
 void Custom::RobotControl() {
-  motiontime += 2;
+  motion_time += 2;
   udp.GetRecv(state);
-  //   printf("%d   %f\n", motiontime, state.imu.quaternion[2]);
-  cmd.mode = 0;  // 0:idle, default stand      1:forced stand     2:walk continuously
+  // printf("%d   %f\n", motion_time, state.imu.quaternion[2]);
+  // 0: idle, default stand
+  // 1: forced stand
+  // 2: walk continuously
+  cmd.mode = 0;
   cmd.gaitType = 0;
   cmd.speedLevel = 0;
   cmd.footRaiseHeight = 0;
@@ -48,66 +59,66 @@ void Custom::RobotControl() {
   cmd.yawSpeed = 0.0f;
   cmd.reserve = 0;
 
-  if (motiontime > 0 && motiontime < 1000) {
+  if (motion_time > 0 && motion_time < 1000) {
     cmd.mode = 1;
     cmd.euler[0] = -0.3;
   }
-  if (motiontime > 1000 && motiontime < 2000) {
+  if (motion_time > 1000 && motion_time < 2000) {
     cmd.mode = 1;
     cmd.euler[0] = 0.3;
   }
-  if (motiontime > 2000 && motiontime < 3000) {
+  if (motion_time > 2000 && motion_time < 3000) {
     cmd.mode = 1;
     cmd.euler[1] = -0.2;
   }
-  if (motiontime > 3000 && motiontime < 4000) {
+  if (motion_time > 3000 && motion_time < 4000) {
     cmd.mode = 1;
     cmd.euler[1] = 0.2;
   }
-  if (motiontime > 4000 && motiontime < 5000) {
+  if (motion_time > 4000 && motion_time < 5000) {
     cmd.mode = 1;
     cmd.euler[2] = -0.2;
   }
-  if (motiontime > 5000 && motiontime < 6000) {
+  if (motion_time > 5000 && motion_time < 6000) {
     cmd.mode = 1;
     cmd.euler[2] = 0.2;
   }
-  if (motiontime > 6000 && motiontime < 7000) {
+  if (motion_time > 6000 && motion_time < 7000) {
     cmd.mode = 1;
     cmd.bodyHeight = -0.2;
   }
-  if (motiontime > 7000 && motiontime < 8000) {
+  if (motion_time > 7000 && motion_time < 8000) {
     cmd.mode = 1;
     cmd.bodyHeight = 0.1;
   }
-  if (motiontime > 8000 && motiontime < 9000) {
+  if (motion_time > 8000 && motion_time < 9000) {
     cmd.mode = 1;
     cmd.bodyHeight = 0.0;
   }
-  if (motiontime > 9000 && motiontime < 11000) {
+  if (motion_time > 9000 && motion_time < 11000) {
     cmd.mode = 5;
   }
-  if (motiontime > 11000 && motiontime < 13000) {
+  if (motion_time > 11000 && motion_time < 13000) {
     cmd.mode = 7;
   }
-  if (motiontime > 13000 && motiontime < 15000) {
+  if (motion_time > 13000 && motion_time < 15000) {
     cmd.mode = 6;
   }
-  if (motiontime > 15000 && motiontime < 16000) {
+  if (motion_time > 15000 && motion_time < 16000) {
     cmd.mode = 0;
   }
-  if (motiontime > 16000 && motiontime < 20000) {
+  if (motion_time > 16000 && motion_time < 20000) {
     cmd.mode = 2;
     cmd.gaitType = 2;
     cmd.velocity[0] = 0.4f;
     cmd.yawSpeed = 2;
     cmd.footRaiseHeight = 0.1;
   }
-  if (motiontime > 20000 && motiontime < 22000) {
+  if (motion_time > 20000 && motion_time < 22000) {
     cmd.mode = 0;
     cmd.velocity[0] = 0;
   }
-  if (motiontime > 22000 && motiontime < 26000) {
+  if (motion_time > 22000 && motion_time < 26000) {
     cmd.mode = 2;
     cmd.gaitType = 1;
     cmd.velocity[0] = 0.2f;
@@ -115,18 +126,18 @@ void Custom::RobotControl() {
   }
 
   // straightHand mode usage
-  if (motiontime > 26000 && motiontime < 27000) {
+  if (motion_time > 26000 && motion_time < 27000) {
     cmd.mode = 1;
   }
-  if (motiontime > 27000 && motiontime < 35000) {
+  if (motion_time > 27000 && motion_time < 35000) {
     cmd.mode = 11;
   }
 
   // jumpYaw mode usage
-  if (motiontime > 35000 && motiontime < 36000) {
+  if (motion_time > 35000 && motion_time < 36000) {
     cmd.mode = 1;
   }
-  if (motiontime > 36000 && motiontime < 37000) {
+  if (motion_time > 36000 && motion_time < 37000) {
     cmd.mode = 10;
   }
 

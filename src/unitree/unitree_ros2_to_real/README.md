@@ -97,11 +97,7 @@ Before you do high level or low level control, you should run the `ros2_udp` nod
 
 ```
 ros2 run unitree_legged_real ros2_udp highlevel
-```
-
-or
-
-```
+# or
 ros2 run unitree_legged_real ros2_udp lowlevel
 ```
 
@@ -111,11 +107,6 @@ In the high level mode, you can run the node `ros2_walk_example`
 
 ```
 ros2 run unitree_legged_real ros2_walk_example
-```
-
-In the low level mode, you can run the node `ros2_position_example`
-
-```
 ros2 run unitree_legged_real ros2_position_example
 ```
 

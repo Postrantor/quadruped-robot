@@ -1,0 +1,13 @@
+{
+  "python.autoComplete.extraPaths": [
+    "/home/trantor/project/unitree_ws/devel/lib/python3/dist-packages",
+    "/opt/ros/noetic/lib/python3/dist-packages",
+    "/home/trantor/.local/bin"
+  ],
+  "python.analysis.extraPaths": [
+    "/home/trantor/project/unitree_ws/devel/lib/python3/dist-packages",
+    "/opt/ros/noetic/lib/python3/dist-packages",
+    "/home/trantor/.local/bin"
+  ],
+  "ros.distro": "noetic"
+}

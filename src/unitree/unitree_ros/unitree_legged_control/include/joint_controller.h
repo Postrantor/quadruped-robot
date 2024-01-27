@@ -1,7 +1,13 @@
-/************************************************************************
-Copyright (c) 2018-2019, Unitree Robotics.Co.Ltd. All rights reserved.
-Use of this source code is governed by the MPL-2.0 license, see LICENSE.
-************************************************************************/
+/**
+ * @file joint_controller.h
+ * @author your name (you@domain.com)
+ * @brief
+ * @version 0.1
+ * @date 2024-01-28
+ *
+ * @copyright Copyright (c) 2024
+ *
+ */
 
 #ifndef _UNITREE_ROS_JOINT_CONTROLLER_H_
 #define _UNITREE_ROS_JOINT_CONTROLLER_H_
@@ -9,24 +15,20 @@ Use of this source code is governed by the MPL-2.0 license, see LICENSE.
 #include <boost/scoped_ptr.hpp>
 #include <boost/thread/condition.hpp>
 
-#include <ros/node_handle.h>
-#include <urdf/model.h>
-#include <control_toolbox/pid.h>
-#include <realtime_tools/realtime_publisher.h>
-#include <realtime_tools/realtime_buffer.h>
-#include <controller_interface/controller.h>
-#include <hardware_interface/joint_command_interface.h>
+#include "ros/node_handle.h"
+#include "urdf/model.h"
+#include "control_toolbox/pid.h"
+#include "realtime_tools/realtime_publisher.h"
+#include "realtime_tools/realtime_buffer.h"
+#include "controller_interface/controller.h"
+#include "hardware_interface/joint_command_interface.h"
 
 #include <std_msgs/Float64.h>
 #include <geometry_msgs/WrenchStamped.h>
 #include "unitree_legged_msgs/MotorCmd.h"
 #include "unitree_legged_msgs/MotorState.h"
-#include "unitree_joint_control_tool.h"
 
-#define PMSM (0x0A)
-#define BRAKE (0x00)
-#define PosStopF (2.146E+9f)
-#define VelStopF (16000.0f)
+#include "unitree_joint_control_tool.h"
 
 namespace unitree_legged_control {
 
@@ -41,21 +43,22 @@ private:
       controller_state_publisher_;
 
 public:
+  UnitreeJointController();
+  ~UnitreeJointController();
+
   // bool start_up;
   std::string name_space;
   std::string joint_name;
   float sensor_torque;
   bool isHip, isThigh, isCalf, rqtTune;
   urdf::JointConstSharedPtr joint_urdf;
-  realtime_tools::RealtimeBuffer<unitree_legged_msgs::MotorCmd> command;
 
+  // pub?
+  realtime_tools::RealtimeBuffer<unitree_legged_msgs::MotorCmd> command;
   unitree_legged_msgs::MotorCmd lastCmd;
   unitree_legged_msgs::MotorState lastState;
 
   ServoCmd servoCmd;
-
-  UnitreeJointController();
-  ~UnitreeJointController();
 
   virtual bool init(hardware_interface::EffortJointInterface *robot, ros::NodeHandle &n);
   virtual void starting(const ros::Time &time);
@@ -64,6 +67,7 @@ public:
 
   void setTorqueCB(const geometry_msgs::WrenchStampedConstPtr &msg);
   void setCommandCB(const unitree_legged_msgs::MotorCmdConstPtr &msg);
+
   void positionLimits(double &position);
   void velocityLimits(double &velocity);
   void effortLimits(double &effort);
@@ -75,8 +79,19 @@ public:
       const double &i_max,
       const double &i_min,
       const bool &antiwindup = false);
-  void getGains(double &p, double &i, double &d, double &i_max, double &i_min, bool &antiwindup);
-  void getGains(double &p, double &i, double &d, double &i_max, double &i_min);
+  void getGains(
+      double &p,      //
+      double &i,      //
+      double &d,      //
+      double &i_max,  //
+      double &i_min,  //
+      bool &antiwindup);
+  void getGains(
+      double &p,      //
+      double &i,      //
+      double &d,      //
+      double &i_max,  //
+      double &i_min);
 };
 }  // namespace unitree_legged_control
 

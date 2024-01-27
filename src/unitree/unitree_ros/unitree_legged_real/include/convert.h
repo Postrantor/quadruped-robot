@@ -106,6 +106,35 @@ UNITREE_LEGGED_SDK::LowCmd rosMsg2Cmd(const unitree_legged_msgs::LowCmd::ConstPt
   return cmd;
 }
 
+UNITREE_LEGGED_SDK::HighCmd rosMsg2Cmd(const geometry_msgs::Twist::ConstPtr &msg) {
+  UNITREE_LEGGED_SDK::HighCmd cmd;
+  cmd.head[0] = 0xFE;
+  cmd.head[1] = 0xEF;
+  cmd.levelFlag = UNITREE_LEGGED_SDK::HIGHLEVEL;
+  cmd.mode = 0;
+  cmd.gaitType = 0;
+  cmd.speedLevel = 0;
+  cmd.footRaiseHeight = 0;
+  cmd.bodyHeight = 0;
+  cmd.euler[0] = 0;
+  cmd.euler[1] = 0;
+  cmd.euler[2] = 0;
+
+  cmd.velocity[0] = 0.0f;
+  cmd.velocity[1] = 0.0f;
+  cmd.yawSpeed = 0.0f;
+
+  cmd.reserve = 0;
+
+  cmd.velocity[0] = msg->linear.x;
+  cmd.velocity[1] = msg->linear.y;
+  cmd.yawSpeed = msg->angular.z;
+
+  cmd.mode = 2;
+  cmd.gaitType = 1;
+  return cmd;
+}
+
 unitree_legged_msgs::MotorState state2rosMsg(UNITREE_LEGGED_SDK::MotorState &state) {
   unitree_legged_msgs::MotorState ros_msg;
   ros_msg.mode = state.mode;
@@ -225,31 +254,6 @@ unitree_legged_msgs::HighState state2rosMsg(UNITREE_LEGGED_SDK::HighState &state
   ros_msg.reserve = state.reserve;
   ros_msg.crc = state.crc;
   return ros_msg;
-}
-
-UNITREE_LEGGED_SDK::HighCmd rosMsg2Cmd(const geometry_msgs::Twist::ConstPtr &msg) {
-  UNITREE_LEGGED_SDK::HighCmd cmd;
-  cmd.head[0] = 0xFE;
-  cmd.head[1] = 0xEF;
-  cmd.levelFlag = UNITREE_LEGGED_SDK::HIGHLEVEL;
-  cmd.mode = 0;
-  cmd.gaitType = 0;
-  cmd.speedLevel = 0;
-  cmd.footRaiseHeight = 0;
-  cmd.bodyHeight = 0;
-  cmd.euler[0] = 0;
-  cmd.euler[1] = 0;
-  cmd.euler[2] = 0;
-  cmd.velocity[0] = 0.0f;
-  cmd.velocity[1] = 0.0f;
-  cmd.yawSpeed = 0.0f;
-  cmd.reserve = 0;
-  cmd.velocity[0] = msg->linear.x;
-  cmd.velocity[1] = msg->linear.y;
-  cmd.yawSpeed = msg->angular.z;
-  cmd.mode = 2;
-  cmd.gaitType = 1;
-  return cmd;
 }
 
 #endif  // _CONVERT_H_

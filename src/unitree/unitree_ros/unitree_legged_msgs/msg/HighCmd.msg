@@ -8,7 +8,7 @@ uint16 bandWidth
 uint8 mode
 
 uint8 gaitType
-uint8 speedLeve
+uint8 speedLevel
 float32 footRaiseHeight
 float32 bodyHeight
 float32[2] position

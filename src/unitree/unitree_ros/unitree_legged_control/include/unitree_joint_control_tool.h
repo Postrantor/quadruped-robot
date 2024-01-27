@@ -1,7 +1,13 @@
-/************************************************************************
-Copyright (c) 2018-2019, Unitree Robotics.Co.Ltd. All rights reserved.
-Use of this source code is governed by the MPL-2.0 license, see LICENSE.
-************************************************************************/
+/**
+ * @file unitree_joint_control_tool.h
+ * @author your name (you@domain.com)
+ * @brief
+ * @version 0.1
+ * @date 2024-01-28
+ *
+ * @copyright Copyright (c) 2024
+ *
+ */
 
 // #ifndef _UNITREE_JOINT_CONTROL_TOOL_H_
 // #define _UNITREE_JOINT_CONTROL_TOOL_H_
@@ -13,8 +19,13 @@ Use of this source code is governed by the MPL-2.0 license, see LICENSE.
 #include <algorithm>
 #include <math.h>
 
-#define posStopF (2.146E+9f)  // stop position control mode
-#define velStopF (16000.0f)   // stop velocity control mode
+#include "unitree_legged_sdk/unitree_legged_sdk.h"
+
+// Servo: 0x0A, Damping: 0x00
+#define PMSM (0x0A)
+#define BRAKE (0x00)
+// #define PosStopF (2.146E+9f)
+// #define VelStopF (16000.0f)
 
 typedef struct {
   uint8_t mode;
@@ -25,12 +36,12 @@ typedef struct {
   double torque;
 } ServoCmd;
 
-double clamp(double&, double, double);  // eg. clamp(1.5, -1, 1) = 1
+// eg. clamp(1.5, -1, 1) = 1
+double clamp(double&, double, double);
+// get current velocity
 double computeVel(
-    double current_position,
-    double last_position,
-    double last_velocity,
-    double duration);  // get current velocity
-double computeTorque(double current_position, double current_velocity, ServoCmd&);  // get torque
+    double current_position, double last_position, double last_velocity, double duration);
+// get torque
+double computeTorque(double current_position, double current_velocity, ServoCmd&);
 
 #endif

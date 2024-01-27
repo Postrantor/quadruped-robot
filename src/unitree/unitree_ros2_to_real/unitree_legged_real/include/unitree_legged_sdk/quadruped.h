@@ -1,33 +1,35 @@
-/**********************************************************************
- Copyright (c) 2020-2023, Unitree Robotics.Co.Ltd. All rights reserved.
-***********************************************************************/
+/**
+ * @file quadruped.h
+ * @author your name (you@domain.com)
+ * @brief
+ * @version 0.1
+ * @date 2024-01-27
+ *
+ * @copyright Copyright (c) 2024
+ *
+ */
 
 #ifndef _UNITREE_LEGGED_QUADRUPED_H_
 #define _UNITREE_LEGGED_QUADRUPED_H_
 
 #include <string>
 
-using namespace std;
-
 namespace UNITREE_LEGGED_SDK {
 
-enum class LeggedType {
-  Aliengo,
-  A1,
-  Go1,
-  B1
-};
+enum class LeggedType { Aliengo, A1, Go1, B1 };
 
-string VersionSDK();
+std::string VersionSDK();
 int InitEnvironment();  // memory lock
 
 // definition of each leg and joint
-constexpr int FR_ = 0;  // leg index
+// leg index
+constexpr int FR_ = 0;
 constexpr int FL_ = 1;
 constexpr int RR_ = 2;
 constexpr int RL_ = 3;
 
-constexpr int FR_0 = 0;  // joint index
+// joint index
+constexpr int FR_0 = 0;
 constexpr int FR_1 = 1;
 constexpr int FR_2 = 2;
 

@@ -1,10 +1,19 @@
-/*****************************************************************
-Copyright (c) 2020, Unitree Robotics.Co.Ltd. All rights reserved.
-*****************************************************************/
+/**
+ * @file joystick.h
+ * @author your name (you@domain.com)
+ * @brief
+ * @version 0.1
+ * @date 2024-01-27
+ *
+ * @copyright Copyright (c) 2024
+ *
+ */
+
 #ifndef _UNITREE_LEGGED_JOYSTICK_H_
 #define _UNITREE_LEGGED_JOYSTICK_H_
 
 #include <stdint.h>
+
 // 16b
 typedef union {
   struct {

@@ -1,11 +1,19 @@
-/**********************************************************************
- Copyright (c) 2020-2023, Unitree Robotics.Co.Ltd. All rights reserved.
-***********************************************************************/
+/**
+ * @file example_torque.cpp
+ * @author your name (you@domain.com)
+ * @brief
+ * @version 0.1
+ * @date 2024-01-28
+ *
+ * @copyright Copyright (c) 2024
+ *
+ */
 
-#include "unitree_legged_sdk/unitree_legged_sdk.h"
 #include <math.h>
 #include <iostream>
 #include <unistd.h>
+
+#include "unitree_legged_sdk/unitree_legged_sdk.h"
 
 using namespace UNITREE_LEGGED_SDK;
 
@@ -22,7 +30,7 @@ public:
   UDP udp;
   LowCmd cmd = {0};
   LowState state = {0};
-  int motiontime = 0;
+  int motion_time = 0;
   float dt = 0.002;  // 0.001~0.01
 };
 
@@ -31,7 +39,7 @@ void Custom::UDPRecv() { udp.Recv(); }
 void Custom::UDPSend() { udp.Send(); }
 
 void Custom::RobotControl() {
-  motiontime++;
+  motion_time++;
   udp.GetRecv(state);
   // gravity compensation
   cmd.motorCmd[FR_0].tau = -0.65f;
@@ -39,7 +47,7 @@ void Custom::RobotControl() {
   cmd.motorCmd[RR_0].tau = -0.65f;
   cmd.motorCmd[RL_0].tau = +0.65f;
 
-  if (motiontime >= 500) {
+  if (motion_time >= 500) {
     float torque = (0 - state.motorState[FR_1].q) * 10.0f + (0 - state.motorState[FR_1].dq) * 1.0f;
     if (torque > 5.0f) torque = 5.0f;
     if (torque < -5.0f) torque = -5.0f;
@@ -57,12 +65,12 @@ void Custom::RobotControl() {
 }
 
 int main(void) {
-  std::cout << "Communication level is set to LOW-level." << std::endl
-            << "WARNING: Make sure the robot is hung up." << std::endl
-            << "NOTE: The robot also needs to be set to LOW-level mode, otherwise it will make "
+  std::cout << "communication level is set to low-level." << std::endl
+            << "warning: make sure the robot is hung up." << std::endl
+            << "note: the robot also needs to be set to low-level mode, otherwise it will make "
                "strange noises and this example will not run successfully! "
             << std::endl
-            << "Press Enter to continue..." << std::endl;
+            << "press enter to continue..." << std::endl;
   std::cin.ignore();
 
   Custom custom(LOWLEVEL);

@@ -1,6 +1,13 @@
-/**********************************************************************
- Copyright (c) 2020-2023, Unitree Robotics.Co.Ltd. All rights reserved.
-***********************************************************************/
+/**
+ * @file loop.h
+ * @author your name (you@domain.com)
+ * @brief
+ * @version 0.1
+ * @date 2024-01-27
+ *
+ * @copyright Copyright (c) 2024
+ *
+ */
 
 #ifndef _UNITREE_LEGGED_LOOP_H_
 #define _UNITREE_LEGGED_LOOP_H_
@@ -21,7 +28,7 @@ constexpr int THREAD_PRIORITY = 95;  // real-time priority
 typedef boost::function<void()> Callback;
 
 class Loop {
- public:
+public:
   Loop(std::string name, float period, int bindCPU = -1)
       : _name(name), _period(period), _bindCPU(bindCPU) {}
   ~Loop();
@@ -29,7 +36,7 @@ class Loop {
   void shutdown();
   virtual void functionCB() = 0;
 
- private:
+private:
   void entryFunc();
 
   std::string _name;
@@ -41,18 +48,17 @@ class Loop {
 };
 
 /*
-  period     unit:second
-  bindCPU    change the CPU affinity of this thread
+  period unit:second
+  bindCPU change the CPU affinity of this thread
 */
 class LoopFunc : public Loop {
- public:
-  LoopFunc(std::string name, float period, const Callback& _cb)
-      : Loop(name, period), _fp(_cb) {}
+public:
+  LoopFunc(std::string name, float period, const Callback& _cb) : Loop(name, period), _fp(_cb) {}
   LoopFunc(std::string name, float period, int bindCPU, const Callback& _cb)
       : Loop(name, period, bindCPU), _fp(_cb) {}
   void functionCB() { (_fp)(); }
 
- private:
+private:
   boost::function<void()> _fp;
 };
 

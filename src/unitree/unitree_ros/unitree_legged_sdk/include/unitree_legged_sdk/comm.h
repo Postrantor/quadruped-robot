@@ -162,17 +162,17 @@ typedef struct {
   uint16_t bandWidth;               // reserve
   uint8_t mode;                     // 0. idle, default stand
                                     // 1. force stand (controlled by dBodyHeight + ypr)
-                 // 2. target velocity walking (controlled by velocity + yawSpeed)
-                 // 3. target position walking (controlled by position + ypr[0]), reserve
-                 // 4. path mode walking (reserve for future release), reserve
-                 // 5. position stand down.
-                 // 6. position stand up
-                 // 7. damping mode
-                 // 8. recovery stand
-                 // 9. backflip, reserve
-                 // 10. jumpYaw, only left direction. Note, to use this mode, you need to set mode =
-                 // 1 first.
-                 // 11. straightHand. Note, to use this mode, you need to set mode = 1 first.
+  // 2. target velocity walking (controlled by velocity + yawSpeed)
+  // 3. target position walking (controlled by position + ypr[0]), reserve
+  // 4. path mode walking (reserve for future release), reserve
+  // 5. position stand down.
+  // 6. position stand up
+  // 7. damping mode
+  // 8. recovery stand
+  // 9. backflip, reserve
+  // 10. jumpYaw, only left direction. Note, to use this mode, you need to set mode =
+  // 1 first.
+  // 11. straightHand. Note, to use this mode, you need to set mode = 1 first.
 
   uint8_t gaitType;       // 0.idle
                           // 1.trot
