@@ -9,5 +9,11 @@
     "/opt/ros/noetic/lib/python3/dist-packages",
     "/home/trantor/.local/bin"
   ],
-  "ros.distro": "noetic"
+  "ros.distro": "noetic",
+  "files.associations": {
+    "*.m": "matlab",
+    ".clang-format": "markdown",
+    "typeindex": "cpp",
+    "typeinfo": "cpp"
+  }
 }

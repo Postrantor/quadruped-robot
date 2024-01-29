@@ -74,18 +74,18 @@ typedef struct {
 #pragma pack()
 #pragma pack(1)
 
-typedef struct {    // 以 4个字节一组排列 ，不然编译器会凑整
+typedef struct {
+  // 以 4个字节一组排列 ，不然编译器会凑整
   uint8_t mode;     // 当前关节模式
-  uint8_t ReadBit;  // 电机控制参数修改     是否成功位
+  uint8_t ReadBit;  // 电机控制参数修改，是否成功位
   int8_t Temp;      // 电机当前平均温度
   uint8_t MError;   // 电机错误 标识
 
   COMData32 Read;  // 读取的当前 电机 的控制数据
-  int16_t T;       // 当前实际电机输出力矩       7 + 8 描述
 
+  int16_t T;       // 当前实际电机输出力矩       7 + 8 描述
   int16_t W;  // 当前实际电机速度（高速）   8 + 7 描述
   float LW;   // 当前实际电机速度（低速）
-
   int16_t W2;  // 当前实际关节速度（高速）   8 + 7 描述
   float LW2;   // 当前实际关节速度（低速）
 

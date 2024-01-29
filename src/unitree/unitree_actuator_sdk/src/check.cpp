@@ -23,16 +23,9 @@ int main() {
   //接收参数
   MOTOR_recv motor_r;
   //文件ID
-#if defined(__linux__)
   int fd;
 
-#elif defined(__WIN32__)
-  HANDLE fd;
-
-#endif
-
   fd = open_set((char*)"/dev/ttyUSB0");
-  // fd = open_set((char*)"\\\\.\\COM4");
 
   modify_data(&motor_s);
   modify_data(&motor_s1);
@@ -60,9 +53,5 @@ int main() {
   // show_resv_data(&motor_r);
 
   close_serial(fd);
-#if defined(__WIN32__)
-  system("pause");
-#endif
-
   return 0;
 }
