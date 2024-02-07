@@ -11,14 +11,14 @@
 
 #include <cmath>
 
+#include "convert.h"
 #include "rclcpp/rclcpp.hpp"
+#include "unitree_legged_sdk/unitree_legged_sdk.h"
+
 #include "ros2_unitree_legged_msgs/msg/high_cmd.hpp"
 #include "ros2_unitree_legged_msgs/msg/high_state.hpp"
 #include "ros2_unitree_legged_msgs/msg/low_cmd.hpp"
 #include "ros2_unitree_legged_msgs/msg/low_state.hpp"
-#include "unitree_legged_sdk/unitree_legged_sdk.h"
-
-#include "convert.h"
 
 using namespace UNITREE_LEGGED_SDK;
 
@@ -85,7 +85,6 @@ int main(int argc, char **argv) {
       low_cmd_ros.motor_cmd[FR_1].dq = 0.0;
       low_cmd_ros.motor_cmd[FR_1].kp = 5.0;
       low_cmd_ros.motor_cmd[FR_1].kd = 1.0;
-
     }
     count++;
     if (count > 10) {

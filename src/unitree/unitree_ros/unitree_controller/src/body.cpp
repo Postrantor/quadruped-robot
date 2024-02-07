@@ -14,6 +14,7 @@
 namespace unitree_model {
 
 ros::Publisher servo_pub[12];
+
 unitree_legged_msgs::LowCmd lowCmd;
 unitree_legged_msgs::LowState lowState;
 
@@ -28,11 +29,13 @@ void paramInit() {
     lowCmd.motorCmd[i * 3 + 0].dq = 0;
     lowCmd.motorCmd[i * 3 + 0].Kd = 3;
     lowCmd.motorCmd[i * 3 + 0].tau = 0;
+
     lowCmd.motorCmd[i * 3 + 1].mode = 0x0A;
     lowCmd.motorCmd[i * 3 + 1].Kp = 180;
     lowCmd.motorCmd[i * 3 + 1].dq = 0;
     lowCmd.motorCmd[i * 3 + 1].Kd = 8;
     lowCmd.motorCmd[i * 3 + 1].tau = 0;
+
     lowCmd.motorCmd[i * 3 + 2].mode = 0x0A;
     lowCmd.motorCmd[i * 3 + 2].Kp = 300;
     lowCmd.motorCmd[i * 3 + 2].dq = 0;
@@ -67,7 +70,9 @@ void sendServoCmd() {
 
 void moveAllPosition(double* targetPos, double duration) {
   double pos[12], lastPos[12], percent;
-  for (int j = 0; j < 12; j++) lastPos[j] = lowState.motorState[j].q;
+  for (int j = 0; j < 12; j++) {
+    lastPos[j] = lowState.motorState[j].q;
+  }
   for (int i = 1; i <= duration; i++) {
     if (!ros::ok()) break;
     percent = (double)i / duration;

@@ -19,6 +19,7 @@
 #include "unitree_legged_msgs/HighState.h"
 
 #include "unitree_legged_sdk/unitree_legged_sdk.h"
+
 // Servo: 0x0A, Damping: 0x00
 #define PosStopF (2.146E+9f)
 #define VelStopF (16000.0f)

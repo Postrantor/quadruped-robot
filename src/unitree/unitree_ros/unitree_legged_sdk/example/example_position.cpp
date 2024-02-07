@@ -1,6 +1,13 @@
-/**********************************************************************
- Copyright (c) 2020-2023, Unitree Robotics.Co.Ltd. All rights reserved.
-***********************************************************************/
+/**
+ * @file example_position.cpp
+ * @author your name (you@domain.com)
+ * @brief
+ * @version 0.1
+ * @date 2024-02-07
+ *
+ * @copyright Copyright (c) 2024
+ *
+ */
 
 #include "unitree_legged_sdk/unitree_legged_sdk.h"
 #include <math.h>
@@ -126,16 +133,16 @@ void Custom::RobotControl() {
 }
 
 int main(void) {
-  std::cout << "Communication level is set to LOW-level." << std::endl
-            << "WARNING: Make sure the robot is hung up." << std::endl
-            << "NOTE: The robot also needs to be set to LOW-level mode, otherwise it will make "
+  std::cout << "communication level is set to low-level." << std::endl
+            << "warning: make sure the robot is hung up." << std::endl
+            << "note: the robot also needs to be set to low-level mode, otherwise it will make "
                "strange noises and this example will not run successfully! "
             << std::endl
-            << "Press Enter to continue..." << std::endl;
+            << "press enter to continue..." << std::endl;
   std::cin.ignore();
 
-  Custom custom(LOWLEVEL);
   // InitEnvironment();
+  Custom custom(LOWLEVEL);
   LoopFunc loop_control("control_loop", custom.dt, boost::bind(&Custom::RobotControl, &custom));
   LoopFunc loop_udpSend("udp_send", custom.dt, 3, boost::bind(&Custom::UDPSend, &custom));
   LoopFunc loop_udpRecv("udp_recv", custom.dt, 3, boost::bind(&Custom::UDPRecv, &custom));

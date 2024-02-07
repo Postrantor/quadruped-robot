@@ -24,7 +24,7 @@ Including the library files of Linux and Windows separately. If you wish to use 
 
 Including the head files. Where `LSerial.h` contains the declarations of serial port operation functions. The `motor_msg.h` contains the command structure for motor communication. The `motor_ctrl.h` contains the encoding and decoding functions.
 
-> 包括头文件。其中“LSerial.h”包含串行端口操作函数的声明。“motor_msg.h”包含用于电机通信的命令结构。“motor_ctrl.h”包含编码和解码功能。
+> 包括头文件。其中`LSerial.h`包含串行端口操作函数的声明。`motor_msg.h`包含用于电机通信的命令结构。`motor_ctrl.h`包含编码和解码功能。
 
 ## /ChangeID_Tool
 
@@ -42,7 +42,7 @@ Including the example source files of C and C++. The example can control motors 
 
 Including the example source files of Python. This example's function is same with the C/C++ example. The `typedef.py` declares the data structure of all library functions and structures in Python style, so that the `check.py` can call the library correctly.
 
-> 包括 Python 的示例源文件。此示例的功能与 C/C++示例相同。“typedef.py”以 Python 样式声明所有库函数和结构的数据结构，这样“check.py”就可以正确地调用库。
+> 包括 Python 的示例源文件。此示例的功能与 C/C++示例相同。`typedef.py`以 Python 样式声明所有库函数和结构的数据结构，这样`check.py`就可以正确地调用库。
 
 ## /unitree_motor_ctrl
 
@@ -142,7 +142,7 @@ rosrun unitree_motor_ctrl check.py
 
 We take MinGW as an example. First, select the "MinGW Makefiles" in CMake GUI and generate the makefiles to `build` directory. Then open the cmd.exe, run:
 
-> 我们以 MinGW 为例。首先，在 CMake GUI 中选择“MinGW Makefiles”，并将 Makefiles 生成到“build”目录。然后打开 cmd.exe，运行：
+> 我们以 MinGW 为例。首先，在 CMake GUI 中选择`MinGW Makefiles`，并将 Makefiles 生成到`build`目录。然后打开 cmd.exe，运行：
 
 ```bash
 cd build

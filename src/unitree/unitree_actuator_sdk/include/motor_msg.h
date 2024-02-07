@@ -1,3 +1,14 @@
+/**
+ * @file motor_msg.h
+ * @author your name (you@domain.com)
+ * @brief
+ * @version 0.1
+ * @date 2024-02-06
+ *
+ * @copyright Copyright (c) 2024
+ *
+ */
+
 #ifndef MOTOR_MSG
 #define MOTOR_MSG
 
@@ -6,18 +17,8 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+
 typedef int16_t q15_t;
-
-#pragma pack(1)
-
-// 发送用单个数据数据结构
-typedef union {
-  int32_t L;
-  uint8_t u8[4];
-  uint16_t u16[2];
-  uint32_t u32;
-  float F;
-} COMData32;
 
 // 定义数据包头
 typedef struct {
@@ -26,8 +27,14 @@ typedef struct {
   unsigned char reserved;
 } COMHead;
 
-#pragma pack()
-#pragma pack(1)
+// 发送用单个数据，数据结构
+typedef union {
+  int32_t L;
+  uint8_t u8[4];
+  uint16_t u16[2];
+  uint32_t u32;
+  float F;
+} COMData32;
 
 typedef struct {
   uint8_t fan_d;   // 关节上的散热风扇转速
@@ -38,7 +45,6 @@ typedef struct {
 } LowHzMotorCmd;
 
 typedef struct {
-  // 以 4个字节一组排列 ，不然编译器会凑整
   uint8_t mode;       // 关节模式选择
   uint8_t ModifyBit;  // 电机控制参数修改位
   uint8_t ReadBit;    // 电机控制参数发送位
@@ -49,7 +55,7 @@ typedef struct {
   //实际给FOC的指令力矩为：K_P*delta_Pos + K_W*delta_W + T
   // 期望关节的输出力矩（电机本身的力矩）x256, 7 + 8 描述
   q15_t T;
-  // 期望关节速度 （电机本身的速度） x128,       8 + 7描述
+  // 期望关节速度 （电机本身的速度） x128, 8 + 7描述
   q15_t W;
   // 期望关节位置 x 16384/6.2832, 14位编码器（主控0点修正，电机关节还是以编码器0点为准）
   int32_t Pos;
@@ -61,7 +67,7 @@ typedef struct {
   uint8_t LowHzMotorCmdIndex;  // 电机低频率控制命令的索引, 0-7, 分别代表LowHzMotorCmd中的8个字节
   uint8_t LowHzMotorCmdByte;  // 电机低频率控制命令的字节
 
-  COMData32 Res[1];  // 通讯 保留字节  用于实现别的一些通讯内容
+  COMData32 Res[1];  // 通讯保留字节用于实现别的一些通讯内容
 } MasterComdV3;      // 加上数据包的包头 和CRC 34字节
 
 // 电机控制命令数据包
@@ -71,11 +77,7 @@ typedef struct {
   COMData32 CRCdata;
 } MasterComdDataV3;  //返回数据
 
-#pragma pack()
-#pragma pack(1)
-
 typedef struct {
-  // 以 4个字节一组排列 ，不然编译器会凑整
   uint8_t mode;     // 当前关节模式
   uint8_t ReadBit;  // 电机控制参数修改，是否成功位
   int8_t Temp;      // 电机当前平均温度
@@ -83,9 +85,9 @@ typedef struct {
 
   COMData32 Read;  // 读取的当前 电机 的控制数据
 
-  int16_t T;       // 当前实际电机输出力矩       7 + 8 描述
-  int16_t W;  // 当前实际电机速度（高速）   8 + 7 描述
-  float LW;   // 当前实际电机速度（低速）
+  int16_t T;   // 当前实际电机输出力矩       7 + 8 描述
+  int16_t W;   // 当前实际电机速度（高速）   8 + 7 描述
+  float LW;    // 当前实际电机速度（低速）
   int16_t W2;  // 当前实际关节速度（高速）   8 + 7 描述
   float LW2;   // 当前实际关节速度（低速）
 
@@ -120,9 +122,8 @@ typedef struct {
   COMData32 CRCdata;
 } ServoComdDataV3;  //发送数据
 
-#pragma pack()
-
 #ifdef __cplusplus
 }
 #endif
+
 #endif

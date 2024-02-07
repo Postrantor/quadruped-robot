@@ -10,9 +10,9 @@ using namespace UNITREE_LEGGED_SDK;
 int main(int argc, char **argv) {
   ros::init(argc, argv, "example_postition_without_lcm");
 
-  std::cout << "Communication level is set to LOW-level." << std::endl
-            << "WARNING: Make sure the robot is hung up." << std::endl
-            << "Press Enter to continue..." << std::endl;
+  std::cout << "communication level is set to low-level." << std::endl
+            << "warning: make sure the robot is hung up." << std::endl
+            << "press enter to continue..." << std::endl;
   std::cin.ignore();
 
   ros::NodeHandle nh;

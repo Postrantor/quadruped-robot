@@ -29,10 +29,11 @@ UnitreeJointController::~UnitreeJointController() {
 }
 
 void UnitreeJointController::setTorqueCB(const geometry_msgs::WrenchStampedConstPtr &msg) {
-  if (isHip)
+  if (isHip) {
     sensor_torque = msg->wrench.torque.x;
-  else
+  } else {
     sensor_torque = msg->wrench.torque.y;
+  }
   std::cout << "sensor torque: " << sensor_torque << std::endl;
 }
 
@@ -50,8 +51,9 @@ void UnitreeJointController::setCommandCB(const unitree_legged_msgs::MotorCmdCon
 }
 
 // Controller initialization in non-realtime
-bool UnitreeJointController::init(hardware_interface::EffortJointInterface *robot,  //
-                                      ros::NodeHandle &n) {
+bool UnitreeJointController::init(
+    hardware_interface::EffortJointInterface *robot,  //
+    ros::NodeHandle &n) {
   isHip = false;
   isThigh = false;
   isCalf = false;
