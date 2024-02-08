@@ -47,8 +47,8 @@ install(
 )
 
 install(
-    DIRECTORY lib
-    DESTINATION lib
+    DIRECTORY lib DESTINATION .
+    DIRECTORY include DESTINATION .
 )
 
 # ament_package()
