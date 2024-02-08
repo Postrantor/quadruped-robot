@@ -44,33 +44,6 @@ Including the example source files of Python. This example's function is same wi
 
 > 包括 Python 的示例源文件。此示例的功能与 C/C++示例相同。`typedef.py`以 Python 样式声明所有库函数和结构的数据结构，这样`check.py`就可以正确地调用库。
 
-## /unitree_motor_ctrl
-
-It is a package of ROS and the library file is just the library file of Linux.
-
-> 它是 ROS 的一个包，库文件只是 Linux 的库文件。
-
-## /build
-
-Build directory
-
-## /bin
-
-The directory of final executable file.
-
-# Usage
-
-## C/C++ under Liunx
-
-### Build
-
-```bash
-mkdir build
-cd build
-cmake ..
-make
-```
-
 ### Run
 
 ```bash

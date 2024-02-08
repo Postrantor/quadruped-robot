@@ -2,6 +2,16 @@
 tip: translate by baidu@2024-01-26 20:02:43
 ---
 
+```sh
+apt install liblcm-dev
+```
+
+```sh
+apt install ros-humble-map-msgs
+```
+
+---
+
 # Introduction
 
 This package can send control command to real robot from ROS2. You can do low-level control(namely control all joints on robot) and high-level control(namely control the walking direction and speed of robot).
@@ -40,7 +50,7 @@ After you download this package into this folder, your folder should be like thi
 
 > 将此软件包下载到此文件夹后，您的文件夹应该是这样的
 
-```
+```sh
 ~/ros2_ws/src/unitree_ros2_to_real
 ```
 
@@ -64,7 +74,7 @@ Then, open the `ipconfig.sh` file under the folder `unitree_legged_real`, modify
 
 > 然后，打开文件夹`unitree_legged_real`下的`ipconfig.sh`文件，将端口名修改为自己的端口名。并运行以下命令：
 
-```
+```sh
 sudo chmod +x ipconfig.sh
 sudo ./ipconfig.sh
 ```
@@ -74,13 +84,13 @@ If you run the `ifconfig` again, you will find that port has `inet` and `netmask
 > 如果您再次运行“ifconfig”，您会发现端口现在有“inet”和“netmask”。
 > In order to set your port automatically, you can modify `interfaces`:
 
-```
+```sh
 sudo gedit /etc/network/interfaces
 ```
 
 And add the following 4 lines at the end:
 
-```
+```sh
 auto enx000ec6612921
 iface enx000ec6612921 inet static
 address 192.168.123.162
@@ -95,7 +105,7 @@ Before you do high level or low level control, you should run the `ros2_udp` nod
 
 > 在进行高级或低级控制之前，您应该运行“ros2_udp”节点，它是连接用户和机器人的桥梁
 
-```
+```sh
 ros2 run unitree_legged_real ros2_udp highlevel
 # or
 ros2 run unitree_legged_real ros2_udp lowlevel
@@ -105,7 +115,7 @@ it depends which control mode(low level or high level) you want to use.
 
 In the high level mode, you can run the node `ros2_walk_example`
 
-```
+```sh
 ros2 run unitree_legged_real ros2_walk_example
 ros2 run unitree_legged_real ros2_position_example
 ```
