@@ -1,15 +1,8 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(unitree_legged_sdk)
 
 # check arch and os
-message("-- CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
-if("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "x86_64.*")
-  set(ARCH amd64)
-endif()
-if("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "aarch64.*")
-  set(ARCH arm64)
-endif()
-
+set(ARCH arm64)
 include_directories(include)
 link_directories(lib/cpp/${ARCH})
 
@@ -20,15 +13,15 @@ endif()
 
 set(EXTRA_LIBS -pthread libunitree_legged_sdk.a)
 set(CMAKE_CXX_FLAGS "-O3 -fPIC")
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
-find_package(catkin QUIET)
-if(${catkin_FOUND})
-  catkin_package(
-    INCLUDE_DIRS include
-    LIBRARIES ${PROJECT_SOURCE_DIR}/lib/cpp/${ARCH}/libunitree_legged_sdk.a
-  )
-endif()
+find_package(ament_cmake QUIET)
+# if(${catkin_FOUND})
+#   catkin_package(
+#     INCLUDE_DIRS include
+#     LIBRARIES ${PROJECT_SOURCE_DIR}/lib/cpp/${ARCH}/libunitree_legged_sdk.a
+#   )
+# endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
@@ -50,8 +43,13 @@ target_link_libraries(example_joystick ${EXTRA_LIBS})
 
 # install
 install(TARGETS
-  example_position example_velocity example_torque example_walk example_joystick
+    example_position
+    example_velocity
+    example_torque
+    example_walk
+    example_joystick
   DESTINATION bin/unitree)
+
 install(DIRECTORY lib/cpp/${ARCH}/
   DESTINATION lib/unitree
   USE_SOURCE_PERMISSIONS)
