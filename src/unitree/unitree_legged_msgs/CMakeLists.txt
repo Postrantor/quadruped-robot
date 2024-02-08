@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(ros2_unitree_legged_msgs)
 
-# Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()

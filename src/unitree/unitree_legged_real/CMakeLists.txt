@@ -1,21 +1,14 @@
 cmake_minimum_required(VERSION 3.5)
 project(unitree_legged_real)
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(ARCH arm64)
+set(EXTRA_LIBS -pthread libunitree_legged_sdk_${ARCH}.a lcm)
+set(CMAKE_CXX_FLAGS "-O3")
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(ros2_unitree_legged_msgs REQUIRED)
-
-message("-- CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}")
-if("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "x86_64.*")
-  set(ARCH amd64)
-else()
-  set(ARCH arm64)
-endif()
-set(EXTRA_LIBS -pthread libunitree_legged_sdk_${ARCH}.a lcm)
-
-set(CMAKE_CXX_FLAGS "-O3")
+find_package(unitree_legged_sdk REQUIRED)
 
 include_directories(include)
 link_directories(${CMAKE_SOURCE_DIR}/lib/cpp)
@@ -26,17 +19,23 @@ link_directories(${CMAKE_SOURCE_DIR}/lib/cpp)
 
 add_executable(ros2_walk_example src/ros2_walk_example.cpp)
 target_link_libraries(ros2_walk_example ${EXTRA_LIBS})
-ament_target_dependencies(ros2_walk_example rclcpp ros2_unitree_legged_msgs)
+ament_target_dependencies(ros2_walk_example
+  rclcpp
+  ros2_unitree_legged_msgs
+  unitree_legged_sdk)
 
 add_executable(ros2_position_example src/ros2_position_example.cpp)
 target_link_libraries(ros2_position_example ${EXTRA_LIBS})
-ament_target_dependencies(ros2_position_example rclcpp ros2_unitree_legged_msgs)
+ament_target_dependencies(ros2_position_example
+  rclcpp
+  ros2_unitree_legged_msgs
+  unitree_legged_sdk)
 
-install(TARGETS
-  # ros2_udp
-  ros2_walk_example
-  ros2_position_example
-  DESTINATION lib/${PROJECT_NAME}
-)
+install(
+  TARGETS
+    # ros2_udp
+    ros2_walk_example
+    ros2_position_example
+  DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

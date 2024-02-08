@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.5)
 project(unitree_legged_sdk)
 
+set(CMAKE_CXX_FLAGS "-O3 -fPIC")
+set(CMAKE_CXX_STANDARD 17)
+set(EXTRA_LIBS -pthread libunitree_legged_sdk.a)
+
+find_package(ament_cmake REQUIRED)
+
 # check arch and os
 set(ARCH arm64)
 include_directories(include)
@@ -10,20 +16,6 @@ option(PYTHON_BUILD "build python wrapper" OFF)
 if(PYTHON_BUILD)
   add_subdirectory(python_wrapper)
 endif()
-
-set(EXTRA_LIBS -pthread libunitree_legged_sdk.a)
-set(CMAKE_CXX_FLAGS "-O3 -fPIC")
-set(CMAKE_CXX_STANDARD 17)
-
-find_package(ament_cmake QUIET)
-# if(${catkin_FOUND})
-#   catkin_package(
-#     INCLUDE_DIRS include
-#     LIBRARIES ${PROJECT_SOURCE_DIR}/lib/cpp/${ARCH}/libunitree_legged_sdk.a
-#   )
-# endif()
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 # exec
 add_executable(example_position example/example_position.cpp)
@@ -42,14 +34,27 @@ add_executable(example_joystick example/example_joystick.cpp)
 target_link_libraries(example_joystick ${EXTRA_LIBS})
 
 # install
-install(TARGETS
+install(
+  TARGETS
     example_position
     example_velocity
     example_torque
     example_walk
     example_joystick
-  DESTINATION bin/unitree)
+  DESTINATION bin
+)
 
-install(DIRECTORY lib/cpp/${ARCH}/
-  DESTINATION lib/unitree
-  USE_SOURCE_PERMISSIONS)
+install(
+  DIRECTORY lib/cpp/${ARCH}/
+  DESTINATION lib
+)
+
+install(
+  DIRECTORY include
+  DESTINATION .
+)
+
+ament_export_include_directories(include)
+ament_export_libraries(lib/cpp/${ARCH})
+# ament_export_dependencies(unitree_legged_sdk)
+ament_package()
