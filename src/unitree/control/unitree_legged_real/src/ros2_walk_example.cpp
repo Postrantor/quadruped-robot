@@ -128,9 +128,7 @@ int main(int argc, char **argv) {
     }
 
     pub->publish(high_cmd_ros);
-
     rclcpp::spin_some(node);
-
     loop_rate.sleep();
   }
 
