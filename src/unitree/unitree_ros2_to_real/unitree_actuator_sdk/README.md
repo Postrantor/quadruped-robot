@@ -28,6 +28,6 @@ sudo ./example_a1_motor
 
 If you need to run the Python example, please enter the "python" folder. Then run the examples with 'sudo', for example:
 
-```python
+```sh
 sudo python3 example_a1_motor.py
 ```

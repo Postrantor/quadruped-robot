@@ -1,4 +1,10 @@
-##
+## build
+
+```sh
+apt install liblcm-dev
+```
+
+## git
 
 ```sh
 git clone https://github.com/unitreerobotics/unitree_guide.git
