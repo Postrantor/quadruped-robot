@@ -20,6 +20,8 @@ public:
   MotorCmd() {}
   MotorType motorType;
   int hex_len;
+  // 电机模式 0:刹车 1:FOC闭环 2:电机标定(发送后等待5sec,期间禁止给电机发送消息)
+  // 电机控制模式，0:空闲, 5:开环缓慢转动, 10:闭环控制
   unsigned short id;
   unsigned short mode;
   float tau;

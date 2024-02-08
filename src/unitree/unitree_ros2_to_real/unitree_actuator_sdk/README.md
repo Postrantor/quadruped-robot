@@ -1,4 +1,13 @@
-# README.md
+## go-m8010-6
+
+support motor: go-m8010-6 motor
+not support motor: a1 motor、 b1 motor (check a1b1 branch for support)
+
+```sh
+cmake -Bbuild .
+cmake --build build
+sudo ./motorctrl
+```
 
 ### Notice
 
