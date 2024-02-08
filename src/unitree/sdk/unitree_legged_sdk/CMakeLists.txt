@@ -7,7 +7,7 @@ set(EXTRA_LIBS -pthread libunitree_legged_sdk.a)
 
 find_package(ament_cmake REQUIRED)
 
-# check arch and os
+# set
 set(ARCH arm64)
 include_directories(include)
 link_directories(lib/cpp/${ARCH})
@@ -54,7 +54,8 @@ install(
   DESTINATION .
 )
 
+# export
 ament_export_include_directories(include)
-ament_export_libraries(lib/cpp/${ARCH})
+ament_export_libraries(unitree_legged_sdk)
 # ament_export_dependencies(unitree_legged_sdk)
 ament_package()

@@ -9,11 +9,12 @@
  *
  */
 
-#include "unitree_legged_sdk/unitree_legged_sdk.h"
 #include <math.h>
 #include <iostream>
 #include <unistd.h>
 #include <string.h>
+
+#include "unitree_legged_sdk/unitree_legged_sdk.h"
 
 using namespace UNITREE_LEGGED_SDK;
 
@@ -145,9 +146,9 @@ void Custom::RobotControl() {
 }
 
 int main(void) {
-  std::cout << "Communication level is set to HIGH-level." << std::endl
-            << "WARNING: Make sure the robot is standing on the ground." << std::endl
-            << "Press Enter to continue..." << std::endl;
+  std::cout << "communication level is set to high-level." << std::endl
+            << "warning: make sure the robot is standing on the ground." << std::endl
+            << "press enter to continue..." << std::endl;
   std::cin.ignore();
 
   Custom custom(HIGHLEVEL);

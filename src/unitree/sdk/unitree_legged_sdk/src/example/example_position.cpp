@@ -9,11 +9,12 @@
  *
  */
 
-#include "unitree_legged_sdk/unitree_legged_sdk.h"
 #include <math.h>
 #include <iostream>
 #include <stdio.h>
 #include <stdint.h>
+
+#include "unitree_legged_sdk/unitree_legged_sdk.h"
 
 using namespace std;
 using namespace UNITREE_LEGGED_SDK;

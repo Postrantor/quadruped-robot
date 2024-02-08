@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.5)
 project(unitree_legged_real)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "-O3 -fPIC")
 set(ARCH arm64)
 set(EXTRA_LIBS -pthread libunitree_legged_sdk_${ARCH}.a lcm)
-set(CMAKE_CXX_FLAGS "-O3")
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
