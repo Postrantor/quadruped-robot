@@ -1,6 +1,6 @@
 #include <pybind11/pybind11.h>
-#include "unitreeMotor/unitreeMotor.h"
-#include "serialPort/SerialPort.h"
+#include "motor/motor_control.hpp"
+#include "serial/serial_port.hpp"
 
 namespace py = pybind11;
 

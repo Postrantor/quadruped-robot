@@ -1,8 +1,7 @@
 #ifndef __UNITREEMOTOR_H
 #define __UNITREEMOTOR_H
 
-#include "unitreeMotor/include/motor_msg_GO-M8010-6.h"
-#include "unitreeMotor/include/motor_msg_A1B1.h"
+#include "motor/motor_msg.hpp"
 
 #include <stdint.h>
 #include <iostream>
@@ -37,7 +36,7 @@ public:
 
 private:
   ControlData_t GO_M8010_6_motor_send_data;
-  MasterComdDataV3 A1B1_motor_send_data;
+  // MasterComdDataV3 A1B1_motor_send_data;
 };
 
 struct MotorData {
@@ -66,7 +65,7 @@ public:
 
 private:
   MotorData_t GO_M8010_6_motor_recv_data;
-  ServoComdDataV3 A1B1_motor_recv_data;
+  // ServoComdDataV3 A1B1_motor_recv_data;
 };
 
 // Utility Function

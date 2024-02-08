@@ -16,9 +16,9 @@
 #include <unistd.h>
 #include <iostream>
 
-#include "serialPort/include/errorClass.h"
-#include "unitreeMotor/unitreeMotor.h"
-#include "IOPort/IOPort.h"
+#include "serial/error_class.hpp"
+#include "serial/io_port.hpp"
+#include "motor/motor_control.hpp"
 
 enum class bytesize_t { fivebits, sixbits, sevenbits, eightbits };
 enum class parity_t { parity_none, parity_odd, parity_even, parity_mark, parity_space };

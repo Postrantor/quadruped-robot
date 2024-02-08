@@ -3,8 +3,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#include "serialPort/SerialPort.h"
-#include "unitreeMotor/unitreeMotor.h"
+#include "serial/serial_port.hpp"
+#include "motor/motor_control.hpp"
 
 #define BroadAllMotorID 0xBB
 #define MotorPulsator 11

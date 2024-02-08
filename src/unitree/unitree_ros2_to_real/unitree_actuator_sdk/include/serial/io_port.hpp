@@ -4,7 +4,8 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <vector>
-#include "unitreeMotor/unitreeMotor.h"
+
+#include "motor/motor_control.hpp"
 
 enum class BlockYN { YES, NO };
 
