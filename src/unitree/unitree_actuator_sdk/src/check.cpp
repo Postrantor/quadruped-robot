@@ -4,7 +4,7 @@
 #include <unistd.h>  //Unix标准函数定义, usleep()
 #include <sys/time.h>
 
-#include "serial/l_serial.hpp"     //串口通信函数
+#include "serial/l_serial.hpp"  //串口通信函数
 #include "serial/motor_ctrl.h"  //声明发送数据、接收数据的结构体，以及函数声明
 
 int main() {
