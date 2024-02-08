@@ -11,10 +11,11 @@ ROS2 也使用 DDS 作为通讯工具，因此 Go2、B2 和 H1 机器人的底�
 ## 系统要求
 
 测试过的系统和 ros2 版本
-|系统|ros2 版本|
-|--|--|
-|Ubuntu 20.04|foxy|
-|Ubuntu 22.04|humble|
+
+| 系统         | ros2 版本 |
+| ------------ | --------- |
+| Ubuntu 20.04 | foxy      |
+| Ubuntu 22.04 | humble    |
 
 以下以 ros2 foxy 为例，如需要其他版本的 ros2，在相应的地方替换 foxy 为当前的 ros2 版本名称即可：
 

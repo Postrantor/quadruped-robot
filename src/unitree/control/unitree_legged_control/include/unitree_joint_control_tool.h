@@ -1,18 +1,5 @@
-/**
- * @file unitree_joint_control_tool.h
- * @author your name (you@domain.com)
- * @brief
- * @version 0.1
- * @date 2024-01-28
- *
- * @copyright Copyright (c) 2024
- *
- */
-
-// #ifndef _UNITREE_JOINT_CONTROL_TOOL_H_
-// #define _UNITREE_JOINT_CONTROL_TOOL_H_
-#ifndef _LAIKAGO_CONTROL_TOOL_H_
-#define _LAIKAGO_CONTROL_TOOL_H_
+#ifndef _UNITREE_JOINT_CONTROL_TOOL_H_
+#define _UNITREE_JOINT_CONTROL_TOOL_H_
 
 #include <stdio.h>
 #include <stdint.h>
@@ -37,11 +24,20 @@ typedef struct {
 } ServoCmd;
 
 // eg. clamp(1.5, -1, 1) = 1
-double clamp(double&, double, double);
+double clamp(
+    double&,  //
+    double,   //
+    double);
 // get current velocity
 double computeVel(
-    double current_position, double last_position, double last_velocity, double duration);
+    double current_position,  //
+    double last_position,     //
+    double last_velocity,     //
+    double duration);
 // get torque
-double computeTorque(double current_position, double current_velocity, ServoCmd&);
+double computeTorque(
+    double current_position,  //
+    double current_velocity,  //
+    ServoCmd&);
 
 #endif

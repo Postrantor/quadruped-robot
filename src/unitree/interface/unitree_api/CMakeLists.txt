@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(unitree_go)
+project(unitree_api)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -23,45 +23,32 @@ find_package(ament_cmake REQUIRED)
 
 find_package(geometry_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
-find_package(rosidl_generator_dds_idl REQUIRED)
+# find_package(rosidl_generator_dds_idl REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
-        "msg/AudioData.msg"
-        "msg/BmsCmd.msg"
-        "msg/BmsState.msg"
-        "msg/Error.msg"
-        "msg/Go2FrontVideoData.msg"
-        "msg/HeightMap.msg"
-        "msg/IMUState.msg"
-        "msg/InterfaceConfig.msg"
-        "msg/LidarState.msg"
-        "msg/LowCmd.msg"
-        "msg/LowState.msg"
-        "msg/MotorCmd.msg"
-        "msg/MotorState.msg"
-        "msg/PathPoint.msg"
-        "msg/Req.msg"
-        "msg/Res.msg"
-        "msg/SportModeCmd.msg"
-        "msg/SportModeState.msg"
-        "msg/TimeSpec.msg"
-        "msg/UwbState.msg"
-        "msg/UwbSwitch.msg"
-        "msg/WirelessController.msg"
+  "msg/Request.msg"
+  "msg/RequestHeader.msg"
+  "msg/RequestIdentity.msg"
+  "msg/RequestLease.msg"
+  "msg/RequestPolicy.msg"
+  "msg/Response.msg"
+  "msg/ResponseHeader.msg"
+  "msg/ResponseStatus.msg"
+
   DEPENDENCIES geometry_msgs
 )
 
-rosidl_generate_dds_interfaces(
-  ${rosidl_generate_interfaces_TARGET}__dds_connext_idl
-  IDL_TUPLES ${rosidl_generate_interfaces_IDL_TUPLES}
-  OUTPUT_SUBFOLDERS "dds_connext"
-)
-add_dependencies(
-  ${PROJECT_NAME}
-  ${PROJECT_NAME}__dds_connext_idl
-)
-
-
+# TODO(@zhiqi.jia): 直接生成dds的idl文件，两者可以通过这层interface通信吗？
+# 这算是内置的bridge吗？
+# rosidl_generate_dds_interfaces(
+#   ${rosidl_generate_interfaces_TARGET}__dds_connext_idl
+#   IDL_TUPLES ${rosidl_generate_interfaces_IDL_TUPLES}
+#   OUTPUT_SUBFOLDERS "dds_connext"
+# )
+# add_dependencies(
+#   ${PROJECT_NAME}
+#   ${PROJECT_NAME}__dds_connext_idl
+# )
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

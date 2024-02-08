@@ -1,14 +1,3 @@
-/**
- * @file joint_controller.h
- * @author your name (you@domain.com)
- * @brief
- * @version 0.1
- * @date 2024-01-28
- *
- * @copyright Copyright (c) 2024
- *
- */
-
 #ifndef _UNITREE_ROS_JOINT_CONTROLLER_H_
 #define _UNITREE_ROS_JOINT_CONTROLLER_H_
 

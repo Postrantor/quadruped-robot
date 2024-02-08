@@ -1,12 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
 project(go2_demo)
 
-# Default to C99
 if(NOT CMAKE_C_STANDARD)
   set(CMAKE_C_STANDARD 99)
 endif()
-
-# Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
@@ -40,25 +37,26 @@ add_executable(low_level_ctrl src/low_level_ctrl.cpp src/common/motor_crc.cpp)
 add_executable(read_low_state src/read_low_state.cpp)
 add_executable(read_motion_state src/read_motion_state.cpp)
 add_executable(read_wireless_controller src/read_wireless_controller.cpp)
-add_executable(record_bag src/record_bag.cpp)
+# add_executable(record_bag src/record_bag.cpp)
 add_executable(sport_mode_ctrl src/sport_mode_ctrl.cpp src/common/ros2_sport_client.cpp)
 
 ament_target_dependencies(low_level_ctrl ${DEPENDENCY_LIST})
 ament_target_dependencies(read_low_state ${DEPENDENCY_LIST})
 ament_target_dependencies(read_motion_state ${DEPENDENCY_LIST})
 ament_target_dependencies(read_wireless_controller ${DEPENDENCY_LIST})
-ament_target_dependencies(record_bag ${DEPENDENCY_LIST})
+# ament_target_dependencies(record_bag ${DEPENDENCY_LIST})
 ament_target_dependencies(sport_mode_ctrl ${DEPENDENCY_LIST})
 
 
-install(TARGETS 
-        low_level_ctrl
-        read_low_state
-        read_motion_state
-        read_wireless_controller
-        record_bag
-        sport_mode_ctrl
-        DESTINATION lib/${PROJECT_NAME})
+install(
+  TARGETS 
+    low_level_ctrl
+    read_low_state
+    read_motion_state
+    read_wireless_controller
+    # record_bag
+    sport_mode_ctrl
+  DESTINATION lib/${PROJECT_NAME})
 
 
 if(BUILD_TESTING)
