@@ -33,6 +33,7 @@ public:
   float sin_mid_q[3] = {0.0, 1.2, -2.0};
   float Kp[3] = {0};
   float Kd[3] = {0};
+
   double time_consume = 0;
   int rate_count = 0;
   int sin_count = 0;
@@ -62,17 +63,14 @@ void Custom::RobotControl() {
   cmd.motorCmd[RR_0].tau = -0.65f;
   cmd.motorCmd[RL_0].tau = +0.65f;
 
-  // if( motiontime >= 100){
   if (motiontime >= 0) {
     // first, get record initial position
-    // if( motiontime >= 100 && motiontime < 500){
     if (motiontime >= 0 && motiontime < 10) {
       qInit[0] = state.motorState[FR_0].q;
       qInit[1] = state.motorState[FR_1].q;
       qInit[2] = state.motorState[FR_2].q;
     }
     // second, move to the origin point of a sine movement with Kp Kd
-    // if( motiontime >= 500 && motiontime < 1500){
     if (motiontime >= 10 && motiontime < 400) {
       rate_count++;
       double rate = rate_count / 200.0;  // needs count to 200
@@ -82,8 +80,6 @@ void Custom::RobotControl() {
       Kd[0] = 1.0;
       Kd[1] = 1.0;
       Kd[2] = 1.0;
-      // Kp[0] = 20.0; Kp[1] = 20.0; Kp[2] = 20.0;
-      // Kd[0] = 2.0; Kd[1] = 2.0; Kd[2] = 2.0;
 
       qDes[0] = joint_linear_interpolation(qInit[0], sin_mid_q[0], rate);
       qDes[1] = joint_linear_interpolation(qInit[1], sin_mid_q[1], rate);
@@ -121,8 +117,8 @@ void Custom::RobotControl() {
   if (motiontime > 10) {
     safe.PositionLimit(cmd);
     int res1 = safe.PowerProtect(cmd, state, 1);
-    // You can uncomment it for position protection
-    // int res2 = safe.PositionProtect(cmd, state, 10);
+    // you can uncomment it for position protection
+    // int res2 = safe.positionprotect(cmd, state, 10);
     if (res1 < 0) exit(-1);
   }
 

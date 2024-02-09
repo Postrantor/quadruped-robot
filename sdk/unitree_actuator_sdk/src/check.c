@@ -1,3 +1,8 @@
+/**
+ * @brief
+ * @copyright
+*/
+
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
@@ -40,8 +45,9 @@ int main() {
     return 1;
   }
 
-  // Send
+  // send
   MOTOR_send motor_s, motor_s1;
+
   // long long start_time = 0;
   motor_s.id = 0;          // motor ID
   motor_s.mode = 10;       // switch to servo mode
@@ -53,8 +59,10 @@ int main() {
 
   motor_s1.id = 0;
   motor_s1.mode = 0;
-  // Receive
+
+  // receive
   MOTOR_recv motor_r;
+
   // over heat protection
   const float safe_torque = 0.7;
   const float cooldown_torque = 0.5;
@@ -66,15 +74,10 @@ int main() {
   long long current = 0;
   long long overload_start = 0;
   long long cooldown_start = 0;
+
   enum motor_status { NORMAL, OVERHEAT, COOLDOWN };
   printf("87\n");
-#if defined(__linux__)
-  int fd;
-  fd = open_set("/dev/ttyUSB0");
-#elif defined(__WIN32__)
-  HANDLE fd;
-  fd = open_set("\\\\.\\COM4");
-#endif
+  int fd = open_set("/dev/ttyUSB0");
   printf("95\n");
   int status = NORMAL;
 
@@ -84,6 +87,7 @@ int main() {
   send_recv(fd, &motor_s, &motor_r);
   send_recv(fd, &motor_s1, &motor_r);
   printf("102\n");
+
   extract_data(&motor_r);
   printf("START\n");
 
@@ -138,9 +142,5 @@ int main() {
   // show_resv_data(&motor_r);
 
   close_serial(fd);
-#if defined(__WIN32__)
-  system("pause");
-#endif
-
   return 0;
 }

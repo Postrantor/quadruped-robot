@@ -1,3 +1,8 @@
+/**
+ * @brief
+ * @copyright
+*/
+
 #include <stdio.h>
 #include <errno.h>  //错误定义
 #include <string.h>
@@ -10,17 +15,19 @@
 int main() {
   //发送参数
   MOTOR_send motor_s, motor_s1;
+
   // long long start_time = 0;
   motor_s.id = 0;
   motor_s.mode = 5;
-  motor_s.T = 0;      //单位：Nm, T<255.9
-  motor_s.W = 21.0;   //单位：rad/s, W<511.9
-  motor_s.Pos = 0.0;  //单位：rad, Pos<131071.9
+  motor_s.T = 0;      //unit Nm, T<255.9
+  motor_s.W = 21.0;   //unit rad/s, W<511.9
+  motor_s.Pos = 0.0;  //unit rad, Pos<131071.9
   motor_s.K_P = 0.0;  // K_P<31.9
   motor_s.K_W = 10;   // K_W<63.9
 
   motor_s1.id = 0;
   motor_s1.mode = 0;
+
   //接收参数
   MOTOR_recv motor_r;
   //文件ID

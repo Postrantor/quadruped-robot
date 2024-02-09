@@ -1,3 +1,8 @@
+/**
+ * @brief
+ * @copyright
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -18,7 +23,7 @@ int main() {
   motor_s.motorType = MotorType::B1;  // set the motor type, A1 or B1
   motor_r.motorType = motor_s.motorType;
 
-  printf("please input the name of serial port.(e.g. linux:/dev/ttyusb0, windows:\\\\.\\com3)\n");
+  printf("please input the name of serial port.(e.g. linux:/dev/ttyusb0)\n");
   scanf("%s", serial_name);
   printf("the serial port is %s\n", serial_name);
 
