@@ -3,6 +3,7 @@
  */
 
 #include <chrono>
+#include <iostream>
 
 #include "rclcpp/rclcpp.hpp"
 #include "unitree_go/msg/low_cmd.hpp"
@@ -17,21 +18,16 @@ using namespace std::chrono_literals;
 class low_level_cmd_sender : public rclcpp::Node {
 public:
   low_level_cmd_sender() : Node("low_level_cmd_sender") {
-    // the cmd_pub_ is set to subscribe "/lowcmd" topic
-    cmd_pub_ = this->create_publisher<unitree_go::msg::LowCmd>("/lowcmd", 10);
+    // the cmd_pub_ is set to subscribe "/cmd_low" topic
+    cmd_pub_ = this->create_publisher<unitree_go::msg::LowCmd>("/cmd_low", 10);
     // the timer is set to 200hz, and bind to low_level_cmd_sender::timer_callback function
     timer_ = this->create_wall_timer(5ms, std::bind(&low_level_cmd_sender::timer_callback, this));
     // initialize lowcmd
     init_cmd();
-    // running time count
-    // t = 0;
   }
 
 private:
   void timer_callback() {
-    // test code here
-    // t += 0.02;
-
     // toque control, set rl_2 toque
     cmd_.motor_cmd[RL_2].q = PosStopF;  // Set to stop position(rad)
     cmd_.motor_cmd[RL_2].kp = 0;
@@ -46,8 +42,10 @@ private:
     cmd_.motor_cmd[RL_0].kd = 1;   // Poinstion(rad) control kd gain
     cmd_.motor_cmd[RL_0].tau = 0;  // Feedforward toque 1N.m
 
-    get_crc(cmd_);            // check motor cmd crc
+    get_crc(cmd_);  // check motor cmd crc
+
     cmd_pub_->publish(cmd_);  // Publish lowcmd message
+    RCLCPP_INFO(this->get_logger(), "timer callback: %ld", count_++);
   }
 
   void init_cmd() {
@@ -64,16 +62,22 @@ private:
   rclcpp::TimerBase::SharedPtr timer_;
   rclcpp::Publisher<unitree_go::msg::LowCmd>::SharedPtr cmd_pub_;
   unitree_go::msg::LowCmd cmd_;
-  // double t;
+  std::uint64_t count_{0};
 };
 
 int main(int argc, char **argv) {
-  rclcpp::init(argc, argv);
+  std::cout << "communication level is set to low-level." << std::endl
+            << "warning: make sure the robot is hung up." << std::endl
+            << "note: the robot also needs to be set to low-level mode, otherwise it will make "
+               "strange noises and this example will not run successfully! "
+            << std::endl
+            << "press enter to continue..." << std::endl;
+  std::cin.ignore();
 
-  // rclcpp::TimerBase::SharedPtr timer_;
+  rclcpp::init(argc, argv);
   auto node = std::make_shared<low_level_cmd_sender>();
   rclcpp::spin(node);
-
   rclcpp::shutdown();
+
   return 0;
 }
