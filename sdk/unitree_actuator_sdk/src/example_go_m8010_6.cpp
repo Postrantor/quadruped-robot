@@ -12,6 +12,7 @@
 
 int main() {
   SerialPort serial("/dev/ttyUSB0");
+
   MotorCmd cmd;
   MotorData data;
 
@@ -19,26 +20,26 @@ int main() {
   while (true) {
     if (count < 10) {
       cmd.motorType = MotorType::GO_M8010_6;
-      data.motorType = MotorType::GO_M8010_6;
-      cmd.mode = queryMotorMode(MotorType::GO_M8010_6, MotorMode::FOC);
-
       cmd.id = 0;
-      cmd.kp = 0.0;
-      cmd.kd = 0.01;
-      cmd.q = 0.0;
-      cmd.dq = -6.28 * queryGearRatio(MotorType::GO_M8010_6);
-      cmd.tau = 0.0;
+      cmd.mode = 1;
+      cmd.K_P = 0.0;
+      cmd.K_W = 0.05;
+      cmd.Pos = 0.0;
+      cmd.W = 6.28 * 6.33;
+      cmd.T = 0.0;
+
+      data.motorType = MotorType::GO_M8010_6;
 
       serial.sendRecv(&cmd, &data);
 
       std::cout << "count: " << count << std::endl;
       if (data.correct == true) {
-        std::cout << "--- --- ---" << std::endl;
-        std::cout << "q: " << data.q << " rad" << std::endl;
-        std::cout << "dq: " << data.dq << " rad/s" << std::endl;
-        std::cout << "tau: " << data.tau << " N.m" << std::endl;
-        std::cout << "temperature: " << data.temp << " °C" << std::endl;
-        std::cout << "merror: " << data.merror << std::endl;
+        std::cout << std::endl;
+        std::cout << "motor.Pos: " << data.Pos << " rad" << std::endl;
+        std::cout << "motor.Temp: " << data.Temp << " ℃" << std::endl;
+        std::cout << "motor.W: " << data.W << " rad/s" << std::endl;
+        std::cout << "motor.T: " << data.T << " N·m" << std::endl;
+        std::cout << "motor.MError: " << data.MError << std::endl;
         std::cout << std::endl;
       }
 
@@ -52,18 +53,19 @@ int main() {
     } else {
       cmd.motorType = MotorType::GO_M8010_6;
       data.motorType = MotorType::GO_M8010_6;
-      cmd.mode = queryMotorMode(MotorType::GO_M8010_6, MotorMode::BRAKE);
+      // cmd.mode = queryMotorMode(MotorType::GO_M8010_6, MotorMode::BRAKE);
+      cmd.mode = 0;
       cmd.id = 0;
 
       serial.sendRecv(&cmd, &data);
 
       if (data.correct == true) {
-        std::cout << "--- --- ---" << std::endl;
-        std::cout << "q: " << data.q << " rad" << std::endl;
-        std::cout << "dq: " << data.dq << " rad/s" << std::endl;
-        std::cout << "tau: " << data.tau << " N.m" << std::endl;
-        std::cout << "temperature: " << data.temp << " °C" << std::endl;
-        std::cout << "merror: " << data.merror << std::endl;
+        std::cout << std::endl;
+        std::cout << "motor.Pos: " << data.Pos << " rad" << std::endl;
+        std::cout << "motor.Temp: " << data.Temp << " ℃" << std::endl;
+        std::cout << "motor.W: " << data.W << " rad/s" << std::endl;
+        std::cout << "motor.T: " << data.T << " N·m" << std::endl;
+        std::cout << "motor.MError: " << data.MError << std::endl;
         std::cout << std::endl;
       }
       return 0;

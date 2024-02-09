@@ -25,47 +25,20 @@
 class Custom {
 public:
   UNITREE_LEGGED_SDK::UDP low_udp;
-  UNITREE_LEGGED_SDK::UDP high_udp;
-
-  UNITREE_LEGGED_SDK::HighCmd high_cmd = {0};
-  UNITREE_LEGGED_SDK::HighState high_state = {0};
-
   UNITREE_LEGGED_SDK::LowCmd low_cmd = {0};
   UNITREE_LEGGED_SDK::LowState low_state = {0};
 
 public:
-  Custom()
-      : low_udp(UNITREE_LEGGED_SDK::LOWLEVEL, 8091, "192.168.123.10", 8007),
-        high_udp(
-            8090,
-            "192.168.123.161",
-            8082,
-            sizeof(UNITREE_LEGGED_SDK::HighCmd),
-            sizeof(UNITREE_LEGGED_SDK::HighState)) {
-    high_udp.InitCmdData(high_cmd);
+  Custom() : low_udp(UNITREE_LEGGED_SDK::LOWLEVEL, 8091, "192.168.123.10", 8007) {
     low_udp.InitCmdData(low_cmd);
   }
-
-  void highUdpSend() {
-    // printf("high udp send is running\n");
-    high_udp.SetSend(high_cmd);
-    high_udp.Send();
-  }
-
   void lowUdpSend() {
     low_udp.SetSend(low_cmd);
     low_udp.Send();
   }
-
   void lowUdpRecv() {
     low_udp.Recv();
     low_udp.GetRecv(low_state);
-  }
-
-  void highUdpRecv() {
-    // printf("high udp recv is running\n");
-    high_udp.Recv();
-    high_udp.GetRecv(high_state);
   }
 };
 

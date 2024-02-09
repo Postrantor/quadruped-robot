@@ -20,6 +20,8 @@ endif()
 # exec
 add_executable(example_position src/example/example_position.cpp)
 target_link_libraries(example_position ${EXTRA_LIBS})
+add_executable(example_position_serial src/example/example_position_serial.cpp)
+target_link_libraries(example_position_serial ${EXTRA_LIBS})
 
 add_executable(example_velocity src/example/example_velocity.cpp)
 target_link_libraries(example_velocity ${EXTRA_LIBS})
@@ -37,6 +39,7 @@ target_link_libraries(example_joystick ${EXTRA_LIBS})
 install(
   TARGETS
     example_position
+    example_position_serial
     example_velocity
     example_torque
     example_walk

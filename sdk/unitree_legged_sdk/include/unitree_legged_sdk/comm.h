@@ -80,9 +80,9 @@ typedef struct {
  */
 typedef struct {
   // motor working mode.
-  // Servo: 0x0A,
-  // Damping: 0x00,
-  // Overheat: 0x08.
+  // servo: 0x0a,
+  // damping: 0x00,
+  // overheat: 0x08.
   uint8_t mode;
   float q;             // current angle (unit: radian)
   float dq;            // current velocity (unit: radian/second)
@@ -122,10 +122,14 @@ typedef struct {
   IMU imu;
   std::array<MotorState, 20> motorState;
   BmsState bms;
-  std::array<int16_t, 4> footForce;        // Data from foot airbag sensor
-  std::array<int16_t, 4> footForceEst;     // reserve，typically zero
-  uint32_t tick;                           // reference real-time from motion controller (unit: ms)
-  std::array<uint8_t, 40> wirelessRemote;  // Data from Unitree Joystick.
+  // data from foot airbag sensor
+  std::array<int16_t, 4> footForce;
+  // reserve，typically zero
+  std::array<int16_t, 4> footForceEst;
+  // reference real-time from motion controller (unit: ms)
+  uint32_t tick;
+  // data from unitree joystick.
+  std::array<uint8_t, 40> wirelessRemote;
   uint32_t reserve;
   uint32_t crc;
 } LowState;
