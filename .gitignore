@@ -3,4 +3,5 @@
 build/
 devel/
 install/
-log/
+build_*
+ros_control

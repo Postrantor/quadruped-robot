@@ -1,9 +1,14 @@
+/**
+ * @brief
+ * @copyright
+ */
+
 #ifndef __SERIALPORT_H
 #define __SERIALPORT_H
 
 /*
- *High frequency serial communication,
- *Not that common, but useful for motor communication.
+ * high frequency serial communication,
+ * not that common, but useful for motor communication.
  */
 #include <termios.h>
 #include <sys/select.h>
@@ -53,9 +58,11 @@ public:
   size_t send(uint8_t *sendMsg, size_t sendLength);
   size_t recv(uint8_t *recvMsg, size_t recvLength);
   size_t recv(uint8_t *recvMsg);
+
   bool sendRecv(uint8_t *sendMsg, uint8_t *recvMsg, size_t sendLength);
   bool sendRecv(MotorCmd *sendMsg, MotorData *recvMsg);
   bool sendRecv(std::vector<MotorCmd> &sendVec, std::vector<MotorData> &recvVec);
+
   void test();
 
 private:

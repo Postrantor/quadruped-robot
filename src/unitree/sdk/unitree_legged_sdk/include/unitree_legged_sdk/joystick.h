@@ -1,6 +1,8 @@
-/*****************************************************************
-Copyright (c) 2020, Unitree Robotics.Co.Ltd. All rights reserved.
-*****************************************************************/
+/**
+ * @brief
+ * @copyright Copyright (c) 2020, Unitree Robotics.Co.Ltd. All rights reserved.
+ */
+
 #ifndef _UNITREE_LEGGED_JOYSTICK_H_
 #define _UNITREE_LEGGED_JOYSTICK_H_
 

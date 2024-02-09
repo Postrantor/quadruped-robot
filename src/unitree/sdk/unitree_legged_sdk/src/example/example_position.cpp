@@ -1,12 +1,7 @@
 /**
- * @file example_position.cpp
- * @author your name (you@domain.com)
  * @brief
- * @version 0.1
  * @date 2024-02-07
- *
  * @copyright Copyright (c) 2024
- *
  */
 
 #include <math.h>
@@ -30,6 +25,7 @@ public:
 
   Safety safe;
   UDP udp;
+
   LowCmd cmd = {0};
   LowState state = {0};
   float qInit[3] = {0};
@@ -48,10 +44,10 @@ void Custom::UDPRecv() { udp.Recv(); }
 
 void Custom::UDPSend() { udp.Send(); }
 
-double jointLinearInterpolation(double initPos, double targetPos, double rate) {
+double joint_linear_interpolation(double init_pos, double target_pos, double rate) {
   double p;
-  rate = std::min(std::max(rate, 0.0), 1.0);
-  p = initPos * (1 - rate) + targetPos * rate;
+  rate = std::min(std::max(rate, 0.0), 1.0);  // 0.0~1.0
+  p = init_pos * (1 - rate) + target_pos * rate;
   return p;
 }
 
@@ -89,9 +85,9 @@ void Custom::RobotControl() {
       // Kp[0] = 20.0; Kp[1] = 20.0; Kp[2] = 20.0;
       // Kd[0] = 2.0; Kd[1] = 2.0; Kd[2] = 2.0;
 
-      qDes[0] = jointLinearInterpolation(qInit[0], sin_mid_q[0], rate);
-      qDes[1] = jointLinearInterpolation(qInit[1], sin_mid_q[1], rate);
-      qDes[2] = jointLinearInterpolation(qInit[2], sin_mid_q[2], rate);
+      qDes[0] = joint_linear_interpolation(qInit[0], sin_mid_q[0], rate);
+      qDes[1] = joint_linear_interpolation(qInit[1], sin_mid_q[1], rate);
+      qDes[2] = joint_linear_interpolation(qInit[2], sin_mid_q[2], rate);
     }
     double sin_joint1, sin_joint2;
     if (motiontime >= 400) {

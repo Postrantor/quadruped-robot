@@ -9,6 +9,7 @@ apt install liblcm-dev
 ```sh
 apt install ros-humble-map-msgs
 sudo apt install ros-humble-rosidl-generator-dds-idl
+sudo apt install 'ros-humble-rmw-*'
 ```
 
 ---

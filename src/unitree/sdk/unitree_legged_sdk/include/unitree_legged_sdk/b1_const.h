@@ -1,6 +1,7 @@
-/**********************************************************************
- Copyright (c) 2020-2023, Unitree Robotics.Co.Ltd. All rights reserved.
-***********************************************************************/
+/**
+ * @brief
+ * @copyright Copyright (c) 2020-2023, Unitree Robotics.Co.Ltd. All rights reserved.
+ */
 
 #ifndef B1_CONST_H
 #define B1_CONST_H

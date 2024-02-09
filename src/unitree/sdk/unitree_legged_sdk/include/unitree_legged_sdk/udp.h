@@ -1,21 +1,16 @@
 /**
- * @file udp.h
- * @author your name (you@domain.com)
  * @brief
- * @version 0.1
- * @date 2024-01-28
- *
  * @copyright Copyright (c) 2024
- *
  */
 
 #ifndef _UNITREE_LEGGED_UDP_H_
 #define _UNITREE_LEGGED_UDP_H_
 
-#include "comm.h"
-#include "unitree_legged_sdk/quadruped.h"
 #include <pthread.h>
 #include <stdint.h>
+
+#include "comm.h"
+#include "unitree_legged_sdk/quadruped.h"
 
 /**
   @brief udp critical configuration:

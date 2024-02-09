@@ -1,3 +1,8 @@
+/**
+ * @brief
+ * @copyright
+ */
+
 #ifndef _UNITREE_JOINT_CONTROL_TOOL_H_
 #define _UNITREE_JOINT_CONTROL_TOOL_H_
 

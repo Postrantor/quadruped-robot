@@ -43,7 +43,7 @@ sudo apt install ros-foxy-rosidl-generator-dds-idl
 
 ### 2. 编译 cyclone-dds
 
-由于 Go2 机器人使用的是 cyclonedds 0.10.2  版本，因此需要先更改 ROS2 的 dds 实现。见：https://docs.ros.org/en/foxy/Concepts/About-Different-Middleware-Vendors.html
+由于 Go2 机器人使用的是 cyclonedds 0.10.2 版本，因此需要先更改 ROS2 的 dds 实现。见：https://docs.ros.org/en/foxy/Concepts/About-Different-Middleware-Vendors.html
 
 在终端中执行以下操作编译 cyclone-dds
 
@@ -68,10 +68,10 @@ colcon build #编译工作空间下的所有功能包
 
 ### 1. 配置网络
 
-使用网线连接  Go2  和计算机，使用 ifconfig 查看网络信息，确认机器人连接到的以太网网卡。（例如如图中的 enp3s0，以实际为准）
+使用网线连接 Go2 和计算机，使用 ifconfig 查看网络信息，确认机器人连接到的以太网网卡。（例如如图中的 enp3s0，以实际为准）
 ![image](https://alidocs.oss-cn-zhangjiakou.aliyuncs.com/res/W4j6OJ2awDgbO3p8/img/5d22c143-5dad-4964-81f3-55864906a9f0.png)
 
-接着打开网络设置，找到机器人所连接的网卡，进入  IPv4 ，将  IPv4  方式改为手动，地址设置为 192.168.123.99，子网掩码设置为 255.255.255.0，完成后点击应用，等待网络重新连接。
+接着打开网络设置，找到机器人所连接的网卡，进入 IPv4，将 IPv4 方式改为手动，地址设置为 192.168.123.99，子网掩码设置为 255.255.255.0，完成后点击应用，等待网络重新连接。
 ![image](https://alidocs.oss-cn-zhangjiakou.aliyuncs.com/res/W4j6OJ2awDgbO3p8/img/721e1660-04dc-42b7-8d6e-14799afe2165.png)
 
 打开 unitree_ros2_setup.sh 文件
@@ -105,10 +105,10 @@ source ~/unitree_ros2/unitree_ros2_setup.sh
 ### 2. 连接测试
 
 完成上述配置后，建议重启一下电脑再进行测试。
-确保机器人连接正确，打开终端输入 ros2 topic list，可以看见如下话题：
+确保机器人连接正确，打开终端输入 `ros2 topic list`，可以看见如下话题：
 ![image](https://alidocs.oss-cn-zhangjiakou.aliyuncs.com/res/W4j6OJ2awDgbO3p8/img/5e45e8ec-9248-47eb-8380-798ed0ef468b.png)
 
-打开终端输入 ros2 topic echo /sportmodestate  后，可以看见该话题的数据如下图所示，说明机器人与电脑已经正常通讯：
+打开终端输入 `ros2 topic echo /sportmodestate` 后，可以看见该话题的数据如下图所示，说明机器人与电脑已经正常通讯：
 ![image](https://alidocs.oss-cn-zhangjiakou.aliyuncs.com/res/W4j6OJ2awDgbO3p8/img/89214761-6cfb-4b52-bf24-7a5bd9a9806c.png)
 
 ### 3. 编译和测试例程
@@ -118,11 +118,6 @@ ctrl+alt+T 打开终端，在终端中执行如下命令，编译测试例程：
 ```bash
 cd ~/unitree_ros2/Go2_ROS2_example
 colcon build
-```
-
-编译完成后 z 在终端中运行:
-
-```bash
 ./install/go2_demo/lib/go2_demo/read_motion_state
 ```
 
@@ -146,14 +141,14 @@ Go2 机器人底层采用与 ROS2 兼容的 dds 通信方式，当安装和配�
 
 ### 1. 高层状态获取
 
-高层状态为机器人的速度、位置、足端位置等与运动相关的状态。高层状态的获取可通过订阅"lf/sportmodestate"或"sportmodestate" topic 实现，其中"lf"表示低频率。高层状态的 msg 定义如下：
+高层状态为机器人的速度、位置、足端位置等与运动相关的状态。高层状态的获取可通过订阅`lf/sportmodestate`或`sportmodestate` topic 实现，其中"lf"表示低频率。高层状态的 msg 定义如下：
 
 ```cpp
 TimeSpec stamp //时间戳
 uint32 error_code //错误代码
 IMUState imu_state //IMU状态
 uint8 mode //运动模式
-/*
+/**
  * 运动模式
  * 0. idle, default stand
  * 1. balanceStand
@@ -169,18 +164,18 @@ uint8 mode //运动模式
  * 11. frontFlip
  * 12. frontJump
  * 13. frontPounc
-*/
+ */
 float32 progress //是否动作执行状态：0. dance false; 1. dance true
 uint8 gait_type //步态类型
-/*
-步态类型
-0.idle
-1.trot
-2.run
-3.climb stair
-4.forwardDownStair
-9.adjust
-*/
+/**
+ * 步态类型
+ * 0.idle
+ * 1.trot
+ * 2.run
+ * 3.climb stair
+ * 4.forwardDownStair
+ * 9.adjust
+ */
 float32 foot_raise_height //抬腿高度
 float32[3] position //当前位置
 float32 body_height //机体高度
@@ -199,7 +194,7 @@ float32[12] foot_speed_body //足端相对于机体的速度
 
 ### 2. 低层状态获取
 
-低层状态为机器人的关节电机、电源信息等底层状态。通过订阅"lf/lowstate"或"lowstate" topic，可实现低层状态的获取。低层状态的 msg 定义如下：
+低层状态为机器人的关节电机、电源信息等底层状态。通过订阅`lf/lowstate`或`lowstate` topic，可实现低层状态的获取。低层状态的 msg 定义如下：
 
 ```cpp
 uint8[2] head
@@ -267,12 +262,12 @@ uint16 keys //键值
 
 ### 1. 运动控制
 
-Go2 机器人的运动指令是通过请求响应的方式实现的，通过订阅"/api/sport/request"，并发送运动 unitree_api::msg::Request 消息可以实现高层的运动控制。其中不同运动接口的 Request 消息可调用 SportClient(位于/Go2_ROS2_example/src/common/ros2_sport_client.cpp)类来获取，例如实现 Go2 的姿态控制：
+Go2 机器人的运动指令是通过请求响应的方式实现的，通过订阅`/api/sport/request`，并发送运动 `unitree_api::msg::Request` 消息可以实现高层的运动控制。其中不同运动接口的 Request 消息可调用 SportClient(位于/Go2_ROS2_example/src/common/ros2_sport_client.cpp)类来获取，例如实现 Go2 的姿态控制：
 
 ```cpp
 rclcpp::Publisher<unitree_api::msg::Request>::SharedPtr req_puber = this->create_publisher<unitree_api::msg::Request>("/api/sport/request", 10);
 
-SportClient sport_req;//实例化一个sportclient
+SportClient sport_req; //实例化一个sportclient
 unitree_api::msg::Request req; //创建一个运动请求msg
 sport_req.Euler(req,roll,pitch,yaw); //获取欧拉角运动请求消息，并赋值给req
 
@@ -286,7 +281,7 @@ req_puber->publish(req); //发布数据
 
 ### 2. 电机控制
 
-通过订阅"/lowcmd" topic，并发送 unitree_go::msg::LowCmd 可以实现对电机的力矩、位置、和速度控制。底层控制指令的 msg 定义如下:
+通过订阅`/lowcmd` topic，并发送 `unitree_go::msg::LowCmd` 可以实现对电机的力矩、位置、和速度控制。底层控制指令的 msg 定义如下:
 
 ```cpp
 uint8[2] head
@@ -308,7 +303,7 @@ uint32 crc
 其中 motor_cmd 为电机指令:
 
 ```C++
-uint8 mode;  //电机控制模式（Foc模式（工作模式）-> 0x01 ，stop模式（待机模式）-> 0x00
+uint8 mode;  //电机控制模式: Foc模式(工作模式)->0x01, stop模式(待机模式)->0x00
 float q;     //关节目标位置
 float dq;    //关节目标速度
 float tau;   //关节目标力矩
@@ -326,7 +321,7 @@ unsigned long reserve[3];   //保留位
 由于 Go2 机器人底层兼容了 ROS2 的 topic 机制，因此可以使用 rviz 工具来可视化 Go2 机器人的状态信息。下面以查看机器人的点云数据为例：
 首先列出所有 topic：
 
-```bash
+```sh
 ros2 topic list
 ```
 
@@ -334,13 +329,13 @@ ros2 topic list
 
 可以找到雷达点云的 topic：
 
-```bash
+```sh
 utlidar/cloud
 ```
 
 接着查看点云的 frame_id：
 
-```
+```sh
 ros2 topic echo --no-arr /utlidar/cloud
 ```
 
@@ -349,7 +344,7 @@ ros2 topic echo --no-arr /utlidar/cloud
 
 最后打开 rviz2：
 
-```
+```sh
 ros2 run rviz2 rviz2
 ```
 

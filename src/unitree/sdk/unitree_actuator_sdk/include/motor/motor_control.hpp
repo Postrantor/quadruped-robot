@@ -1,10 +1,10 @@
 #ifndef __UNITREEMOTOR_H
 #define __UNITREEMOTOR_H
 
-#include "motor/motor_msg.hpp"
-
 #include <stdint.h>
 #include <iostream>
+
+#include "motor/motor_msg.hpp"
 
 enum class MotorType {
   A1,  // 4.8M baudrate
@@ -18,11 +18,13 @@ struct MotorCmd {
 public:
   MotorCmd() {}
   MotorType motorType;
+
   int hex_len;
+  unsigned short id;
   // 电机模式 0:刹车 1:FOC闭环 2:电机标定(发送后等待5sec,期间禁止给电机发送消息)
   // 电机控制模式，0:空闲, 5:开环缓慢转动, 10:闭环控制
-  unsigned short id;
   unsigned short mode;
+
   float tau;
   float dq;
   float q;
@@ -30,8 +32,7 @@ public:
   float kd;
 
   void modify_data(MotorCmd* motor_s);
-  uint8_t* get_motor_send_data();
-
+  std::uint8_t* get_motor_send_data();
   COMData32 Res;
 
 private:
@@ -43,9 +44,11 @@ struct MotorData {
 public:
   MotorData() {}
   MotorType motorType;
+
   int hex_len;
   unsigned char motor_id;
   unsigned char mode;
+
   int temp;
   int merror;
   float tau;
@@ -53,8 +56,9 @@ public:
   float q;
 
   bool correct = false;
+
   bool extract_data(MotorData* motor_r);
-  uint8_t* get_motor_recv_data();
+  std::uint8_t* get_motor_recv_data();
 
   int footForce;
   float LW;
@@ -71,4 +75,5 @@ private:
 // Utility Function
 int queryMotorMode(MotorType motortype, MotorMode motormode);
 float queryGearRatio(MotorType motortype);
+
 #endif  // UNITREEMOTOR_H

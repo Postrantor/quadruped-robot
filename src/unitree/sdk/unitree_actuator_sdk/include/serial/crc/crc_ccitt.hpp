@@ -2,10 +2,10 @@
 #define __CRC_CCITT_H
 
 /*
- * This mysterious table is just the CRC of each possible byte. It can be
- * computed using the standard bit-at-a-time methods. The polynomial can
- * be seen in entry 128, 0x8408. This corresponds to x^0 + x^5 + x^12.
- * Add the implicit x^16, and you have the standard CRC-CCITT.
+ * this mysterious table is just the crc of each possible byte. it can be
+ * computed using the standard bit-at-a-time methods. the polynomial can
+ * be seen in entry 128, 0x8408. this corresponds to x^0 + x^5 + x^12.
+ * add the implicit x^16, and you have the standard crc-ccitt.
  * https://github.com/torvalds/linux/blob/5bfc75d92efd494db37f5c4c173d3639d4772966/lib/crc-ccitt.c
  */
 uint16_t const crc_ccitt_table[256] = {
@@ -37,8 +37,7 @@ static uint16_t crc_ccitt_byte(uint16_t crc, const uint8_t c) {
 }
 
 /**
- *	crc_ccitt - recompute the CRC (CRC-CCITT variant) for the data
- *	buffer
+ *	@brief crc_ccitt - recompute the CRC (CRC-CCITT variant) for the data buffer
  *	@crc: previous CRC value
  *	@buffer: data pointer
  *	@len: number of bytes in the buffer

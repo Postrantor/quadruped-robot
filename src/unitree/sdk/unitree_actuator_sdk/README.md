@@ -49,12 +49,6 @@ Including the example source files of Python. This example's function is same wi
 ```bash
 cd ../bin
 sudo ./check_c
-```
-
-and
-
-```bash
-cd ../bin
 sudo ./check_cpp
 ```
 

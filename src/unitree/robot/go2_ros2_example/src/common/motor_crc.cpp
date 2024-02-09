@@ -1,4 +1,4 @@
-#include "motor_crc.h"
+#include "common/motor_crc.h"
 
 void get_crc(unitree_go::msg::LowCmd& msg) {
   LowCmd raw{};

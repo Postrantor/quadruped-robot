@@ -1,12 +1,7 @@
 /**
- * @file joint_controller.cpp
- * @author your name (you@domain.com)
  * @brief
- * @version 0.1
  * @date 2024-01-25
- *
  * @copyright Copyright (c) 2024
- *
  */
 
 #include <iostream>
@@ -45,12 +40,12 @@ void UnitreeJointController::setCommandCB(const unitree_legged_msgs::MotorCmdCon
   lastCmd.Kd = msg->Kd;
   lastCmd.tau = msg->tau;
   // the writefromnonrt can be used in rt, if you have the guarantee that
-  //  * no non-rt thread is calling the same function (we're not subscribing to ros callbacks)
-  //  * there is only one single rt thread
+  // no non-rt thread is calling the same function (we're not subscribing to ros callbacks)
+  // there is only one single rt thread
   command.writeFromNonRT(lastCmd);
 }
 
-// Controller initialization in non-realtime
+// controller initialization in non-realtime
 bool UnitreeJointController::init(
     hardware_interface::EffortJointInterface *robot,  //
     ros::NodeHandle &n) {
@@ -146,7 +141,6 @@ void UnitreeJointController::getGains(
 // controller startup in realtime
 void UnitreeJointController::starting(const ros::Time &time) {
   double init_pos = joint.getPosition();
-  // 这两个参数是和设置的电机模式相关？
   // lastCmd.Kp = 0;
   // lastCmd.Kd = 0;
   lastCmd.q = init_pos;
@@ -248,7 +242,7 @@ void UnitreeJointController::effortLimits(double &effort) {
 
 }  // namespace unitree_legged_control
 
-// Register controller to pluginlib
+// register controller to pluginlib
 PLUGINLIB_EXPORT_CLASS(
     unitree_legged_control::UnitreeJointController,  //
     controller_interface::ControllerBase);

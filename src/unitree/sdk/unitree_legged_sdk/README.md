@@ -1,7 +1,13 @@
+## sdk
+
+这个包是 unitree 整机使用的，配置网络之后通过 udp 进行通信；
+应该基于这个包，修改成通过 485 协议进行通信。
+
+---
+
 # v3.8.6
 
-The unitree_legged_sdk is mainly used for communication between PC and Controller board.
-It also can be used in other PCs with UDP.
+The unitree_legged_sdk is mainly used for communication between PC and Controller board. It also can be used in other PCs with UDP.
 
 ### Notice
 
@@ -52,14 +58,6 @@ If can not find msgpack.hpp, then
 sudo apt install libmsgpack*
 ```
 
-### Run
-
-#### Cpp
-
-Run examples with 'sudo' for memory locking.
-
-#### Python
-
-##### arm
+Run examples with `sudo` for memory locking.
 
 change `sys.path.append('../lib/python/amd64')` to `sys.path.append('../lib/python/arm64')`

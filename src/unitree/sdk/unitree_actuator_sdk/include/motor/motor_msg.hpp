@@ -17,10 +17,10 @@ typedef union {
   float F;
 } COMData32;
 
+// 定义数据包头
 typedef struct {
-  // 定义 数据包头
   unsigned char start[2];  // 包头
-  unsigned char motorID;  // 电机ID  0,1,2,3 ...   0xBB 表示向所有电机广播（此时无返回）
+  unsigned char motorID;  // 电机ID: 0,1,2,3 ... 0xBB 表示向所有电机广播（此时无返回）
   unsigned char reserved;
 } COMHead;
 
