@@ -16,4 +16,6 @@
 
 #define UT UNITREE_LEGGED_SDK  // short name
 
+namespace unitree_sdk = UNITREE_LEGGED_SDK;
+
 #endif
