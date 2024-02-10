@@ -1,43 +1,38 @@
 /**
- * @file state_sub.cpp
- * @author your name (you@domain.com)
  * @brief
- * @version 0.1
  * @date 2024-01-28
- *
  * @copyright Copyright (c) 2024
- *
  */
 
-#include "unitree_legged_sdk/unitree_legged_sdk.h"
+#include "rclcpp/rclcpp.hpp"
+#include "unitree_msgs/LowCmd.hpp"
+#include "unitree_msgs/LowState.hpp"
+#include "unitree_msgs/HighCmd.hpp"
+#include "unitree_msgs/HighState.hpp"
+#include "unitree_msgs/MotorCmd.hpp"
+#include "unitree_msgs/MotorState.hpp"
+#include "unitree_msgs/BmsCmd.hpp"
+#include "unitree_msgs/BmsState.hpp"
+#include "unitree_msgs/IMU.hpp"
 
-#include <ros/ros.h>
-#include <unitree_legged_msgs/LowCmd.h>
-#include <unitree_legged_msgs/LowState.h>
-#include <unitree_legged_msgs/HighCmd.h>
-#include <unitree_legged_msgs/HighState.h>
-#include <unitree_legged_msgs/MotorCmd.h>
-#include <unitree_legged_msgs/MotorState.h>
-#include <unitree_legged_msgs/BmsCmd.h>
-#include <unitree_legged_msgs/BmsState.h>
-#include <unitree_legged_msgs/IMU.h>
+#include "sdk/unitree_sdk.h"
 
-void highStateCallback(const unitree_legged_msgs::HighState::ConstPtr &msg) {
+void high_state_callback(const unitree_msgs::HighState::ConstPtr &msg) {
   printf("yaw = %f\n", msg->imu.rpy[2]);
 }
 
-void lowStateCallback(const unitree_legged_msgs::LowState::ConstPtr &msg) {
-  printf("FR_2_pos = %f\n", msg->motorState[UNITREE_LEGGED_SDK::FR_2].q);
+void low_state_callback(const unitree_msgs::LowState::ConstPtr &msg) {
+  printf("FR_2_pos = %f\n", msg->motorState[unitree_sdk::FR_2].q);
 }
 
 int main(int argc, char **argv) {
-  ros::init(argc, argv, "node_high_state_sub");
-  ros::NodeHandle nh;
+  rclcpp::init(argc, argv);
+  auto nh = std::make_shared<rclcpp::Node>("node_high_state_sub");
 
-  unitree_legged_msgs::HighState high_state_ros;
-  ros::Subscriber high_sub = nh.subscribe("high_state", 1, highStateCallback);
-  ros::Subscriber low_sub = nh.subscribe("low_state", 1, lowStateCallback);
+  unitree_msgs::HighState high_state_ros;
+  rclcpp::Subscriber high_sub = nh.subscribe("high_state", 1, high_state_callback);
+  rclcpp::Subscriber low_sub = nh.subscribe("low_state", 1, low_state_callback);
 
-  ros::spin();
+  rclcpp::spin(nh);
   return 0;
 }

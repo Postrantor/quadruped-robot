@@ -16,7 +16,7 @@
 #include "common/convert.h"
 #include "serial/serial_port.hpp"
 #include "motor/motor_control.hpp"
-#include "unitree_sdk/unitree_sdk.h"
+#include "sdk/unitree_sdk.h"
 
 using namespace std::chrono_literals;
 

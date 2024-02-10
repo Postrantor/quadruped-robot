@@ -18,10 +18,10 @@
 #include "unitree_msgs/msg/bms_state.hpp"
 #include "unitree_msgs/msg/imu.hpp"
 
-#include "unitree_sdk/unitree_sdk.h"
+#include "sdk/unitree_sdk.h"
 
 // msg -> cmd
-unitree_sdk::BmsCmd rosMsg2Cmd(const unitree_msgs::msg::BmsCmd &msg) {
+unitree_sdk::BmsCmd msg2motor(const unitree_msgs::msg::BmsCmd &msg) {
   unitree_sdk::BmsCmd cmd;
   cmd.off = msg.off;
 
@@ -31,7 +31,7 @@ unitree_sdk::BmsCmd rosMsg2Cmd(const unitree_msgs::msg::BmsCmd &msg) {
   return cmd;
 }
 
-unitree_sdk::HighCmd rosMsg2Cmd(const unitree_msgs::msg::HighCmd::SharedPtr &msg) {
+unitree_sdk::HighCmd msg2motor(const unitree_msgs::msg::HighCmd::SharedPtr &msg) {
   unitree_sdk::HighCmd cmd;
 
   for (int i(0); i < 2; i++) {
@@ -68,11 +68,11 @@ unitree_sdk::HighCmd rosMsg2Cmd(const unitree_msgs::msg::HighCmd::SharedPtr &msg
   cmd.reserve = msg->reserve;
   cmd.crc = msg->crc;
 
-  cmd.bms = rosMsg2Cmd(msg->bms);
+  cmd.bms = msg2motor(msg->bms);
   return cmd;
 }
 
-unitree_sdk::MotorCmd rosMsg2Cmd(const unitree_msgs::msg::MotorCmd &msg) {
+unitree_sdk::MotorCmd msg2motor(const unitree_msgs::msg::MotorCmd &msg) {
   unitree_sdk::MotorCmd cmd;
 
   cmd.mode = msg.mode;
@@ -90,7 +90,7 @@ unitree_sdk::MotorCmd rosMsg2Cmd(const unitree_msgs::msg::MotorCmd &msg) {
   return cmd;
 }
 
-unitree_sdk::LowCmd rosMsg2Cmd(const unitree_msgs::msg::LowCmd::SharedPtr &msg) {
+unitree_sdk::LowCmd msg2motor(const unitree_msgs::msg::LowCmd::SharedPtr &msg) {
   unitree_sdk::LowCmd cmd;
 
   for (int i(0); i < 2; i++) {
@@ -102,10 +102,10 @@ unitree_sdk::LowCmd rosMsg2Cmd(const unitree_msgs::msg::LowCmd::SharedPtr &msg) 
     cmd.wirelessRemote[i] = msg->wireless_remote[i];
   }
   for (int i(0); i < 20; i++) {
-    cmd.motorCmd[i] = rosMsg2Cmd(msg->motor_cmd[i]);
+    cmd.motorCmd[i] = msg2motor(msg->motor_cmd[i]);
   }
 
-  cmd.bms = rosMsg2Cmd(msg->bms);
+  cmd.bms = msg2motor(msg->bms);
   cmd.levelFlag = msg->level_flag;
   cmd.frameReserve = msg->frame_reserve;
   cmd.bandWidth = msg->band_width;
@@ -115,7 +115,7 @@ unitree_sdk::LowCmd rosMsg2Cmd(const unitree_msgs::msg::LowCmd::SharedPtr &msg) 
 }
 
 // state -> msg
-unitree_msgs::msg::MotorState state2rosMsg(unitree_sdk::MotorState &state) {
+unitree_msgs::msg::MotorState motor2msg(unitree_sdk::MotorState &state) {
   unitree_msgs::msg::MotorState ros_msg;
 
   ros_msg.mode = state.mode;
@@ -134,7 +134,7 @@ unitree_msgs::msg::MotorState state2rosMsg(unitree_sdk::MotorState &state) {
   return ros_msg;
 }
 
-unitree_msgs::msg::IMU state2rosMsg(unitree_sdk::IMU &state) {
+unitree_msgs::msg::IMU motor2msg(unitree_sdk::IMU &state) {
   unitree_msgs::msg::IMU ros_msg;
 
   for (int i(0); i < 4; i++) {
@@ -150,7 +150,7 @@ unitree_msgs::msg::IMU state2rosMsg(unitree_sdk::IMU &state) {
   return ros_msg;
 }
 
-unitree_msgs::msg::BmsState state2rosMsg(unitree_sdk::BmsState &state) {
+unitree_msgs::msg::BmsState motor2msg(unitree_sdk::BmsState &state) {
   unitree_msgs::msg::BmsState ros_msg;
 
   for (int i(0); i < 2; i++) {
@@ -171,7 +171,7 @@ unitree_msgs::msg::BmsState state2rosMsg(unitree_sdk::BmsState &state) {
   return ros_msg;
 }
 
-unitree_msgs::msg::LowState state2rosMsg(unitree_sdk::LowState &state) {
+unitree_msgs::msg::LowState motor2msg(unitree_sdk::LowState &state) {
   unitree_msgs::msg::LowState ros_msg;
 
   for (int i(0); i < 2; i++) {
@@ -187,11 +187,11 @@ unitree_msgs::msg::LowState state2rosMsg(unitree_sdk::LowState &state) {
     ros_msg.wireless_remote[i] = state.wirelessRemote[i];
   }
   for (int i(0); i < 20; i++) {
-    ros_msg.motor_state[i] = state2rosMsg(state.motorState[i]);
+    ros_msg.motor_state[i] = motor2msg(state.motorState[i]);
   }
 
-  ros_msg.imu = state2rosMsg(state.imu);
-  ros_msg.bms = state2rosMsg(state.bms);
+  ros_msg.imu = motor2msg(state.imu);
+  ros_msg.bms = motor2msg(state.bms);
 
   ros_msg.tick = state.tick;
   ros_msg.reserve = state.reserve;
@@ -200,7 +200,7 @@ unitree_msgs::msg::LowState state2rosMsg(unitree_sdk::LowState &state) {
   return ros_msg;
 }
 
-unitree_msgs::msg::Cartesian state2rosMsg(unitree_sdk::Cartesian &state) {
+unitree_msgs::msg::Cartesian motor2msg(unitree_sdk::Cartesian &state) {
   unitree_msgs::msg::Cartesian ros_msg;
 
   ros_msg.x = state.x;
@@ -210,7 +210,7 @@ unitree_msgs::msg::Cartesian state2rosMsg(unitree_sdk::Cartesian &state) {
   return ros_msg;
 }
 
-unitree_msgs::msg::HighState state2rosMsg(unitree_sdk::HighState &state) {
+unitree_msgs::msg::HighState motor2msg(unitree_sdk::HighState &state) {
   unitree_msgs::msg::HighState ros_msg;
 
   for (int i(0); i < 2; i++) {
@@ -222,8 +222,8 @@ unitree_msgs::msg::HighState state2rosMsg(unitree_sdk::HighState &state) {
     ros_msg.foot_force[i] = state.footForce[i];
     ros_msg.foot_force_est[i] = state.footForceEst[i];
     ros_msg.range_obstacle[i] = state.rangeObstacle[i];
-    ros_msg.foot_position2body[i] = state2rosMsg(state.footPosition2Body[i]);
-    ros_msg.foot_speed2body[i] = state2rosMsg(state.footSpeed2Body[i]);
+    ros_msg.foot_position2body[i] = motor2msg(state.footPosition2Body[i]);
+    ros_msg.foot_speed2body[i] = motor2msg(state.footSpeed2Body[i]);
   }
   for (int i(0); i < 3; i++) {
     ros_msg.position[i] = state.position[i];
@@ -233,11 +233,11 @@ unitree_msgs::msg::HighState state2rosMsg(unitree_sdk::HighState &state) {
     ros_msg.wireless_remote[i] = state.wirelessRemote[i];
   }
   for (int i(0); i < 20; i++) {
-    ros_msg.motor_state[i] = state2rosMsg(state.motorState[i]);
+    ros_msg.motor_state[i] = motor2msg(state.motorState[i]);
   }
 
-  ros_msg.imu = state2rosMsg(state.imu);
-  ros_msg.bms = state2rosMsg(state.bms);
+  ros_msg.imu = motor2msg(state.imu);
+  ros_msg.bms = motor2msg(state.bms);
 
   ros_msg.level_flag = state.levelFlag;
   ros_msg.frame_reserve = state.frameReserve;
