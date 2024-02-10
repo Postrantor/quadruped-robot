@@ -54,7 +54,7 @@ private:
 
     state_.motorType = MotorType::GO_M8010_6;
 
-    serial_.sendRecv(&cmd_, &state_);
+    serial_.send_recv(&cmd_, &state_);
 
     if (state_.correct == true) {
       std::cout << state_ << std::endl;
@@ -79,7 +79,7 @@ private:
       cmd_.mode = set_motor_mode(MotorMode::BRAKE);
       cmd_.id = 0;
       state_.motorType = MotorType::GO_M8010_6;
-      serial_.sendRecv(&cmd_, &state_);
+      serial_.send_recv(&cmd_, &state_);
 
       if (state_.correct == true) {
         std::cout << state_ << std::endl;

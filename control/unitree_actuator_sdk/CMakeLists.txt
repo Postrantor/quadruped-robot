@@ -12,11 +12,11 @@ link_directories(lib)
 
 #example
 set(MOTOR_SDK libUnitreeMotorSDK_M80106_Arm64.so)
-add_executable(go_m8010_6 src/example_go_m8010_6.cpp)
-target_link_libraries(go_m8010_6 ${MOTOR_SDK})
+# add_executable(go_m8010_6 src/example_go_m8010_6.cpp)
+# target_link_libraries(go_m8010_6 ${MOTOR_SDK})
 
-add_executable(change_id src/change_id.cpp)
-target_link_libraries(change_id ${MOTOR_SDK})
+# add_executable(change_id src/change_id.cpp)
+# target_link_libraries(change_id ${MOTOR_SDK})
 
 # 
 # set(EXTRA_LIBS2 libUnitree_motor_SDK_ARM64.so)
@@ -28,11 +28,11 @@ target_link_libraries(change_id ${MOTOR_SDK})
 # 
 install(
   TARGETS 
-    go_m8010_6
+    # go_m8010_6
     # change_id
     # check_c
     # check_cpp
-  RUNTIME DESTINATION bin
+  # RUNTIME DESTINATION bin
   # LIBRARY DESTINATION lib
   # ARCHIVE DESTINATION lib
   # INCLUDES include

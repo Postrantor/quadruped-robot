@@ -63,12 +63,21 @@ public:
   bool sendRecv(MotorCmd *sendMsg, MotorData *recvMsg);
   bool sendRecv(std::vector<MotorCmd> &sendVec, std::vector<MotorData> &recvVec);
 
+  bool send_recv(uint8_t *sendMsg, uint8_t *recvMsg, size_t sendLength) {
+    return sendRecv(sendMsg, recvMsg, sendLength);
+  }
+  bool send_recv(MotorCmd *sendMsg, MotorData *recvMsg) { return sendRecv(sendMsg, recvMsg); }
+  bool send_recv(std::vector<MotorCmd> &sendVec, std::vector<MotorData> &recvVec) {
+    return sendRecv(sendVec, recvVec);
+  }
+
   void test();
 
 private:
   void _open();
   void _set();
   void _close();
+
   size_t _nonBlockRecv(uint8_t *recvMsg, size_t readLen);
   std::string _portName;
   uint32_t _baudrate;
@@ -76,9 +85,11 @@ private:
   parity_t _parity;
   stopbits_t _stopbits;
   flowcontrol_t _flowcontrol;
+
   bool _xonxoff;
   bool _rtscts;
   int _fd;
+
   fd_set _rSet;
 };
 
