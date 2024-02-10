@@ -30,7 +30,7 @@ link_directories(lib)
 set(EXTRA_LIBS 
     -pthread
     lcm
-    libUnitreeMotorSDK_M80106_Arm64.so
+    libunitree_motor_sdk_m8010-6_arm.so
     libunitree_legged_sdk_arm64.a
 )
 set(DEPENDENCY_LIST
