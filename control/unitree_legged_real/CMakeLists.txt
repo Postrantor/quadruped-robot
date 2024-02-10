@@ -18,26 +18,30 @@ find_package(ament_cmake_ros REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rosbag2_cpp REQUIRED)
 find_package(std_msgs REQUIRED)
+
 find_package(unitree_go REQUIRED)
 find_package(unitree_api REQUIRED)
 find_package(ros2_unitree_legged_msgs REQUIRED)
 find_package(unitree_legged_sdk REQUIRED)
-find_package(unitree_actuator_sdk REQUIRED)
 
 include_directories(include)
-link_directories(${CMAKE_SOURCE_DIR}/lib/cpp)
+link_directories(lib)
 
-set(EXTRA_LIBS -pthread libunitree_legged_sdk_arm64.a lcm)
+set(EXTRA_LIBS 
+    -pthread
+    lcm
+    libUnitreeMotorSDK_M80106_Arm64.so
+    libunitree_legged_sdk_arm64.a
+)
 set(DEPENDENCY_LIST
     rclcpp
-    ros2_unitree_legged_msgs
-    unitree_legged_sdk
-    unitree_actuator_sdk
+    rclcpp
+    rosbag2_cpp
+    std_msgs
     unitree_go
     unitree_api
-    rclcpp
-    std_msgs
-    rosbag2_cpp
+    ros2_unitree_legged_msgs
+    unitree_legged_sdk
 )
 
 # src/common/motor_crc.cpp
@@ -45,18 +49,8 @@ add_executable(example_ros2_motor src/control_motor_by_ros2.cpp)
 target_link_libraries(example_ros2_motor ${EXTRA_LIBS})
 ament_target_dependencies(example_ros2_motor ${DEPENDENCY_LIST})
 
-# add_executable(ros2_walk_example src/ros2_walk_example.cpp)
-# target_link_libraries(ros2_walk_example ${EXTRA_LIBS})
-# ament_target_dependencies(ros2_walk_example ${DEPENDENCY_LIST})
-
-# add_executable(ros2_position_example src/ros2_position_example.cpp)
-# target_link_libraries(ros2_position_example ${EXTRA_LIBS})
-# ament_target_dependencies(ros2_position_example ${DEPENDENCY_LIST})
-
 install(
   TARGETS
-    # ros2_walk_example
-    # ros2_position_example
     example_ros2_motor
   DESTINATION lib/${PROJECT_NAME}
 )
