@@ -1,16 +1,11 @@
 /**
- * @file convert.h
- * @author your name (you@domain.com)
  * @brief
- * @version 0.1
  * @date 2024-01-27
- *
  * @copyright Copyright (c) 2024
- *
  */
 
-#ifndef _CONVERT_H_
-#define _CONVERT_H_
+#ifndef _UNITREE_MSG_CONVERT_H_
+#define _UNITREE_MSG_CONVERT_H_
 
 #include "rclcpp/rclcpp.hpp"
 #include "ros2_unitree_legged_msgs/msg/low_cmd.hpp"
@@ -260,4 +255,4 @@ ros2_unitree_legged_msgs::msg::HighState state2rosMsg(UNITREE_LEGGED_SDK::HighSt
   return ros_msg;
 }
 
-#endif  // _CONVERT_H_
+#endif  // _UNITREE_MSG_CONVERT_H_

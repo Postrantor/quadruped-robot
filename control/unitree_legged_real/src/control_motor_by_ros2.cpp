@@ -13,7 +13,7 @@
 #include "unitree_go/msg/motor_cmd.hpp"
 #include "unitree_go/msg/bms_cmd.hpp"
 
-#include "convert.h"
+#include "common/convert.h"
 #include "serial/serial_port.hpp"
 #include "motor/motor_control.hpp"
 #include "unitree_legged_sdk/unitree_legged_sdk.h"
