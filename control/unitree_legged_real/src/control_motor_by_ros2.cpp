@@ -34,35 +34,25 @@ private:
   void timer_callback() {
     RCLCPP_INFO(this->get_logger(), "timer callback: %ld", count_++);
 
-    // cmd.motorType = MotorType::GO_M8010_6;
-    // cmd.mode = queryMotorMode(MotorType::GO_M8010_6, MotorMode::FOC);
-    // cmd.id = 0;
-    // cmd.kp = 0.0;
-    // cmd.kd = 0.01;
-    // cmd.q = 0.0;
-    // cmd.dq = -6.28 * queryGearRatio(MotorType::GO_M8010_6);
-    // cmd.tau = 0.0;
-
     cmd_.motorType = MotorType::GO_M8010_6;
+    cmd_.mode = set_motor_mode(MotorMode::FOC);
     cmd_.id = 0;
-    cmd_.mode = 1;
-    cmd_.K_P = 0.0;
-    cmd_.K_W = 0.05;
-    cmd_.Pos = 0.0;
-    cmd_.W = 6.28 * 6.33;
-    cmd_.T = 0.0;
+    cmd_.k_q = 0.0;
+    cmd_.k_dq = 0.05;
+    cmd_.q = 0.0;
+    cmd_.dq = 6.28 * GearRatio;
+    cmd_.tau = 0.0;
 
     state_.motorType = MotorType::GO_M8010_6;
 
     serial_.sendRecv(&cmd_, &state_);
 
     if (state_.correct == true) {
-      std::cout << std::endl;
-      std::cout << "motor.Pos: " << state_.Pos << " rad" << std::endl;
-      std::cout << "motor.Temp: " << state_.Temp << " ℃" << std::endl;
-      std::cout << "motor.W: " << state_.W << " rad/s" << std::endl;
-      std::cout << "motor.T: " << state_.T << " N·m" << std::endl;
-      std::cout << "motor.MError: " << state_.MError << std::endl;
+      std::cout << "motor.q: " << state_.q << " rad" << std::endl;
+      std::cout << "motor.dq: " << state_.dq << " rad/s" << std::endl;
+      std::cout << "motor.tau: " << state_.tau << " N·m" << std::endl;
+      std::cout << "motor.temp: " << state_.temp << " ℃" << std::endl;
+      std::cout << "motor.error: " << state_.error << std::endl;
       std::cout << std::endl;
     } else {
       RCLCPP_INFO(this->get_logger(), "get motor response error.");
@@ -89,19 +79,17 @@ private:
     RCLCPP_INFO(this->get_logger(), "register on_shutdown_callback.");
     context->add_on_shutdown_callback([this]() {
       cmd_.motorType = MotorType::GO_M8010_6;
-      state_.motorType = MotorType::GO_M8010_6;
-      // cmd.mode = queryMotorMode(MotorType::GO_M8010_6, MotorMode::BRAKE);
-      cmd_.mode = 0;
+      cmd_.mode = set_motor_mode(MotorMode::BRAKE);
       cmd_.id = 0;
-
+      state_.motorType = MotorType::GO_M8010_6;
       serial_.sendRecv(&cmd_, &state_);
 
       if (state_.correct == true) {
-        std::cout << "motor.Pos: " << state_.Pos << " rad" << std::endl;
-        std::cout << "motor.Temp: " << state_.Temp << " ℃" << std::endl;
-        std::cout << "motor.W: " << state_.W << " rad/s" << std::endl;
-        std::cout << "motor.T: " << state_.T << " N·m" << std::endl;
-        std::cout << "motor.MError: " << state_.MError << std::endl;
+        std::cout << "motor.q: " << state_.q << " rad" << std::endl;
+        std::cout << "motor.dq: " << state_.dq << " rad/s" << std::endl;
+        std::cout << "motor.tau: " << state_.tau << " N·m" << std::endl;
+        std::cout << "motor.temp: " << state_.temp << " ℃" << std::endl;
+        std::cout << "motor.error: " << state_.error << std::endl;
         std::cout << std::endl;
       } else {
         RCLCPP_INFO(this->get_logger(), "get motor response error.");
