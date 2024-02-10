@@ -1,0 +1,22 @@
+<package format="3">
+    <name>unitree_real</name>
+    <version>0.1.0</version>
+    <description>unitree real</description>
+    <maintainer email="postrantor@gmail.com">trantor</maintainer>
+    <license>TODO</license>
+
+    <depend>ament_cmake</depend>
+    <depend>rosidl_default_generators</depend>
+    <depend>rosidl_default_runtime</depend>
+    <depend>rosidl_typesupport_cpp</depend>
+
+    <depend>unitree_sdk</depend>
+    <depend>eigen</depend>
+
+    <test_depend>ament_lint_auto</test_depend>
+    <test_depend>ament_lint_common</test_depend>
+
+    <export>
+        <build_type>ament_cmake</build_type>
+    </export>
+</package>
