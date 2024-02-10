@@ -1,25 +1,26 @@
 <package format="3">
     <name>unitree_legged_real</name>
-    <version>0.0.0</version>
-    <description>The unitree_legged_real package</description>
-    <maintainer email="laikago@unitree.cc">unitree</maintainer>
+    <version>0.1.0</version>
+    <description>unitree legged real</description>
+    <maintainer email="postrantor@gmail.com">trantor</maintainer>
     <license>TODO</license>
 
-    <buildtool_depend>ament_cmake</buildtool_depend>
-    <buildtool_depend>rosidl_default_generators</buildtool_depend>
-
-    <depend>rclcpp</depend>
-    <depend>rcl</depend>
+    <depend>ament_cmake</depend>
+    <depend>rosidl_default_generators</depend>
     <depend>rosidl_default_runtime</depend>
+    <depend>rosidl_typesupport_cpp</depend>
+
+    <depend>rcl</depend>
+    <depend>rclcpp</depend>
     <depend>rosbag2_cpp</depend>
     <depend>std_msgs</depend>
-    <depend>unitree_go</depend>
+
     <depend>unitree_api</depend>
+    <depend>unitree_go</depend>
+    <depend>unitree_legged_msgs</depend>
     <depend>unitree_legged_sdk</depend>
-    <depend>unitree_actuator_sdk</depend>
-    <depend>ros2_unitree_legged_msgs</depend>
+
     <depend>eigen</depend>
-    <depend>rosidl_typesupport_cpp</depend>
 
     <test_depend>ament_lint_auto</test_depend>
     <test_depend>ament_lint_common</test_depend>

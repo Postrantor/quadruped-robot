@@ -21,7 +21,7 @@ find_package(std_msgs REQUIRED)
 
 find_package(unitree_go REQUIRED)
 find_package(unitree_api REQUIRED)
-find_package(ros2_unitree_legged_msgs REQUIRED)
+find_package(unitree_legged_msgs REQUIRED)
 find_package(unitree_legged_sdk REQUIRED)
 
 include_directories(include)
@@ -40,7 +40,7 @@ set(DEPENDENCY_LIST
     std_msgs
     unitree_go
     unitree_api
-    ros2_unitree_legged_msgs
+    unitree_legged_msgs
     unitree_legged_sdk
 )
 
