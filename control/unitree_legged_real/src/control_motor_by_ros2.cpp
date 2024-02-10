@@ -30,6 +30,15 @@ public:
     add_shutdown_callback();
   }
 
+  void init_motor() {
+    // cmd_.motor_cmd[i].mode = 0x01;
+    // cmd_.motor_cmd[i].q = UNITREE_LEGGED_SDK::PosStopF;
+    // cmd_.motor_cmd[i].kp = 0;
+    // cmd_.motor_cmd[i].dq = UNITREE_LEGGED_SDK::VelStopF;
+    // cmd_.motor_cmd[i].kd = 0;
+    // cmd_.motor_cmd[i].tau = 0;
+  }
+
 private:
   void timer_callback() {
     RCLCPP_INFO(this->get_logger(), "timer callback: %ld", count_++);
@@ -40,7 +49,7 @@ private:
     cmd_.k_q = 0.0;
     cmd_.k_dq = 0.05;
     cmd_.q = 0.0;
-    cmd_.dq = 6.28 * GearRatio;
+    cmd_.dq = 6.28 * get_motor_gear_ratio(MotorType::GO_M8010_6);
     cmd_.tau = 0.0;
 
     state_.motorType = MotorType::GO_M8010_6;
@@ -48,22 +57,10 @@ private:
     serial_.sendRecv(&cmd_, &state_);
 
     if (state_.correct == true) {
-      std::cout << "motor.q: " << state_.q << " rad" << std::endl;
-      std::cout << "motor.dq: " << state_.dq << " rad/s" << std::endl;
-      std::cout << "motor.tau: " << state_.tau << " N·m" << std::endl;
-      std::cout << "motor.temp: " << state_.temp << " ℃" << std::endl;
-      std::cout << "motor.error: " << state_.error << std::endl;
-      std::cout << std::endl;
+      std::cout << state_ << std::endl;
     } else {
       RCLCPP_INFO(this->get_logger(), "get motor response error.");
     }
-
-    // toque control, set rl_2 toque
-    // cmd_.motor_cmd[RL_2].q = PosStopF;  // Set to stop position(rad)
-    // cmd_.motor_cmd[RL_2].kp = 0;
-    // cmd_.motor_cmd[RL_2].dq = VelStopF;  // Set to stop angular velocity(rad/s)
-    // cmd_.motor_cmd[RL_2].kd = 0;
-    // cmd_.motor_cmd[RL_2].tau = 1;  // target toque is set to 1N.m
 
     // get_crc(cmd_);  // check motor cmd crc
     // cmd_pub_->publish(cmd);  // publish cmd_low message
@@ -85,29 +82,13 @@ private:
       serial_.sendRecv(&cmd_, &state_);
 
       if (state_.correct == true) {
-        std::cout << "motor.q: " << state_.q << " rad" << std::endl;
-        std::cout << "motor.dq: " << state_.dq << " rad/s" << std::endl;
-        std::cout << "motor.tau: " << state_.tau << " N·m" << std::endl;
-        std::cout << "motor.temp: " << state_.temp << " ℃" << std::endl;
-        std::cout << "motor.error: " << state_.error << std::endl;
-        std::cout << std::endl;
+        std::cout << state_ << std::endl;
       } else {
         RCLCPP_INFO(this->get_logger(), "get motor response error.");
       }
     });
     return true;
   }
-
-  // void init_motor() {
-  //   for (int i = 0; i < 20; i++) {
-  //     cmd_.motor_cmd[i].mode = 0x01;  // set toque mode, 0x00 is passive mode
-  //     cmd_.motor_cmd[i].q = UNITREE_LEGGED_SDK::PosStopF;
-  //     cmd_.motor_cmd[i].kp = 0;
-  //     cmd_.motor_cmd[i].dq = UNITREE_LEGGED_SDK::VelStopF;
-  //     cmd_.motor_cmd[i].kd = 0;
-  //     cmd_.motor_cmd[i].tau = 0;
-  //   }
-  // }
 
 private:
   rclcpp::TimerBase::SharedPtr timer_;
