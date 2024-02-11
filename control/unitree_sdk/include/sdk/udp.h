@@ -10,7 +10,7 @@
 #include <stdint.h>
 
 #include "comm.h"
-#include "unitree_sdk/quadruped.h"
+#include "sdk/quadruped.h"
 
 /**
   @brief udp critical configuration:
