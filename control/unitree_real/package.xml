@@ -10,7 +10,9 @@
     <depend>rosidl_default_runtime</depend>
     <depend>rosidl_typesupport_cpp</depend>
 
+    <depend>rclcpp</depend>
     <depend>unitree_sdk</depend>
+    <depend>unitree_msgs</depend>
     <depend>eigen</depend>
 
     <test_depend>ament_lint_auto</test_depend>

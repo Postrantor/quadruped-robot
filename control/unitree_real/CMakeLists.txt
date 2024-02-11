@@ -16,7 +16,9 @@ set(CMAKE_CXX_FLAGS "-O3 -fPIC")
 #
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_ros REQUIRED)
+find_package(rclcpp REQUIRED)
 find_package(unitree_sdk REQUIRED)
+find_package(unitree_msgs REQUIRED)
 find_library(LEGGEDLIB unitree_legged_sdk REQUIRED)
 find_library(MOTORLIB UnitreeMotorSDK_M80106_Arm64 REQUIRED)
 
@@ -28,7 +30,9 @@ set(EXTRA_LIBS
   ${LEGGEDLIB}
 )
 set(DEPENDENCIES
+  rclcpp
   unitree_sdk
+  unitree_msgs
 )
 
 #

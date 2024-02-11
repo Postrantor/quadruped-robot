@@ -2,6 +2,7 @@
 #define __MOTOR_MSG_H
 
 #include <stdint.h>
+
 #define CRC_SIZE 2
 #define CTRL_DAT_SIZE sizeof(ControlData_t) - CRC_SIZE
 #define DATA_DAT_SIZE sizeof(MotorData_t) - CRC_SIZE

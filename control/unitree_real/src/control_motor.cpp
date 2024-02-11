@@ -9,61 +9,61 @@
 #include <thread>
 
 #include "rclcpp/rclcpp.hpp"
-// #include "unitree_msg/msg/low_cmd.hpp"
-// #include "unitree_msg/msg/motor_cmd.hpp"
-// #include "unitree_msg/msg/bms_cmd.hpp"
+#include "unitree_msgs/msg/low_cmd.hpp"
+#include "unitree_msgs/msg/bms_cmd.hpp"
+#include "unitree_msgs/msg/motor_state.hpp"
+#include "unitree_msgs/msg/motor_cmd.hpp"
 
 #include "common/convert.h"
 #include "serial/serial_port.hpp"
 #include "motor/motor_control.hpp"
-#include "sdk/unitree_sdk.h"
+// #include "sdk/unitree_sdk.h"
 
 using namespace std::chrono_literals;
 
-// create a low_level_cmd_sender class for low state receive
-class low_level_cmd_sender : public rclcpp::Node {
+class low_level_motor_cmd_sender : public rclcpp::Node {
 public:
-  low_level_cmd_sender() : Node("low_level_cmd_sender"), serial_("/dev/ttyUSB0") {
-    // cmd_pub_ = this->create_publisher<unitree_msg::msg::LowCmd>("/cmd_motor", 1);
-    timer_ = this->create_wall_timer(100ms, std::bind(&low_level_cmd_sender::timer_callback, this));
+  low_level_motor_cmd_sender() : Node("low_level_motor_cmd_sender"), serial_("/dev/ttyUSB0") {
+    pub_state_ = this->create_publisher<unitree_msgs::msg::MotorState>("/motor_state", 1);
+    timer_ = this->create_wall_timer(
+        100ms, std::bind(&low_level_motor_cmd_sender::timer_callback, this));
     // init_motor();
     add_shutdown_callback();
   }
 
   void init_motor() {
-    // cmd_.motor_cmd[i].mode = 0x01;
-    // cmd_.motor_cmd[i].q = unitree_sdk::PosStopF;
-    // cmd_.motor_cmd[i].kp = 0;
-    // cmd_.motor_cmd[i].dq = unitree_sdk::VelStopF;
-    // cmd_.motor_cmd[i].kd = 0;
-    // cmd_.motor_cmd[i].tau = 0;
+    // motor_cmd_.motor_cmd[i].mode = 0x01;
+    // motor_cmd_.motor_cmd[i].q = unitree_sdk::PosStopF;
+    // motor_cmd_.motor_cmd[i].kp = 0;
+    // motor_cmd_.motor_cmd[i].dq = unitree_sdk::VelStopF;
+    // motor_cmd_.motor_cmd[i].kd = 0;
+    // motor_cmd_.motor_cmd[i].tau = 0;
   }
 
 private:
   void timer_callback() {
     RCLCPP_INFO(this->get_logger(), "timer callback: %ld", count_++);
 
-    cmd_.motorType = MotorType::GO_M8010_6;
-    cmd_.mode = set_motor_mode(MotorMode::FOC);
-    cmd_.id = 0;
-    cmd_.k_q = 0.0;
-    cmd_.k_dq = 0.05;
-    cmd_.q = 0.0;
-    cmd_.dq = 6.28 * get_motor_gear_ratio(MotorType::GO_M8010_6);
-    cmd_.tau = 0.0;
+    // sub?
+    motor_cmd_.motorType = MotorType::GO_M8010_6;
+    motor_cmd_.mode = set_mode(MotorMode::FOC);
+    motor_cmd_.id = 0;
+    motor_cmd_.k_q = 0.0;
+    motor_cmd_.k_dq = 0.05;
+    motor_cmd_.q = 0.0;
+    motor_cmd_.dq = 6.28 * get_gear_ratio(MotorType::GO_M8010_6);
+    motor_cmd_.tau = 0.0;
+    std::cout << motor_cmd_ << std::endl;
 
-    state_.motorType = MotorType::GO_M8010_6;
+    motor_state_.motorType = MotorType::GO_M8010_6;
 
-    serial_.send_recv(&cmd_, &state_);
+    serial_.send_recv(&motor_cmd_, &motor_state_);
 
-    if (state_.correct == true) {
-      std::cout << state_ << std::endl;
-    } else {
+    if (!get_crc(motor_state_)) {
       RCLCPP_INFO(this->get_logger(), "get motor response error.");
     }
-
-    // get_crc(cmd_);  // check motor cmd crc
-    // cmd_pub_->publish(cmd);  // publish cmd_low message
+    std::cout << motor_state_ << std::endl;
+    pub_state_->publish(unitree_sdk::motor2msg(motor_state_));
   }
 
   bool add_shutdown_callback() {
@@ -75,14 +75,14 @@ private:
 
     RCLCPP_INFO(this->get_logger(), "register on_shutdown_callback.");
     context->add_on_shutdown_callback([this]() {
-      cmd_.motorType = MotorType::GO_M8010_6;
-      cmd_.mode = set_motor_mode(MotorMode::BRAKE);
-      cmd_.id = 0;
-      state_.motorType = MotorType::GO_M8010_6;
-      serial_.send_recv(&cmd_, &state_);
+      motor_cmd_.motorType = MotorType::GO_M8010_6;
+      motor_cmd_.mode = set_mode(MotorMode::BRAKE);
+      motor_cmd_.id = 0;
+      motor_state_.motorType = MotorType::GO_M8010_6;
+      serial_.send_recv(&motor_cmd_, &motor_state_);
 
-      if (state_.correct == true) {
-        std::cout << state_ << std::endl;
+      if (motor_state_.correct == true) {
+        std::cout << motor_state_ << std::endl;
       } else {
         RCLCPP_INFO(this->get_logger(), "get motor response error.");
       }
@@ -92,13 +92,11 @@ private:
 
 private:
   rclcpp::TimerBase::SharedPtr timer_;
-  // rclcpp::Publisher<unitree_msg::msg::LowCmd>::SharedPtr cmd_pub_;
-  // unitree_go::msg::LowCmd cmd_;
+  rclcpp::Publisher<unitree_msgs::msg::MotorState>::SharedPtr pub_state_;
 
-  std::uint64_t count_{0};
-
-  MotorCmd cmd_;
-  MotorData state_;
+  std::size_t count_{0};
+  MotorCmd motor_cmd_;
+  MotorData motor_state_;
   SerialPort serial_;
 };
 
@@ -112,7 +110,7 @@ int main(int argc, char **argv) {
   std::cin.ignore();
 
   rclcpp::init(argc, argv);
-  auto node = std::make_shared<low_level_cmd_sender>();
+  auto node = std::make_shared<low_level_motor_cmd_sender>();
   rclcpp::spin(node);
   rclcpp::shutdown();
 

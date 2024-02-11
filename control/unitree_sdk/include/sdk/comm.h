@@ -67,7 +67,7 @@ typedef struct {
   std::array<float, 3> accelerometer;  // acceleration （unit: m/(s2))       (raw data)
   std::array<float, 3> rpy;            // euler angle（unit: rad)
   int8_t temperature;                  // the temperature of imu (unit: °C)
-} IMU;                                 //
+} IMU;
 
 typedef struct {
   uint8_t r;
