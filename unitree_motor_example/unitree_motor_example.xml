@@ -1,0 +1,7 @@
+<library path="unitree_motor_example">
+  <class name="unitree_motor_example/UnitreeMotorSystemHardware" type="unitree_motor_example::UnitreeMotorSystemHardware" base_class_type="hardware_interface::SystemInterface">
+    <description>
+      unitree m8010-6 motor.
+    </description>
+  </class>
+</library>

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!-- Basic unitree motor base -->
+<!-- xmlns:xacro 指定xacro的命名空间 -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="unitree_motor">
+  <!-- arg 定义两个参数 -->
+  <xacro:arg name="prefix" default="" />
+  <xacro:arg name="use_mock_hardware" default="false" />
+  <!-- include 引入外部文件 -->
+  <!-- 取决于cmake install -->
+  <xacro:include filename="$(find model_description)/unitree/urdf/unitree_motor_description.urdf.xacro" />
+  <xacro:include filename="$(find model_description)/unitree/urdf/unitree_motor.materials.xacro" />
+  <xacro:include filename="$(find unitree_motor_example)/ros2_control/unitree_motor.ros2_control.xacro" />
+  <!-- 实例化对象，分别在 include 中定义对应的对象 -->
+  <xacro:unitree_motor prefix="$(arg prefix)" />
+  <xacro:unitree_motor_control name="UnitreeMotor" prefix="$(arg prefix)" use_mock_hardware="$(arg use_mock_hardware)"/>
+</robot>
