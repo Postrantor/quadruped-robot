@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <math.h>
 
-#include "unitree_legged_sdk/unitree_legged_sdk.h"
+#include "sdk/unitree_sdk.h"
 
 // Servo: 0x0A, Damping: 0x00
 #define PMSM (0x0A)

@@ -5,3 +5,5 @@ devel/
 install/
 build_*
 ros_control
+
+/control/keyboard/*

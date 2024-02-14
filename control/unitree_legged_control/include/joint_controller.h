@@ -19,8 +19,11 @@
 #include "hardware_interface/joint_command_interface.h"
 #include "std_msgs/Float64.h"
 #include "geometry_msgs/WrenchStamped.h"
-#include "unitree_legged_msgs/MotorCmd.h"
-#include "unitree_legged_msgs/MotorState.h"
+
+#include "unitree_msgs/msg/low_cmd.hpp"
+#include "unitree_msgs/msg/bms_cmd.hpp"
+#include "unitree_msgs/msg/motor_state.hpp"
+#include "unitree_msgs/msg/motor_cmd.hpp"
 
 #include "unitree_joint_control_tool.h"
 
@@ -33,7 +36,7 @@ private:
   ros::Subscriber sub_cmd, sub_ft;
   // ros::Publisher pub_state;
   control_toolbox::Pid pid_controller_;
-  boost::scoped_ptr<realtime_tools::RealtimePublisher<unitree_legged_msgs::MotorState> >
+  boost::scoped_ptr<realtime_tools::RealtimePublisher<unitree_msgs::MotorState> >
       controller_state_publisher_;
 
 public:
@@ -48,9 +51,9 @@ public:
   urdf::JointConstSharedPtr joint_urdf;
 
   // pub?
-  realtime_tools::RealtimeBuffer<unitree_legged_msgs::MotorCmd> command;
-  unitree_legged_msgs::MotorCmd lastCmd;
-  unitree_legged_msgs::MotorState lastState;
+  realtime_tools::RealtimeBuffer<unitree_msgs::MotorCmd> command;
+  unitree_msgs::MotorCmd lastCmd;
+  unitree_msgs::MotorState lastState;
 
   ServoCmd servoCmd;
 
@@ -60,7 +63,7 @@ public:
   virtual void stopping();
 
   void setTorqueCB(const geometry_msgs::WrenchStampedConstPtr &msg);
-  void setCommandCB(const unitree_legged_msgs::MotorCmdConstPtr &msg);
+  void setCommandCB(const unitree_msgs::MotorCmdConstPtr &msg);
 
   void positionLimits(double &position);
   void velocityLimits(double &velocity);
