@@ -52,7 +52,7 @@ BreakConstructorInitializersBeforeComma: false # 构造函数初始化列表逗�
 BreakConstructorInitializers: BeforeColon # 构造函数初始化列表冒号前换行
 BreakAfterJavaFieldAnnotations: false # Java 字段注解后不换行
 BreakStringLiterals: true # 字符串字面量换行
-ColumnLimit: 120 # 列限制为 100
+ColumnLimit: 130 # 列限制为 100
 CommentPragmas: "^ IWYU pragma:" # 注释指令
 CompactNamespaces: false # 不压缩命名空间
 ConstructorInitializerAllOnOneLineOrOnePerLine: true # 构造函数初始化列表全部在一行或每行一个

@@ -27,8 +27,10 @@
 #include "rclcpp/time.hpp"
 #include "rcppmath/rolling_mean_accumulator.hpp"
 
-namespace unitree_position_controller {
-class Odometry {
+namespace unitree_position_controller
+{
+class Odometry
+{
 public:
   explicit Odometry(size_t velocity_rolling_window_size = 10);
 
@@ -38,11 +40,26 @@ public:
   void updateOpenLoop(double linear, double angular, const rclcpp::Time& time);
   void resetOdometry();
 
-  double getX() const { return x_; }
-  double getY() const { return y_; }
-  double getHeading() const { return heading_; }
-  double getLinear() const { return linear_; }
-  double getAngular() const { return angular_; }
+  double getX() const
+  {
+    return x_;
+  }
+  double getY() const
+  {
+    return y_;
+  }
+  double getHeading() const
+  {
+    return heading_;
+  }
+  double getLinear() const
+  {
+    return linear_;
+  }
+  double getAngular() const
+  {
+    return angular_;
+  }
 
   void setWheelParams(double wheel_separation, double left_wheel_radius, double right_wheel_radius);
   void setVelocityRollingWindowSize(size_t velocity_rolling_window_size);
@@ -81,6 +98,6 @@ private:
   RollingMeanAccumulator angular_accumulator_;
 };
 
-}  // namespace unitree_position_cotroller
+}  // namespace unitree_position_controller
 
 #endif  // UNITREE_POSITION_COTROLLER__ODOMETRY_HPP_

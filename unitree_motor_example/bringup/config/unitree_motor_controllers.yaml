@@ -1,3 +1,5 @@
+# 这里的参数是提供给 controller 使用的，会在 /controller/*controller.cpp 中使用
+
 controller_manager:
   ros__parameters:
     update_rate: 10 # Hz
@@ -9,6 +11,16 @@ controller_manager:
       type: unitree_position_controller/UnitreePositionController
 
 unitree_base_controller:
+  ros__parameters:
+    joint_ll_0_name: ["joint_ll_0"]
+
+    publish_rate: 50.0
+    open_loop: true
+    cmd_vel_timeout: 0.5
+    #publish_limited_velocity: true # 因为上面使用 open_loop 所以这里是 true?
+    #velocity_rolling_window_size: 10
+
+old_unitree_base_controller:
   ros__parameters:
     left_wheel_names: ["left_wheel_joint"]
     right_wheel_names: ["right_wheel_joint"]

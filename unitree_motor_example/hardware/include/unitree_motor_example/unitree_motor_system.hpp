@@ -42,14 +42,6 @@ public:
   on_init(const hardware_interface::HardwareInfo &info) override;
 
   UNITREE_MOTOR_EXAMPLE_PUBLIC
-  std::vector<hardware_interface::StateInterface>
-  export_state_interfaces() override;
-
-  UNITREE_MOTOR_EXAMPLE_PUBLIC
-  std::vector<hardware_interface::CommandInterface>
-  export_command_interfaces() override;
-
-  UNITREE_MOTOR_EXAMPLE_PUBLIC
   hardware_interface::CallbackReturn
   on_activate(const rclcpp_lifecycle::State &previous_state) override;
 
@@ -57,6 +49,7 @@ public:
   hardware_interface::CallbackReturn
   on_deactivate(const rclcpp_lifecycle::State &previous_state) override;
 
+  // `read()`, `write()`
   UNITREE_MOTOR_EXAMPLE_PUBLIC
   hardware_interface::return_type read(const rclcpp::Time &time,
                                        const rclcpp::Duration &period) override;
@@ -65,11 +58,20 @@ public:
   hardware_interface::return_type
   write(const rclcpp::Time &time, const rclcpp::Duration &period) override;
 
+  UNITREE_MOTOR_EXAMPLE_PUBLIC
+  std::vector<hardware_interface::StateInterface>
+  export_state_interfaces() override;
+
+  UNITREE_MOTOR_EXAMPLE_PUBLIC
+  std::vector<hardware_interface::CommandInterface>
+  export_command_interfaces() override;
+
 private:
+  // @zhiqi.jia, `info_` paser from "*.ros2_control.xacro",
+  // 应该是framework已经给解析好了，这些文件已经是按照指定的方式加载进来的
   // parameters for the unitree_motor simulation
   double hw_start_sec_;
   double hw_stop_sec_;
-
   // store the command for the simulated robot
   std::vector<double> hw_commands_;
   std::vector<double> hw_positions_;
