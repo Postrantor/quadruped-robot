@@ -1,151 +1,185 @@
-// Copyright 2020 PAL Robotics S.L.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @brief
+ * @date 2024-02-15
+ * @copyright Copyright (c) 2024
+ */
 
 #ifndef UNITREE_POSITION_CONTROLLER__UNITREE_POSITION_CONTROLLER_HPP_
 #define UNITREE_POSITION_CONTROLLER__UNITREE_POSITION_CONTROLLER_HPP_
 
 #include <chrono>
-#include <cmath>
+#include <geometry_msgs/msg/detail/twist_stamped__struct.hpp>
 #include <memory>
-#include <queue>
 #include <string>
+#include <cmath>
+#include <queue>
 #include <vector>
-
+// ros2
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/state.hpp"
-#include "realtime_tools/realtime_box.h"
 #include "realtime_tools/realtime_buffer.h"
+#include "realtime_tools/realtime_box.h"
 #include "realtime_tools/realtime_publisher.h"
-
-#include "unitree_position_controller/odometry.hpp"
-#include "unitree_position_controller/speed_limiter.hpp"
-#include "unitree_position_controller/visibility_control.h"
-
+// interfaces
 #include "controller_interface/controller_interface.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "geometry_msgs/msg/twist_stamped.hpp"
 #include "hardware_interface/handle.hpp"
-#include "nav_msgs/msg/odometry.hpp"
-#include "odometry.hpp"
-#include "tf2_msgs/msg/tf_message.hpp"
+// unitree_controller
+// #include "unitree_position_controller/pid.hpp"
+// #include "unitree_position_controller/speed_limiter.hpp"
+#include "unitree_position_controller_parameters.hpp"  // generate to build folder
+#include "unitree_position_controller/visibility_control.h"
 
-#include "unitree_position_controller_parameters.hpp"
+namespace unitree_position_controller {
 
-namespace unitree_position_controller
-{
-class UnitreePositionController : public controller_interface::ControllerInterface
-{
-  using Twist = geometry_msgs::msg::TwistStamped;
+using CallbackReturn = controller_interface::CallbackReturn;
+using InterfaceConfiguration = controller_interface::InterfaceConfiguration;
+// FIXME(@zhiqi.jia), shoud be in class
+static const rclcpp::Logger LOGGER = rclcpp::get_logger("unitree_motor_controller");
 
+class UnitreePositionController : public controller_interface::ControllerInterface {
 public:
   UNITREE_POSITION_CONTROLLER_PUBLIC
-  UnitreePositionController();
 
-  // @zhiqi.jia, interface
+  /**
+   * @brief Construct a new Unitree Position Controller object
+   * @details 这里采用的是 lifecycle node 的方式，所以创建、销毁pub/sub的操作需要在对应的api中实现
+   * 构造函数中不再有任何实现
+   */
+  UnitreePositionController() = default;
+
+  /**
+   * @brief 2. command_interface, type `ALL`，`INDIVIDUAL` 和 `NONE`
+   * 将方法全部注册到基类对应的成员变量中，通过 share memory 的方式和 hardware
+   * 方面通信
+   * @return InterfaceConfiguration
+   * return `<joint_name>/<interface_type>`
+   */
   UNITREE_POSITION_CONTROLLER_PUBLIC
-  controller_interface::InterfaceConfiguration command_interface_configuration() const override;
+  InterfaceConfiguration command_interface_configuration() const override;
+
+  // 2. state_interface 同上
+  UNITREE_POSITION_CONTROLLER_PUBLIC
+  InterfaceConfiguration state_interface_configuration() const override;
+
+  /**
+   * @brief 4. 从硬件接口获取状态，并下发命令到硬件
+   * @param time 当前时间，time - last_time
+   * @param period 周期
+   * @return controller_interface::return_type
+   */
+  UNITREE_POSITION_CONTROLLER_PUBLIC
+  controller_interface::return_type update(const rclcpp::Time &time, const rclcpp::Duration &period) override;
+
+  /**
+   * @brief 0. 初始化各种资源
+   * @details 1.创建param_listener node; 2.从yaml文件中解析参数;
+   * read from `ros2_control/<description>.ros2_control.xacro`
+   * read from `config/_controller.yaml`
+   * @return CallbackReturn
+   */
+  UNITREE_POSITION_CONTROLLER_PUBLIC
+  CallbackReturn on_init() override;
+
+  /**
+   * @brief 1. 创建 publisher_, subscriber_
+   * @return CallbackReturn
+   */
+  UNITREE_POSITION_CONTROLLER_PUBLIC
+  CallbackReturn on_configure(const rclcpp_lifecycle::State &previous_state) override;
+
+  /**
+   * @brief 将关节和对应的接口关联起来
+   * @details controller_interface <-> hardware_interface
+   * @return CallbackReturn, ==> `registered_handles_`
+   */
+  UNITREE_POSITION_CONTROLLER_PUBLIC
+  CallbackReturn on_activate(const rclcpp_lifecycle::State &previous_state) override;
 
   UNITREE_POSITION_CONTROLLER_PUBLIC
-  controller_interface::InterfaceConfiguration state_interface_configuration() const override;
-
-  // @zhiqi.jia update()
-  UNITREE_POSITION_CONTROLLER_PUBLIC
-  controller_interface::return_type update(const rclcpp::Time& time, const rclcpp::Duration& period) override;
-
-  // @zhiqi.jia, lifecycle interface
-  UNITREE_POSITION_CONTROLLER_PUBLIC
-  controller_interface::CallbackReturn on_init() override;
+  CallbackReturn on_deactivate(const rclcpp_lifecycle::State &previous_state) override;
 
   UNITREE_POSITION_CONTROLLER_PUBLIC
-  controller_interface::CallbackReturn on_configure(const rclcpp_lifecycle::State& previous_state) override;
+  CallbackReturn on_cleanup(const rclcpp_lifecycle::State &previous_state) override;
 
   UNITREE_POSITION_CONTROLLER_PUBLIC
-  controller_interface::CallbackReturn on_activate(const rclcpp_lifecycle::State& previous_state) override;
+  CallbackReturn on_error(const rclcpp_lifecycle::State &previous_state) override;
 
   UNITREE_POSITION_CONTROLLER_PUBLIC
-  controller_interface::CallbackReturn on_deactivate(const rclcpp_lifecycle::State& previous_state) override;
-
-  UNITREE_POSITION_CONTROLLER_PUBLIC
-  controller_interface::CallbackReturn on_cleanup(const rclcpp_lifecycle::State& previous_state) override;
-
-  UNITREE_POSITION_CONTROLLER_PUBLIC
-  controller_interface::CallbackReturn on_error(const rclcpp_lifecycle::State& previous_state) override;
-
-  UNITREE_POSITION_CONTROLLER_PUBLIC
-  controller_interface::CallbackReturn on_shutdown(const rclcpp_lifecycle::State& previous_state) override;
+  CallbackReturn on_shutdown(const rclcpp_lifecycle::State &previous_state) override;
 
 protected:
-  // 这里的值是直接从硬件中 read() write() 通过进程内通信(share memory)获得
-  // update() 中计算得到的两轮的速度指令，是直接set到这里
-  // update() 中获得位置信息也是直接从这里get
-  struct WheelHandle
-  {
-    std::reference_wrapper<const hardware_interface::LoanedStateInterface> feedback;
-    std::reference_wrapper<hardware_interface::LoanedCommandInterface> velocity;
+  // subscribe `desired_state`
+  bool subscriber_is_active_{false};  // for lifecycle config
+  rclcpp::Subscription<geometry_msgs::msg::TwistStamped>::SharedPtr subscribe_desired_state_{nullptr};
+  std::queue<geometry_msgs::msg::TwistStamped> previous_states_;  // last two commands
+
+  // publish `real_command`
+  std::shared_ptr<rclcpp::Publisher<geometry_msgs::msg::TwistStamped>> publishe_real_command_{nullptr};
+
+  // publish `target_state`
+  std::shared_ptr<rclcpp::Publisher<geometry_msgs::msg::TwistStamped>> publishe_target_state_{nullptr};
+
+  // publish rate, use timer?
+  double publish_rate_ = 50.0;
+  rclcpp::Duration publish_period_ = rclcpp::Duration::from_nanoseconds(0);
+  rclcpp::Time previous_update_timestamp_{0};
+  rclcpp::Time previous_publish_timestamp_{0, 0, RCL_CLOCK_UNINITIALIZED};
+
+  /**
+   * @brief 这里的值是直接从硬件中 read()/write() 通过进程内通信(share memory)获得
+   * 还可以再封装一层！直接对每个interface的 ->set()/->get()
+   */
+  struct JointHandle {
+    std::reference_wrapper<hardware_interface::LoanedCommandInterface> command_velocity;
+    std::reference_wrapper<const hardware_interface::LoanedStateInterface> feedback_position;
+    std::reference_wrapper<const hardware_interface::LoanedStateInterface> feedback_velocity;
   };
+  /**
+   * <joint name="${prefix}joint_ll_0_name">
+   *   <command_interface name="velocity"/>
+   *   <state_interface name="position"/>
+   *   <state_interface name="velocity"/>
+   *   <param name="id">1</param>
+   * </joint>
+   */
+  std::vector<JointHandle> registered_joint_handles_;
 
-  const char* feedback_type() const;
-  controller_interface::CallbackReturn configure_side(const std::string& side,
-                                                      const std::vector<std::string>& wheel_names,
-                                                      std::vector<WheelHandle>& registered_handles);
+  /**
+   * @brief find joint interface handle from `state_interfaces_` and `command_interfaces_`
+   * @details find all joint interface include state, command from controller_manger(controller_interface) and
+   * resource_manager(hardware_interface)
+   * @param joints_name
+   * @param registered_handles
+   * @return CallbackReturn
+   */
+  CallbackReturn get_joint_handle(
+      const std::vector<std::string> &joints_name,  //
+      std::vector<JointHandle> &registered_handles);
 
-  std::vector<WheelHandle> registered_left_wheel_handles_;
-  std::vector<WheelHandle> registered_right_wheel_handles_;
+  // 这里应该是通过 realtime_toolbox 工具箱中的set/get方法来，可能是有锁来保护
+  std::queue<geometry_msgs::msg::TwistStamped> previous_desired_states_;  // last two commands
+  realtime_tools::RealtimeBox<std::shared_ptr<geometry_msgs::msg::TwistStamped>> received_desired_state_ptr_{nullptr};
+  // std::shared_ptr<geometry_msgs::msg::TwistStamped> received_desired_state_ptr_{nullptr};
 
   // parameters from ros for unitree_position_controller
-  // @zhiqi.jia, generate code
   std::shared_ptr<ParamListener> param_listener_;
   Params params_;
 
-  // timeout to consider cmd_vel commands old
-  // @zhiqi.jia, could read from yaml
-  std::chrono::milliseconds cmd_vel_timeout_{ 500 };
+  // timeout to consider desired_state commands old
+  std::chrono::milliseconds desired_state_timeout_{500};
 
-  // @zhiqi.jia, algorithm，包含了计算里程计方法
-  Odometry odometry_;
+  // safety
+  // SpeedLimiter limiter_linear_;
+  // SpeedLimiter limiter_angular_;
 
-  // @zhiqi.jia, create odom publisher
-  std::shared_ptr<rclcpp::Publisher<nav_msgs::msg::Odometry>> odometry_publisher_ = nullptr;
-  std::shared_ptr<realtime_tools::RealtimePublisher<nav_msgs::msg::Odometry>> realtime_odometry_publisher_ = nullptr;
-  std::shared_ptr<rclcpp::Publisher<tf2_msgs::msg::TFMessage>> odometry_transform_publisher_ = nullptr;
-  std::shared_ptr<realtime_tools::RealtimePublisher<tf2_msgs::msg::TFMessage>> realtime_odometry_transform_publisher_ =
-      nullptr;
-
-  // @zhiqi.jia, command subscriber
-  bool subscriber_is_active_ = false;
-  rclcpp::Subscription<geometry_msgs::msg::TwistStamped>::SharedPtr velocity_command_subscriber_ = nullptr;
-  rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr velocity_command_unstamped_subscriber_ = nullptr;
-  realtime_tools::RealtimeBox<std::shared_ptr<geometry_msgs::msg::TwistStamped>> received_velocity_msg_ptr_{ nullptr };
-  std::queue<geometry_msgs::msg::TwistStamped> previous_commands_;  // last two commands
-
-  // @zhiqi.jia, algorithm, speed limiters
-  SpeedLimiter limiter_linear_;
-  SpeedLimiter limiter_angular_;
-  bool publish_limited_velocity_ = false;
-  std::shared_ptr<rclcpp::Publisher<geometry_msgs::msg::TwistStamped>> limited_velocity_publisher_ = nullptr;
-  std::shared_ptr<realtime_tools::RealtimePublisher<geometry_msgs::msg::TwistStamped>>
-      realtime_limited_velocity_publisher_ = nullptr;
-
-  // publish rate limiter, @zhiqi.jia, use timer?
-  rclcpp::Time previous_update_timestamp_{ 0 };
-  double publish_rate_ = 50.0;
-  rclcpp::Duration publish_period_ = rclcpp::Duration::from_nanoseconds(0);
-  rclcpp::Time previous_publish_timestamp_{ 0, 0, RCL_CLOCK_UNINITIALIZED };
+  // break
   bool is_halted = false;
   bool use_stamped_vel_ = true;
   bool reset();
   void halt();
 };
 }  // namespace unitree_position_controller
+
 #endif  // UNITREE_POSITION_CONTROLLER__UNITREE_POSITION_CONTROLLER_HPP_

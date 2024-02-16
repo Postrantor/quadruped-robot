@@ -1,22 +1,14 @@
-// Copyright 2020 PAL Robotics S.L.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @brief
+ * @date 2024-02-15
+ * @copyright Copyright (c) 2024
+ */
 
-#include "unitree_position_controller/odometry.hpp"
+#include "unitree_position_controller/pid.hpp"
 
 namespace unitree_position_controller
 {
-Odometry::Odometry(size_t velocity_rolling_window_size)
+PID::PID(size_t velocity_rolling_window_size)
   : timestamp_(0.0)
   , x_(0.0)
   , y_(0.0)
@@ -34,14 +26,14 @@ Odometry::Odometry(size_t velocity_rolling_window_size)
 {
 }
 
-void Odometry::init(const rclcpp::Time& time)
+void PID::init(const rclcpp::Time& time)
 {
   // Reset accumulators and timestamp:
   resetAccumulators();
   timestamp_ = time;
 }
 
-bool Odometry::update(double left_pos, double right_pos, const rclcpp::Time& time)
+bool PID::update(double left_pos, double right_pos, const rclcpp::Time& time)
 {
   // We cannot estimate the speed with very small time intervals:
   const double dt = time.seconds() - timestamp_.seconds();
@@ -67,7 +59,7 @@ bool Odometry::update(double left_pos, double right_pos, const rclcpp::Time& tim
   return true;
 }
 
-bool Odometry::updateFromVelocity(double left_vel, double right_vel, const rclcpp::Time& time)
+bool PID::updateFromVelocity(double left_vel, double right_vel, const rclcpp::Time& time)
 {
   const double dt = time.seconds() - timestamp_.seconds();
 
@@ -76,7 +68,7 @@ bool Odometry::updateFromVelocity(double left_vel, double right_vel, const rclcp
   // Now there is a bug about scout angular velocity
   const double angular = (right_vel - left_vel) / wheel_separation_;
 
-  // Integrate odometry:
+  // Integrate PID:
   integrateExact(linear, angular);
 
   timestamp_ = time;
@@ -91,40 +83,40 @@ bool Odometry::updateFromVelocity(double left_vel, double right_vel, const rclcp
   return true;
 }
 
-void Odometry::updateOpenLoop(double linear, double angular, const rclcpp::Time& time)
+void PID::updateOpenLoop(double linear, double angular, const rclcpp::Time& time)
 {
   /// Save last linear and angular velocity:
   linear_ = linear;
   angular_ = angular;
 
-  /// Integrate odometry:
+  /// Integrate PID:
   const double dt = time.seconds() - timestamp_.seconds();
   timestamp_ = time;
   integrateExact(linear * dt, angular * dt);
 }
 
-void Odometry::resetOdometry()
+void PID::resetPID()
 {
   x_ = 0.0;
   y_ = 0.0;
   heading_ = 0.0;
 }
 
-void Odometry::setWheelParams(double wheel_separation, double left_wheel_radius, double right_wheel_radius)
+void PID::setWheelParams(double wheel_separation, double left_wheel_radius, double right_wheel_radius)
 {
   wheel_separation_ = wheel_separation;
   left_wheel_radius_ = left_wheel_radius;
   right_wheel_radius_ = right_wheel_radius;
 }
 
-void Odometry::setVelocityRollingWindowSize(size_t velocity_rolling_window_size)
+void PID::setVelocityRollingWindowSize(size_t velocity_rolling_window_size)
 {
   velocity_rolling_window_size_ = velocity_rolling_window_size;
 
   resetAccumulators();
 }
 
-void Odometry::integrateRungeKutta2(double linear, double angular)
+void PID::integrateRungeKutta2(double linear, double angular)
 {
   const double direction = heading_ + angular * 0.5;
 
@@ -134,7 +126,7 @@ void Odometry::integrateRungeKutta2(double linear, double angular)
   heading_ += angular;
 }
 
-void Odometry::integrateExact(double linear, double angular)
+void PID::integrateExact(double linear, double angular)
 {
   if (fabs(angular) < 1e-6)
   {
@@ -151,7 +143,7 @@ void Odometry::integrateExact(double linear, double angular)
   }
 }
 
-void Odometry::resetAccumulators()
+void PID::resetAccumulators()
 {
   linear_accumulator_ = RollingMeanAccumulator(velocity_rolling_window_size_);
   angular_accumulator_ = RollingMeanAccumulator(velocity_rolling_window_size_);

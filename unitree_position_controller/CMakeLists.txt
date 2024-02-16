@@ -6,18 +6,18 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "(GNU|Clang)")
 endif()
 
 set(THIS_PACKAGE_INCLUDE_DEPENDS
-  controller_interface
   generate_parameter_library
-  geometry_msgs
-  hardware_interface
-  nav_msgs
   pluginlib
+  realtime_tools
+  controller_interface
+  hardware_interface
+  geometry_msgs
+  # nav_msgs
   rclcpp
   rclcpp_lifecycle
   rcpputils
-  realtime_tools
-  tf2
-  tf2_msgs
+  # tf2
+  # tf2_msgs
 )
 
 find_package(ament_cmake REQUIRED)
@@ -26,14 +26,15 @@ foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
 
+# 这里会生成一些 parameter 的类，所以下面include的时候要包含 build/
 generate_parameter_library(unitree_position_controller_parameters
   src/unitree_position_controller_parameter.yaml
 )
 
 add_library(unitree_position_controller SHARED
   src/unitree_position_controller.cpp
-  src/odometry.cpp
-  src/speed_limiter.cpp
+  # src/odometry.cpp
+  # src/speed_limiter.cpp
 )
 target_compile_features(unitree_position_controller PUBLIC cxx_std_17)
 target_include_directories(unitree_position_controller PUBLIC
@@ -42,7 +43,7 @@ target_include_directories(unitree_position_controller PUBLIC
 )
 target_link_libraries(unitree_position_controller PUBLIC unitree_position_controller_parameters)
 ament_target_dependencies(unitree_position_controller PUBLIC ${THIS_PACKAGE_INCLUDE_DEPENDS})
-# Causes the visibility macros to use dllexport rather than dllimport,
+# causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
 target_compile_definitions(unitree_position_controller PRIVATE "unitree_position_CONTROLLER_BUILDING_DLL")
 pluginlib_export_plugin_description_file(controller_interface unitree_position_plugin.xml)

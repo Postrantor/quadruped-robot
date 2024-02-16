@@ -8,27 +8,25 @@
       <xacro:unless value="${use_mock_hardware}">
         <hardware>
           <plugin>unitree_motor_example/UnitreeMotorSystemHardware</plugin>
-          <param name="hw_start_duration_sec">0</param>
-          <param name="hw_stop_duration_sec">3.0</param>
+          <param name="hw_start_interval_millisec">200</param>
+          <param name="hw_stop_interval_millisec">100</param>
         </hardware>
       </xacro:unless>
+      <!-- set `false` by launch -->
       <xacro:if value="${use_mock_hardware}">
         <hardware>
           <plugin>mock_components/GenericSystem</plugin>
           <param name="calculate_dynamics">true</param>
         </hardware>
       </xacro:if>
-
+      <!-- controller_interface<->hardware_interface -->
       <joint name="${prefix}joint_ll_0_name">
         <command_interface name="velocity"/>
         <state_interface name="position"/>
         <state_interface name="velocity"/>
+        <param name="motor_id">0</param>
+        <param name="serial_port">/dev/ttyUSB0</param>
       </joint>
-      <!-- <joint name="${prefix}right_wheel_joint">
-        <command_interface name="velocity"/>
-        <state_interface name="position"/>
-        <state_interface name="velocity"/>
-      </joint> -->
     </ros2_control>
 
   </xacro:macro>

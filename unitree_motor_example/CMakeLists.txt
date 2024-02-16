@@ -11,6 +11,8 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   pluginlib
   rclcpp
   rclcpp_lifecycle
+  unitree_msgs
+  unitree_sdk
 )
 
 # find dependencies
@@ -22,14 +24,13 @@ endforeach()
 
 ## COMPILE
 add_library(
-  unitree_motor_example
-  SHARED
+  unitree_motor_example SHARED
   hardware/unitree_motor_system.cpp
 )
 target_compile_features(unitree_motor_example PUBLIC cxx_std_17)
 target_include_directories(unitree_motor_example PUBLIC
-$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/hardware/include>
-$<INSTALL_INTERFACE:include/unitree_motor_example>
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/hardware/include>
+  $<INSTALL_INTERFACE:include/unitree_motor_example>
 )
 ament_target_dependencies(
   unitree_motor_example PUBLIC
@@ -38,7 +39,7 @@ ament_target_dependencies(
 
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
-target_compile_definitions(${PROJECT_NAME} PRIVATE "ROS2_CONTROL_DEMO_EXAMPLE_2_BUILDING_DLL")
+target_compile_definitions(${PROJECT_NAME} PRIVATE "UNITREE_MOTOR_BUILDING_DLL")
 
 # Export hardware plugins
 pluginlib_export_plugin_description_file(hardware_interface unitree_motor_example.xml)

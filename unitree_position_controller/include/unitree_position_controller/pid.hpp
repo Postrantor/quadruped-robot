@@ -1,26 +1,5 @@
-// Copyright 2020 PAL Robotics S.L.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-/*
- * Author: Luca Marchionni
- * Author: Bence Magyar
- * Author: Enrique Fernández
- * Author: Paul Mathieu
- */
-
-#ifndef UNITREE_POSITION_COTROLLER__ODOMETRY_HPP_
-#define UNITREE_POSITION_COTROLLER__ODOMETRY_HPP_
+#ifndef UNITREE_POSITION_COTROLLER__PID_HPP_
+#define UNITREE_POSITION_COTROLLER__PID_HPP_
 
 #include <cmath>
 
@@ -29,16 +8,16 @@
 
 namespace unitree_position_controller
 {
-class Odometry
+class PID
 {
 public:
-  explicit Odometry(size_t velocity_rolling_window_size = 10);
+  explicit PID(size_t velocity_rolling_window_size = 10);
 
   void init(const rclcpp::Time& time);
   bool update(double left_pos, double right_pos, const rclcpp::Time& time);
   bool updateFromVelocity(double left_vel, double right_vel, const rclcpp::Time& time);
   void updateOpenLoop(double linear, double angular, const rclcpp::Time& time);
-  void resetOdometry();
+  void resetPID();
 
   double getX() const
   {
@@ -100,4 +79,4 @@ private:
 
 }  // namespace unitree_position_controller
 
-#endif  // UNITREE_POSITION_COTROLLER__ODOMETRY_HPP_
+#endif  // UNITREE_POSITION_COTROLLER__PID_HPP_

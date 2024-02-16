@@ -1,3 +1,6 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.conditions import IfCondition
@@ -8,7 +11,7 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
-  # Declare arguments
+  # declare arguments
   declared_arguments = []
   declared_arguments.append(
       DeclareLaunchArgument(
@@ -43,7 +46,6 @@ def generate_launch_description():
       PathJoinSubstitution([FindPackageShare("unitree_motor_example"), "urdf", description_file]), " ",
       "prefix:=", prefix,])
   robot_description = {"robot_description": robot_description_content}
-
   rviz_config_file = PathJoinSubstitution(
       [FindPackageShare(description_package), "unitree/rviz", "unitree_view.rviz"])
 
