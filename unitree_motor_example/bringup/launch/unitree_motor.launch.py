@@ -30,8 +30,7 @@ def generate_launch_description():
   # get urdf from description/urdf/*.xacro
   robot_description_content = Command([
       PathJoinSubstitution([FindExecutable(name="xacro")]), " ",
-      PathJoinSubstitution([FindPackageShare("unitree_motor_example"), "urdf", "unitree_motor.urdf.xacro"]), " ",
-      "use_mock_hardware:=", use_mock_hardware,])
+      PathJoinSubstitution([FindPackageShare("unitree_motor_example"), "urdf", "unitree_motor.urdf.xacro"]), " ",])
   robot_description = {"robot_description": robot_description_content}
 
   # get controller param from bringup/config/*.yaml

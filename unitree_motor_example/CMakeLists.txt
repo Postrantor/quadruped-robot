@@ -1,9 +1,16 @@
 cmake_minimum_required(VERSION 3.16)
 project(unitree_motor_example LANGUAGES CXX)
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "(GNU|Clang)")
+if(NOT CMAKE_C_STANDARD)
+  set(CMAKE_C_STANDARD 11)
+endif()
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+endif()
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "(GNU|Clang)")
   add_compile_options(-Wall -Wextra)
 endif()
+set(CMAKE_CXX_FLAGS "-O3 -fPIC")
 
 # find dependencies
 set(THIS_PACKAGE_INCLUDE_DEPENDS
@@ -15,23 +22,32 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   unitree_sdk
 )
 
+set(EXTRA_LIBS
+  -pthread
+  lcm
+  ${MOTORLIB}
+  ${LEGGEDLIB}
+)
+
 # find dependencies
 find_package(ament_cmake REQUIRED)
 foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
-
+find_library(LEGGEDLIB unitree_legged_sdk REQUIRED)
+find_library(MOTORLIB UnitreeMotorSDK_M80106_Arm64 REQUIRED)
 
 ## COMPILE
 add_library(
   unitree_motor_example SHARED
   hardware/unitree_motor_system.cpp
 )
-target_compile_features(unitree_motor_example PUBLIC cxx_std_17)
+# target_compile_features(unitree_motor_example PUBLIC cxx_std_17)
 target_include_directories(unitree_motor_example PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/hardware/include>
   $<INSTALL_INTERFACE:include/unitree_motor_example>
 )
+target_link_libraries(unitree_motor_example PUBLIC ${EXTRA_LIBS})
 ament_target_dependencies(
   unitree_motor_example PUBLIC
   ${THIS_PACKAGE_INCLUDE_DEPENDS}

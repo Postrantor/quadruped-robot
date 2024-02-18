@@ -96,7 +96,12 @@ std::ostream &operator<<(std::ostream &os, const MotorData &state) {
 
 unsigned short set_mode(const MotorMode &mode) { return static_cast<unsigned short>(mode); };
 
-// gear speed ratio
+/**
+ * @brief Get the gear ratio object
+ *
+ * @param type
+ * @return float
+ */
 float get_gear_ratio(const MotorType &type = MotorType::GO_M8010_6) {
   float gear_ratio = 6.33;
 
@@ -109,6 +114,78 @@ float get_gear_ratio(const MotorType &type = MotorType::GO_M8010_6) {
   }
 };
 
+/**
+ * @brief Get the crc object
+ *
+ * @param recv
+ * @return true
+ * @return false
+ */
 bool get_crc(const MotorData &recv) { return recv.correct; };
+
+/**
+ * @brief
+ * @details for ros2-control
+ * @param motor_state
+ * @param hw_interface
+ * @return double
+ */
+double from_motor_state(MotorData *motor_state, const std::string &hw_interface) {
+  double hw_state;
+
+  if (hw_interface == "position") {
+    hw_state = motor_state->q;
+  } else if (hw_interface == "velocity") {
+    hw_state = motor_state->dq / get_gear_ratio(MotorType::GO_M8010_6);
+  } else if (hw_interface == "acceleration") {
+    hw_state = motor_state->tau;
+  } else if (hw_interface == "effort") {
+    hw_state = motor_state->tau;
+  } else {
+    // do something
+    hw_state = motor_state->error;
+  }
+
+  return hw_state;
+}
+
+/**
+ * @brief
+ * @details for ros2-control
+ * @param hw_command
+ * @param hw_interface
+ * @return MotorCmd
+ */
+MotorCmd to_motor_cmd(const double *hw_command, const std::string &hw_interface) {
+  MotorCmd motor_cmd;
+  double position{0.0};
+  double velocity{0.0};
+  // double acceleration{0.0};
+  double effort{0.0};
+
+  if (hw_interface == "position") {
+    position = *hw_command;
+  } else if (hw_interface == "velocity") {
+    velocity = *hw_command * get_gear_ratio(MotorType::GO_M8010_6);
+  } else if (hw_interface == "acceleration") {
+    effort = *hw_command;
+  } else if (hw_interface == "effort") {
+    effort = *hw_command;
+  } else {
+    // do something
+    std::cout << "set hw command error." << std::endl;
+  }
+
+  motor_cmd.motorType = MotorType::GO_M8010_6;
+  motor_cmd.mode = set_mode(MotorMode::FOC);
+  motor_cmd.id = 0;
+  motor_cmd.k_q = 0.0;
+  motor_cmd.k_dq = 0.05;
+  motor_cmd.q = position;
+  motor_cmd.dq = velocity;
+  motor_cmd.tau = effort;
+
+  return motor_cmd;
+}
 
 #endif  // UNITREEMOTOR_H

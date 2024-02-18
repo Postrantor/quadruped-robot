@@ -192,7 +192,8 @@ CallbackReturn UnitreePositionController::on_shutdown(const rclcpp_lifecycle::St
  * @param period
  * @return controller_interface::return_type
  */
-controller_interface::return_type UnitreePositionController::update(const rclcpp::Time &time, const rclcpp::Duration &period) {
+controller_interface::return_type UnitreePositionController::update(
+    const rclcpp::Time &time, const rclcpp::Duration & /*period*/) {
   // 0. check lifecycle state
   if (get_state().id() == lifecycle_msgs::msg::State::PRIMARY_STATE_INACTIVE) {
     if (!is_halted) {
@@ -259,8 +260,8 @@ controller_interface::return_type UnitreePositionController::update(const rclcpp
     should_publish = true;
   }
   if (should_publish) {
-    publishe_target_state_->publish(target_state);
     publishe_real_command_->publish(desired_state);  // real_cmd=sub_cmd
+    publishe_target_state_->publish(target_state);
     // and write()->motor
     for (size_t i = 0; i < params_.joint_ll_0_name.size(); ++i) {
       registered_joint_handles_[i].command_velocity.get().set_value(desired_state.twist.linear.y);

@@ -11,6 +11,7 @@
 #include <vector>
 #include <string>
 
+#include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/clock.hpp"
 #include "rclcpp/duration.hpp"
 #include "rclcpp/logger.hpp"
@@ -91,13 +92,15 @@ private:
   std::vector<double> hw_state_positions_;
   std::vector<double> hw_state_velocities_;
   // std::vector<double> hw_state_efforts_;
+
   // command hw_interface
   // std::vector<double> hw_command_positions_;
   std::vector<double> hw_command_velocities_;
   // std::vector<double> hw_command_efforts_;
+
   // unitree motor
   std::vector<std::string> hw_serial_ports_name_;
-  // std::vector<SerialPort> hw_serial_ports_;
+  std::vector<SerialPort> hw_serial_ports_;
   std::vector<uint8_t> hw_motor_ids_;
 };
 

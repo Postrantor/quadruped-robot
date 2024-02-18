@@ -9,7 +9,6 @@
 #define __SERIALPORT_H
 
 #include <fcntl.h>
-#include <iostream>
 #include <linux/serial.h>
 #include <stdint.h>
 #include <string.h>
@@ -18,6 +17,8 @@
 #include <sys/select.h>
 #include <termios.h>
 #include <unistd.h>
+#include <iostream>
+#include <vector>
 
 #include "motor/motor_control.hpp"
 #include "serial/error_class.hpp"
@@ -33,8 +34,8 @@ public:
   SerialPort(
       const std::string &portName,
       size_t recvLength = 16,
-      uint32_t baudrate = 4000000,
-      size_t timeOutUs = 20000,
+      uint32_t baudrate = 4000000,  // 4MB
+      size_t timeOutUs = 20000,     // 20ms
       BlockYN blockYN = BlockYN::NO,
       bytesize_t bytesize = bytesize_t::eightbits,
       parity_t parity = parity_t::parity_none,
@@ -61,6 +62,7 @@ public:
   bool sendRecv(MotorCmd *sendMsg, MotorData *recvMsg);
   bool sendRecv(std::vector<MotorCmd> &sendVec, std::vector<MotorData> &recvVec);
 
+  // TODO(@zhiqi.jia), wrap `sendRecv()`
   bool send_recv(uint8_t *sendMsg, uint8_t *recvMsg, size_t sendLength) { return sendRecv(sendMsg, recvMsg, sendLength); }
   bool send_recv(MotorCmd *sendMsg, MotorData *recvMsg) { return sendRecv(sendMsg, recvMsg); }
   bool send_recv(std::vector<MotorCmd> &sendVec, std::vector<MotorData> &recvVec) { return sendRecv(sendVec, recvVec); }
