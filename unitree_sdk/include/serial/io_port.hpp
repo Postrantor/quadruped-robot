@@ -1,3 +1,9 @@
+/**
+ * @brief
+ * @date 2024-02-18
+ * @copyright Copyright (c) 2024
+ */
+
 #ifndef __IOPORT_H
 #define __IOPORT_H
 
@@ -11,9 +17,7 @@ enum class BlockYN { YES, NO };
 
 class IOPort {
 public:
-  IOPort(BlockYN blockYN, size_t recvLength, size_t timeOutUs) {
-    resetIO(blockYN, recvLength, timeOutUs);
-  }
+  IOPort(BlockYN blockYN, size_t recvLength, size_t timeOutUs) { resetIO(blockYN, recvLength, timeOutUs); }
   virtual ~IOPort() {}
   virtual size_t send(uint8_t *sendMsg, size_t sendLength) = 0;
   virtual size_t recv(uint8_t *recvMsg, size_t recvLength) = 0;

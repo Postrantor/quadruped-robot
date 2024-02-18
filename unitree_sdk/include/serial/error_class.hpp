@@ -1,3 +1,9 @@
+/**
+ * @brief
+ * @date 2024-02-18
+ * @copyright Copyright (c) 2024
+ */
+
 #ifndef __ERRORCLASS_H
 #define __ERRORCLASS_H
 
@@ -19,8 +25,7 @@ class IOException : public std::exception {
   int errno_;
 
 public:
-  explicit IOException(std::string file, int line, int errnum)
-      : file_(file), line_(line), errno_(errnum) {
+  explicit IOException(std::string file, int line, int errnum) : file_(file), line_(line), errno_(errnum) {
     std::stringstream ss;
     char* error_str = strerror(errnum);
     ss << "IO Exception (" << errno_ << "): " << error_str;
@@ -28,8 +33,7 @@ public:
     e_what_ = ss.str();
   }
 
-  explicit IOException(std::string file, int line, const char* description)
-      : file_(file), line_(line), errno_(0) {
+  explicit IOException(std::string file, int line, const char* description) : file_(file), line_(line), errno_(0) {
     std::stringstream ss;
     ss << "IO Exception: " << description;
     ss << ", file " << file_ << ", line " << line_ << ".";
@@ -38,8 +42,7 @@ public:
 
   virtual ~IOException() throw() {}
 
-  IOException(const IOException& other)
-      : line_(other.line_), e_what_(other.e_what_), errno_(other.errno_) {}
+  IOException(const IOException& other) : line_(other.line_), e_what_(other.e_what_), errno_(other.errno_) {}
 
   int getErrorNumber() const { return errno_; }
 

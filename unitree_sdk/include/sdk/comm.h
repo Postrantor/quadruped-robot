@@ -166,16 +166,16 @@ typedef struct {
   IMU imu;
   std::array<MotorState, 20> motorState;
   BmsState bms;
-  std::array<int16_t, 4> footForce;     // Data from foot airbag sensor
-  std::array<int16_t, 4> footForceEst;  // reserve，typically zero
-  uint8_t mode;                         // The current mode of the robot
-  float progress;                       // reserve
-  uint8_t gaitType;               // 0.idle  1.trot  2.trot running  3.climb stair  4.trot obstacle
-  float footRaiseHeight;          // (unit: m, default: 0.08m), foot up height while walking
-  std::array<float, 3> position;  // (unit: m), from own odometry in inertial frame, usually drift
-  float bodyHeight;               // (unit: m, default: 0.28m),
-  std::array<float, 3> velocity;  // (unit: m/s), forwardSpeed, sideSpeed, rotateSpeed in body frame
-  float yawSpeed;                 // (unit: rad/s), rotateSpeed in body frame
+  std::array<int16_t, 4> footForce;            // Data from foot airbag sensor
+  std::array<int16_t, 4> footForceEst;         // reserve，typically zero
+  uint8_t mode;                                // The current mode of the robot
+  float progress;                              // reserve
+  uint8_t gaitType;                            // 0.idle  1.trot  2.trot running  3.climb stair  4.trot obstacle
+  float footRaiseHeight;                       // (unit: m, default: 0.08m), foot up height while walking
+  std::array<float, 3> position;               // (unit: m), from own odometry in inertial frame, usually drift
+  float bodyHeight;                            // (unit: m, default: 0.28m),
+  std::array<float, 3> velocity;               // (unit: m/s), forwardSpeed, sideSpeed, rotateSpeed in body frame
+  float yawSpeed;                              // (unit: rad/s), rotateSpeed in body frame
   std::array<float, 4> rangeObstacle;          // Distance to nearest obstacle
   std::array<Cartesian, 4> footPosition2Body;  // foot position relative to body
   std::array<Cartesian, 4> footSpeed2Body;     // foot speed relative to body

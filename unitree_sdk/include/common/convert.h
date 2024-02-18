@@ -31,11 +31,11 @@ MotorCmd msg2motor(const unitree_msgs::msg::MotorCmd &msg) {
   cmd.hex_len = msg.hex_len;  // 17;
   cmd.id = msg.id;            // motor id: 0~14, 15: broadcast id, no return
   cmd.mode = msg.mode;        // motor mode
-  cmd.tau = msg.tau;    // 期望关节的输出力矩(电机转子转矩 N.m) 范围: ±127.99
-  cmd.dq = msg.dq;      // 期望关节速度(电机转子转速 rad/s) ±804.00
-  cmd.q = msg.q;        // 期望关节位置(电机转子位置 rad) ±411774
-  cmd.k_q = msg.k_q;    // 关节刚度系数 0~25.599
-  cmd.k_dq = msg.k_dq;  // 关节速度系数 0~25.599
+  cmd.tau = msg.tau;          // 期望关节的输出力矩(电机转子转矩 N.m) 范围: ±127.99
+  cmd.dq = msg.dq;            // 期望关节速度(电机转子转速 rad/s) ±804.00
+  cmd.q = msg.q;              // 期望关节位置(电机转子位置 rad) ±411774
+  cmd.k_q = msg.k_q;          // 关节刚度系数 0~25.599
+  cmd.k_dq = msg.k_dq;        // 关节速度系数 0~25.599
 
   return cmd;
 }
@@ -241,15 +241,15 @@ unitree_msgs::msg::LowState motor2msg(unitree_sdk::LowState &state) {
 unitree_msgs::msg::MotorState motor2msg(MotorData &state) {
   unitree_msgs::msg::MotorState msg;
 
-  msg.hex_len = state.hex_len;  // 接收的命令长度: 16Byte
-  msg.correct = state.correct;  // 接收数据是否完整(true完整，false不完整或断联)
-  msg.id = state.id;            // motor id: 0~14, 15: broadcast id, no return
-  msg.mode = state.mode;        // motor mode
-  msg.temp = state.temp;        // temperature: -50~127°C
-  msg.error = state.error;      // error flag: 0.正常 1.过热 2.过流 3.过压 4.编码器故障
-  msg.tau = state.tau;          // 关节的输出力矩(电机转子转矩 N.m) 范围: ±127.99
-  msg.dq = state.dq;            // 关节速度(电机转子转速 rad/s) ±804.00
-  msg.q = state.q;              // 关节位置(电机转子位置 rad) ±411774
+  msg.hex_len = state.hex_len;        // 接收的命令长度: 16Byte
+  msg.correct = state.correct;        // 接收数据是否完整(true完整，false不完整或断联)
+  msg.id = state.id;                  // motor id: 0~14, 15: broadcast id, no return
+  msg.mode = state.mode;              // motor mode
+  msg.temp = state.temp;              // temperature: -50~127°C
+  msg.error = state.error;            // error flag: 0.正常 1.过热 2.过流 3.过压 4.编码器故障
+  msg.tau = state.tau;                // 关节的输出力矩(电机转子转矩 N.m) 范围: ±127.99
+  msg.dq = state.dq;                  // 关节速度(电机转子转速 rad/s) ±804.00
+  msg.q = state.q;                    // 关节位置(电机转子位置 rad) ±411774
   msg.foot_force = state.foot_force;  // 足端气压传感器接口 ADC原始值
 
   return msg;
