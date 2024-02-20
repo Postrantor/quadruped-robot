@@ -15,8 +15,8 @@
 #include "rclcpp/rclcpp.hpp"
 #include <rclcpp/logging.hpp>
 #include "rclcpp/macros.hpp"
-#include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "hardware_interface/system_interface.hpp"
+#include "hardware_interface/types/hardware_interface_type_values.hpp"
 
 #include "unitree_motor_example/unitree_motor_system.hpp"
 #include "unitree_motor_example/visibility_control.h"
@@ -31,14 +31,6 @@ using namespace std::chrono_literals;
 
 namespace unitree_motor_example {
 
-/**
- * @brief 这个函数将info_变量的接口(从URDF中进行读取)
- * @details
- * 定义了硬件提供的接口。对于`Sensor`类型的硬件接口，没有`export_command_interfaces`方法。
- * 接口名称具有结构`<joint_name>/<interface_type>`。
- * $ros2_control/hardware_interface/doc/writing_new_hardware_component.md
- * @return std::vector<hardware_interface::StateInterface> 返回一个状态接口列表
- */
 std::vector<hardware_interface::StateInterface> UnitreeMotorSystemHardware::export_state_interfaces() {
   std::vector<hardware_interface::StateInterface> state_interfaces;
   for (size_t i = 0; i < info_.joints.size(); i++) {
@@ -47,13 +39,10 @@ std::vector<hardware_interface::StateInterface> UnitreeMotorSystemHardware::expo
     state_interfaces.emplace_back(
         hardware_interface::StateInterface(info_.joints[i].name, hardware_interface::HW_IF_VELOCITY, &hw_state_velocities_[i]));
   }
+
   return state_interfaces;
 }
 
-/**
- * @brief 同上
- * @return std::vector<hardware_interface::CommandInterface>
- */
 std::vector<hardware_interface::CommandInterface> UnitreeMotorSystemHardware::export_command_interfaces() {
   std::vector<hardware_interface::CommandInterface> command_interfaces;
   for (size_t i = 0; i < info_.joints.size(); i++) {
@@ -120,25 +109,22 @@ CallbackReturn UnitreeMotorSystemHardware::on_init(const hardware_interface::Har
     hw_motor_ids_[i] = static_cast<uint8_t>(std::stoi(info_.joints[i].parameters["motor_id"]));
     hw_serial_ports_name_[i] = info_.joints[i].parameters["serial_port"];
     RCLCPP_INFO_STREAM(
-        LOGGER, "" << info_.joints[i].name.c_str() << " mapped to motor " << hw_motor_ids_[i]
+        LOGGER, "" << info_.joints[i].name.c_str() << " mapped to motor " << static_cast<int>(hw_motor_ids_[i])
                    << ", use serial_port: " << hw_serial_ports_name_[i] << ".");
   }
 
   return CallbackReturn::SUCCESS;
 }
 
-/**
- * @brief 实现启用硬件`power`的`on_activate`方法。
- * @details (并初始化变量)
- */
 CallbackReturn UnitreeMotorSystemHardware::on_activate(const rclcpp_lifecycle::State & /*previous_state*/) {
   RCLCPP_INFO_STREAM(LOGGER, "activating ...please wait...");
 
   // initialize serial ports
   for (size_t i = 0; i < info_.joints.size(); i++) {
-    hw_serial_ports_.push_back(SerialPort(hw_serial_ports_name_[i]));
+    RCLCPP_INFO_STREAM(LOGGER, "initialize serial port: " << hw_serial_ports_name_[i] << ", waiting...");
+    hw_serial_ports_.emplace_back(hw_serial_ports_name_[i]);
     rclcpp::sleep_for(std::chrono::milliseconds(hw_start_interval_millisec_));
-    RCLCPP_INFO_STREAM(LOGGER, "initialize serial port `" << i << "`, waiting...");
+    RCLCPP_INFO_STREAM(LOGGER, "serial port: " << hw_serial_ports_.size());
   }
 
   // set some default values
@@ -146,7 +132,7 @@ CallbackReturn UnitreeMotorSystemHardware::on_activate(const rclcpp_lifecycle::S
     if (std::isnan(hw_state_positions_[i])) {
       hw_state_positions_[i] = 0;
       hw_state_velocities_[i] = 0;
-      hw_command_velocities_[i] = 0;
+      hw_command_velocities_[i] = 5;
     }
   }
 
@@ -155,9 +141,6 @@ CallbackReturn UnitreeMotorSystemHardware::on_activate(const rclcpp_lifecycle::S
   return CallbackReturn::SUCCESS;
 }
 
-/**
- * @brief 去使能硬件，其作用与`on_activate`相反。
- */
 CallbackReturn UnitreeMotorSystemHardware::on_deactivate(const rclcpp_lifecycle::State & /*previous_state*/) {
   RCLCPP_INFO_STREAM(LOGGER, "deactivating ...please wait...");
 

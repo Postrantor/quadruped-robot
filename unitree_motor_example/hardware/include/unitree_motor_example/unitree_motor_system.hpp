@@ -11,17 +11,17 @@
 #include <vector>
 #include <string>
 
-#include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/clock.hpp"
 #include "rclcpp/duration.hpp"
 #include "rclcpp/logger.hpp"
 #include "rclcpp/macros.hpp"
 #include "rclcpp/time.hpp"
-#include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
+#include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "hardware_interface/handle.hpp"
 #include "hardware_interface/hardware_info.hpp"
 #include "hardware_interface/system_interface.hpp"
+#include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "hardware_interface/types/hardware_interface_return_values.hpp"
 
 #include "unitree_motor_example/visibility_control.h"
@@ -44,7 +44,11 @@ public:
   RCLCPP_SHARED_PTR_DEFINITIONS(UnitreeMotorSystemHardware);
 
   /**
-   * @brief 这个函数将info_变量的接口(从URDF中进行读取)，转存到一个state_interfaces中，返回到ControllerManager
+   * @brief 这个函数将info_变量的接口(从URDF中进行读取)
+   * @details
+   * 定义了硬件提供的接口。对于`Sensor`类型的硬件接口，没有`export_command_interfaces`方法。
+   * 接口名称具有结构`<joint_name>/<interface_type>`。
+   * $ros2_control/hardware_interface/doc/writing_new_hardware_component.md
    * @return std::vector<hardware_interface::StateInterface> 返回一个状态接口列表
    */
   UNITREE_MOTOR_EXAMPLE_PUBLIC
