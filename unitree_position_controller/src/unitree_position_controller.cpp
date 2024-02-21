@@ -23,6 +23,7 @@ namespace {
     linear: x: 0.7 y: 0.0 z: 0.0
     angular: x: 0.0 y: 0.0 z: 1.0"
 */
+// TODO(@zhiqi.jia): 这个topic的名称可以考虑通过yaml文件进行设置
 constexpr auto DEFAULT_DESIRED_STATE_TOPIC = "~/desired_state";  // sub
 constexpr auto DEFAULT_TARGET_STATE_TOPIC = "~/target_state";    // pub
 constexpr auto DEFAULT_REAL_COMMAND_TOPIC = "~/control_cmd";     // pub

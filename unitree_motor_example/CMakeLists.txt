@@ -22,7 +22,7 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   unitree_sdk
 )
 
-set(EXTRA_LIBS
+set(MOTOR_SDK
   -pthread
   lcm
   ${MOTORLIB}
@@ -47,7 +47,7 @@ target_include_directories(unitree_motor_example PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/hardware/include>
   $<INSTALL_INTERFACE:include/unitree_motor_example>
 )
-target_link_libraries(unitree_motor_example PUBLIC ${EXTRA_LIBS})
+target_link_libraries(unitree_motor_example PUBLIC ${MOTOR_SDK})
 ament_target_dependencies(
   unitree_motor_example PUBLIC
   ${THIS_PACKAGE_INCLUDE_DEPENDS}

@@ -12,18 +12,17 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
-  # Declare arguments
+  # declare arguments
   declared_arguments = []
-  declared_arguments.append(
-      DeclareLaunchArgument(
-          "gui", default_value="true",
-          description="Start RViz2 automatically with this launch file.",))
-  declared_arguments.append(
-      DeclareLaunchArgument(
-          "use_mock_hardware", default_value="false",
-          description="Start robot with mock hardware mirroring command to its states.", ))
-
-  # Initialize Arguments
+  declared_arguments.append(DeclareLaunchArgument(
+      "gui",
+      default_value="true",
+      description="start rviz2 automatically with this launch file.",))
+  declared_arguments.append(DeclareLaunchArgument(
+      "use_mock_hardware",
+      default_value="false",
+      description="start robot with mock hardware mirroring command to its states.", ))
+  # initialize arguments
   gui = LaunchConfiguration("gui")
   use_mock_hardware = LaunchConfiguration("use_mock_hardware")
 
@@ -32,7 +31,6 @@ def generate_launch_description():
       PathJoinSubstitution([FindExecutable(name="xacro")]), " ",
       PathJoinSubstitution([FindPackageShare("unitree_motor_example"), "urdf", "unitree_motor.urdf.xacro"]), " ",])
   robot_description = {"robot_description": robot_description_content}
-
   # get controller param from bringup/config/*.yaml
   robot_controllers = PathJoinSubstitution([
       FindPackageShare("unitree_motor_example"), "config", "unitree_motor_controllers.yaml",])
@@ -40,7 +38,7 @@ def generate_launch_description():
       [FindPackageShare("model_description"), "unitree/rviz", "unitree.rviz"])
 
   # launch node
-  # 在这里将yaml中的参数传给controller_manager，之后就可以管理其中的 controller?
+  # 在这里将yaml中的参数传给controller_manager，之后就可以管理其中的 controller
   control_node = Node(
       package="controller_manager",
       executable="ros2_control_node",
@@ -83,6 +81,7 @@ def generate_launch_description():
 
   nodes = [
       control_node,
+      robot_controller_spawner,
       #   robot_state_pub_node,
       #   joint_state_broadcaster_spawner,
       #   delay_rviz_after_joint_state_broadcaster_spawner,
