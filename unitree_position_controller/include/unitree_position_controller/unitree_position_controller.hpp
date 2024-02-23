@@ -75,8 +75,10 @@ public:
   /**
    * @brief 0. 初始化各种资源
    * @details 1.创建param_listener node; 2.从yaml文件中解析参数;
-   * read from `ros2_control/<description>.ros2_control.xacro`
-   * read from `config/_controller.yaml`
+   *  read from `ros2_control/<description>.ros2_control.xacro`
+   *  read from `config/_controller.yaml`
+   *  这里仅仅做一些必要的初始化，比如构造一些临时的对象等
+   *  对于 pub/sub 这类对象，作为类的成员函数中定义，在`on_configure()`中构造
    * @return CallbackReturn
    */
   UNITREE_POSITION_CONTROLLER_PUBLIC

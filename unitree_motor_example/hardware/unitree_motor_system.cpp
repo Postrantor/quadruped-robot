@@ -132,7 +132,7 @@ CallbackReturn UnitreeMotorSystemHardware::on_activate(const rclcpp_lifecycle::S
     if (std::isnan(hw_state_positions_[i])) {
       hw_state_positions_[i] = 0;
       hw_state_velocities_[i] = 0;
-      hw_command_velocities_[i] = 5;
+      hw_command_velocities_[i] = 0;
     }
   }
 

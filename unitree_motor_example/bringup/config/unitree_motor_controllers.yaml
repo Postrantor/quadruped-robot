@@ -1,10 +1,13 @@
 # 这里的参数是提供给 controller 使用的，会在 /controller/*controller.cpp 中使用
 controller_manager:
   ros__parameters:
-    update_rate: 10 # Hz
+    update_rate: 2 # Hz
 
     unitree_base_controller:
       type: unitree_position_controller/UnitreePositionController
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
 
 unitree_base_controller:
   ros__parameters:

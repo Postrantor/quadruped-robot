@@ -53,8 +53,6 @@ controller_interface::InterfaceConfiguration UnitreePositionController::state_in
 }
 
 CallbackReturn UnitreePositionController::on_init() {
-  // 这里仅仅做一些必要的初始化，比如构造一些临时的对象等
-  // 对于 pub/sub 这类对象，作为类的成员函数中定义，在`on_configure()`中构造
   try {
     // create the parameter listener and get the parameters
     param_listener_ = std::make_shared<ParamListener>(get_node());
@@ -194,7 +192,8 @@ CallbackReturn UnitreePositionController::on_shutdown(const rclcpp_lifecycle::St
  * @return controller_interface::return_type
  */
 controller_interface::return_type UnitreePositionController::update(
-    const rclcpp::Time &time, const rclcpp::Duration & /*period*/) {
+    const rclcpp::Time &time,  //
+    const rclcpp::Duration & /*period*/) {
   // 0. check lifecycle state
   if (get_state().id() == lifecycle_msgs::msg::State::PRIMARY_STATE_INACTIVE) {
     if (!is_halted) {
@@ -265,6 +264,8 @@ controller_interface::return_type UnitreePositionController::update(
     publishe_target_state_->publish(target_state);
     // and write()->motor
     for (size_t i = 0; i < params_.joint_ll_0_name.size(); ++i) {
+      RCLCPP_INFO_STREAM(
+          LOGGER, "from publisher: " << DEFAULT_DESIRED_STATE_TOPIC << " write() desired_state to hardware interfaces");
       registered_joint_handles_[i].command_velocity.get().set_value(desired_state.twist.linear.y);
     }
   }
