@@ -13,28 +13,22 @@
 // limitations under the License.
 
 
-#ifndef GZ_ROS2_CONTROL__GZ_SYSTEM_INTERFACE_HPP_
-#define GZ_ROS2_CONTROL__GZ_SYSTEM_INTERFACE_HPP_
+#ifndef IGN_ROS2_CONTROL__IGN_SYSTEM_INTERFACE_HPP_
+#define IGN_ROS2_CONTROL__IGN_SYSTEM_INTERFACE_HPP_
 
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#ifdef GZ_HEADERS
-#include <gz/sim/System.hh>
-namespace sim = gz::sim;
-#else
 #include <ignition/gazebo/System.hh>
-namespace sim = ignition::gazebo;
-#endif
 
 #include <hardware_interface/system_interface.hpp>
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
 
 #include <rclcpp/rclcpp.hpp>
 
-namespace gz_ros2_control
+namespace ign_ros2_control
 {
 
 /// \brief This class allows us to handle flags easily, instead of using strings
@@ -77,7 +71,7 @@ protected:
 };
 
 // SystemInterface provides API-level access to read and command joint properties.
-class GazeboSimSystemInterface
+class IgnitionSystemInterface
   : public hardware_interface::SystemInterface
 {
 public:
@@ -90,9 +84,9 @@ public:
   /// param[in] update_rate controller update rate
   virtual bool initSim(
     rclcpp::Node::SharedPtr & model_nh,
-    std::map<std::string, sim::Entity> & joints,
+    std::map<std::string, ignition::gazebo::Entity> & joints,
     const hardware_interface::HardwareInfo & hardware_info,
-    sim::EntityComponentManager & _ecm,
+    ignition::gazebo::EntityComponentManager & _ecm,
     int & update_rate) = 0;
 
   // Methods used to control a joint.
@@ -110,6 +104,6 @@ protected:
   rclcpp::Node::SharedPtr nh_;
 };
 
-}  // namespace gz_ros2_control
+}  // namespace ign_ros2_control
 
-#endif  // GZ_ROS2_CONTROL__GZ_SYSTEM_INTERFACE_HPP_
+#endif  // IGN_ROS2_CONTROL__IGN_SYSTEM_INTERFACE_HPP_
