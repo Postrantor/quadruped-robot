@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<robot name="diff_drive" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="diff_drive"
+  xmlns:xacro="http://www.ros.org/wiki/xacro">
   <!-- Base Link -->
   <link name="chassis">
     <collision>
@@ -20,13 +21,7 @@
     <inertial>
       <origin xyz="-0.151427 -0 0.5" rpy="0 0 0"/>
       <mass value="1.14395"/>
-      <inertia
-        ixx="0.126164"
-        ixy="0.0"
-        ixz="0.0"
-        iyy="0.416519"
-        iyz="0.0"
-        izz="0.481014"/>
+      <inertia ixx="0.126164" ixy="0.0" ixz="0.0" iyy="0.416519" iyz="0.0" izz="0.481014"/>
     </inertial>
   </link>
 
@@ -55,12 +50,7 @@
 
     <inertial>
       <mass value="2"/>
-      <inertia ixx="0.145833"
-               ixy="0.0"
-               ixz="0.0"
-               iyy="0.145833"
-               iyz="0.0"
-               izz="0.125"/>
+      <inertia ixx="0.145833" ixy="0.0" ixz="0.0" iyy="0.145833" iyz="0.0" izz="0.125"/>
     </inertial>
   </link>
 
@@ -89,13 +79,8 @@
 
     <inertial>
       <mass value="2"/>
-      <inertia ixx="0.145833"
-               ixy="0.0"
-               ixz="0.0"
-               iyy="0.145833"
-               iyz="0.0"
-               izz="0.125"/>
-      </inertial>
+      <inertia ixx="0.145833" ixy="0.0" ixz="0.0" iyy="0.145833" iyz="0.0" izz="0.125"/>
+    </inertial>
   </link>
 
   <joint name="caster_joint" type="fixed">
@@ -122,13 +107,7 @@
     <inertial>
       <origin xyz="-0.957138 -0 0.2" rpy="0 0 0"/>
       <mass value="0.005"/>
-      <inertia
-        ixx="0.1"
-        ixy="0.0"
-        ixz="0.0"
-        iyy="0.1"
-        iyz="0.0"
-        izz="0.1"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1"/>
     </inertial>
   </link>
 

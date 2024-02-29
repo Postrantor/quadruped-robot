@@ -46,7 +46,8 @@ def generate_launch_description():
             os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py')),
         launch_arguments={'gz_args': PathJoinSubstitution([
             pkg_project_gazebo,
-            'worlds', 'diff_drive.sdf -v 4 --render-engine ogre'
+            'worlds',
+            'diff_drive.sdf -v 4 --render-engine ogre'
         ])}.items(),
     )
 
@@ -75,7 +76,7 @@ def generate_launch_description():
         package='ros_gz_bridge',
         executable='parameter_bridge',
         parameters=[{
-            'config_file': os.path.join(pkg_project_bringup, 'config', 'ros_gz_example_bridge.yaml'),
+            'config_file': os.path.join(pkg_project_bringup,'config', 'ros_gz_example_bridge.yaml'),
             'qos_overrides./tf_static.publisher.durability': 'transient_local',
         }],
         output='screen'

@@ -53,6 +53,13 @@ This repository holds packages that provide integration between
   Plugins for publishing point clouds to ROS from
   [Gazebo Sim](https://gazebosim.org/libs/gazebo) simulations.
 
+* [ros_gz](https://github.com/gazebosim/ros_gz/tree/ros2/ros_gz): 提供所有其他包的元包。
+* [ros_gz_image](https://github.com/gazebosim/ros_gz/tree/ros2/ros_gz_image): 使用单向传输桥将图像从[Gazebo Transport](https://gazebosim.org/libs/transport)传输到ROS [image_transport](http://wiki.ros.org/image_transport)。
+* [ros_gz_bridge](https://github.com/gazebosim/ros_gz/tree/ros2/ros_gz_bridge): [Gazebo Transport](https://gazebosim.org/libs/transport) 和 ROS 之间的双向传输桥。
+* [ros_gz_sim](https://github.com/gazebosim/ros_gz/tree/ros2/ros_gz_sim): 方便的启动文件和可执行文件，以便在 ROS 中使用 [Gazebo Sim](https://gazebosim.org/libs/gazebo) 。
+* [ros_gz_sim_demos](https://github.com/gazebosim/ros_gz/tree/ros2/ros_gz_sim_demos)：使用 ROS-Gazebo 集成的演示。
+* [ros_gz_point_cloud](https://github.com/gazebosim/ros_gz/tree/ros2/ros_gz_point_cloud): 用于从 [Gazebo Sim](https://gazebosim.org/libs/gazebo) 模拟将点云发布到 ROS 的插件。
+
 ## Install
 
 This branch supports ROS Humble. See above for other ROS versions.

@@ -22,12 +22,13 @@ from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
-def generate_launch_description():
-    ros_gz_sim_dir = get_package_share_directory('ros_gz_sim')
-    launch_dir = os.path.join(ros_gz_sim_dir, 'launch')
 
-    return LaunchDescription([
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(os.path.join(launch_dir, 'gz_sim.launch.py'))
-        )
-    ])
+def generate_launch_description():
+  ros_gz_sim_dir = get_package_share_directory('ros_gz_sim')
+  launch_dir = os.path.join(ros_gz_sim_dir, 'launch')
+
+  return LaunchDescription([
+      IncludeLaunchDescription(
+          PythonLaunchDescriptionSource(os.path.join(launch_dir, 'gz_sim.launch.py'))
+      )
+  ])

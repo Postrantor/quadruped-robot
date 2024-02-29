@@ -16,21 +16,11 @@
 
 #include <ros_gz_bridge/ros_gz_bridge.hpp>
 
-class test_ros_gz_bridge : public ::testing::Test
-{
+class test_ros_gz_bridge : public ::testing::Test {
 public:
-  static void SetUpTestCase()
-  {
-    rclcpp::init(0, nullptr);
-  }
+  static void SetUpTestCase() { rclcpp::init(0, nullptr); }
 
-  static void TearDownTestCase()
-  {
-    rclcpp::shutdown();
-  }
+  static void TearDownTestCase() { rclcpp::shutdown(); }
 };
 
-TEST_F(test_ros_gz_bridge, SpawnNode)
-{
-  ros_gz_bridge::RosGzBridge node;
-}
+TEST_F(test_ros_gz_bridge, SpawnNode) { ros_gz_bridge::RosGzBridge node; }
