@@ -2,14 +2,14 @@ cmake_minimum_required(VERSION 2.8.3)
 project(unitree_controller)
 
 find_package(catkin REQUIRED COMPONENTS
+    roscpp
     controller_manager
-    genmsg
     joint_state_controller
     robot_state_publisher
-    roscpp
     gazebo_ros
-    std_msgs
+    genmsg
     tf
+    std_msgs
     geometry_msgs
     unitree_legged_msgs
     unitree_legged_sdk

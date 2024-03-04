@@ -1,12 +1,7 @@
 /**
- * @file body.h
- * @author your name (you@domain.com)
  * @brief
- * @version 0.1
  * @date 2024-01-28
- *
  * @copyright Copyright (c) 2024
- *
  */
 
 #ifndef __BODY_H__
@@ -14,9 +9,9 @@
 
 #include "ros/ros.h"
 
+#include "unitree_legged_msgs/HighState.h"
 #include "unitree_legged_msgs/LowCmd.h"
 #include "unitree_legged_msgs/LowState.h"
-#include "unitree_legged_msgs/HighState.h"
 
 #include "unitree_legged_sdk/unitree_legged_sdk.h"
 
@@ -34,7 +29,7 @@ extern unitree_legged_msgs::LowState lowState;
 void stand();
 void motion_init();
 void sendServoCmd();
-void moveAllPosition(double* jointPositions, double duration);
+void moveAllPosition(double *jointPositions, double duration);
 
 }  // namespace unitree_model
 

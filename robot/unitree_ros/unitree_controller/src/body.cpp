@@ -1,12 +1,7 @@
 /**
- * @file body.cpp
- * @author your name (you@domain.com)
  * @brief
- * @version 0.1
  * @date 2024-01-25
- *
  * @copyright Copyright (c) 2024
- *
  */
 
 #include "body.h"
@@ -20,7 +15,8 @@ unitree_legged_msgs::LowState lowState;
 
 /**
  * @brief these parameters are only for reference.
- * @details actual patameters need to be debugged if you want to run on real robot.
+ * @details actual patameters need to be debugged if you want to run on real
+ * robot.
  */
 void paramInit() {
   for (int i = 0; i < 4; i++) {
@@ -68,7 +64,7 @@ void sendServoCmd() {
   usleep(1000);
 }
 
-void moveAllPosition(double* targetPos, double duration) {
+void moveAllPosition(double *targetPos, double duration) {
   double pos[12], lastPos[12], percent;
   for (int j = 0; j < 12; j++) {
     lastPos[j] = lowState.motorState[j].q;

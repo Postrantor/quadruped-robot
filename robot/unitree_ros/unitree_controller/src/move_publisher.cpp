@@ -1,22 +1,17 @@
 /**
- * @file move_publisher.cpp
- * @author your name (you@domain.com)
  * @brief
- * @version 0.1
  * @date 2024-01-28
- *
  * @copyright Copyright (c) 2024
- *
  */
 
-#include <stdio.h>
-#include <math.h>
 #include <iostream>
+#include <math.h>
+#include <stdio.h>
 #include <string>
 
-#include "ros/ros.h"
 #include "gazebo_msgs/ModelState.h"
 #include "gazebo_msgs/SetModelState.h"
+#include "ros/ros.h"
 #include "tf/transform_datatypes.h"
 
 int main(int argc, char **argv) {
@@ -25,8 +20,7 @@ int main(int argc, char **argv) {
 
   ros::init(argc, argv, "move_publisher");
   ros::NodeHandle nh;
-  ros::Publisher move_publisher =
-      nh.advertise<gazebo_msgs::ModelState>("/gazebo/set_model_state", 1000);
+  ros::Publisher move_publisher = nh.advertise<gazebo_msgs::ModelState>("/gazebo/set_model_state", 1000);
 
   gazebo_msgs::ModelState model_state_pub;
 
