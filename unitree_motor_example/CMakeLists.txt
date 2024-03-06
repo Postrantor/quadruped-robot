@@ -4,12 +4,15 @@ project(unitree_motor_example LANGUAGES CXX)
 if(NOT CMAKE_C_STANDARD)
   set(CMAKE_C_STANDARD 11)
 endif()
+
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 17)
 endif()
+
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "(GNU|Clang)")
   add_compile_options(-Wall -Wextra)
 endif()
+
 set(CMAKE_CXX_FLAGS "-O3 -fPIC")
 
 # find dependencies
@@ -34,8 +37,14 @@ find_package(ament_cmake REQUIRED)
 foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
+
+# 获取编译平台的处理器架构
 find_library(LEGGEDLIB unitree_legged_sdk REQUIRED)
-find_library(MOTORLIB UnitreeMotorSDK_M80106_Arm64 REQUIRED)
+if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm")
+  find_library(MOTORLIB UnitreeMotorSDK_M80106_Arm64 REQUIRED)
+elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "x86")
+  find_library(MOTORLIB UnitreeMotorSDK_M80106_Linux64 REQUIRED)
+endif()
 
 ## COMPILE
 add_library(
