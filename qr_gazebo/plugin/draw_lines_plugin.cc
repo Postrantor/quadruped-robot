@@ -1,3 +1,9 @@
+/**
+ * @brief
+ * @date 2024-03-11
+ * @copyright Copyright (c) 2024
+ */
+
 #include <ignition/math/Color.hh>
 #include <gazebo/common/Events.hh>
 #include <gazebo/msgs/msgs.hh>

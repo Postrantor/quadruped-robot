@@ -1,9 +1,19 @@
 #include "qr_gazebo/gazebo_model_spawn.h"
 
 const std::vector<std::string> GazeboSpawner::controller_list = {
-    "joint_state_controller", "FR_hip_controller",   "FR_thigh_controller", "FR_calf_controller",  "FL_hip_controller",
-    "FL_thigh_controller",    "FL_calf_controller",  "RR_hip_controller",   "RR_thigh_controller", "RR_calf_controller",
-    "RL_hip_controller",      "RL_thigh_controller", "RL_calf_controller"};
+    "joint_state_controller",  //
+    "FR_hip_controller",       //
+    "FR_thigh_controller",     //
+    "FR_calf_controller",      //
+    "FL_hip_controller",       //
+    "FL_thigh_controller",     //
+    "FL_calf_controller",      //
+    "RR_hip_controller",       //
+    "RR_thigh_controller",     //
+    "RR_calf_controller",      //
+    "RL_hip_controller",       //
+    "RL_thigh_controller",     //
+    "RL_calf_controller"};
 
 geometry_msgs::Pose GazeboSpawner::model_pose = geometry_msgs::Pose();
 
@@ -53,15 +63,11 @@ bool GazeboSpawner::delete_model() {
 
   // std::string service_name = "/gazebo/delete_model";
   // ros::ServiceClient model_service = d_nh.serviceClient<gazebo_msgs::DeleteModel>(service_name);
-
   // gazebo_msgs::DeleteModel msg;
-
   // msg.request.model_name = d_robot_type;
-
   // if(!model_service.call(msg)){
   //   return false;
   // }
-
   // while(!msg.response.success){
   //   //ROS_WARN("Deleting gazebo model...");
   // }

@@ -43,6 +43,8 @@
   <material name="white">
     <color rgba="1.0 1.0 1.0 1.0"/>
   </material>
+
+
   <!-- ros_control plugin -->
   <gazebo>
     <plugin filename="libgazebo_ros_control.so" name="gazebo_ros_control">
@@ -163,6 +165,8 @@
       </plugin>
     </visual>
   </gazebo>
+
+
   <gazebo reference="base">
     <material>Gazebo/Green</material>
     <turnGravityOff>false</turnGravityOff>
@@ -319,7 +323,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://unitree_description/meshes/trunk.dae" scale="1 1 1"/>
+        <mesh filename="package://robot_description/meshes/trunk.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -372,7 +376,7 @@
     <visual>
       <origin rpy="3.14159265359 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://unitree_description/meshes/hip.dae" scale="1 1 1"/>
+        <mesh filename="package://robot_description/meshes/hip.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -414,7 +418,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://unitree_description/meshes/thigh_mirror.dae" scale="1 1 1"/>
+        <mesh filename="package://robot_description/meshes/thigh_mirror.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -442,7 +446,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://unitree_description/meshes/calf.dae" scale="1 1 1"/>
+        <mesh filename="package://robot_description/meshes/calf.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -524,7 +528,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://unitree_description/meshes/hip.dae" scale="1 1 1"/>
+        <mesh filename="package://robot_description/meshes/hip.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -566,7 +570,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://unitree_description/meshes/thigh.dae" scale="1 1 1"/>
+        <mesh filename="package://robot_description/meshes/thigh.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -594,7 +598,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://unitree_description/meshes/calf.dae" scale="1 1 1"/>
+        <mesh filename="package://robot_description/meshes/calf.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -676,7 +680,7 @@
     <visual>
       <origin rpy="3.14159265359 3.14159265359 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://unitree_description/meshes/hip.dae" scale="1 1 1"/>
+        <mesh filename="package://robot_description/meshes/hip.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -718,7 +722,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://unitree_description/meshes/thigh_mirror.dae" scale="1 1 1"/>
+        <mesh filename="package://robot_description/meshes/thigh_mirror.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -746,7 +750,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://unitree_description/meshes/calf.dae" scale="1 1 1"/>
+        <mesh filename="package://robot_description/meshes/calf.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -828,7 +832,7 @@
     <visual>
       <origin rpy="0 3.14159265359 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://unitree_description/meshes/hip.dae" scale="1 1 1"/>
+        <mesh filename="package://robot_description/meshes/hip.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -870,7 +874,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://unitree_description/meshes/thigh.dae" scale="1 1 1"/>
+        <mesh filename="package://robot_description/meshes/thigh.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -898,7 +902,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://unitree_description/meshes/calf.dae" scale="1 1 1"/>
+        <mesh filename="package://robot_description/meshes/calf.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>

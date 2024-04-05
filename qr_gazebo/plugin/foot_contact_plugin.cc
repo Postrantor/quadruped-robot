@@ -1,7 +1,8 @@
-/************************************************************************
-Copyright (c) 2018-2019, Unitree Robotics.Co.Ltd. All rights reserved.
-Use of this source code is governed by the MPL-2.0 license, see LICENSE.
-************************************************************************/
+/**
+ * @brief
+ * @date 2024-03-11
+ * @copyright Copyright (c) 2024
+ */
 
 #include <string>
 #include <gazebo/common/Events.hh>

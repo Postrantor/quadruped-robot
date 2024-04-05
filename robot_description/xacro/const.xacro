@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
 
-<robot name="a1_description" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="a1_description"
+    xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <!-- Constants for robot dimensions -->
+    <!-- constants for robot dimensions -->
     <xacro:property name="PI" value="3.1415926535897931"/>
     <xacro:property name="stick_mass" value="0.00001"/>
 
     <!-- simplified collision value -->
-    <xacro:property name="trunk_width" value="0.194"/> 
+    <xacro:property name="trunk_width" value="0.194"/>
     <xacro:property name="trunk_length" value="0.267"/>
     <xacro:property name="trunk_height" value="0.114"/>
     <xacro:property name="hip_radius" value="0.046"/>
@@ -104,6 +105,5 @@
 
     <xacro:property name="kp" value="100"/>
     <xacro:property name="kd" value="1"/>
-    
 
 </robot>

@@ -5,7 +5,6 @@
  *  Use of this source code is governed by the MPL-2.0 license, see LICENSE.
  */
 
-// #include "unitree_legged_control/joint_controller.h"
 #include "joint_controller.h"
 #include <pluginlib/class_list_macros.h>
 
@@ -24,6 +23,7 @@ UnitreeJointController::~UnitreeJointController() {
   sub_cmd.shutdown();
 }
 
+// 这里就是对应硬件层中 write()/read()?
 void UnitreeJointController::setTorqueCB(const geometry_msgs::WrenchStampedConstPtr &msg) {
   if (isHip) {
     sensor_torque = msg->wrench.torque.x;
@@ -46,7 +46,7 @@ void UnitreeJointController::setCommandCB(const unitree_legged_msgs::MotorCmdCon
   command.writeFromNonRT(lastCmd);
 }
 
-// Controller initialization in non-realtime
+// controller initialization in non-realtime
 bool UnitreeJointController::init(hardware_interface::EffortJointInterface *robot, ros::NodeHandle &n) {
   isHip = false;
   isThigh = false;
@@ -79,22 +79,26 @@ bool UnitreeJointController::init(hardware_interface::EffortJointInterface *robo
     ROS_ERROR("Could not find joint '%s' in urdf", joint_name.c_str());
     return false;
   }
-  if (joint_name == "FR_hip_joint" || joint_name == "FL_hip_joint" || joint_name == "RR_hip_joint" ||
+  if (joint_name == "FR_hip_joint" ||  //
+      joint_name == "FL_hip_joint" ||  //
+      joint_name == "RR_hip_joint" ||  //
       joint_name == "RL_hip_joint") {
     isHip = true;
   }
-  if (joint_name == "FR_calf_joint" || joint_name == "FL_calf_joint" || joint_name == "RR_calf_joint" ||
+  if (joint_name == "FR_calf_joint" ||  //
+      joint_name == "FL_calf_joint" ||  //
+      joint_name == "RR_calf_joint" ||  //
       joint_name == "RL_calf_joint") {
     isCalf = true;
   }
   joint = robot->getHandle(joint_name);
 
-  // Start command subscriber
+  // start command subscriber
   sub_ft = n.subscribe(name_space + "/" + "joint_wrench", 1, &UnitreeJointController::setTorqueCB, this);
   sub_cmd = n.subscribe("command", 20, &UnitreeJointController::setCommandCB, this);
 
   // pub_state = n.advertise<unitree_legged_msgs::MotorState>(name_space + "/state", 20);
-  // Start realtime state publisher
+  // start realtime state publisher
   controller_state_publisher_.reset(
       new realtime_tools::RealtimePublisher<unitree_legged_msgs::MotorState>(n, name_space + "/state", 1));
 
@@ -136,7 +140,7 @@ void UnitreeJointController::starting(const ros::Time &time) {
   pid_controller_.reset();
 }
 
-// Controller update loop in realtime
+// controller update loop in realtime
 void UnitreeJointController::update(const ros::Time &time, const ros::Duration &period) {
   double currentPos, currentVel, calcTorque;
   lastCmd = *(command.readFromRT());

@@ -1,10 +1,10 @@
 a1_gazebo:
-  # Publish all joint states -----------------------------------
+  # publish all joint states
   joint_state_controller:
     type: joint_state_controller/JointStateController
     publish_rate: 1000
 
-  # FL Controllers ---------------------------------------
+  # fl controllers
   FL_hip_controller:
     type: unitree_legged_control/UnitreeJointController
     joint: FL_hip_joint
@@ -20,7 +20,7 @@ a1_gazebo:
     joint: FL_calf_joint
     pid: { p: 300.0, i: 0.0, d: 8.0 }
 
-  # FR Controllers ---------------------------------------
+  # fr controllers
   FR_hip_controller:
     type: unitree_legged_control/UnitreeJointController
     joint: FR_hip_joint
@@ -36,7 +36,7 @@ a1_gazebo:
     joint: FR_calf_joint
     pid: { p: 300.0, i: 0.0, d: 8.0 }
 
-  # RL Controllers ---------------------------------------
+  # rl controllers
   RL_hip_controller:
     type: unitree_legged_control/UnitreeJointController
     joint: RL_hip_joint
@@ -52,7 +52,7 @@ a1_gazebo:
     joint: RL_calf_joint
     pid: { p: 300.0, i: 0.0, d: 8.0 }
 
-  # RR Controllers ---------------------------------------
+  # rr controllers
   RR_hip_controller:
     type: unitree_legged_control/UnitreeJointController
     joint: RR_hip_joint

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(unitree_description)
+project(robot_description)
 
 if(NOT CMAKE_C_STANDARD)
   set(CMAKE_C_STANDARD 99)

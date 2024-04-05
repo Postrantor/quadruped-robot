@@ -7,23 +7,21 @@
 #ifndef _UNITREE_ROS_JOINT_CONTROLLER_H_
 #define _UNITREE_ROS_JOINT_CONTROLLER_H_
 
-#include <ros/node_handle.h>
-#include <urdf/model.h>
-#include <control_toolbox/pid.h>
-#include <controller_interface/controller.h>
-#include <controller_interface/controller.h>
-#include <realtime_tools/realtime_publisher.h>
-#include <realtime_tools/realtime_buffer.h>
-#include <hardware_interface/joint_command_interface.h>
-#include <hardware_interface/joint_command_interface.h>
-#include <std_msgs/Float64.h>
-#include <geometry_msgs/WrenchStamped.h>
 #include <boost/scoped_ptr.hpp>
 #include <boost/thread/condition.hpp>
+#include <control_toolbox/pid.h>
+#include <controller_interface/controller.h>
+#include <geometry_msgs/WrenchStamped.h>
+#include <hardware_interface/joint_command_interface.h>
+#include <realtime_tools/realtime_buffer.h>
+#include <realtime_tools/realtime_publisher.h>
+#include <ros/node_handle.h>
+#include <std_msgs/Float64.h>
+#include <urdf/model.h>
 
+#include "unitree_joint_control_tool.h"
 #include "unitree_legged_msgs/MotorCmd.h"
 #include "unitree_legged_msgs/MotorState.h"
-#include "unitree_joint_control_tool.h"
 
 #define PMSM (0x0A)
 #define BRAKE (0x00)
@@ -38,7 +36,7 @@ private:
   ros::Subscriber sub_cmd, sub_ft;
   // ros::Publisher pub_state;
   control_toolbox::Pid pid_controller_;
-  boost::scoped_ptr<realtime_tools::RealtimePublisher<unitree_legged_msgs::MotorState> > controller_state_publisher_;
+  boost::scoped_ptr<realtime_tools::RealtimePublisher<unitree_legged_msgs::MotorState>> controller_state_publisher_;
 
 public:
   // bool start_up;

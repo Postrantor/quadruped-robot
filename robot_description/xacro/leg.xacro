@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
-
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-
-    <xacro:include filename="$(find a1_description)/xacro/transmission.xacro"/>
+    <xacro:include filename="$(find robot_description)/xacro/transmission.xacro"/>
 
     <!-- <xacro:property name="damping" value="0.3" />
     <xacro:property name="friction" value="0.3" /> -->
@@ -20,7 +18,7 @@
             </xacro:if>
             <xacro:if value="${(mirror_dae == False)}">
                 <limit effort="${hip_torque_max}" velocity="${hip_velocity_max}" lower="${-hip_max*PI/180.0}" upper="${-hip_min*PI/180.0}"/>
-            </xacro:if>            
+            </xacro:if>
         </joint>
 
         <link name="${name}_hip">
@@ -38,7 +36,7 @@
                     <origin rpy="${PI} ${PI} 0" xyz="0 0 0"/>
                 </xacro:if>
                 <geometry>
-                    <mesh filename="package://a1_description/meshes/hip.dae" scale="1 1 1"/>
+                    <mesh filename="package://robot_description/meshes/hip.dae" scale="1 1 1"/>
                 </geometry>
                 <material name="orange"/>
             </visual>
@@ -51,10 +49,7 @@
             <inertial>
                 <origin rpy="0 0 0" xyz="${hip_com_x*front_hind} ${hip_com_y*mirror} ${hip_com_z}"/>
                 <mass value="${hip_mass}"/>
-                <inertia
-                    ixx="${hip_ixx}" ixy="${hip_ixy*mirror*front_hind}" ixz="${hip_ixz*front_hind}"
-                    iyy="${hip_iyy}" iyz="${hip_iyz*mirror}"
-                    izz="${hip_izz}"/>       
+                <inertia ixx="${hip_ixx}" ixy="${hip_ixy*mirror*front_hind}" ixz="${hip_ixz*front_hind}" iyy="${hip_iyy}" iyz="${hip_iyz*mirror}" izz="${hip_izz}"/>
             </inertial>
         </link>
 
@@ -88,10 +83,10 @@
                 <origin rpy="0 0 0" xyz="0 0 0"/>
                 <geometry>
                     <xacro:if value="${mirror_dae == True}">
-                        <mesh filename="package://a1_description/meshes/thigh.dae" scale="1 1 1"/>
+                        <mesh filename="package://robot_description/meshes/thigh.dae" scale="1 1 1"/>
                     </xacro:if>
                     <xacro:if value="${mirror_dae == False}">
-                        <mesh filename="package://a1_description/meshes/thigh_mirror.dae" scale="1 1 1"/>
+                        <mesh filename="package://robot_description/meshes/thigh_mirror.dae" scale="1 1 1"/>
                     </xacro:if>
                 </geometry>
                 <material name="orange"/>
@@ -100,15 +95,12 @@
                 <origin rpy="0 ${PI/2.0} 0" xyz="0 0 ${-thigh_length/2.0}"/>
                 <geometry>
                     <box size="${thigh_length} ${thigh_width} ${thigh_height}"/>
-                </geometry>      
+                </geometry>
             </collision>
             <inertial>
                 <origin rpy="0 0 0" xyz="${thigh_com_x} ${thigh_com_y*mirror} ${thigh_com_z}"/>
                 <mass value="${thigh_mass}"/>
-                <inertia
-                    ixx="${thigh_ixx}" ixy="${thigh_ixy*mirror}" ixz="${thigh_ixz}"
-                    iyy="${thigh_iyy}" iyz="${thigh_iyz*mirror}"
-                    izz="${thigh_izz}"/>       
+                <inertia ixx="${thigh_ixx}" ixy="${thigh_ixy*mirror}" ixz="${thigh_ixz}" iyy="${thigh_iyy}" iyz="${thigh_iyz*mirror}" izz="${thigh_izz}"/>
             </inertial>
         </link>
 
@@ -125,7 +117,7 @@
             <visual>
                 <origin rpy="0 0 0" xyz="0 0 0"/>
                 <geometry>
-                    <mesh filename="package://a1_description/meshes/calf.dae" scale="1 1 1"/>
+                    <mesh filename="package://robot_description/meshes/calf.dae" scale="1 1 1"/>
                 </geometry>
                 <material name="orange"/>
             </visual>
@@ -133,15 +125,12 @@
                 <origin rpy="0 ${PI/2.0} 0" xyz="0 0 ${-calf_length/2.0}"/>
                 <geometry>
                     <box size="${calf_length/1.5} ${calf_width} ${calf_height}"/>
-                </geometry>      
+                </geometry>
             </collision>
             <inertial>
                 <origin rpy="0 0 0" xyz="${calf_com_x} ${calf_com_y} ${calf_com_z}"/>
                 <mass value="${calf_mass}"/>
-                <inertia
-                    ixx="${calf_ixx}" ixy="${calf_ixy}" ixz="${calf_ixz}"
-                    iyy="${calf_iyy}" iyz="${calf_iyz}"
-                    izz="${calf_izz}"/>       
+                <inertia ixx="${calf_ixx}" ixy="${calf_ixy}" ixz="${calf_ixz}" iyy="${calf_iyy}" iyz="${calf_iyz}" izz="${calf_izz}"/>
             </inertial>
         </link>
 
@@ -167,10 +156,7 @@
             </collision>
             <inertial>
                 <mass value="${foot_mass}"/>
-                <inertia
-                    ixx="${(2*foot_mass)/5.0*(foot_radius*foot_radius)}" ixy="0.0" ixz="0.0"
-                    iyy="${(2*foot_mass)/5.0*(foot_radius*foot_radius)}" iyz="0.0"
-                    izz="${(2*foot_mass)/5.0*(foot_radius*foot_radius)}"/>             
+                <inertia ixx="${(2*foot_mass)/5.0*(foot_radius*foot_radius)}" ixy="0.0" ixz="0.0" iyy="${(2*foot_mass)/5.0*(foot_radius*foot_radius)}" iyz="0.0" izz="${(2*foot_mass)/5.0*(foot_radius*foot_radius)}"/>
             </inertial>
         </link>
 

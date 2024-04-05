@@ -1,23 +1,24 @@
 <?xml version="1.0"?>
 
-<robot name="a1_description" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="robot_description"
+    xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <xacro:include filename="$(find a1_description)/xacro/const.xacro"/>
-    <xacro:include filename="$(find a1_description)/xacro/materials.xacro"/>
-    <xacro:include filename="$(find a1_description)/xacro/leg.xacro"/>
-    <xacro:include filename="$(find a1_description)/xacro/stairs.xacro"/>
-    <xacro:include filename="$(find a1_description)/xacro/gazebo.xacro"/>
+    <xacro:include filename="$(find robot_description)/xacro/const.xacro"/>
+    <xacro:include filename="$(find robot_description)/xacro/materials.xacro"/>
+    <xacro:include filename="$(find robot_description)/xacro/leg.xacro"/>
+    <xacro:include filename="$(find robot_description)/xacro/stairs.xacro"/>
+    <xacro:include filename="$(find robot_description)/xacro/gazebo.xacro"/>
     <xacro:if value="$(arg USE_CAMERA)">
         <xacro:include filename="$(find realsense_ros_gazebo)/xacro/depthcam.xacro"/>
-    </xacro:if> 
+    </xacro:if>
 
     <!-- <xacro:include filename="$(find a1_gazebo)/launch/stairs.urdf.xacro"/> -->
     <!-- <xacro:stairs stairs="15" xpos="0" ypos="0" zpos="0" /> -->
 
-    <!-- Rollover Protection mode will add an additional stick on the top, use "true" or "false" to switch it. -->
+    <!-- rollover protection mode will add an additional stick on the top, use "true" or "false" to switch it. -->
     <xacro:property name="rolloverProtection" value="false"/>
 
-    <!-- Debug mode will hung up the robot, use "true" or "false" to switch it. -->
+    <!-- debug mode will hung up the robot, use "true" or "false" to switch it. -->
     <xacro:if value="$(arg DEBUG)">
         <link name="world"/>
         <joint name="base_static_joint" type="fixed">
@@ -25,7 +26,7 @@
             <parent link="world"/>
             <child link="base"/>
         </joint>
-    </xacro:if> 
+    </xacro:if>
 
     <link name="base">
         <visual>
@@ -53,7 +54,7 @@
         <visual>
             <origin rpy="0 0 0" xyz="0 0 0"/>
             <geometry>
-                <mesh filename="package://a1_description/meshes/trunk.dae" scale="1 1 1"/>
+                <mesh filename="package://robot_description/meshes/trunk.dae" scale="1 1 1"/>
             </geometry>
             <material name="orange"/>
         </visual>
@@ -66,10 +67,7 @@
         <inertial>
             <origin rpy="0 0 0" xyz="${trunk_com_x} ${trunk_com_y} ${trunk_com_z}"/>
             <mass value="${trunk_mass}"/>
-            <inertia
-                ixx="${trunk_ixx}" ixy="${trunk_ixy}" ixz="${trunk_ixz}"
-                iyy="${trunk_iyy}" iyz="${trunk_iyz}"
-                izz="${trunk_izz}"/>  
+            <inertia ixx="${trunk_ixx}" ixy="${trunk_ixy}" ixz="${trunk_ixz}" iyy="${trunk_iyy}" iyz="${trunk_iyz}" izz="${trunk_izz}"/>
         </inertial>
     </link>
 
@@ -77,7 +75,7 @@
         <xacro:realsense_d435 sensor_name="d435" parent_link="trunk" rate="10">
             <origin rpy="0 0 0 " xyz="0.25 0 0.055"/>
         </xacro:realsense_d435>
-    </xacro:if> 
+    </xacro:if>
 
     <xacro:if value="${(rolloverProtection == 'true')}">
         <joint name="stick_joint" type="fixed">
@@ -102,13 +100,10 @@
             </collision>
             <inertial>
                 <mass value="${stick_mass}"/>
-                <inertia
-                    ixx="${stick_mass / 2.0 * (stick_radius*stick_radius)}" ixy="0.0" ixz="0.0"
-                    iyy="${stick_mass / 12.0 * (3*stick_radius*stick_radius + stick_length*stick_length)}" iyz="0.0"
-                    izz="${stick_mass / 12.0 * (3*stick_radius*stick_radius + stick_length*stick_length)}"/>                   
+                <inertia ixx="${stick_mass / 2.0 * (stick_radius*stick_radius)}" ixy="0.0" ixz="0.0" iyy="${stick_mass / 12.0 * (3*stick_radius*stick_radius + stick_length*stick_length)}" iyz="0.0" izz="${stick_mass / 12.0 * (3*stick_radius*stick_radius + stick_length*stick_length)}"/>
             </inertial>
         </link>
-    </xacro:if> 
+    </xacro:if>
 
     <joint name="imu_joint" type="fixed">
         <parent link="trunk"/>

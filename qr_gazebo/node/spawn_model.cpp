@@ -1,5 +1,6 @@
-#include <ros/ros.h>
+#include <iostream>
 
+#include <ros/ros.h>
 #include "qr_gazebo/gazebo_model_spawn.h"
 
 int main(int argc, char** argv) {
@@ -21,17 +22,15 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  printf("----------------------------------------------------------------\n");
-  printf("Press Enter key to start controllers.\n");
-  printf("----------------------------------------------------------------\n");
+  std::cout << "----------------------------------------------------------------" << std::endl;
+  std::cout << "Press Enter key to start controllers" << std::endl;
 
   getchar();
   manager.load_controllers();
   manager.start_controllers();
 
-  printf("----------------------------------------------------------------\n");
-  printf("Press Enter key to delete controllers and model.\n");
-  printf("----------------------------------------------------------------\n");
+  std::cout << "----------------------------------------------------------------" << std::endl;
+  std::cout << "Press Enter key to delete controllers and model" << std::endl;
 
   getchar();
 
