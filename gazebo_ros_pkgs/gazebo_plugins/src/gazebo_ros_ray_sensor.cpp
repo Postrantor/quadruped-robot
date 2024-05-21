@@ -26,11 +26,9 @@
 #include <limits>
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 
-class GazeboRosRaySensorPrivate
-{
+class GazeboRosRaySensorPrivate {
 public:
   /// Node for ROS communication.
   gazebo_ros::Node::SharedPtr ros_node_;
@@ -56,16 +54,16 @@ public:
   void SubscribeGazeboLaserScan();
 
   /// Publish a sensor_msgs/LaserScan message from a gazebo laser scan
-  void PublishLaserScan(ConstLaserScanStampedPtr & _msg);
+  void PublishLaserScan(ConstLaserScanStampedPtr& _msg);
 
   /// Publish a sensor_msgs/PointCloud message from a gazebo laser scan
-  void PublishPointCloud(ConstLaserScanStampedPtr & _msg);
+  void PublishPointCloud(ConstLaserScanStampedPtr& _msg);
 
   /// Publish a sensor_msgs/PointCloud2 message from a gazebo laser scan
-  void PublishPointCloud2(ConstLaserScanStampedPtr & _msg);
+  void PublishPointCloud2(ConstLaserScanStampedPtr& _msg);
 
   /// Publish a sensor_msgs/Range message from a gazebo laser scan
-  void PublishRange(ConstLaserScanStampedPtr & _msg);
+  void PublishRange(ConstLaserScanStampedPtr& _msg);
 
   /// Gazebo transport topic to subscribe to for laser scan
   std::string sensor_topic_;
@@ -83,13 +81,9 @@ public:
   gazebo::transport::SubscriberPtr laser_scan_sub_;
 };
 
-GazeboRosRaySensor::GazeboRosRaySensor()
-: impl_(std::make_unique<GazeboRosRaySensorPrivate>())
-{
-}
+GazeboRosRaySensor::GazeboRosRaySensor() : impl_(std::make_unique<GazeboRosRaySensorPrivate>()) {}
 
-GazeboRosRaySensor::~GazeboRosRaySensor()
-{
+GazeboRosRaySensor::~GazeboRosRaySensor() {
   // Must release subscriber and then call fini on node to remove it from topic manager.
   impl_->laser_scan_sub_.reset();
   if (impl_->gazebo_node_) {
@@ -98,13 +92,12 @@ GazeboRosRaySensor::~GazeboRosRaySensor()
   impl_->gazebo_node_.reset();
 }
 
-void GazeboRosRaySensor::Load(gazebo::sensors::SensorPtr _sensor, sdf::ElementPtr _sdf)
-{
+void GazeboRosRaySensor::Load(gazebo::sensors::SensorPtr _sensor, sdf::ElementPtr _sdf) {
   // Create ros_node configured from sdf
   impl_->ros_node_ = gazebo_ros::Node::Get(_sdf);
 
   // Get QoS profiles
-  const gazebo_ros::QoS & qos = impl_->ros_node_->get_qos();
+  const gazebo_ros::QoS& qos = impl_->ros_node_->get_qos();
 
   // Get QoS profile for the publisher
   rclcpp::QoS pub_qos = qos.get_publisher_qos("~/out", rclcpp::SensorDataQoS().reliable());
@@ -114,27 +107,20 @@ void GazeboRosRaySensor::Load(gazebo::sensors::SensorPtr _sensor, sdf::ElementPt
 
   // Get output type from sdf if provided
   if (!_sdf->HasElement("output_type")) {
-    RCLCPP_WARN(
-      impl_->ros_node_->get_logger(), "missing <output_type>, defaults to sensor_msgs/PointCloud2");
-    impl_->pub_ = impl_->ros_node_->create_publisher<sensor_msgs::msg::PointCloud2>(
-      "~/out", pub_qos);
+    RCLCPP_WARN(impl_->ros_node_->get_logger(), "missing <output_type>, defaults to sensor_msgs/PointCloud2");
+    impl_->pub_ = impl_->ros_node_->create_publisher<sensor_msgs::msg::PointCloud2>("~/out", pub_qos);
   } else {
     std::string output_type_string = _sdf->Get<std::string>("output_type");
     if (output_type_string == "sensor_msgs/LaserScan") {
-      impl_->pub_ = impl_->ros_node_->create_publisher<sensor_msgs::msg::LaserScan>(
-        "~/out", pub_qos);
+      impl_->pub_ = impl_->ros_node_->create_publisher<sensor_msgs::msg::LaserScan>("~/out", pub_qos);
     } else if (output_type_string == "sensor_msgs/PointCloud") {
-      impl_->pub_ = impl_->ros_node_->create_publisher<sensor_msgs::msg::PointCloud>(
-        "~/out", pub_qos);
+      impl_->pub_ = impl_->ros_node_->create_publisher<sensor_msgs::msg::PointCloud>("~/out", pub_qos);
     } else if (output_type_string == "sensor_msgs/PointCloud2") {
-      impl_->pub_ = impl_->ros_node_->create_publisher<sensor_msgs::msg::PointCloud2>(
-        "~/out", pub_qos);
+      impl_->pub_ = impl_->ros_node_->create_publisher<sensor_msgs::msg::PointCloud2>("~/out", pub_qos);
     } else if (output_type_string == "sensor_msgs/Range") {
-      impl_->pub_ = impl_->ros_node_->create_publisher<sensor_msgs::msg::Range>(
-        "~/out", pub_qos);
+      impl_->pub_ = impl_->ros_node_->create_publisher<sensor_msgs::msg::Range>("~/out", pub_qos);
     } else {
-      RCLCPP_ERROR(
-        impl_->ros_node_->get_logger(), "Invalid <output_type> [%s]", output_type_string.c_str());
+      RCLCPP_ERROR(impl_->ros_node_->get_logger(), "Invalid <output_type> [%s]", output_type_string.c_str());
       return;
     }
   }
@@ -142,8 +128,7 @@ void GazeboRosRaySensor::Load(gazebo::sensors::SensorPtr _sensor, sdf::ElementPt
   // Get parameters specific to Range output from sdf
   if (impl_->pub_.type() == typeid(GazeboRosRaySensorPrivate::RangePub)) {
     if (!_sdf->HasElement("radiation_type")) {
-      RCLCPP_INFO(
-        impl_->ros_node_->get_logger(), "missing <radiation_type>, defaulting to infrared");
+      RCLCPP_INFO(impl_->ros_node_->get_logger(), "missing <radiation_type>, defaulting to infrared");
       impl_->range_radiation_type_ = sensor_msgs::msg::Range::INFRARED;
     } else if ("ultrasound" == _sdf->Get<std::string>("radiation_type")) {
       impl_->range_radiation_type_ = sensor_msgs::msg::Range::ULTRASOUND;
@@ -151,17 +136,14 @@ void GazeboRosRaySensor::Load(gazebo::sensors::SensorPtr _sensor, sdf::ElementPt
       impl_->range_radiation_type_ = sensor_msgs::msg::Range::INFRARED;
     } else {
       RCLCPP_ERROR(
-        impl_->ros_node_->get_logger(),
-        "Invalid <radiation_type> [%s]. Can be ultrasound or infrared",
-        _sdf->Get<std::string>("radiation_type").c_str());
+          impl_->ros_node_->get_logger(), "Invalid <radiation_type> [%s]. Can be ultrasound or infrared",
+          _sdf->Get<std::string>("radiation_type").c_str());
       return;
     }
   }
 
   if (!_sdf->HasElement("min_intensity")) {
-    RCLCPP_DEBUG(
-      impl_->ros_node_->get_logger(), "missing <min_intensity>, defaults to %f",
-      impl_->min_intensity_);
+    RCLCPP_DEBUG(impl_->ros_node_->get_logger(), "missing <min_intensity>, defaults to %f", impl_->min_intensity_);
   } else {
     impl_->min_intensity_ = _sdf->Get<double>("min_intensity");
   }
@@ -175,27 +157,21 @@ void GazeboRosRaySensor::Load(gazebo::sensors::SensorPtr _sensor, sdf::ElementPt
   impl_->SubscribeGazeboLaserScan();
 }
 
-void GazeboRosRaySensorPrivate::SubscribeGazeboLaserScan()
-{
+void GazeboRosRaySensorPrivate::SubscribeGazeboLaserScan() {
   if (pub_.type() == typeid(LaserScanPub)) {
-    laser_scan_sub_ = gazebo_node_->Subscribe(
-      sensor_topic_, &GazeboRosRaySensorPrivate::PublishLaserScan, this);
+    laser_scan_sub_ = gazebo_node_->Subscribe(sensor_topic_, &GazeboRosRaySensorPrivate::PublishLaserScan, this);
   } else if (pub_.type() == typeid(PointCloudPub)) {
-    laser_scan_sub_ = gazebo_node_->Subscribe(
-      sensor_topic_, &GazeboRosRaySensorPrivate::PublishPointCloud, this);
+    laser_scan_sub_ = gazebo_node_->Subscribe(sensor_topic_, &GazeboRosRaySensorPrivate::PublishPointCloud, this);
   } else if (pub_.type() == typeid(PointCloud2Pub)) {
-    laser_scan_sub_ = gazebo_node_->Subscribe(
-      sensor_topic_, &GazeboRosRaySensorPrivate::PublishPointCloud2, this);
+    laser_scan_sub_ = gazebo_node_->Subscribe(sensor_topic_, &GazeboRosRaySensorPrivate::PublishPointCloud2, this);
   } else if (pub_.type() == typeid(RangePub)) {
-    laser_scan_sub_ = gazebo_node_->Subscribe(
-      sensor_topic_, &GazeboRosRaySensorPrivate::PublishRange, this);
+    laser_scan_sub_ = gazebo_node_->Subscribe(sensor_topic_, &GazeboRosRaySensorPrivate::PublishRange, this);
   } else {
     RCLCPP_ERROR(ros_node_->get_logger(), "Publisher is an invalid type. This is an internal bug.");
   }
 }
 
-void GazeboRosRaySensorPrivate::PublishLaserScan(ConstLaserScanStampedPtr & _msg)
-{
+void GazeboRosRaySensorPrivate::PublishLaserScan(ConstLaserScanStampedPtr& _msg) {
   // Convert Laser scan to ROS LaserScan
   auto ls = gazebo_ros::Convert<sensor_msgs::msg::LaserScan>(*_msg);
   // Set tf frame
@@ -204,8 +180,7 @@ void GazeboRosRaySensorPrivate::PublishLaserScan(ConstLaserScanStampedPtr & _msg
   boost::get<LaserScanPub>(pub_)->publish(ls);
 }
 
-void GazeboRosRaySensorPrivate::PublishPointCloud(ConstLaserScanStampedPtr & _msg)
-{
+void GazeboRosRaySensorPrivate::PublishPointCloud(ConstLaserScanStampedPtr& _msg) {
   // Convert Laser scan to PointCloud
   auto pc = gazebo_ros::Convert<sensor_msgs::msg::PointCloud>(*_msg, min_intensity_);
   // Set tf frame
@@ -214,8 +189,7 @@ void GazeboRosRaySensorPrivate::PublishPointCloud(ConstLaserScanStampedPtr & _ms
   boost::get<PointCloudPub>(pub_)->publish(pc);
 }
 
-void GazeboRosRaySensorPrivate::PublishPointCloud2(ConstLaserScanStampedPtr & _msg)
-{
+void GazeboRosRaySensorPrivate::PublishPointCloud2(ConstLaserScanStampedPtr& _msg) {
   // Convert Laser scan to PointCloud2
   auto pc2 = gazebo_ros::Convert<sensor_msgs::msg::PointCloud2>(*_msg, min_intensity_);
   // Set tf frame
@@ -224,8 +198,7 @@ void GazeboRosRaySensorPrivate::PublishPointCloud2(ConstLaserScanStampedPtr & _m
   boost::get<PointCloud2Pub>(pub_)->publish(pc2);
 }
 
-void GazeboRosRaySensorPrivate::PublishRange(ConstLaserScanStampedPtr & _msg)
-{
+void GazeboRosRaySensorPrivate::PublishRange(ConstLaserScanStampedPtr& _msg) {
   // Convert Laser scan to range
   auto range_msg = gazebo_ros::Convert<sensor_msgs::msg::Range>(*_msg);
   // Set tf frame

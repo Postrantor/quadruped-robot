@@ -18,15 +18,13 @@
 #include <rclcpp/rclcpp.hpp>
 #include <gazebo/common/Events.hh>
 
-namespace gazebo_ros
-{
+namespace gazebo_ros {
 
 /// Executor run in a separate thread to handle events from all #gazebo_ros::Node instances
 /**
  * \class Executor executor.hpp <gazebo_ros/executor.hpp>
  */
-class Executor : public rclcpp::executors::MultiThreadedExecutor
-{
+class Executor : public rclcpp::executors::MultiThreadedExecutor {
 public:
   /// Create an instance and start the internal thread
   Executor();

@@ -20,8 +20,7 @@
 
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 class GazeboRosElevatorPrivate;
 
 /// A elevator plugin for gazebo.
@@ -42,8 +41,7 @@ class GazeboRosElevatorPrivate;
       <top_floor>1</top_floor>
   \endcode
 */
-class GazeboRosElevator : public gazebo::ElevatorPlugin
-{
+class GazeboRosElevator : public gazebo::ElevatorPlugin {
 public:
   /// Constructor
   GazeboRosElevator();

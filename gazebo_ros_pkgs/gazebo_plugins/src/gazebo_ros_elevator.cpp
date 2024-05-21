@@ -19,10 +19,8 @@
 #include <limits>
 #include <memory>
 
-namespace gazebo_plugins
-{
-class GazeboRosElevatorPrivate
-{
+namespace gazebo_plugins {
+class GazeboRosElevatorPrivate {
 public:
   /// A pointer to the GazeboROS node.
   gazebo_ros::Node::SharedPtr ros_node_;
@@ -37,28 +35,22 @@ public:
   int top_;
 };
 
-GazeboRosElevator::GazeboRosElevator()
-: impl_(std::make_unique<GazeboRosElevatorPrivate>())
-{
-}
+GazeboRosElevator::GazeboRosElevator() : impl_(std::make_unique<GazeboRosElevatorPrivate>()) {}
 
-GazeboRosElevator::~GazeboRosElevator()
-{
-}
+GazeboRosElevator::~GazeboRosElevator() {}
 
-void GazeboRosElevator::Load(gazebo::physics::ModelPtr _model, sdf::ElementPtr _sdf)
-{
+void GazeboRosElevator::Load(gazebo::physics::ModelPtr _model, sdf::ElementPtr _sdf) {
   ElevatorPlugin::Load(_model, _sdf);
 
   // Initialize ROS node
   impl_->ros_node_ = gazebo_ros::Node::Get(_sdf);
 
   // Get QoS profiles
-  const gazebo_ros::QoS & qos = impl_->ros_node_->get_qos();
+  const gazebo_ros::QoS& qos = impl_->ros_node_->get_qos();
 
   impl_->sub_ = impl_->ros_node_->create_subscription<std_msgs::msg::String>(
-    "elevator", qos.get_subscription_qos("elevator", rclcpp::QoS(1)),
-    std::bind(&GazeboRosElevator::OnElevator, this, std::placeholders::_1));
+      "elevator", qos.get_subscription_qos("elevator", rclcpp::QoS(1)),
+      std::bind(&GazeboRosElevator::OnElevator, this, std::placeholders::_1));
 
   RCLCPP_INFO(impl_->ros_node_->get_logger(), "Subscribed to [%s]", impl_->sub_->get_topic_name());
 
@@ -67,8 +59,7 @@ void GazeboRosElevator::Load(gazebo::physics::ModelPtr _model, sdf::ElementPtr _
   impl_->top_ = _sdf->Get<int>("top_floor", std::numeric_limits<int>::max()).first;
 }
 
-void GazeboRosElevator::OnElevator(const std_msgs::msg::String::ConstSharedPtr msg)
-{
+void GazeboRosElevator::OnElevator(const std_msgs::msg::String::ConstSharedPtr msg) {
   try {
     int target_floor = std::stoi(msg->data);
     if (target_floor < impl_->bottom_) {
@@ -80,7 +71,7 @@ void GazeboRosElevator::OnElevator(const std_msgs::msg::String::ConstSharedPtr m
       return;
     }
     MoveToFloor(target_floor);
-  } catch (const std::exception & /*e*/) {
+  } catch (const std::exception& /*e*/) {
     RCLCPP_ERROR(impl_->ros_node_->get_logger(), "Invalid floor number for elevator");
   }
 }

@@ -16,12 +16,9 @@
 
 #include <iostream>
 
-namespace gazebo_ros
-{
+namespace gazebo_ros {
 
-Executor::Executor()
-: spin_thread_(std::bind(&Executor::run, this))
-{
+Executor::Executor() : spin_thread_(std::bind(&Executor::run, this)) {
   using namespace std::chrono_literals;
   sigint_handle_ = gazebo::event::Events::ConnectSigInt(std::bind(&Executor::shutdown, this));
   while (!this->spinning) {
@@ -34,20 +31,15 @@ Executor::Executor()
   }
 }
 
-Executor::~Executor()
-{
+Executor::~Executor() {
   // If ros was not already shutdown by SIGINT handler, do it now
   this->shutdown();
   spin_thread_.join();
 }
 
-void Executor::run()
-{
-  spin();
-}
+void Executor::run() { spin(); }
 
-void Executor::shutdown()
-{
+void Executor::shutdown() {
   if (this->spinning) {
     this->cancel();
   }

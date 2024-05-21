@@ -37,44 +37,37 @@
 #include <string>
 #include <vector>
 
-namespace gazebo_ros
-{
+namespace gazebo_ros {
 
-class GazeboRosFactoryPrivate
-{
+class GazeboRosFactoryPrivate {
 public:
   /// Callback when a world is created.
   /// \param[in] _world_name The world's name
-  void OnWorldCreated(const std::string & _world_name);
+  void OnWorldCreated(const std::string& _world_name);
 
   /// \brief Function for receiving the model list from a gazebo world.
   /// \param[in] Request
   /// \param[out] res Response
   void GetModelList(
-    gazebo_msgs::srv::GetModelList::Request::SharedPtr,
-    gazebo_msgs::srv::GetModelList::Response::SharedPtr res);
+      gazebo_msgs::srv::GetModelList::Request::SharedPtr, gazebo_msgs::srv::GetModelList::Response::SharedPtr res);
 
   /// \brief Function for inserting an entity into Gazebo from ROS Service Call.
   /// Supported formats are SDF and URDF and works with both models and lights.
   /// \param[in] req Request
   /// \param[out] res Response
   void SpawnEntity(
-    gazebo_msgs::srv::SpawnEntity::Request::SharedPtr req,
-    gazebo_msgs::srv::SpawnEntity::Response::SharedPtr res);
+      gazebo_msgs::srv::SpawnEntity::Request::SharedPtr req, gazebo_msgs::srv::SpawnEntity::Response::SharedPtr res);
 
   /// \brief Function for removing an entity from Gazebo from ROS Service Call.
   /// \param[in] req Request
   /// \param[out] res Response
   void DeleteEntity(
-    gazebo_msgs::srv::DeleteEntity::Request::SharedPtr req,
-    gazebo_msgs::srv::DeleteEntity::Response::SharedPtr res);
+      gazebo_msgs::srv::DeleteEntity::Request::SharedPtr req, gazebo_msgs::srv::DeleteEntity::Response::SharedPtr res);
 
   /// Iterate over all child elements and add <ros><namespace> tags to the <plugin> tags.
   /// \param[out] _elem SDF element.
   /// \param[in] _robot_namespace Namespace to be added.
-  void AddNamespace(
-    const sdf::ElementPtr & _elem,
-    const std::string & _robot_namespace);
+  void AddNamespace(const sdf::ElementPtr& _elem, const std::string& _robot_namespace);
 
   /// \brief World pointer from Gazebo.
   gazebo::physics::WorldPtr world_;
@@ -107,27 +100,20 @@ public:
   gazebo::event::ConnectionPtr world_created_connection_;
 };
 
-GazeboRosFactory::GazeboRosFactory()
-: impl_(std::make_unique<GazeboRosFactoryPrivate>())
-{
-}
+GazeboRosFactory::GazeboRosFactory() : impl_(std::make_unique<GazeboRosFactoryPrivate>()) {}
 
-GazeboRosFactory::~GazeboRosFactory()
-{
-}
+GazeboRosFactory::~GazeboRosFactory() {}
 
-void GazeboRosFactory::Load(int /* argc */, char ** /* argv */)
-{
+void GazeboRosFactory::Load(int /* argc */, char** /* argv */) {
   // Keep this in the constructor for performance.
   // sdf::initFile causes disk access.
   sdf::initFile("root.sdf", impl_->factory_sdf_);
 
   impl_->world_created_connection_ = gazebo::event::Events::ConnectWorldCreated(
-    std::bind(&GazeboRosFactoryPrivate::OnWorldCreated, impl_.get(), std::placeholders::_1));
+      std::bind(&GazeboRosFactoryPrivate::OnWorldCreated, impl_.get(), std::placeholders::_1));
 }
 
-void GazeboRosFactoryPrivate::OnWorldCreated(const std::string & _world_name)
-{
+void GazeboRosFactoryPrivate::OnWorldCreated(const std::string& _world_name) {
   // Only support one world
   world_created_connection_.reset();
 
@@ -137,22 +123,16 @@ void GazeboRosFactoryPrivate::OnWorldCreated(const std::string & _world_name)
   ros_node_ = gazebo_ros::Node::Get();
 
   model_list_service_ = ros_node_->create_service<gazebo_msgs::srv::GetModelList>(
-    "get_model_list",
-    std::bind(
-      &GazeboRosFactoryPrivate::GetModelList, this,
-      std::placeholders::_1, std::placeholders::_2));
+      "get_model_list",
+      std::bind(&GazeboRosFactoryPrivate::GetModelList, this, std::placeholders::_1, std::placeholders::_2));
 
   spawn_service_ = ros_node_->create_service<gazebo_msgs::srv::SpawnEntity>(
-    "spawn_entity",
-    std::bind(
-      &GazeboRosFactoryPrivate::SpawnEntity, this,
-      std::placeholders::_1, std::placeholders::_2));
+      "spawn_entity",
+      std::bind(&GazeboRosFactoryPrivate::SpawnEntity, this, std::placeholders::_1, std::placeholders::_2));
 
   delete_service_ = ros_node_->create_service<gazebo_msgs::srv::DeleteEntity>(
-    "delete_entity",
-    std::bind(
-      &GazeboRosFactoryPrivate::DeleteEntity, this,
-      std::placeholders::_1, std::placeholders::_2));
+      "delete_entity",
+      std::bind(&GazeboRosFactoryPrivate::DeleteEntity, this, std::placeholders::_1, std::placeholders::_2));
 
   // Gazebo transport
   gz_node_ = gazebo::transport::NodePtr(new gazebo::transport::Node());
@@ -162,9 +142,7 @@ void GazeboRosFactoryPrivate::OnWorldCreated(const std::string & _world_name)
 }
 
 void GazeboRosFactoryPrivate::GetModelList(
-  gazebo_msgs::srv::GetModelList::Request::SharedPtr,
-  gazebo_msgs::srv::GetModelList::Response::SharedPtr res)
-{
+    gazebo_msgs::srv::GetModelList::Request::SharedPtr, gazebo_msgs::srv::GetModelList::Response::SharedPtr res) {
   res->header.stamp = Convert<builtin_interfaces::msg::Time>(world_->SimTime());
   res->model_names.clear();
   for (unsigned int i = 0; i < world_->ModelCount(); i++) {
@@ -174,9 +152,7 @@ void GazeboRosFactoryPrivate::GetModelList(
 }
 
 void GazeboRosFactoryPrivate::SpawnEntity(
-  gazebo_msgs::srv::SpawnEntity::Request::SharedPtr req,
-  gazebo_msgs::srv::SpawnEntity::Response::SharedPtr res)
-{
+    gazebo_msgs::srv::SpawnEntity::Request::SharedPtr req, gazebo_msgs::srv::SpawnEntity::Response::SharedPtr res) {
   // Parse XML string into SDF
   factory_sdf_->Root()->ClearElements();
   if (!sdf::readString(req->xml, factory_sdf_)) {
@@ -213,9 +189,7 @@ void GazeboRosFactoryPrivate::SpawnEntity(
 
     // When name is given and the entity exists, we assume it's an error and don't spawn
     // When name is not given, spawn anyway, and Gazebo will append a number to the name as needed
-    if ((isLight && world_->LightByName(req->name) != nullptr) ||
-      world_->ModelByName(req->name) != nullptr)
-    {
+    if ((isLight && world_->LightByName(req->name) != nullptr) || world_->ModelByName(req->name) != nullptr) {
       res->success = false;
       res->status_message = "Entity [" + req->name + "] already exists.";
       return;
@@ -234,17 +208,14 @@ void GazeboRosFactoryPrivate::SpawnEntity(
     initial_xyz = frame_pose.Pos() + frame_pose.Rot().RotateVector(initial_xyz);
     initial_q = frame_pose.Rot() * initial_q;
   } else {
-    if (req->reference_frame == "" || req->reference_frame == "world" ||
-      req->reference_frame == "map" || req->reference_frame == "/map")
-    {
-      RCLCPP_DEBUG(
-        ros_node_->get_logger(),
-        "SpawnEntity: reference_frame is empty/world/map, using inertial frame");
+    if (req->reference_frame == "" || req->reference_frame == "world" || req->reference_frame == "map" ||
+        req->reference_frame == "/map") {
+      RCLCPP_DEBUG(ros_node_->get_logger(), "SpawnEntity: reference_frame is empty/world/map, using inertial frame");
     } else {
       res->success = false;
-      res->status_message =
-        "Reference frame [" + req->reference_frame + "] not found, did you forget to scope "
-        "the link by model name?";
+      res->status_message = "Reference frame [" + req->reference_frame +
+                            "] not found, did you forget to scope "
+                            "the link by model name?";
       return;
     }
   }
@@ -285,14 +256,14 @@ void GazeboRosFactoryPrivate::SpawnEntity(
   while (rclcpp::ok()) {
     if (ros_node_->now() > timeout) {
       res->success = false;
-      res->status_message = "Entity pushed to spawn queue, but spawn service timed out"
-        "waiting for entity to appear in simulation under the name [" + req->name + "]";
+      res->status_message =
+          "Entity pushed to spawn queue, but spawn service timed out"
+          "waiting for entity to appear in simulation under the name [" +
+          req->name + "]";
       return;
     }
 
-    if ((isLight && world_->LightByName(req->name) != nullptr) ||
-      (world_->ModelByName(req->name) != nullptr))
-    {
+    if ((isLight && world_->LightByName(req->name) != nullptr) || (world_->ModelByName(req->name) != nullptr)) {
       break;
     }
     usleep(2000);
@@ -304,9 +275,7 @@ void GazeboRosFactoryPrivate::SpawnEntity(
 }
 
 void GazeboRosFactoryPrivate::DeleteEntity(
-  gazebo_msgs::srv::DeleteEntity::Request::SharedPtr req,
-  gazebo_msgs::srv::DeleteEntity::Response::SharedPtr res)
-{
+    gazebo_msgs::srv::DeleteEntity::Request::SharedPtr req, gazebo_msgs::srv::DeleteEntity::Response::SharedPtr res) {
   auto entity = world_->EntityByName(req->name);
   if (!entity) {
     res->success = false;
@@ -323,8 +292,7 @@ void GazeboRosFactoryPrivate::DeleteEntity(
   while (rclcpp::ok()) {
     if (ros_node_->now() > timeout) {
       res->success = false;
-      res->status_message =
-        "Delete service timed out waiting for entity to disappear from simulation";
+      res->status_message = "Delete service timed out waiting for entity to disappear from simulation";
       return;
     }
 
@@ -338,13 +306,8 @@ void GazeboRosFactoryPrivate::DeleteEntity(
   res->status_message = "Successfully deleted entity [" + req->name + "]";
 }
 
-void GazeboRosFactoryPrivate::AddNamespace(
-  const sdf::ElementPtr & _elem,
-  const std::string & _robot_namespace)
-{
-  for (sdf::ElementPtr child_elem = _elem->GetFirstElement(); child_elem;
-    child_elem = child_elem->GetNextElement())
-  {
+void GazeboRosFactoryPrivate::AddNamespace(const sdf::ElementPtr& _elem, const std::string& _robot_namespace) {
+  for (sdf::ElementPtr child_elem = _elem->GetFirstElement(); child_elem; child_elem = child_elem->GetNextElement()) {
     // <plugin>
     if (child_elem->GetName() == "plugin") {
       // Get / create <ros>

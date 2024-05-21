@@ -25,8 +25,7 @@
 #include <rclcpp/logging.hpp>
 #include <rclcpp/time.hpp>
 
-namespace gazebo_ros
-{
+namespace gazebo_ros {
 /// \brief Common logger for all conversions
 static rclcpp::Logger conversions_logger = rclcpp::get_logger("gazebo_ros_conversions");
 
@@ -34,10 +33,8 @@ static rclcpp::Logger conversions_logger = rclcpp::get_logger("gazebo_ros_conver
 /// \param[in] in Input vector.
 /// \return Conversion result
 /// \tparam T Output type
-template<class T>
-inline
-T Convert(const ignition::math::Vector3d &)
-{
+template <class T>
+inline T Convert(const ignition::math::Vector3d &) {
   T::ConversionNotImplemented;
 }
 
@@ -45,10 +42,8 @@ T Convert(const ignition::math::Vector3d &)
 /// \param[in] in Input quaternion
 /// \return Conversion result
 /// \tparam T Output type
-template<class T>
-inline
-T Convert(const ignition::math::Quaterniond &)
-{
+template <class T>
+inline T Convert(const ignition::math::Quaterniond &) {
   T::ConversionNotImplemented;
 }
 
@@ -56,10 +51,8 @@ T Convert(const ignition::math::Quaterniond &)
 /// \param[in] in Input pose3d
 /// \return Conversion result
 /// \tparam T Output type
-template<class T>
-inline
-T Convert(const ignition::math::Pose3d &)
-{
+template <class T>
+inline T Convert(const ignition::math::Pose3d &) {
   T::ConversionNotImplemented;
 }
 
@@ -67,20 +60,16 @@ T Convert(const ignition::math::Pose3d &)
 /// \param[in] in Input time;
 /// \return Conversion result
 /// \tparam T Output type
-template<class T>
-inline
-T Convert(const gazebo::common::Time &)
-{
+template <class T>
+inline T Convert(const gazebo::common::Time &) {
   T::ConversionNotImplemented;
 }
 
 /// \brief Specialized conversion from an Gazebo Time to a RCLCPP Time.
 /// \param[in] in Gazebo Time to convert.
 /// \return A rclcpp::Time object with the same value as in
-template<>
-inline
-rclcpp::Time Convert(const gazebo::common::Time & in)
-{
+template <>
+inline rclcpp::Time Convert(const gazebo::common::Time &in) {
   return rclcpp::Time(in.sec, in.nsec, rcl_clock_type_t::RCL_ROS_TIME);
 }
 
@@ -88,10 +77,8 @@ rclcpp::Time Convert(const gazebo::common::Time & in)
 /// \param[in] in Input time
 /// \return Conversion result
 /// \tparam T Output type
-template<class T>
-inline
-T Convert(const gazebo::msgs::Time &)
-{
+template <class T>
+inline T Convert(const gazebo::msgs::Time &) {
   T::ConversionNotImplemented;
 }
 

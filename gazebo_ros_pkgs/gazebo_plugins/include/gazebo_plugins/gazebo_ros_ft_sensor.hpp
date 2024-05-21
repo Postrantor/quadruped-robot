@@ -19,8 +19,7 @@
 
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 class GazeboRosFTSensorPrivate;
 
 /// This is a controller that simulates a 6 dof force and torque sensor on link or joint.
@@ -62,8 +61,7 @@ class GazeboRosFTSensorPrivate;
     </plugin>
   \endcode
 */
-class GazeboRosFTSensor : public gazebo::ModelPlugin
-{
+class GazeboRosFTSensor : public gazebo::ModelPlugin {
 public:
   /// Constructor
   GazeboRosFTSensor();

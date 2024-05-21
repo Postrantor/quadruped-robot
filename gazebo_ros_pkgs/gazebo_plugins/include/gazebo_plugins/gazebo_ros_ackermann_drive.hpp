@@ -19,8 +19,7 @@
 
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 class GazeboRosAckermannDrivePrivate;
 
 /// A ackermann drive plugin for car like robots. Subscribes to geometry_msgs/twist
@@ -80,8 +79,7 @@ class GazeboRosAckermannDrivePrivate;
     </plugin>
   \endcode
 */
-class GazeboRosAckermannDrive : public gazebo::ModelPlugin
-{
+class GazeboRosAckermannDrive : public gazebo::ModelPlugin {
 public:
   /// Constructor
   GazeboRosAckermannDrive();

@@ -19,8 +19,7 @@
 
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 class GazeboRosJointPoseTrajectoryPrivate;
 
 /// Set the trajectory of points to be followed by joints in simulation.
@@ -47,8 +46,7 @@ class GazeboRosJointPoseTrajectoryPrivate;
     </plugin>
   \endcode
 */
-class GazeboRosJointPoseTrajectory : public gazebo::ModelPlugin
-{
+class GazeboRosJointPoseTrajectory : public gazebo::ModelPlugin {
 public:
   /// Constructor
   GazeboRosJointPoseTrajectory();

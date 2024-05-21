@@ -22,24 +22,21 @@
 #include <string>
 #include <vector>
 
-namespace gazebo_ros
-{
+namespace gazebo_ros {
 
 std::weak_ptr<Executor> Node::static_executor_;
 std::weak_ptr<Node> Node::static_node_;
 std::mutex Node::lock_;
 ExistingNodes Node::static_existing_nodes_;
 
-Node::~Node()
-{
+Node::~Node() {
   executor_->remove_node(get_node_base_interface());
 
   // remove node object from global map
   static_existing_nodes_.remove_node(this->get_fully_qualified_name());
 }
 
-Node::SharedPtr Node::Get(sdf::ElementPtr sdf, std::string node_name)
-{
+Node::SharedPtr Node::Get(sdf::ElementPtr sdf, std::string node_name) {
   // Initialize arguments
   std::string name = "";
   std::string ns = "/";
@@ -118,13 +115,14 @@ Node::SharedPtr Node::Get(sdf::ElementPtr sdf, std::string node_name)
   // check if node with the same name exists already
   if (static_existing_nodes_.check_node(full_name)) {
     RCLCPP_ERROR(
-      internal_logger(),
-      "Found multiple nodes with same name: %s. This might be due to multiple plugins using the "
-      "same name. Try changing one of the the plugin names or use a different ROS namespace. "
-      "This error might also result from a custom plugin inheriting from another gazebo_ros plugin "
-      "and the custom plugin trying to access the ROS node object hence creating multiple nodes "
-      "with same name. To solve this try providing the optional node_name argument in "
-      "gazebo_ros::Node::Get() function. ", full_name.c_str());
+        internal_logger(),
+        "Found multiple nodes with same name: %s. This might be due to multiple plugins using the "
+        "same name. Try changing one of the the plugin names or use a different ROS namespace. "
+        "This error might also result from a custom plugin inheriting from another gazebo_ros plugin "
+        "and the custom plugin trying to access the ROS node object hence creating multiple nodes "
+        "with same name. To solve this try providing the optional node_name argument in "
+        "gazebo_ros::Node::Get() function. ",
+        full_name.c_str());
     return nullptr;
   }
 
@@ -144,8 +142,7 @@ Node::SharedPtr Node::Get(sdf::ElementPtr sdf, std::string node_name)
   return node;
 }
 
-Node::SharedPtr Node::Get()
-{
+Node::SharedPtr Node::Get() {
   Node::SharedPtr node = static_node_.lock();
 
   if (!node) {
@@ -158,18 +155,15 @@ Node::SharedPtr Node::Get()
   return node;
 }
 
-rclcpp::Parameter Node::sdf_to_ros_parameter(sdf::ElementPtr const & sdf)
-{
+rclcpp::Parameter Node::sdf_to_ros_parameter(sdf::ElementPtr const& sdf) {
   if (!sdf->HasAttribute("name")) {
     RCLCPP_WARN(
-      internal_logger(),
-      "Ignoring parameter because it has no attribute 'name'. Tag: %s", sdf->ToString("").c_str());
+        internal_logger(), "Ignoring parameter because it has no attribute 'name'. Tag: %s", sdf->ToString("").c_str());
     return rclcpp::Parameter();
   }
   if (!sdf->HasAttribute("type")) {
     RCLCPP_WARN(
-      internal_logger(),
-      "Ignoring parameter because it has no attribute 'type'. Tag: %s", sdf->ToString("").c_str());
+        internal_logger(), "Ignoring parameter because it has no attribute 'type'. Tag: %s", sdf->ToString("").c_str());
     return rclcpp::Parameter();
   }
 
@@ -186,31 +180,25 @@ rclcpp::Parameter Node::sdf_to_ros_parameter(sdf::ElementPtr const & sdf)
     return rclcpp::Parameter(name, sdf->Get<std::string>());
   } else {
     RCLCPP_WARN(
-      internal_logger(),
-      "Ignoring parameter because attribute 'type' is invalid. Tag: %s", sdf->ToString("").c_str());
+        internal_logger(), "Ignoring parameter because attribute 'type' is invalid. Tag: %s",
+        sdf->ToString("").c_str());
     return rclcpp::Parameter();
   }
 }
 
-rclcpp::Logger Node::internal_logger()
-{
-  return rclcpp::get_logger("gazebo_ros_node");
-}
+rclcpp::Logger Node::internal_logger() { return rclcpp::get_logger("gazebo_ros_node"); }
 
-void ExistingNodes::add_node(const std::string & node_name)
-{
+void ExistingNodes::add_node(const std::string& node_name) {
   std::lock_guard<std::mutex> guard(this->internal_mutex_);
   this->set_.insert(node_name);
 }
 
-void ExistingNodes::remove_node(const std::string & node_name)
-{
+void ExistingNodes::remove_node(const std::string& node_name) {
   std::lock_guard<std::mutex> guard(this->internal_mutex_);
   this->set_.erase(node_name);
 }
 
-bool ExistingNodes::check_node(const std::string & node_name)
-{
+bool ExistingNodes::check_node(const std::string& node_name) {
   std::lock_guard<std::mutex> guard(this->internal_mutex_);
   return this->set_.find(node_name) != this->set_.end();
 }

@@ -1,24 +1,21 @@
 <?xml version="1.0"?>
 <!--
   Gazebo ROS differential drive plugin demo
-
   Try sending commands:
-
+    ```
     ros2 topic pub /demo/cmd_demo geometry_msgs/Twist '{linear: {x: 1.0}}' -1
-
     ros2 topic pub /demo/cmd_demo geometry_msgs/Twist '{angular: {z: 0.1}}' -1
-
+    ```
   Try listening to odometry:
-
+    ```
     ros2 topic echo /demo/odom_demo
-
+    ```
   Try listening to TF:
-
+    ```
     ros2 run tf2_ros tf2_echo odom_demo chassis
-
     ros2 run tf2_ros tf2_echo chassis right_wheel
-
     ros2 run tf2_ros tf2_echo chassis left_wheel
+    ```
 -->
 <sdf version="1.6">
   <world name="default">
@@ -33,7 +30,6 @@
 
     <model name='vehicle'>
       <pose>0 0 0.325 0 -0 0</pose>
-
       <link name='chassis'>
         <pose>-0.151427 -0 0.175 0 -0 0</pose>
         <inertial>
@@ -220,7 +216,6 @@
       </joint>
 
       <plugin name='diff_drive' filename='libgazebo_ros_diff_drive.so'>
-
         <ros>
           <namespace>/demo</namespace>
           <remapping>cmd_vel:=cmd_demo</remapping>
@@ -246,10 +241,7 @@
 
         <odometry_frame>odom_demo</odometry_frame>
         <robot_base_frame>chassis</robot_base_frame>
-
       </plugin>
-
     </model>
-
   </world>
 </sdf>

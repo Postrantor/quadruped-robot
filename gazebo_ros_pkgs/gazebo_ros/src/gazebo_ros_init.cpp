@@ -34,62 +34,50 @@
 #include <string>
 
 #ifndef GAZEBO_ROS_HAS_PERFORMANCE_METRICS
-#if \
-  (GAZEBO_MAJOR_VERSION == 11 && GAZEBO_MINOR_VERSION > 1) || \
-  (GAZEBO_MAJOR_VERSION == 9 && GAZEBO_MINOR_VERSION > 14)
+#if (GAZEBO_MAJOR_VERSION == 11 && GAZEBO_MINOR_VERSION > 1) || (GAZEBO_MAJOR_VERSION == 9 && GAZEBO_MINOR_VERSION > 14)
 #define GAZEBO_ROS_HAS_PERFORMANCE_METRICS
 #endif
 #endif  // ifndef GAZEBO_ROS_HAS_PERFORMANCE_METRICS
 
-namespace gazebo_ros
-{
+namespace gazebo_ros {
 
-class GazeboRosInitPrivate
-{
+class GazeboRosInitPrivate {
 public:
   /// Constructor
   GazeboRosInitPrivate();
 
   /// Callback when a world is created.
   /// \param[in] _world_name The world's name
-  void OnWorldCreated(const std::string & _world_name);
+  void OnWorldCreated(const std::string& _world_name);
 
   /// Publish simulation time.
   /// \param[in] _info World update information.
-  void PublishSimTime(const gazebo::common::UpdateInfo & _info);
+  void PublishSimTime(const gazebo::common::UpdateInfo& _info);
 
   /// Callback from ROS service to reset simulation.
   /// \param[in] req Empty request
   /// \param[out] res Empty response
-  void OnResetSimulation(
-    std_srvs::srv::Empty::Request::SharedPtr req,
-    std_srvs::srv::Empty::Response::SharedPtr res);
+  void OnResetSimulation(std_srvs::srv::Empty::Request::SharedPtr req, std_srvs::srv::Empty::Response::SharedPtr res);
 
   /// Callback from ROS service to reset world.
   /// \param[in] req Empty request
   /// \param[out] res Empty response
-  void OnResetWorld(
-    std_srvs::srv::Empty::Request::SharedPtr req,
-    std_srvs::srv::Empty::Response::SharedPtr res);
+  void OnResetWorld(std_srvs::srv::Empty::Request::SharedPtr req, std_srvs::srv::Empty::Response::SharedPtr res);
 
   /// Callback from ROS service to pause physics.
   /// \param[in] req Empty request
   /// \param[out] res Empty response
-  void OnPause(
-    std_srvs::srv::Empty::Request::SharedPtr req,
-    std_srvs::srv::Empty::Response::SharedPtr res);
+  void OnPause(std_srvs::srv::Empty::Request::SharedPtr req, std_srvs::srv::Empty::Response::SharedPtr res);
 
   /// Callback from ROS service to unpause (play) physics.
   /// \param[in] req Empty request
   /// \param[out] res Empty response
-  void OnUnpause(
-    std_srvs::srv::Empty::Request::SharedPtr req,
-    std_srvs::srv::Empty::Response::SharedPtr res);
+  void OnUnpause(std_srvs::srv::Empty::Request::SharedPtr req, std_srvs::srv::Empty::Response::SharedPtr res);
 
 #ifdef GAZEBO_ROS_HAS_PERFORMANCE_METRICS
   /// \brief Subscriber callback for performance metrics. This will be send in the ROS network
   /// \param[in] msg Received PerformanceMetrics message
-  void onPerformanceMetrics(ConstPerformanceMetricsPtr & msg);
+  void onPerformanceMetrics(ConstPerformanceMetricsPtr& msg);
 #endif
 
   /// \brief Keep a pointer to the world.
@@ -135,17 +123,11 @@ public:
   static constexpr double DEFAULT_PUBLISH_FREQUENCY = 10.;
 };
 
-GazeboRosInit::GazeboRosInit()
-: impl_(std::make_unique<GazeboRosInitPrivate>())
-{
-}
+GazeboRosInit::GazeboRosInit() : impl_(std::make_unique<GazeboRosInitPrivate>()) {}
 
-GazeboRosInit::~GazeboRosInit()
-{
-}
+GazeboRosInit::~GazeboRosInit() {}
 
-void GazeboRosInit::Load(int argc, char ** argv)
-{
+void GazeboRosInit::Load(int argc, char** argv) {
   // Initialize ROS with arguments
   if (!rclcpp::ok()) {
     rclcpp::init(argc, argv);
@@ -153,48 +135,41 @@ void GazeboRosInit::Load(int argc, char ** argv)
   } else {
     impl_->ros_node_ = gazebo_ros::Node::Get();
     RCLCPP_WARN(
-      impl_->ros_node_->get_logger(),
-      "gazebo_ros_init didn't initialize ROS "
-      "because it's already initialized with other arguments");
+        impl_->ros_node_->get_logger(),
+        "gazebo_ros_init didn't initialize ROS "
+        "because it's already initialized with other arguments");
   }
 
   // Offer transient local durability on the clock topic so that if publishing is infrequent (e.g.
   // the simulation is paused), late subscribers can receive the previously published message(s).
-  impl_->clock_pub_ = impl_->ros_node_->create_publisher<rosgraph_msgs::msg::Clock>(
-    "/clock",
-    rclcpp::ClockQoS());
+  impl_->clock_pub_ = impl_->ros_node_->create_publisher<rosgraph_msgs::msg::Clock>("/clock", rclcpp::ClockQoS());
 
 #ifdef GAZEBO_ROS_HAS_PERFORMANCE_METRICS
   impl_->performance_metrics_pub_ =
-    impl_->ros_node_->create_publisher<gazebo_msgs::msg::PerformanceMetrics>(
-    "performance_metrics", 10);
+      impl_->ros_node_->create_publisher<gazebo_msgs::msg::PerformanceMetrics>("performance_metrics", 10);
 #endif
 
   // Publish rate parameter
   auto rate_param = impl_->ros_node_->declare_parameter(
-    "publish_rate",
-    rclcpp::ParameterValue(GazeboRosInitPrivate::DEFAULT_PUBLISH_FREQUENCY));
+      "publish_rate", rclcpp::ParameterValue(GazeboRosInitPrivate::DEFAULT_PUBLISH_FREQUENCY));
   impl_->throttler_ = Throttler(rate_param.get<double>());
 
   // PerformanceMetrics parameter
   auto description_msg = rcl_interfaces::msg::ParameterDescriptor();
-  description_msg.description =
-    "If set to true, performance metrics are published to the topic /performance_metrics";
+  description_msg.description = "If set to true, performance metrics are published to the topic /performance_metrics";
 
   impl_->ros_node_->declare_parameter<bool>("enable_performance_metrics", true, description_msg);
 
   impl_->world_update_event_ = gazebo::event::Events::ConnectWorldUpdateBegin(
-    std::bind(&GazeboRosInitPrivate::PublishSimTime, impl_.get(), std::placeholders::_1));
+      std::bind(&GazeboRosInitPrivate::PublishSimTime, impl_.get(), std::placeholders::_1));
 
   // Get a callback when a world is created
   impl_->world_created_event_ = gazebo::event::Events::ConnectWorldCreated(
-    std::bind(&GazeboRosInitPrivate::OnWorldCreated, impl_.get(), std::placeholders::_1));
+      std::bind(&GazeboRosInitPrivate::OnWorldCreated, impl_.get(), std::placeholders::_1));
 }
 
 #ifdef GAZEBO_ROS_HAS_PERFORMANCE_METRICS
-void GazeboRosInitPrivate::onPerformanceMetrics(
-  ConstPerformanceMetricsPtr & msg)
-{
+void GazeboRosInitPrivate::onPerformanceMetrics(ConstPerformanceMetricsPtr& msg) {
   // Check if performance metrics parameter was enabled
   bool check_enable_performance_metrics;
   this->ros_node_->get_parameter("enable_performance_metrics", check_enable_performance_metrics);
@@ -223,8 +198,7 @@ void GazeboRosInitPrivate::onPerformanceMetrics(
 }
 #endif
 
-void GazeboRosInitPrivate::OnWorldCreated(const std::string & _world_name)
-{
+void GazeboRosInitPrivate::OnWorldCreated(const std::string& _world_name) {
   // Only support one world
   world_created_event_.reset();
 
@@ -232,29 +206,20 @@ void GazeboRosInitPrivate::OnWorldCreated(const std::string & _world_name)
 
   // Reset services
   reset_simulation_service_ = ros_node_->create_service<std_srvs::srv::Empty>(
-    "reset_simulation",
-    std::bind(
-      &GazeboRosInitPrivate::OnResetSimulation, this,
-      std::placeholders::_1, std::placeholders::_2));
+      "reset_simulation",
+      std::bind(&GazeboRosInitPrivate::OnResetSimulation, this, std::placeholders::_1, std::placeholders::_2));
 
   reset_world_service_ = ros_node_->create_service<std_srvs::srv::Empty>(
-    "reset_world",
-    std::bind(
-      &GazeboRosInitPrivate::OnResetWorld, this,
-      std::placeholders::_1, std::placeholders::_2));
+      "reset_world",
+      std::bind(&GazeboRosInitPrivate::OnResetWorld, this, std::placeholders::_1, std::placeholders::_2));
 
   // Pause services
   pause_service_ = ros_node_->create_service<std_srvs::srv::Empty>(
-    "pause_physics",
-    std::bind(
-      &GazeboRosInitPrivate::OnPause, this,
-      std::placeholders::_1, std::placeholders::_2));
+      "pause_physics", std::bind(&GazeboRosInitPrivate::OnPause, this, std::placeholders::_1, std::placeholders::_2));
 
   unpause_service_ = ros_node_->create_service<std_srvs::srv::Empty>(
-    "unpause_physics",
-    std::bind(
-      &GazeboRosInitPrivate::OnUnpause, this,
-      std::placeholders::_1, std::placeholders::_2));
+      "unpause_physics",
+      std::bind(&GazeboRosInitPrivate::OnUnpause, this, std::placeholders::_1, std::placeholders::_2));
 
 #ifdef GAZEBO_ROS_HAS_PERFORMANCE_METRICS
   // Initialize gazebo transport node
@@ -263,13 +228,9 @@ void GazeboRosInitPrivate::OnWorldCreated(const std::string & _world_name)
 #endif
 }
 
-GazeboRosInitPrivate::GazeboRosInitPrivate()
-: throttler_(DEFAULT_PUBLISH_FREQUENCY)
-{
-}
+GazeboRosInitPrivate::GazeboRosInitPrivate() : throttler_(DEFAULT_PUBLISH_FREQUENCY) {}
 
-void GazeboRosInitPrivate::PublishSimTime(const gazebo::common::UpdateInfo & _info)
-{
+void GazeboRosInitPrivate::PublishSimTime(const gazebo::common::UpdateInfo& _info) {
   if (!throttler_.IsReady(_info.simTime)) {
     return;
   }
@@ -281,9 +242,8 @@ void GazeboRosInitPrivate::PublishSimTime(const gazebo::common::UpdateInfo & _in
 #ifdef GAZEBO_ROS_HAS_PERFORMANCE_METRICS
   if (!performance_metric_sub_ && performance_metrics_pub_->get_subscription_count() > 0) {
     // Subscribe to gazebo performance_metrics topic if there are ros subscribers
-    performance_metric_sub_ = gz_node_->Subscribe(
-      "/gazebo/performance_metrics",
-      &GazeboRosInitPrivate::onPerformanceMetrics, this);
+    performance_metric_sub_ =
+        gz_node_->Subscribe("/gazebo/performance_metrics", &GazeboRosInitPrivate::onPerformanceMetrics, this);
   } else if (performance_metric_sub_ && performance_metrics_pub_->get_subscription_count() == 0) {
     // Unsubscribe from gazebo performance_metrics topic if there are no more ros subscribers
     performance_metric_sub_.reset();
@@ -292,30 +252,22 @@ void GazeboRosInitPrivate::PublishSimTime(const gazebo::common::UpdateInfo & _in
 }
 
 void GazeboRosInitPrivate::OnResetSimulation(
-  std_srvs::srv::Empty::Request::SharedPtr,
-  std_srvs::srv::Empty::Response::SharedPtr)
-{
+    std_srvs::srv::Empty::Request::SharedPtr, std_srvs::srv::Empty::Response::SharedPtr) {
   world_->Reset();
 }
 
 void GazeboRosInitPrivate::OnResetWorld(
-  std_srvs::srv::Empty::Request::SharedPtr,
-  std_srvs::srv::Empty::Response::SharedPtr)
-{
+    std_srvs::srv::Empty::Request::SharedPtr, std_srvs::srv::Empty::Response::SharedPtr) {
   world_->ResetEntities(gazebo::physics::Base::MODEL);
 }
 
 void GazeboRosInitPrivate::OnPause(
-  std_srvs::srv::Empty::Request::SharedPtr,
-  std_srvs::srv::Empty::Response::SharedPtr)
-{
+    std_srvs::srv::Empty::Request::SharedPtr, std_srvs::srv::Empty::Response::SharedPtr) {
   world_->SetPaused(true);
 }
 
 void GazeboRosInitPrivate::OnUnpause(
-  std_srvs::srv::Empty::Request::SharedPtr,
-  std_srvs::srv::Empty::Response::SharedPtr)
-{
+    std_srvs::srv::Empty::Request::SharedPtr, std_srvs::srv::Empty::Response::SharedPtr) {
   world_->SetPaused(false);
 }
 

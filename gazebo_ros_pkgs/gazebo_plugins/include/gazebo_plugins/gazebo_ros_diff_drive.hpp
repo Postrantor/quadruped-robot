@@ -37,8 +37,7 @@
 
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 class GazeboRosDiffDrivePrivate;
 
 /// A differential drive plugin for gazebo. Based on the diffdrive plugin
@@ -54,12 +53,9 @@ class GazeboRosDiffDrivePrivate;
   Example Usage:
   \code{.xml}
     <plugin name="gazebo_ros_diff_drive" filename="libgazebo_ros_diff_drive.so">
-
       <ros>
-
         <!-- Add a namespace -->
         <namespace>/test</namespace>
-
       </ros>
 
       <!-- Update rate in Hz -->
@@ -88,12 +84,10 @@ class GazeboRosDiffDrivePrivate;
       <odometry_topic>odom</odometry_topic>
       <odometry_frame>odom</odometry_frame>
       <robot_base_frame>chassis</robot_base_frame>
-
     </plugin>
   \endcode
 */
-class GazeboRosDiffDrive : public gazebo::ModelPlugin
-{
+class GazeboRosDiffDrive : public gazebo::ModelPlugin {
 public:
   /// Constructor
   GazeboRosDiffDrive();

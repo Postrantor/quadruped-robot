@@ -81,4 +81,5 @@ https://control.ros.org/humble/doc/gz_ros2_control/doc/index.html#add-ros2-contr
 >
 > - `. /usr/share/gazebo/setup.sh`
 > - `ros2 run gazebo_ros spawn_entity.py -topic robot_description -entity diffbot`
+> - `ros2 launch gazebo_ros2_control_demos diff_drive.launch.py`
 > - `ros2 run gazebo_ros2_control_demos example_diff_drive`

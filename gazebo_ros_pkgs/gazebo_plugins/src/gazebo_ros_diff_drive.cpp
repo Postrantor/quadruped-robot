@@ -60,7 +60,6 @@ public:
   enum OdomSource {
     /// Use an ancoder
     ENCODER = 0,
-
     /// Use ground truth from simulation world
     WORLD = 1,
   };
@@ -69,7 +68,6 @@ public:
   enum {
     /// Right wheel
     RIGHT = 0,
-
     /// Left wheel
     LEFT = 1,
   };

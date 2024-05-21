@@ -19,8 +19,7 @@
 
 #include <memory>
 
-namespace gazebo_ros
-{
+namespace gazebo_ros {
 
 class GazeboRosForceSystemPrivate;
 
@@ -41,8 +40,7 @@ class GazeboRosForceSystemPrivate;
 ///
 ///      clear_joint_efforts (gazebo_msgs::srv::JointRequest)
 ///          Clear efforts on gazebo joints.
-class GazeboRosForceSystem : public gazebo::SystemPlugin
-{
+class GazeboRosForceSystem : public gazebo::SystemPlugin {
 public:
   /// Constructor
   GazeboRosForceSystem();
@@ -51,7 +49,7 @@ public:
   virtual ~GazeboRosForceSystem();
 
   // Documentation inherited
-  void Load(int argc, char ** argv) override;
+  void Load(int argc, char** argv) override;
 
 private:
   std::unique_ptr<GazeboRosForceSystemPrivate> impl_;

@@ -27,8 +27,8 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     gazebo = IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/gazebo.launch.py']),
-             )
+        PythonLaunchDescriptionSource([ThisLaunchFileDir(), '/gazebo.launch.py']),
+    )
 
     # GAZEBO_MODEL_PATH has to be correctly set for Gazebo to be able to find the model
     spawn_entity = Node(package='gazebo_ros', executable='spawn_entity.py',

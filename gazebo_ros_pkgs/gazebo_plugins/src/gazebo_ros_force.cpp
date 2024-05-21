@@ -27,10 +27,8 @@
 #include <memory>
 #include <string>
 
-namespace gazebo_plugins
-{
-class GazeboRosForcePrivate
-{
+namespace gazebo_plugins {
+class GazeboRosForcePrivate {
 public:
   /// A pointer to the Link, where force is applied
   gazebo::physics::LinkPtr link_;
@@ -51,17 +49,11 @@ public:
   bool force_on_world_frame_;
 };
 
-GazeboRosForce::GazeboRosForce()
-: impl_(std::make_unique<GazeboRosForcePrivate>())
-{
-}
+GazeboRosForce::GazeboRosForce() : impl_(std::make_unique<GazeboRosForcePrivate>()) {}
 
-GazeboRosForce::~GazeboRosForce()
-{
-}
+GazeboRosForce::~GazeboRosForce() {}
 
-void GazeboRosForce::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf)
-{
+void GazeboRosForce::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf) {
   auto logger = rclcpp::get_logger("gazebo_ros_force");
 
   // Target link
@@ -81,8 +73,9 @@ void GazeboRosForce::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf)
   // Force frame
   if (!sdf->HasElement("force_frame")) {
     RCLCPP_INFO(
-      logger, "Force plugin missing <force_frame> wasn't set,"
-      "therefore it's been set as 'world'. The other option is 'link'.");
+        logger,
+        "Force plugin missing <force_frame> wasn't set,"
+        "therefore it's been set as 'world'. The other option is 'link'.");
     impl_->force_on_world_frame_ = true;
   } else {
     auto force_frame = sdf->GetElement("force_frame")->Get<std::string>();
@@ -100,19 +93,18 @@ void GazeboRosForce::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf)
   impl_->ros_node_ = gazebo_ros::Node::Get(sdf);
 
   // Get QoS profiles
-  const gazebo_ros::QoS & qos = impl_->ros_node_->get_qos();
+  const gazebo_ros::QoS& qos = impl_->ros_node_->get_qos();
 
   impl_->wrench_sub_ = impl_->ros_node_->create_subscription<geometry_msgs::msg::Wrench>(
-    "gazebo_ros_force", qos.get_subscription_qos("gazebo_ros_force", rclcpp::SystemDefaultsQoS()),
-    std::bind(&GazeboRosForce::OnRosWrenchMsg, this, std::placeholders::_1));
+      "gazebo_ros_force", qos.get_subscription_qos("gazebo_ros_force", rclcpp::SystemDefaultsQoS()),
+      std::bind(&GazeboRosForce::OnRosWrenchMsg, this, std::placeholders::_1));
 
   // Callback on every iteration
-  impl_->update_connection_ = gazebo::event::Events::ConnectWorldUpdateBegin(
-    std::bind(&GazeboRosForce::OnUpdate, this));
+  impl_->update_connection_ =
+      gazebo::event::Events::ConnectWorldUpdateBegin(std::bind(&GazeboRosForce::OnUpdate, this));
 }
 
-void GazeboRosForce::OnRosWrenchMsg(const geometry_msgs::msg::Wrench::SharedPtr msg)
-{
+void GazeboRosForce::OnRosWrenchMsg(const geometry_msgs::msg::Wrench::SharedPtr msg) {
   impl_->wrench_msg_.force.x = msg->force.x;
   impl_->wrench_msg_.force.y = msg->force.y;
   impl_->wrench_msg_.force.z = msg->force.z;
@@ -121,22 +113,17 @@ void GazeboRosForce::OnRosWrenchMsg(const geometry_msgs::msg::Wrench::SharedPtr 
   impl_->wrench_msg_.torque.z = msg->torque.z;
 }
 
-void GazeboRosForce::OnUpdate()
-{
+void GazeboRosForce::OnUpdate() {
 #ifdef IGN_PROFILER_ENABLE
   IGN_PROFILE("GazeboRosForce::OnUpdate");
   IGN_PROFILE_BEGIN("Aplly forces");
 #endif
   if (impl_->force_on_world_frame_) {
-    impl_->link_->AddForce(
-      gazebo_ros::Convert<ignition::math::Vector3d>(impl_->wrench_msg_.force));
-    impl_->link_->AddTorque(
-      gazebo_ros::Convert<ignition::math::Vector3d>(impl_->wrench_msg_.torque));
+    impl_->link_->AddForce(gazebo_ros::Convert<ignition::math::Vector3d>(impl_->wrench_msg_.force));
+    impl_->link_->AddTorque(gazebo_ros::Convert<ignition::math::Vector3d>(impl_->wrench_msg_.torque));
   } else {
-    impl_->link_->AddRelativeForce(
-      gazebo_ros::Convert<ignition::math::Vector3d>(impl_->wrench_msg_.force));
-    impl_->link_->AddRelativeTorque(
-      gazebo_ros::Convert<ignition::math::Vector3d>(impl_->wrench_msg_.torque));
+    impl_->link_->AddRelativeForce(gazebo_ros::Convert<ignition::math::Vector3d>(impl_->wrench_msg_.force));
+    impl_->link_->AddRelativeTorque(gazebo_ros::Convert<ignition::math::Vector3d>(impl_->wrench_msg_.torque));
   }
 #ifdef IGN_PROFILER_ENABLE
   IGN_PROFILE_END();

@@ -40,11 +40,11 @@ def generate_launch_description():
     model, plugin, media = GazeboRosPaths.get_paths()
 
     if 'GAZEBO_MODEL_PATH' in environ:
-        model += pathsep+environ['GAZEBO_MODEL_PATH']
+        model += pathsep + environ['GAZEBO_MODEL_PATH']
     if 'GAZEBO_PLUGIN_PATH' in environ:
-        plugin += pathsep+environ['GAZEBO_PLUGIN_PATH']
+        plugin += pathsep + environ['GAZEBO_PLUGIN_PATH']
     if 'GAZEBO_RESOURCE_PATH' in environ:
-        media += pathsep+environ['GAZEBO_RESOURCE_PATH']
+        media += pathsep + environ['GAZEBO_RESOURCE_PATH']
 
     env = {
         'GAZEBO_MODEL_PATH': model,

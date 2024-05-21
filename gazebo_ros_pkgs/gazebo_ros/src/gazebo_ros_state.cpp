@@ -30,29 +30,27 @@
 #include "gazebo_ros/conversions/geometry_msgs.hpp"
 #include "gazebo_ros/gazebo_ros_state.hpp"
 
-namespace gazebo_ros
-{
+namespace gazebo_ros {
 
-class GazeboRosStatePrivate
-{
+class GazeboRosStatePrivate {
 public:
   /// Callback when world is updated.
   /// \param[in] _info Updated simulation info.
-  void OnUpdate(const gazebo::common::UpdateInfo & _info);
+  void OnUpdate(const gazebo::common::UpdateInfo& _info);
 
   /// \brief Callback for get entity state service.
   /// \param[in] req Request
   /// \param[out] res Response
   void GetEntityState(
-    gazebo_msgs::srv::GetEntityState::Request::SharedPtr _req,
-    gazebo_msgs::srv::GetEntityState::Response::SharedPtr _res);
+      gazebo_msgs::srv::GetEntityState::Request::SharedPtr _req,
+      gazebo_msgs::srv::GetEntityState::Response::SharedPtr _res);
 
   /// \brief Callback for set entity state service.
   /// \param[in] req Request
   /// \param[out] res Response
   void SetEntityState(
-    gazebo_msgs::srv::SetEntityState::Request::SharedPtr _req,
-    gazebo_msgs::srv::SetEntityState::Response::SharedPtr _res);
+      gazebo_msgs::srv::SetEntityState::Request::SharedPtr _req,
+      gazebo_msgs::srv::SetEntityState::Response::SharedPtr _res);
 
   /// \brief World pointer from Gazebo.
   gazebo::physics::WorldPtr world_;
@@ -82,50 +80,40 @@ public:
   gazebo::common::Time last_update_time_;
 };
 
-GazeboRosState::GazeboRosState()
-: impl_(std::make_unique<GazeboRosStatePrivate>())
-{
-}
+GazeboRosState::GazeboRosState() : impl_(std::make_unique<GazeboRosStatePrivate>()) {}
 
-GazeboRosState::~GazeboRosState()
-{
-}
+GazeboRosState::~GazeboRosState() {}
 
-void GazeboRosState::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf)
-{
+void GazeboRosState::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf) {
   impl_->world_ = _world;
 
   impl_->ros_node_ = gazebo_ros::Node::Get(_sdf);
 
-  impl_->get_entity_state_service_ =
-    impl_->ros_node_->create_service<gazebo_msgs::srv::GetEntityState>(
-    "get_entity_state", std::bind(
-      &GazeboRosStatePrivate::GetEntityState, impl_.get(),
-      std::placeholders::_1, std::placeholders::_2));
+  impl_->get_entity_state_service_ = impl_->ros_node_->create_service<gazebo_msgs::srv::GetEntityState>(
+      "get_entity_state",
+      std::bind(&GazeboRosStatePrivate::GetEntityState, impl_.get(), std::placeholders::_1, std::placeholders::_2));
 
-  impl_->set_entity_state_service_ =
-    impl_->ros_node_->create_service<gazebo_msgs::srv::SetEntityState>(
-    "set_entity_state", std::bind(
-      &GazeboRosStatePrivate::SetEntityState, impl_.get(),
-      std::placeholders::_1, std::placeholders::_2));
+  impl_->set_entity_state_service_ = impl_->ros_node_->create_service<gazebo_msgs::srv::SetEntityState>(
+      "set_entity_state",
+      std::bind(&GazeboRosStatePrivate::SetEntityState, impl_.get(), std::placeholders::_1, std::placeholders::_2));
 
   impl_->model_states_pub_ = impl_->ros_node_->create_publisher<gazebo_msgs::msg::ModelStates>(
-    "model_states", rclcpp::QoS(rclcpp::KeepLast(1)));
+      "model_states", rclcpp::QoS(rclcpp::KeepLast(1)));
 
   RCLCPP_INFO(
-    impl_->ros_node_->get_logger(), "Publishing states of gazebo models at [%s]",
-    impl_->model_states_pub_->get_topic_name());
+      impl_->ros_node_->get_logger(), "Publishing states of gazebo models at [%s]",
+      impl_->model_states_pub_->get_topic_name());
 
-  impl_->link_states_pub_ = impl_->ros_node_->create_publisher<gazebo_msgs::msg::LinkStates>(
-    "link_states", rclcpp::QoS(rclcpp::KeepLast(1)));
+  impl_->link_states_pub_ =
+      impl_->ros_node_->create_publisher<gazebo_msgs::msg::LinkStates>("link_states", rclcpp::QoS(rclcpp::KeepLast(1)));
 
   RCLCPP_INFO(
-    impl_->ros_node_->get_logger(), "Publishing states of gazebo links at [%s]",
-    impl_->link_states_pub_->get_topic_name());
+      impl_->ros_node_->get_logger(), "Publishing states of gazebo links at [%s]",
+      impl_->link_states_pub_->get_topic_name());
 
   // Get a callback when world is updated
   impl_->world_update_event_ = gazebo::event::Events::ConnectWorldUpdateBegin(
-    std::bind(&GazeboRosStatePrivate::OnUpdate, impl_.get(), std::placeholders::_1));
+      std::bind(&GazeboRosStatePrivate::OnUpdate, impl_.get(), std::placeholders::_1));
 
   // Update rate
   auto update_rate = _sdf->Get<double>("update_rate", 100.0).first;
@@ -137,8 +125,7 @@ void GazeboRosState::Load(gazebo::physics::WorldPtr _world, sdf::ElementPtr _sdf
   impl_->last_update_time_ = _world->SimTime();
 }
 
-void GazeboRosStatePrivate::OnUpdate(const gazebo::common::UpdateInfo & _info)
-{
+void GazeboRosStatePrivate::OnUpdate(const gazebo::common::UpdateInfo& _info) {
   double seconds_since_last_update = (_info.simTime - last_update_time_).Double();
 
   if (seconds_since_last_update < update_period_) {
@@ -149,7 +136,7 @@ void GazeboRosStatePrivate::OnUpdate(const gazebo::common::UpdateInfo & _info)
   gazebo_msgs::msg::LinkStates link_states;
 
   // fill model_states
-  for (const auto & model : world_->Models()) {
+  for (const auto& model : world_->Models()) {
     auto pose = gazebo_ros::Convert<geometry_msgs::msg::Pose>(model->WorldPose());
 
     model_states.pose.push_back(pose);
@@ -181,17 +168,14 @@ void GazeboRosStatePrivate::OnUpdate(const gazebo::common::UpdateInfo & _info)
 }
 
 void GazeboRosStatePrivate::GetEntityState(
-  gazebo_msgs::srv::GetEntityState::Request::SharedPtr _req,
-  gazebo_msgs::srv::GetEntityState::Response::SharedPtr _res)
-{
+    gazebo_msgs::srv::GetEntityState::Request::SharedPtr _req,
+    gazebo_msgs::srv::GetEntityState::Response::SharedPtr _res) {
   // Target entity
   auto entity = world_->EntityByName(_req->name);
   if (!entity) {
     _res->success = false;
 
-    RCLCPP_ERROR(
-      ros_node_->get_logger(),
-      "GetEntityState: entity [%s] does not exist", _req->name.c_str());
+    RCLCPP_ERROR(ros_node_->get_logger(), "GetEntityState: entity [%s] does not exist", _req->name.c_str());
     return;
   }
 
@@ -212,16 +196,14 @@ void GazeboRosStatePrivate::GetEntityState(
     entity_lin_vel = frame_pose.Rot().RotateVectorReverse(entity_lin_vel - frame_lin_vel);
     entity_ang_vel = frame_pose.Rot().RotateVectorReverse(entity_ang_vel - frame_ang_vel);
   } else if (_req->reference_frame == "" || _req->reference_frame == "world") {
-    RCLCPP_DEBUG(
-      ros_node_->get_logger(),
-      "GetEntityState: reference_frame is empty/world, using inertial frame");
+    RCLCPP_DEBUG(ros_node_->get_logger(), "GetEntityState: reference_frame is empty/world, using inertial frame");
   } else {
     _res->success = false;
 
     RCLCPP_ERROR(
-      ros_node_->get_logger(),
-      "GetEntityState: reference entity [%s] not found, did you forget to scope the entity name?",
-      _req->name.c_str());
+        ros_node_->get_logger(),
+        "GetEntityState: reference entity [%s] not found, did you forget to scope the entity name?",
+        _req->name.c_str());
     return;
   }
 
@@ -239,9 +221,8 @@ void GazeboRosStatePrivate::GetEntityState(
 }
 
 void GazeboRosStatePrivate::SetEntityState(
-  gazebo_msgs::srv::SetEntityState::Request::SharedPtr _req,
-  gazebo_msgs::srv::SetEntityState::Response::SharedPtr _res)
-{
+    gazebo_msgs::srv::SetEntityState::Request::SharedPtr _req,
+    gazebo_msgs::srv::SetEntityState::Response::SharedPtr _res) {
   auto entity_pos = Convert<ignition::math::Vector3d>(_req->state.pose.position);
   auto entity_rot = Convert<ignition::math::Quaterniond>(_req->state.pose.orientation);
 
@@ -257,9 +238,7 @@ void GazeboRosStatePrivate::SetEntityState(
   if (!entity) {
     _res->success = false;
 
-    RCLCPP_ERROR(
-      ros_node_->get_logger(),
-      "SetEntityState: entity [%s] does not exist", _req->state.name.c_str());
+    RCLCPP_ERROR(ros_node_->get_logger(), "SetEntityState: entity [%s] does not exist", _req->state.name.c_str());
     return;
   }
 
@@ -274,16 +253,14 @@ void GazeboRosStatePrivate::SetEntityState(
     entity_lin_vel = frame_pose.Rot().RotateVector(entity_lin_vel);
     entity_ang_vel = frame_pose.Rot().RotateVector(entity_ang_vel);
   } else if (_req->state.reference_frame == "" || _req->state.reference_frame == "world") {
-    RCLCPP_DEBUG(
-      ros_node_->get_logger(),
-      "SetEntityState: reference_frame is empty/world, using inertial frame");
+    RCLCPP_DEBUG(ros_node_->get_logger(), "SetEntityState: reference_frame is empty/world, using inertial frame");
   } else {
     _res->success = false;
 
     RCLCPP_ERROR(
-      ros_node_->get_logger(),
-      "GetEntityState: reference entity [%s] not found, did you forget to scope the entity name?",
-      _req->state.name.c_str());
+        ros_node_->get_logger(),
+        "GetEntityState: reference entity [%s] not found, did you forget to scope the entity name?",
+        _req->state.name.c_str());
     return;
   }
 

@@ -19,8 +19,7 @@
 
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 class GazeboRosVacuumGripperPrivate;
 
 /// Vacuum Gripper plugin for attracting entities around the model like vacuum
@@ -57,8 +56,7 @@ class GazeboRosVacuumGripperPrivate;
     </plugin>
   \endcode
 */
-class GazeboRosVacuumGripper : public gazebo::ModelPlugin
-{
+class GazeboRosVacuumGripper : public gazebo::ModelPlugin {
 public:
   /// Constructor
   GazeboRosVacuumGripper();

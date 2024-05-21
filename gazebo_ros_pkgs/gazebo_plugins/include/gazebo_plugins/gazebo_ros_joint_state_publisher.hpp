@@ -37,8 +37,7 @@
 
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 class GazeboRosJointStatePublisherPrivate;
 
 /// Publish the state of joints in simulation to a given ROS topic.
@@ -72,8 +71,7 @@ class GazeboRosJointStatePublisherPrivate;
     </plugin>
   \endcode
 */
-class GazeboRosJointStatePublisher : public gazebo::ModelPlugin
-{
+class GazeboRosJointStatePublisher : public gazebo::ModelPlugin {
 public:
   /// Constructor
   GazeboRosJointStatePublisher();

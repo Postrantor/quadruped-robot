@@ -37,8 +37,7 @@
 
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 class GazeboRosTricycleDrivePrivate;
 
 /// A tricycle drive plugin for gazebo.
@@ -83,8 +82,7 @@ class GazeboRosTricycleDrivePrivate;
   \endcode
 */
 
-class GazeboRosTricycleDrive : public gazebo::ModelPlugin
-{
+class GazeboRosTricycleDrive : public gazebo::ModelPlugin {
 public:
   /// Constructor
   GazeboRosTricycleDrive();
@@ -104,6 +102,5 @@ private:
   std::unique_ptr<GazeboRosTricycleDrivePrivate> impl_;
 };
 }  // namespace gazebo_plugins
-
 
 #endif  // GAZEBO_PLUGINS__GAZEBO_ROS_TRICYCLE_DRIVE_HPP_

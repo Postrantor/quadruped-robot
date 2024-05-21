@@ -20,16 +20,14 @@
 // For std::unique_ptr, could be removed
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 // Forward declaration of private data class.
 class GazeboRosTemplatePrivate;
 
 /// Example ROS-powered Gazebo plugin with some useful boilerplate.
 /// \details This is a `ModelPlugin`, but it could be any supported Gazebo plugin type, such as
 /// System, Visual, GUI, World, Sensor, etc.
-class GazeboRosTemplate : public gazebo::ModelPlugin
-{
+class GazeboRosTemplate : public gazebo::ModelPlugin {
 public:
   /// Constructor
   GazeboRosTemplate();

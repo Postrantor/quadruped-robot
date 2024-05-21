@@ -19,8 +19,7 @@
 
 #include <memory>
 
-namespace gazebo_ros
-{
+namespace gazebo_ros {
 
 class GazeboRosPropertiesPrivate;
 
@@ -53,8 +52,7 @@ class GazeboRosPropertiesPrivate;
 ///      set_light_properties (gazebo_msgs::srv::SetLightProperties)
 ///          Set light's properties including color and attenuation.
 ///
-class GazeboRosProperties : public gazebo::WorldPlugin
-{
+class GazeboRosProperties : public gazebo::WorldPlugin {
 public:
   /// Constructor
   GazeboRosProperties();

@@ -19,8 +19,7 @@
 
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 class GazeboRosHandOfGodPrivate;
 
 /// Drives a floating object around based on the location of a TF frame.
@@ -51,8 +50,7 @@ class GazeboRosHandOfGodPrivate;
     </plugin>
   \endcode
 */
-class GazeboRosHandOfGod : public gazebo::ModelPlugin
-{
+class GazeboRosHandOfGod : public gazebo::ModelPlugin {
 public:
   /// Constructor
   GazeboRosHandOfGod();

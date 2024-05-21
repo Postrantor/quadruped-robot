@@ -29,8 +29,7 @@
 #include <vector>
 #include <unordered_set>
 
-namespace gazebo_ros
-{
+namespace gazebo_ros {
 // forward declare ExistingNodes
 class ExistingNodes;
 
@@ -40,8 +39,7 @@ class ExistingNodes;
  * Wrapper around an rclcpp::Node which ensures all instances share an executor.
  * \include gazebo_ros/node.hpp
  */
-class GAZEBO_ROS_NODE_PUBLIC Node : public rclcpp::Node
-{
+class GAZEBO_ROS_NODE_PUBLIC Node : public rclcpp::Node {
 public:
   /// Shared pointer to a #gazebo_ros::Node
   using SharedPtr = std::shared_ptr<Node>;
@@ -97,11 +95,12 @@ public:
   /**
    * \details This will call rclcpp::init if it hasn't been called yet.
    * \details Forwards arguments to the constructor for rclcpp::Node
-   * \param[in] args List of arguments to pass to <a href="http://docs.ros2.org/latest/api/rclcpp/classrclcpp_1_1_node.html">rclcpp::Node</a>
-   * \return A shared pointer to a new #gazebo_ros::Node
+   * \param[in] args List of arguments to pass to <a
+   * href="http://docs.ros2.org/latest/api/rclcpp/classrclcpp_1_1_node.html">rclcpp::Node</a> \return A shared pointer
+   * to a new #gazebo_ros::Node
    */
-  template<typename ... Args>
-  static SharedPtr CreateWithArgs(Args && ... args);
+  template <typename... Args>
+  static SharedPtr CreateWithArgs(Args&&... args);
 
   /// Convert an sdf element to an rclcpp::Parameter
   /* \details SDF must have a type and name attribute
@@ -119,18 +118,12 @@ public:
    * \return The ROS parameter with the same name, type, and value as the sdf element
    *         On failure, the return parameter.get_type() == rclcpp::ParameterType::PARAMETER_NOT_SET
    */
-  static rclcpp::Parameter sdf_to_ros_parameter(sdf::ElementPtr const & _sdf);
+  static rclcpp::Parameter sdf_to_ros_parameter(sdf::ElementPtr const& _sdf);
 
-  inline const gazebo_ros::QoS & get_qos() const &
-  {
-    return this->qos_;
-  }
+  inline const gazebo_ros::QoS& get_qos() const& { return this->qos_; }
 
   // binds to everything else
-  inline gazebo_ros::QoS get_qos() &&
-  {
-    return this->qos_;
-  }
+  inline gazebo_ros::QoS get_qos() && { return this->qos_; }
 
 private:
   /// Inherit constructor
@@ -162,9 +155,8 @@ private:
   static rclcpp::Logger internal_logger();
 };
 
-template<typename ... Args>
-Node::SharedPtr Node::CreateWithArgs(Args && ... args)
-{
+template <typename... Args>
+Node::SharedPtr Node::CreateWithArgs(Args&&... args) {
   std::lock_guard<std::mutex> l(lock_);
 
   // Contruct Node by forwarding arguments
@@ -175,7 +167,7 @@ Node::SharedPtr Node::CreateWithArgs(Args && ... args)
     rclcpp::init(0, nullptr);
     RCLCPP_INFO(internal_logger(), "ROS was initialized without arguments.");
   }
-  node = std::make_shared<Node>(std::forward<Args>(args) ...);
+  node = std::make_shared<Node>(std::forward<Args>(args)...);
   node->set_parameter(rclcpp::Parameter("use_sim_time", true));
 
   // Store shared pointer to static executor in this object
@@ -192,34 +184,33 @@ Node::SharedPtr Node::CreateWithArgs(Args && ... args)
   node->get_parameter("use_sim_time", check_sim_time);
   if (!check_sim_time) {
     RCLCPP_WARN(
-      node->get_logger(), "Startup warning: use_sim_time parameter will be ignored "
-      "by default plugins and ROS messages will continue to use simulation timestamps");
+        node->get_logger(),
+        "Startup warning: use_sim_time parameter will be ignored "
+        "by default plugins and ROS messages will continue to use simulation timestamps");
   }
 
   std::weak_ptr<gazebo_ros::Node> node_weak_ptr;
   node_weak_ptr = node;
   // Parameter change callback
-  auto param_change_callback =
-    [&node_weak_ptr](std::vector<rclcpp::Parameter> parameters) {
-      auto result = rcl_interfaces::msg::SetParametersResult();
-      result.successful = true;
+  auto param_change_callback = [&node_weak_ptr](std::vector<rclcpp::Parameter> parameters) {
+    auto result = rcl_interfaces::msg::SetParametersResult();
+    result.successful = true;
 
-      for (const auto & parameter : parameters) {
-        auto param_name = parameter.get_name();
-        if (param_name == "use_sim_time") {
-          if (auto node_shared_ptr = node_weak_ptr.lock()) {
-            RCLCPP_WARN(
+    for (const auto& parameter : parameters) {
+      auto param_name = parameter.get_name();
+      if (param_name == "use_sim_time") {
+        if (auto node_shared_ptr = node_weak_ptr.lock()) {
+          RCLCPP_WARN(
               node_shared_ptr->get_logger(),
               "use_sim_time parameter will be ignored by default plugins "
               "and ROS messages will continue to use simulation timestamps");
-          }
         }
       }
-      return result;
-    };
+    }
+    return result;
+  };
 
-  node->param_change_callback_handler_ =
-    node->add_on_set_parameters_callback(param_change_callback);
+  node->param_change_callback_handler_ = node->add_on_set_parameters_callback(param_change_callback);
 
   // Add new node to the executor so its callbacks are called
   node->executor_->add_node(node);
@@ -228,13 +219,12 @@ Node::SharedPtr Node::CreateWithArgs(Args && ... args)
 }
 
 // Class to hold the global set of tracked node names.
-class ExistingNodes
-{
+class ExistingNodes {
 public:
   // Methods need to be protected by internal mutex
-  void add_node(const std::string & node_name);
-  bool check_node(const std::string & node_name);
-  void remove_node(const std::string & node_name);
+  void add_node(const std::string& node_name);
+  bool check_node(const std::string& node_name);
+  void remove_node(const std::string& node_name);
 
 private:
   /// set of tracked node names

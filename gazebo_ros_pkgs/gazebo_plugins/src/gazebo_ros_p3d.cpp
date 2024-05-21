@@ -37,15 +37,13 @@
 #include <string>
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 
-class GazeboRosP3DPrivate
-{
+class GazeboRosP3DPrivate {
 public:
   /// Callback to be called at every simulation iteration
   /// \param[in] info Updated simulation info
-  void OnUpdate(const gazebo::common::UpdateInfo & info);
+  void OnUpdate(const gazebo::common::UpdateInfo& info);
 
   /// The link being traked.
   gazebo::physics::LinkPtr link_{nullptr};
@@ -81,28 +79,23 @@ public:
   gazebo::event::ConnectionPtr update_connection_{nullptr};
 };
 
-GazeboRosP3D::GazeboRosP3D()
-: impl_(std::make_unique<GazeboRosP3DPrivate>())
-{
-}
+GazeboRosP3D::GazeboRosP3D() : impl_(std::make_unique<GazeboRosP3DPrivate>()) {}
 
-GazeboRosP3D::~GazeboRosP3D()
-{
-}
+GazeboRosP3D::~GazeboRosP3D() {}
 
 // Load the controller
-void GazeboRosP3D::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf)
-{
+void GazeboRosP3D::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf) {
   // Configure the plugin from the SDF file
   impl_->ros_node_ = gazebo_ros::Node::Get(sdf);
 
   // Get QoS profiles
-  const gazebo_ros::QoS & qos = impl_->ros_node_->get_qos();
+  const gazebo_ros::QoS& qos = impl_->ros_node_->get_qos();
 
   if (!sdf->HasElement("update_rate")) {
     RCLCPP_DEBUG(
-      impl_->ros_node_->get_logger(), "p3d plugin missing <update_rate>, defaults to 0.0"
-      " (as fast as possible)");
+        impl_->ros_node_->get_logger(),
+        "p3d plugin missing <update_rate>, defaults to 0.0"
+        " (as fast as possible)");
   } else {
     impl_->update_rate_ = sdf->GetElement("update_rate")->Get<double>();
   }
@@ -117,22 +110,17 @@ void GazeboRosP3D::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf)
 
   impl_->link_ = model->GetLink(link_name);
   if (!impl_->link_) {
-    RCLCPP_ERROR(
-      impl_->ros_node_->get_logger(), "body_name: %s does not exist\n",
-      link_name.c_str());
+    RCLCPP_ERROR(impl_->ros_node_->get_logger(), "body_name: %s does not exist\n", link_name.c_str());
     return;
   }
 
   impl_->pub_ = impl_->ros_node_->create_publisher<nav_msgs::msg::Odometry>(
-    impl_->topic_name_, qos.get_publisher_qos(
-      impl_->topic_name_, rclcpp::SensorDataQoS().reliable()));
+      impl_->topic_name_, qos.get_publisher_qos(impl_->topic_name_, rclcpp::SensorDataQoS().reliable()));
   impl_->topic_name_ = impl_->pub_->get_topic_name();
-  RCLCPP_DEBUG(
-    impl_->ros_node_->get_logger(), "Publishing on topic [%s]", impl_->topic_name_.c_str());
+  RCLCPP_DEBUG(impl_->ros_node_->get_logger(), "Publishing on topic [%s]", impl_->topic_name_.c_str());
 
   if (sdf->HasElement("xyz_offsets")) {
-    RCLCPP_WARN(
-      impl_->ros_node_->get_logger(), "<xyz_offsets> is deprecated, use <xyz_offset> instead.");
+    RCLCPP_WARN(impl_->ros_node_->get_logger(), "<xyz_offsets> is deprecated, use <xyz_offset> instead.");
     impl_->offset_.Pos() = sdf->GetElement("xyz_offsets")->Get<ignition::math::Vector3d>();
   }
   if (!sdf->HasElement("xyz_offset")) {
@@ -144,18 +132,15 @@ void GazeboRosP3D::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf)
   }
 
   if (sdf->HasElement("rpy_offsets")) {
-    RCLCPP_WARN(
-      impl_->ros_node_->get_logger(), "<rpy_offsets> is deprecated, use <rpy_offset> instead.");
-    impl_->offset_.Rot() = ignition::math::Quaterniond(
-      sdf->GetElement("rpy_offsets")->Get<ignition::math::Vector3d>());
+    RCLCPP_WARN(impl_->ros_node_->get_logger(), "<rpy_offsets> is deprecated, use <rpy_offset> instead.");
+    impl_->offset_.Rot() = ignition::math::Quaterniond(sdf->GetElement("rpy_offsets")->Get<ignition::math::Vector3d>());
   }
   if (!sdf->HasElement("rpy_offset")) {
     if (!sdf->HasElement("rpy_offsets")) {
       RCLCPP_DEBUG(impl_->ros_node_->get_logger(), "Missing <rpy_offset>, defaults to 0s");
     }
   } else {
-    impl_->offset_.Rot() = ignition::math::Quaterniond(
-      sdf->GetElement("rpy_offset")->Get<ignition::math::Vector3d>());
+    impl_->offset_.Rot() = ignition::math::Quaterniond(sdf->GetElement("rpy_offset")->Get<ignition::math::Vector3d>());
   }
 
   if (!sdf->HasElement("gaussian_noise")) {
@@ -168,33 +153,28 @@ void GazeboRosP3D::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf)
   impl_->last_time_ = model->GetWorld()->SimTime();
 
   if (!sdf->HasElement("frame_name")) {
-    RCLCPP_DEBUG(
-      impl_->ros_node_->get_logger(), "Missing <frame_name>, defaults to world");
+    RCLCPP_DEBUG(impl_->ros_node_->get_logger(), "Missing <frame_name>, defaults to world");
   } else {
     impl_->frame_name_ = sdf->GetElement("frame_name")->Get<std::string>();
   }
 
   // If frame_name specified is "/world", "world", "/map" or "map" report
   // back inertial values in the gazebo world
-  if (impl_->frame_name_ != "/world" && impl_->frame_name_ != "world" &&
-    impl_->frame_name_ != "/map" && impl_->frame_name_ != "map")
-  {
+  if (impl_->frame_name_ != "/world" && impl_->frame_name_ != "world" && impl_->frame_name_ != "/map" &&
+      impl_->frame_name_ != "map") {
     impl_->reference_link_ = model->GetLink(impl_->frame_name_);
     if (!impl_->reference_link_) {
-      RCLCPP_WARN(
-        impl_->ros_node_->get_logger(), "<frame_name> [%s] does not exist.",
-        impl_->frame_name_.c_str());
+      RCLCPP_WARN(impl_->ros_node_->get_logger(), "<frame_name> [%s] does not exist.", impl_->frame_name_.c_str());
     }
   }
 
   // Listen to the update event. This event is broadcast every simulation iteration
   impl_->update_connection_ = gazebo::event::Events::ConnectWorldUpdateBegin(
-    std::bind(&GazeboRosP3DPrivate::OnUpdate, impl_.get(), std::placeholders::_1));
+      std::bind(&GazeboRosP3DPrivate::OnUpdate, impl_.get(), std::placeholders::_1));
 }
 
 // Update the controller
-void GazeboRosP3DPrivate::OnUpdate(const gazebo::common::UpdateInfo & info)
-{
+void GazeboRosP3DPrivate::OnUpdate(const gazebo::common::UpdateInfo& info) {
   if (!link_) {
     return;
   }
@@ -209,9 +189,7 @@ void GazeboRosP3DPrivate::OnUpdate(const gazebo::common::UpdateInfo & info)
   }
 
   // Rate control
-  if (update_rate_ > 0 &&
-    (current_time - last_time_).Double() < (1.0 / update_rate_))
-  {
+  if (update_rate_ > 0 && (current_time - last_time_).Double() < (1.0 / update_rate_)) {
     return;
   }
 

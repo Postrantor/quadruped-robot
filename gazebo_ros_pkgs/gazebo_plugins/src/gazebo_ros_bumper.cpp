@@ -36,10 +36,8 @@
 #include <memory>
 #include <string>
 
-namespace gazebo_plugins
-{
-class GazeboRosBumperPrivate
-{
+namespace gazebo_plugins {
+class GazeboRosBumperPrivate {
 public:
   /// Callback to be called when sensor updates.
   void OnUpdate();
@@ -60,52 +58,40 @@ public:
   gazebo::event::ConnectionPtr update_connection_;
 };
 
-GazeboRosBumper::GazeboRosBumper()
-: impl_(std::make_unique<GazeboRosBumperPrivate>())
-{
-}
+GazeboRosBumper::GazeboRosBumper() : impl_(std::make_unique<GazeboRosBumperPrivate>()) {}
 
-GazeboRosBumper::~GazeboRosBumper()
-{
-  impl_->ros_node_.reset();
-}
+GazeboRosBumper::~GazeboRosBumper() { impl_->ros_node_.reset(); }
 
-void GazeboRosBumper::Load(gazebo::sensors::SensorPtr _sensor, sdf::ElementPtr _sdf)
-{
+void GazeboRosBumper::Load(gazebo::sensors::SensorPtr _sensor, sdf::ElementPtr _sdf) {
   // Initialize ROS node
   impl_->ros_node_ = gazebo_ros::Node::Get(_sdf);
 
   impl_->parent_sensor_ = std::dynamic_pointer_cast<gazebo::sensors::ContactSensor>(_sensor);
   if (!impl_->parent_sensor_) {
-    RCLCPP_ERROR(
-      impl_->ros_node_->get_logger(),
-      "Contact sensor parent is not of type ContactSensor. Aborting");
+    RCLCPP_ERROR(impl_->ros_node_->get_logger(), "Contact sensor parent is not of type ContactSensor. Aborting");
     impl_->ros_node_.reset();
     return;
   }
 
   // Get QoS profiles
-  const gazebo_ros::QoS & qos = impl_->ros_node_->get_qos();
+  const gazebo_ros::QoS& qos = impl_->ros_node_->get_qos();
 
   // Contact state publisher
   impl_->pub_ = impl_->ros_node_->create_publisher<gazebo_msgs::msg::ContactsState>(
-    "bumper_states", qos.get_publisher_qos("bumper_states", rclcpp::SensorDataQoS().reliable()));
+      "bumper_states", qos.get_publisher_qos("bumper_states", rclcpp::SensorDataQoS().reliable()));
 
-  RCLCPP_INFO(
-    impl_->ros_node_->get_logger(), "Publishing contact states to [%s]",
-    impl_->pub_->get_topic_name());
+  RCLCPP_INFO(impl_->ros_node_->get_logger(), "Publishing contact states to [%s]", impl_->pub_->get_topic_name());
 
   // Get tf frame for output
   impl_->frame_name_ = _sdf->Get<std::string>("frame_name", "world").first;
 
-  impl_->update_connection_ = impl_->parent_sensor_->ConnectUpdated(
-    std::bind(&GazeboRosBumperPrivate::OnUpdate, impl_.get()));
+  impl_->update_connection_ =
+      impl_->parent_sensor_->ConnectUpdated(std::bind(&GazeboRosBumperPrivate::OnUpdate, impl_.get()));
 
   impl_->parent_sensor_->SetActive(true);
 }
 
-void GazeboRosBumperPrivate::OnUpdate()
-{
+void GazeboRosBumperPrivate::OnUpdate() {
 #ifdef IGN_PROFILER_ENABLE
   IGN_PROFILE("GazeboRosBumperPrivate::OnUpdate");
   IGN_PROFILE_BEGIN("fill message");

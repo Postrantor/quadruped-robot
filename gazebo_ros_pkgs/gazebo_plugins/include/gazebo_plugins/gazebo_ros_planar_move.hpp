@@ -19,8 +19,7 @@
 
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 class GazeboRosPlanarMovePrivate;
 
 /// Simple model controller that uses a twist message to move an entity on the xy plane.
@@ -64,8 +63,7 @@ class GazeboRosPlanarMovePrivate;
   \endcode
 */
 
-class GazeboRosPlanarMove : public gazebo::ModelPlugin
-{
+class GazeboRosPlanarMove : public gazebo::ModelPlugin {
 public:
   /// Constructor
   GazeboRosPlanarMove();

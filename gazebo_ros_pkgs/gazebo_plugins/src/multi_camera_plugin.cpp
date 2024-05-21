@@ -21,25 +21,18 @@
 #include <string>
 #include <vector>
 
-namespace gazebo_plugins
-{
-class MultiCameraPluginPrivate
-{
+namespace gazebo_plugins {
+class MultiCameraPluginPrivate {
 public:
   /// Connects to pre-render events.
   std::vector<gazebo::event::ConnectionPtr> new_frame_connection_;
 };
 
 /////////////////////////////////////////////////
-MultiCameraPlugin::MultiCameraPlugin()
-: SensorPlugin(),
-  impl_(std::make_unique<MultiCameraPluginPrivate>())
-{
-}
+MultiCameraPlugin::MultiCameraPlugin() : SensorPlugin(), impl_(std::make_unique<MultiCameraPluginPrivate>()) {}
 
 /////////////////////////////////////////////////
-MultiCameraPlugin::~MultiCameraPlugin()
-{
+MultiCameraPlugin::~MultiCameraPlugin() {
   for (auto conn : impl_->new_frame_connection_) {
     conn.reset();
   }
@@ -50,8 +43,7 @@ MultiCameraPlugin::~MultiCameraPlugin()
 }
 
 /////////////////////////////////////////////////
-void MultiCameraPlugin::Load(gazebo::sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/)
-{
+void MultiCameraPlugin::Load(gazebo::sensors::SensorPtr _sensor, sdf::ElementPtr /*_sdf*/) {
   if (!_sensor) {
     gzerr << "Invalid sensor pointer.\n";
   }
@@ -81,12 +73,9 @@ void MultiCameraPlugin::Load(gazebo::sensors::SensorPtr _sensor, sdf::ElementPtr
     depth_.push_back(camera_[i]->ImageDepth());
     format_.push_back(camera_[i]->ImageFormat());
 
-    impl_->new_frame_connection_.push_back(
-      camera_[i]->ConnectNewImageFrame(
-        std::bind(
-          &MultiCameraPlugin::OnNewMultiFrame,
-          this, std::placeholders::_1, std::placeholders::_2,
-          std::placeholders::_3, std::placeholders::_4, std::placeholders::_5, i)));
+    impl_->new_frame_connection_.push_back(camera_[i]->ConnectNewImageFrame(std::bind(
+        &MultiCameraPlugin::OnNewMultiFrame, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3,
+        std::placeholders::_4, std::placeholders::_5, i)));
   }
 
   parent_sensor_->SetActive(true);
@@ -94,13 +83,11 @@ void MultiCameraPlugin::Load(gazebo::sensors::SensorPtr _sensor, sdf::ElementPtr
 
 /////////////////////////////////////////////////
 void MultiCameraPlugin::OnNewMultiFrame(
-  const unsigned char * /*_image*/,
-  unsigned int /*_width*/,
-  unsigned int /*_height*/,
-  unsigned int /*_depth*/,
-  const std::string & /*_format*/,
-  const int /*_camera_num*/)
-{
-}
+    const unsigned char* /*_image*/,
+    unsigned int /*_width*/,
+    unsigned int /*_height*/,
+    unsigned int /*_depth*/,
+    const std::string& /*_format*/,
+    const int /*_camera_num*/) {}
 GZ_REGISTER_SENSOR_PLUGIN(MultiCameraPlugin)
 }  // namespace gazebo_plugins

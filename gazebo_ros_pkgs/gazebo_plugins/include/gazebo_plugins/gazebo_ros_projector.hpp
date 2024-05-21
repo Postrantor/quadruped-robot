@@ -19,8 +19,7 @@
 
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 class GazeboRosProjectorPrivate;
 
 /// A projector plugin for gazebo.
@@ -41,8 +40,7 @@ class GazeboRosProjectorPrivate;
 
   \endcode
 */
-class GazeboRosProjector : public gazebo::ModelPlugin
-{
+class GazeboRosProjector : public gazebo::ModelPlugin {
 public:
   /// Constructor
   GazeboRosProjector();

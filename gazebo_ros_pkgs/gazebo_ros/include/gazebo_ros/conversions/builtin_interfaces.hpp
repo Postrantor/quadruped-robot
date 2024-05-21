@@ -22,15 +22,12 @@
 
 #include "gazebo_ros/conversions/generic.hpp"
 
-namespace gazebo_ros
-{
+namespace gazebo_ros {
 /// \brief Specialized conversion from an Gazebo Time to a ROS Time message.
 /// \param[in] in Gazebo Time to convert.
 /// \return A ROS Time message with the same value as in
-template<>
-inline
-builtin_interfaces::msg::Time Convert(const gazebo::common::Time & in)
-{
+template <>
+inline builtin_interfaces::msg::Time Convert(const gazebo::common::Time &in) {
   builtin_interfaces::msg::Time time;
   time.sec = in.sec;
   time.nanosec = in.nsec;
@@ -40,10 +37,8 @@ builtin_interfaces::msg::Time Convert(const gazebo::common::Time & in)
 /// \brief Specialized conversion from an Gazebo Time message to a ROS Time message.
 /// \param[in] in Gazebo Time message to convert.
 /// \return A ROS Time message with the same value as in
-template<>
-inline
-builtin_interfaces::msg::Time Convert(const gazebo::msgs::Time & in)
-{
+template <>
+inline builtin_interfaces::msg::Time Convert(const gazebo::msgs::Time &in) {
   builtin_interfaces::msg::Time time;
   time.sec = in.sec();
   time.nanosec = in.nsec();
@@ -54,20 +49,16 @@ builtin_interfaces::msg::Time Convert(const gazebo::msgs::Time & in)
 /// \param[in] in Input message.
 /// \return Conversion result
 /// \tparam T Output type
-template<class T>
-inline
-T Convert(const builtin_interfaces::msg::Time &)
-{
+template <class T>
+inline T Convert(const builtin_interfaces::msg::Time &) {
   T::ConversionNotImplemented;
 }
 
 /// \brief Specialized conversion from a ROS Time message to a Gazebo Time.
 /// \param[in] in ROS Time message to convert.
 /// \return A Gazebo Time with the same value as in
-template<>
-inline
-gazebo::common::Time Convert(const builtin_interfaces::msg::Time & in)
-{
+template <>
+inline gazebo::common::Time Convert(const builtin_interfaces::msg::Time &in) {
   gazebo::common::Time time;
   time.sec = in.sec;
   time.nsec = in.nanosec;
@@ -78,20 +69,16 @@ gazebo::common::Time Convert(const builtin_interfaces::msg::Time & in)
 /// \param[in] in Input message.
 /// \return Conversion result
 /// \tparam T Output type
-template<class T>
-inline
-T Convert(const builtin_interfaces::msg::Duration &)
-{
+template <class T>
+inline T Convert(const builtin_interfaces::msg::Duration &) {
   T::ConversionNotImplemented;
 }
 
 /// \brief Specialized conversion from a ROS duration message to a Gazebo Time.
 /// \param[in] in ROS Time message to convert.
 /// \return A Gazebo Time with the same value as in
-template<>
-inline
-gazebo::common::Time Convert(const builtin_interfaces::msg::Duration & in)
-{
+template <>
+inline gazebo::common::Time Convert(const builtin_interfaces::msg::Duration &in) {
   gazebo::common::Time time;
   time.sec = in.sec;
   time.nsec = in.nanosec;

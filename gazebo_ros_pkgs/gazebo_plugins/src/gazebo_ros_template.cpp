@@ -19,11 +19,9 @@
 
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 /// Class to hold private data members (PIMPL pattern)
-class GazeboRosTemplatePrivate
-{
+class GazeboRosTemplatePrivate {
 public:
   /// Connection to world update event. Callback is called while this is alive.
   gazebo::event::ConnectionPtr update_connection_;
@@ -32,17 +30,11 @@ public:
   gazebo_ros::Node::SharedPtr ros_node_;
 };
 
-GazeboRosTemplate::GazeboRosTemplate()
-: impl_(std::make_unique<GazeboRosTemplatePrivate>())
-{
-}
+GazeboRosTemplate::GazeboRosTemplate() : impl_(std::make_unique<GazeboRosTemplatePrivate>()) {}
 
-GazeboRosTemplate::~GazeboRosTemplate()
-{
-}
+GazeboRosTemplate::~GazeboRosTemplate() {}
 
-void GazeboRosTemplate::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf)
-{
+void GazeboRosTemplate::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf) {
   // Create a GazeboRos node instead of a common ROS node.
   // Pass it SDF parameters so common options like namespace and remapping
   // can be handled.
@@ -54,12 +46,11 @@ void GazeboRosTemplate::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sd
 
   // Create a connection so the OnUpdate function is called at every simulation
   // iteration. Remove this call, the connection and the callback if not needed.
-  impl_->update_connection_ = gazebo::event::Events::ConnectWorldUpdateBegin(
-    std::bind(&GazeboRosTemplate::OnUpdate, this));
+  impl_->update_connection_ =
+      gazebo::event::Events::ConnectWorldUpdateBegin(std::bind(&GazeboRosTemplate::OnUpdate, this));
 }
 
-void GazeboRosTemplate::OnUpdate()
-{
+void GazeboRosTemplate::OnUpdate() {
   // Do something every simulation iteration
 }
 

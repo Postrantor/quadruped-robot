@@ -36,14 +36,12 @@
 #include <string>
 #include <memory>
 
-namespace gazebo_plugins
-{
-class GazeboRosFTSensorPrivate
-{
+namespace gazebo_plugins {
+class GazeboRosFTSensorPrivate {
 public:
   /// Callback to be called at every simulation iteration.
   /// \param[in] _info Updated simulation info.
-  void OnUpdate(const gazebo::common::UpdateInfo & _info);
+  void OnUpdate(const gazebo::common::UpdateInfo& _info);
 
   /// A pointer to Gazebo Joint.
   gazebo::physics::JointPtr joint_;
@@ -79,35 +77,26 @@ public:
   double gaussian_noise_;
 };
 
-GazeboRosFTSensor::GazeboRosFTSensor()
-: impl_(std::make_unique<GazeboRosFTSensorPrivate>())
-{
-}
+GazeboRosFTSensor::GazeboRosFTSensor() : impl_(std::make_unique<GazeboRosFTSensorPrivate>()) {}
 
-GazeboRosFTSensor::~GazeboRosFTSensor()
-{
-  impl_->update_connection_.reset();
-}
+GazeboRosFTSensor::~GazeboRosFTSensor() { impl_->update_connection_.reset(); }
 
-void GazeboRosFTSensor::Load(gazebo::physics::ModelPtr _model, sdf::ElementPtr _sdf)
-{
+void GazeboRosFTSensor::Load(gazebo::physics::ModelPtr _model, sdf::ElementPtr _sdf) {
   // Initialize ROS node
   impl_->rosnode_ = gazebo_ros::Node::Get(_sdf);
 
   // Get QoS profiles
-  const gazebo_ros::QoS & qos = impl_->rosnode_->get_qos();
+  const gazebo_ros::QoS& qos = impl_->rosnode_->get_qos();
 
   if (!_sdf->HasElement("update_rate")) {
     RCLCPP_DEBUG(
-      impl_->rosnode_->get_logger(),
-      "ft_sensor plugin missing <update_rate>, defaults to 0.0 (as fast as possible)");
+        impl_->rosnode_->get_logger(), "ft_sensor plugin missing <update_rate>, defaults to 0.0 (as fast as possible)");
   }
   impl_->update_rate_ = _sdf->Get<double>("update_rate", 0.0).first;
 
   if (!_sdf->HasElement("body_name") && !_sdf->HasElement("joint_name")) {
     RCLCPP_ERROR(
-      impl_->rosnode_->get_logger(),
-      "ft_sensor plugin missing <body_name> and <joint_name>, cannot proceed");
+        impl_->rosnode_->get_logger(), "ft_sensor plugin missing <body_name> and <joint_name>, cannot proceed");
     impl_->rosnode_.reset();
     return;
   }
@@ -118,9 +107,7 @@ void GazeboRosFTSensor::Load(gazebo::physics::ModelPtr _model, sdf::ElementPtr _
     impl_->link_ = _model->GetLink(link_name);
 
     if (!impl_->link_) {
-      RCLCPP_ERROR(
-        impl_->rosnode_->get_logger(),
-        "Link [%s] does not exist. Aborting", link_name.c_str());
+      RCLCPP_ERROR(impl_->rosnode_->get_logger(), "Link [%s] does not exist. Aborting", link_name.c_str());
       impl_->rosnode_.reset();
       return;
     }
@@ -132,24 +119,20 @@ void GazeboRosFTSensor::Load(gazebo::physics::ModelPtr _model, sdf::ElementPtr _
     impl_->joint_ = _model->GetJoint(joint_name);
 
     if (!impl_->joint_) {
-      RCLCPP_ERROR(
-        impl_->rosnode_->get_logger(),
-        "Joint [%s] does not exist. Aborting", joint_name.c_str());
+      RCLCPP_ERROR(impl_->rosnode_->get_logger(), "Joint [%s] does not exist. Aborting", joint_name.c_str());
       impl_->rosnode_.reset();
       return;
     }
 
     if (_sdf->HasElement("frame_name")) {
-      RCLCPP_WARN(
-        impl_->rosnode_->get_logger(),
-        "<frame_name> can be set only for ft_sensor on links.");
+      RCLCPP_WARN(impl_->rosnode_->get_logger(), "<frame_name> can be set only for ft_sensor on links.");
     }
     impl_->frame_id_ = impl_->joint_->GetChild()->GetName();
   }
 
   RCLCPP_INFO(
-    impl_->rosnode_->get_logger(),
-    "ft_sensor plugin reporting wrench values to the frame [%s]", impl_->frame_id_.c_str());
+      impl_->rosnode_->get_logger(), "ft_sensor plugin reporting wrench values to the frame [%s]",
+      impl_->frame_id_.c_str());
 
   if (!_sdf->HasElement("gaussian_noise")) {
     RCLCPP_DEBUG(impl_->rosnode_->get_logger(), "Missing <gassian_noise>, defaults to 0.0");
@@ -157,20 +140,17 @@ void GazeboRosFTSensor::Load(gazebo::physics::ModelPtr _model, sdf::ElementPtr _
   impl_->gaussian_noise_ = _sdf->Get<double>("gaussian_noise", 0.0).first;
 
   impl_->pub_ = impl_->rosnode_->create_publisher<geometry_msgs::msg::WrenchStamped>(
-    "wrench", qos.get_publisher_qos("wrench", rclcpp::QoS(1)));
+      "wrench", qos.get_publisher_qos("wrench", rclcpp::QoS(1)));
 
-  RCLCPP_INFO(
-    impl_->rosnode_->get_logger(),
-    "Publishing wrenches on topic [%s]", impl_->pub_->get_topic_name());
+  RCLCPP_INFO(impl_->rosnode_->get_logger(), "Publishing wrenches on topic [%s]", impl_->pub_->get_topic_name());
 
   impl_->last_time_ = _model->GetWorld()->SimTime();
 
   impl_->update_connection_ = gazebo::event::Events::ConnectWorldUpdateBegin(
-    std::bind(&GazeboRosFTSensorPrivate::OnUpdate, impl_.get(), std::placeholders::_1));
+      std::bind(&GazeboRosFTSensorPrivate::OnUpdate, impl_.get(), std::placeholders::_1));
 }
 
-void GazeboRosFTSensorPrivate::OnUpdate(const gazebo::common::UpdateInfo & _info)
-{
+void GazeboRosFTSensorPrivate::OnUpdate(const gazebo::common::UpdateInfo& _info) {
   gazebo::common::Time current_time = _info.simTime;
 
   if (current_time < last_time_) {

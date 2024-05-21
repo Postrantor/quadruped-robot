@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 /*
  * \file  gazebo_ros_video.cpp
  *
@@ -45,27 +44,23 @@
 #include <memory>
 #include <string>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 /**
  * Helper class for GazeboRosVideo
  * The class deals with the image conversions required for display on Gazebo
  * Ogre texture
  **/
-class VideoVisual : public gazebo::rendering::Visual
-{
+class VideoVisual : public gazebo::rendering::Visual {
 public:
   /// Constructor
-  VideoVisual(
-    const std::string & name, gazebo::rendering::VisualPtr parent,
-    int height, int width);
+  VideoVisual(const std::string &name, gazebo::rendering::VisualPtr parent, int height, int width);
 
   /// Destructor
   virtual ~VideoVisual();
 
   /// Resize image and copy image data into pixel buffer.
   /// \param[in] image Subscribed image
-  void render(const cv::Mat & image);
+  void render(const cv::Mat &image);
 
 private:
   /// Instance of Ogre Texture manager
@@ -78,22 +73,14 @@ private:
   int width_;
 };
 
-VideoVisual::VideoVisual(
-  const std::string & name,
-  gazebo::rendering::VisualPtr parent, int height,
-  int width)
-: gazebo::rendering::Visual(name, parent), height_(height), width_(width)
-{
+VideoVisual::VideoVisual(const std::string &name, gazebo::rendering::VisualPtr parent, int height, int width)
+    : gazebo::rendering::Visual(name, parent), height_(height), width_(width) {
   texture_ = Ogre::TextureManager::getSingleton().createManual(
-    name + "__VideoTexture__",
-    Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-    Ogre::TEX_TYPE_2D, width_, height_, 0, Ogre::PF_BYTE_BGRA,
-    Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
+      name + "__VideoTexture__", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, Ogre::TEX_TYPE_2D, width_,
+      height_, 0, Ogre::PF_BYTE_BGRA, Ogre::TU_DYNAMIC_WRITE_ONLY_DISCARDABLE);
 
-  Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create(
-    name + "__VideoMaterial__", "General");
-  material->getTechnique(0)->getPass(0)->createTextureUnitState(
-    name + "__VideoTexture__");
+  Ogre::MaterialPtr material = Ogre::MaterialManager::getSingleton().create(name + "__VideoMaterial__", "General");
+  material->getTechnique(0)->getPass(0)->createTextureUnitState(name + "__VideoTexture__");
   material->setReceiveShadows(false);
 
   double factor = 1.0;
@@ -119,18 +106,16 @@ VideoVisual::VideoVisual(
 
   mo.convertToMesh(name + "__VideoMesh__");
 
-  Ogre::MovableObject * obj =
-    (Ogre::MovableObject *) GetSceneNode()->getCreator()->createEntity(
-    name + "__VideoEntity__", name + "__VideoMesh__");
+  Ogre::MovableObject *obj = (Ogre::MovableObject *)GetSceneNode()->getCreator()->createEntity(
+      name + "__VideoEntity__", name + "__VideoMesh__");
   obj->setCastShadows(false);
   AttachObject(obj);
 }
 
 VideoVisual::~VideoVisual() {}
-void VideoVisual::render(const cv::Mat & image)
-{
+void VideoVisual::render(const cv::Mat &image) {
   // Fix image size if necessary
-  const cv::Mat * image_ptr = &image;
+  const cv::Mat *image_ptr = &image;
   cv::Mat converted_image;
   if (image_ptr->rows != height_ || image_ptr->cols != width_) {
     cv::resize(*image_ptr, converted_image, cv::Size(width_, height_));
@@ -142,8 +127,8 @@ void VideoVisual::render(const cv::Mat & image)
 
   // Lock the pixel buffer and get a pixel box
   pixelBuffer->lock(Ogre::HardwareBuffer::HBL_DISCARD);
-  const Ogre::PixelBox & pixelBox = pixelBuffer->getCurrentLock();
-  auto * pDest = static_cast<uint8_t *>(pixelBox.data);
+  const Ogre::PixelBox &pixelBox = pixelBuffer->getCurrentLock();
+  auto *pDest = static_cast<uint8_t *>(pixelBox.data);
 
   memcpy(pDest, image_ptr->data, height_ * width_ * 4);
 
@@ -151,8 +136,7 @@ void VideoVisual::render(const cv::Mat & image)
   pixelBuffer->unlock();
 }
 
-class GazeboRosVideoPrivate
-{
+class GazeboRosVideoPrivate {
 public:
   /// Callback when a image is received.
   /// \param[in] _msg Image command message.
@@ -185,54 +169,44 @@ public:
 };
 
 // Constructor
-GazeboRosVideo::GazeboRosVideo()
-: impl_(std::make_unique<GazeboRosVideoPrivate>())
-{
-}
+GazeboRosVideo::GazeboRosVideo() : impl_(std::make_unique<GazeboRosVideoPrivate>()) {}
 
 // Destructor
-GazeboRosVideo::~GazeboRosVideo()
-{
+GazeboRosVideo::~GazeboRosVideo() {
   impl_->update_connection_.reset();
   impl_->rosnode_.reset();
 }
 
-void GazeboRosVideo::Load(
-  gazebo::rendering::VisualPtr _parent,
-  sdf::ElementPtr _sdf)
-{
+void GazeboRosVideo::Load(gazebo::rendering::VisualPtr _parent, sdf::ElementPtr _sdf) {
   impl_->rosnode_ = gazebo_ros::Node::Get(_sdf);
 
   // Get QoS profiles
-  const gazebo_ros::QoS & qos = impl_->rosnode_->get_qos();
+  const gazebo_ros::QoS &qos = impl_->rosnode_->get_qos();
 
   int height = _sdf->Get<int>("height", 240).first;
 
   int width = _sdf->Get<int>("width", 320).first;
 
   impl_->video_visual_ = std::make_shared<VideoVisual>(
-    _parent->Name() + "::video_visual::" + _sdf->Get<std::string>("name"), _parent, height, width);
+      _parent->Name() + "::video_visual::" + _sdf->Get<std::string>("name"), _parent, height, width);
   _parent->GetScene()->AddVisual(impl_->video_visual_);
 
   // Subscribe to the image topic
-  impl_->camera_subscriber_ =
-    impl_->rosnode_->create_subscription<sensor_msgs::msg::Image>(
-    "~/image_raw", qos.get_subscription_qos("~/image_raw", rclcpp::QoS(1)),
-    std::bind(&GazeboRosVideoPrivate::processImage, impl_.get(), std::placeholders::_1));
+  impl_->camera_subscriber_ = impl_->rosnode_->create_subscription<sensor_msgs::msg::Image>(
+      "~/image_raw", qos.get_subscription_qos("~/image_raw", rclcpp::QoS(1)),
+      std::bind(&GazeboRosVideoPrivate::processImage, impl_.get(), std::placeholders::_1));
 
   impl_->new_image_available_ = false;
 
-  impl_->update_connection_ = gazebo::event::Events::ConnectPreRender(
-    std::bind(&GazeboRosVideoPrivate::onUpdate, impl_.get()));
+  impl_->update_connection_ =
+      gazebo::event::Events::ConnectPreRender(std::bind(&GazeboRosVideoPrivate::onUpdate, impl_.get()));
 
   RCLCPP_INFO(
-    impl_->rosnode_->get_logger(),
-    "GazeboRosVideo has started. Subscribed to [%s]",
-    impl_->camera_subscriber_->get_topic_name());
+      impl_->rosnode_->get_logger(), "GazeboRosVideo has started. Subscribed to [%s]",
+      impl_->camera_subscriber_->get_topic_name());
 }
 
-void GazeboRosVideoPrivate::onUpdate()
-{
+void GazeboRosVideoPrivate::onUpdate() {
 #ifdef IGN_PROFILER_ENABLE
   IGN_PROFILE("GazeboRosVideoPrivate::onUpdate");
 #endif
@@ -249,8 +223,7 @@ void GazeboRosVideoPrivate::onUpdate()
   new_image_available_ = false;
 }
 
-void GazeboRosVideoPrivate::processImage(const sensor_msgs::msg::Image::ConstSharedPtr msg)
-{
+void GazeboRosVideoPrivate::processImage(const sensor_msgs::msg::Image::ConstSharedPtr msg) {
   // Get a reference to the image from the image message pointer
   std::lock_guard<std::mutex> scoped_lock(m_image_);
   // We get image with alpha channel as it allows memcpy onto ogre texture

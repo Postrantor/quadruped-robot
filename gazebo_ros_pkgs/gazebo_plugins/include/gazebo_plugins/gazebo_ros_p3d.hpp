@@ -20,8 +20,7 @@
 
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 
 class GazeboRosP3DPrivate;
 
@@ -63,8 +62,7 @@ class GazeboRosP3DPrivate;
     </plugin>
   \endcode
 */
-class GazeboRosP3D : public gazebo::ModelPlugin
-{
+class GazeboRosP3D : public gazebo::ModelPlugin {
 public:
   /// Constructor
   GazeboRosP3D();

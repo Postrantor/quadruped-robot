@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 #ifndef GAZEBO_PLUGINS__GAZEBO_ROS_GPS_SENSOR_HPP_
 #define GAZEBO_PLUGINS__GAZEBO_ROS_GPS_SENSOR_HPP_
 
@@ -22,8 +21,7 @@
 
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 
 class GazeboRosGpsSensorPrivate;
 
@@ -46,8 +44,7 @@ class GazeboRosGpsSensorPrivate;
     </sensor>
   \endcode
 */
-class GazeboRosGpsSensor : public gazebo::SensorPlugin
-{
+class GazeboRosGpsSensor : public gazebo::SensorPlugin {
 public:
   /// Constructor.
   GazeboRosGpsSensor();

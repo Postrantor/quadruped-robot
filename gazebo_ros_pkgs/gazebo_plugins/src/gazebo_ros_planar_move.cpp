@@ -40,14 +40,12 @@
 #include <memory>
 #include <string>
 
-namespace gazebo_plugins
-{
-class GazeboRosPlanarMovePrivate
-{
+namespace gazebo_plugins {
+class GazeboRosPlanarMovePrivate {
 public:
   /// Callback to be called at every simulation iteration.
   /// \param[in] _info Updated simulation info.
-  void OnUpdate(const gazebo::common::UpdateInfo & _info);
+  void OnUpdate(const gazebo::common::UpdateInfo& _info);
 
   /// Callback when a velocity command is received.
   /// \param[in] _msg Twist command message.
@@ -55,11 +53,11 @@ public:
 
   /// Update odometry.
   /// \param[in] _current_time Current simulation time
-  void UpdateOdometry(const gazebo::common::Time & _current_time);
+  void UpdateOdometry(const gazebo::common::Time& _current_time);
 
   /// Publish odometry transforms
   /// \param[in] _current_time Current simulation time
-  void PublishOdometryTf(const gazebo::common::Time & _current_time);
+  void PublishOdometryTf(const gazebo::common::Time& _current_time);
 
   /// A pointer to the GazeboROS node.
   gazebo_ros::Node::SharedPtr ros_node_;
@@ -116,17 +114,11 @@ public:
   bool publish_odom_tf_;
 };
 
-GazeboRosPlanarMove::GazeboRosPlanarMove()
-: impl_(std::make_unique<GazeboRosPlanarMovePrivate>())
-{
-}
+GazeboRosPlanarMove::GazeboRosPlanarMove() : impl_(std::make_unique<GazeboRosPlanarMovePrivate>()) {}
 
-GazeboRosPlanarMove::~GazeboRosPlanarMove()
-{
-}
+GazeboRosPlanarMove::~GazeboRosPlanarMove() {}
 
-void GazeboRosPlanarMove::Load(gazebo::physics::ModelPtr _model, sdf::ElementPtr _sdf)
-{
+void GazeboRosPlanarMove::Load(gazebo::physics::ModelPtr _model, sdf::ElementPtr _sdf) {
   impl_->model_ = _model;
 
   impl_->world_ = _model->GetWorld();
@@ -135,7 +127,7 @@ void GazeboRosPlanarMove::Load(gazebo::physics::ModelPtr _model, sdf::ElementPtr
   impl_->ros_node_ = gazebo_ros::Node::Get(_sdf);
 
   // Get QoS profiles
-  const gazebo_ros::QoS & qos = impl_->ros_node_->get_qos();
+  const gazebo_ros::QoS& qos = impl_->ros_node_->get_qos();
 
   // Odometry
   impl_->odometry_frame_ = _sdf->Get<std::string>("odometry_frame", "odom").first;
@@ -160,34 +152,28 @@ void GazeboRosPlanarMove::Load(gazebo::physics::ModelPtr _model, sdf::ElementPtr
   impl_->last_publish_time_ = impl_->world_->SimTime();
 
   impl_->cmd_vel_sub_ = impl_->ros_node_->create_subscription<geometry_msgs::msg::Twist>(
-    "cmd_vel", qos.get_subscription_qos("cmd_vel", rclcpp::QoS(1)),
-    std::bind(&GazeboRosPlanarMovePrivate::OnCmdVel, impl_.get(), std::placeholders::_1));
+      "cmd_vel", qos.get_subscription_qos("cmd_vel", rclcpp::QoS(1)),
+      std::bind(&GazeboRosPlanarMovePrivate::OnCmdVel, impl_.get(), std::placeholders::_1));
 
-  RCLCPP_INFO(
-    impl_->ros_node_->get_logger(), "Subscribed to [%s]",
-    impl_->cmd_vel_sub_->get_topic_name());
+  RCLCPP_INFO(impl_->ros_node_->get_logger(), "Subscribed to [%s]", impl_->cmd_vel_sub_->get_topic_name());
 
   // Advertise odometry topic
   impl_->publish_odom_ = _sdf->Get<bool>("publish_odom", true).first;
   if (impl_->publish_odom_) {
     impl_->odometry_pub_ = impl_->ros_node_->create_publisher<nav_msgs::msg::Odometry>(
-      "odom", qos.get_publisher_qos("odom", rclcpp::QoS(1)));
+        "odom", qos.get_publisher_qos("odom", rclcpp::QoS(1)));
 
-    RCLCPP_INFO(
-      impl_->ros_node_->get_logger(), "Advertise odometry on [%s]",
-      impl_->odometry_pub_->get_topic_name());
+    RCLCPP_INFO(impl_->ros_node_->get_logger(), "Advertise odometry on [%s]", impl_->odometry_pub_->get_topic_name());
   }
 
   // Broadcast TF
   impl_->publish_odom_tf_ = _sdf->Get<bool>("publish_odom_tf", true).first;
   if (impl_->publish_odom_tf_) {
-    impl_->transform_broadcaster_ =
-      std::make_shared<tf2_ros::TransformBroadcaster>(impl_->ros_node_);
+    impl_->transform_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(impl_->ros_node_);
 
     RCLCPP_INFO(
-      impl_->ros_node_->get_logger(),
-      "Publishing odom transforms between [%s] and [%s]", impl_->odometry_frame_.c_str(),
-      impl_->robot_base_frame_.c_str());
+        impl_->ros_node_->get_logger(), "Publishing odom transforms between [%s] and [%s]",
+        impl_->odometry_frame_.c_str(), impl_->robot_base_frame_.c_str());
   }
 
   auto covariance_x = _sdf->Get<double>("covariance_x", 0.00001).first;
@@ -215,19 +201,17 @@ void GazeboRosPlanarMove::Load(gazebo::physics::ModelPtr _model, sdf::ElementPtr
 
   // Listen to the update event (broadcast every simulation iteration)
   impl_->update_connection_ = gazebo::event::Events::ConnectWorldUpdateBegin(
-    std::bind(&GazeboRosPlanarMovePrivate::OnUpdate, impl_.get(), std::placeholders::_1));
+      std::bind(&GazeboRosPlanarMovePrivate::OnUpdate, impl_.get(), std::placeholders::_1));
 }
 
-void GazeboRosPlanarMove::Reset()
-{
+void GazeboRosPlanarMove::Reset() {
   impl_->last_update_time_ = impl_->world_->SimTime();
   impl_->target_cmd_vel_.linear.x = 0;
   impl_->target_cmd_vel_.linear.y = 0;
   impl_->target_cmd_vel_.angular.z = 0;
 }
 
-void GazeboRosPlanarMovePrivate::OnUpdate(const gazebo::common::UpdateInfo & _info)
-{
+void GazeboRosPlanarMovePrivate::OnUpdate(const gazebo::common::UpdateInfo& _info) {
   double seconds_since_last_update = (_info.simTime - last_update_time_).Double();
 
   std::lock_guard<std::mutex> scoped_lock(lock_);
@@ -238,11 +222,9 @@ void GazeboRosPlanarMovePrivate::OnUpdate(const gazebo::common::UpdateInfo & _in
   if (seconds_since_last_update >= update_period_) {
     ignition::math::Pose3d pose = model_->WorldPose();
     auto yaw = static_cast<float>(pose.Rot().Yaw());
-    model_->SetLinearVel(
-      ignition::math::Vector3d(
+    model_->SetLinearVel(ignition::math::Vector3d(
         target_cmd_vel_.linear.x * cosf(yaw) - target_cmd_vel_.linear.y * sinf(yaw),
-        target_cmd_vel_.linear.y * cosf(yaw) + target_cmd_vel_.linear.x * sinf(yaw),
-        0));
+        target_cmd_vel_.linear.y * cosf(yaw) + target_cmd_vel_.linear.x * sinf(yaw), 0));
     model_->SetAngularVel(ignition::math::Vector3d(0, 0, target_cmd_vel_.angular.z));
 
     last_update_time_ = _info.simTime;
@@ -286,14 +268,12 @@ void GazeboRosPlanarMovePrivate::OnUpdate(const gazebo::common::UpdateInfo & _in
   }
 }
 
-void GazeboRosPlanarMovePrivate::OnCmdVel(const geometry_msgs::msg::Twist::SharedPtr _msg)
-{
+void GazeboRosPlanarMovePrivate::OnCmdVel(const geometry_msgs::msg::Twist::SharedPtr _msg) {
   std::lock_guard<std::mutex> scoped_lock(lock_);
   target_cmd_vel_ = *_msg;
 }
 
-void GazeboRosPlanarMovePrivate::UpdateOdometry(const gazebo::common::Time & _current_time)
-{
+void GazeboRosPlanarMovePrivate::UpdateOdometry(const gazebo::common::Time& _current_time) {
   auto pose = model_->WorldPose();
   odom_.pose.pose = gazebo_ros::Convert<geometry_msgs::msg::Pose>(pose);
 
@@ -310,8 +290,7 @@ void GazeboRosPlanarMovePrivate::UpdateOdometry(const gazebo::common::Time & _cu
   odom_.header.stamp = gazebo_ros::Convert<builtin_interfaces::msg::Time>(_current_time);
 }
 
-void GazeboRosPlanarMovePrivate::PublishOdometryTf(const gazebo::common::Time & _current_time)
-{
+void GazeboRosPlanarMovePrivate::PublishOdometryTf(const gazebo::common::Time& _current_time) {
   geometry_msgs::msg::TransformStamped msg;
   msg.header.stamp = gazebo_ros::Convert<builtin_interfaces::msg::Time>(_current_time);
   msg.header.frame_id = odometry_frame_;

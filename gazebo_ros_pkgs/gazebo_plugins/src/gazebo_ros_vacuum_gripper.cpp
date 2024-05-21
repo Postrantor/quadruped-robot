@@ -37,10 +37,8 @@
 #include <string>
 #include <unordered_set>
 
-namespace gazebo_plugins
-{
-class GazeboRosVacuumGripperPrivate
-{
+namespace gazebo_plugins {
+class GazeboRosVacuumGripperPrivate {
 public:
   /// Callback to be called at every simulation iteration.
   void OnUpdate();
@@ -48,9 +46,7 @@ public:
   /// \brief Function to switch the gripper on/off.
   /// \param[in] req Request
   /// \param[out] res Response
-  void OnSwitch(
-    std_srvs::srv::SetBool::Request::SharedPtr req,
-    std_srvs::srv::SetBool::Response::SharedPtr res);
+  void OnSwitch(std_srvs::srv::SetBool::Request::SharedPtr req, std_srvs::srv::SetBool::Response::SharedPtr res);
 
   /// A pointer to the GazeboROS node.
   gazebo_ros::Node::SharedPtr ros_node_;
@@ -83,24 +79,18 @@ public:
   double max_distance_;
 };
 
-GazeboRosVacuumGripper::GazeboRosVacuumGripper()
-: impl_(std::make_unique<GazeboRosVacuumGripperPrivate>())
-{
-}
+GazeboRosVacuumGripper::GazeboRosVacuumGripper() : impl_(std::make_unique<GazeboRosVacuumGripperPrivate>()) {}
 
-GazeboRosVacuumGripper::~GazeboRosVacuumGripper()
-{
-}
+GazeboRosVacuumGripper::~GazeboRosVacuumGripper() {}
 
-void GazeboRosVacuumGripper::Load(gazebo::physics::ModelPtr _model, sdf::ElementPtr _sdf)
-{
+void GazeboRosVacuumGripper::Load(gazebo::physics::ModelPtr _model, sdf::ElementPtr _sdf) {
   impl_->world_ = _model->GetWorld();
 
   // Initialize ROS node
   impl_->ros_node_ = gazebo_ros::Node::Get(_sdf);
 
   // Get QoS profiles
-  const gazebo_ros::QoS & qos = impl_->ros_node_->get_qos();
+  const gazebo_ros::QoS& qos = impl_->ros_node_->get_qos();
 
   if (_sdf->HasElement("link_name")) {
     auto link = _sdf->Get<std::string>("link_name");
@@ -117,14 +107,10 @@ void GazeboRosVacuumGripper::Load(gazebo::physics::ModelPtr _model, sdf::Element
   impl_->max_distance_ = _sdf->Get<double>("max_distance", 0.05).first;
 
   if (_sdf->HasElement("fixed")) {
-    for (auto fixed = _sdf->GetElement("fixed"); fixed != nullptr;
-      fixed = fixed->GetNextElement("fixed"))
-    {
+    for (auto fixed = _sdf->GetElement("fixed"); fixed != nullptr; fixed = fixed->GetNextElement("fixed")) {
       auto name = fixed->Get<std::string>();
       impl_->fixed_.insert(name);
-      RCLCPP_INFO(
-        impl_->ros_node_->get_logger(),
-        "Model/Link [%s] exempted from gripper force", name.c_str());
+      RCLCPP_INFO(impl_->ros_node_->get_logger(), "Model/Link [%s] exempted from gripper force", name.c_str());
     }
   }
   impl_->fixed_.insert(_model->GetName());
@@ -132,30 +118,24 @@ void GazeboRosVacuumGripper::Load(gazebo::physics::ModelPtr _model, sdf::Element
 
   // Initialize publisher
   impl_->pub_ = impl_->ros_node_->create_publisher<std_msgs::msg::Bool>(
-    "grasping", qos.get_publisher_qos("grasping", rclcpp::QoS(1)));
+      "grasping", qos.get_publisher_qos("grasping", rclcpp::QoS(1)));
 
-  RCLCPP_INFO(
-    impl_->ros_node_->get_logger(),
-    "Advertise gripper status on [%s]", impl_->pub_->get_topic_name());
+  RCLCPP_INFO(impl_->ros_node_->get_logger(), "Advertise gripper status on [%s]", impl_->pub_->get_topic_name());
 
   // Initialize service
   impl_->service_ = impl_->ros_node_->create_service<std_srvs::srv::SetBool>(
-    "switch",
-    std::bind(
-      &GazeboRosVacuumGripperPrivate::OnSwitch, impl_.get(),
-      std::placeholders::_1, std::placeholders::_2));
+      "switch",
+      std::bind(&GazeboRosVacuumGripperPrivate::OnSwitch, impl_.get(), std::placeholders::_1, std::placeholders::_2));
 
   RCLCPP_INFO(
-    impl_->ros_node_->get_logger(),
-    "Advertise gripper switch service on [%s]", impl_->service_->get_service_name());
+      impl_->ros_node_->get_logger(), "Advertise gripper switch service on [%s]", impl_->service_->get_service_name());
 
   // Listen to the update event (broadcast every simulation iteration)
-  impl_->update_connection_ = gazebo::event::Events::ConnectWorldUpdateBegin(
-    std::bind(&GazeboRosVacuumGripperPrivate::OnUpdate, impl_.get()));
+  impl_->update_connection_ =
+      gazebo::event::Events::ConnectWorldUpdateBegin(std::bind(&GazeboRosVacuumGripperPrivate::OnUpdate, impl_.get()));
 }
 
-void GazeboRosVacuumGripperPrivate::OnUpdate()
-{
+void GazeboRosVacuumGripperPrivate::OnUpdate() {
 #ifdef IGN_PROFILER_ENABLE
   IGN_PROFILE("GazeboRosVacuumGripper::OnUpdate");
 #endif
@@ -176,12 +156,12 @@ void GazeboRosVacuumGripperPrivate::OnUpdate()
   ignition::math::Pose3d parent_pose = link_->WorldPose();
   gazebo::physics::Model_V models = world_->Models();
 
-  for (auto & model : models) {
+  for (auto& model : models) {
     if (fixed_.find(model->GetName()) != fixed_.end()) {
       continue;
     }
     gazebo::physics::Link_V links = model->GetLinks();
-    for (auto & link : links) {
+    for (auto& link : links) {
       ignition::math::Pose3d link_pose = link->WorldPose();
       ignition::math::Pose3d diff = parent_pose - link_pose;
       if (diff.Pos().Length() > max_distance_) {
@@ -201,9 +181,7 @@ void GazeboRosVacuumGripperPrivate::OnUpdate()
 }
 
 void GazeboRosVacuumGripperPrivate::OnSwitch(
-  std_srvs::srv::SetBool::Request::SharedPtr req,
-  std_srvs::srv::SetBool::Response::SharedPtr res)
-{
+    std_srvs::srv::SetBool::Request::SharedPtr req, std_srvs::srv::SetBool::Response::SharedPtr res) {
   res->success = false;
   if (req->data) {
     if (!status_) {

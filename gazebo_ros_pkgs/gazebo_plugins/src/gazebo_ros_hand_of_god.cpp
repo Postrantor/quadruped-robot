@@ -59,13 +59,11 @@
 #include <memory>
 #include <string>
 
-namespace gazebo_plugins
-{
-class GazeboRosHandOfGodPrivate
-{
+namespace gazebo_plugins {
+class GazeboRosHandOfGodPrivate {
 public:
   /// Callback to be called at every simulation iteration.
-  void OnUpdate(const gazebo::common::UpdateInfo & info);
+  void OnUpdate(const gazebo::common::UpdateInfo& info);
 
   /// A pointer to the GazeboROS node.
   gazebo_ros::Node::SharedPtr ros_node_;
@@ -92,17 +90,11 @@ public:
   gazebo::event::ConnectionPtr update_connection_;
 };
 
-GazeboRosHandOfGod::GazeboRosHandOfGod()
-: impl_(std::make_unique<GazeboRosHandOfGodPrivate>())
-{
-}
+GazeboRosHandOfGod::GazeboRosHandOfGod() : impl_(std::make_unique<GazeboRosHandOfGodPrivate>()) {}
 
-GazeboRosHandOfGod::~GazeboRosHandOfGod()
-{
-}
+GazeboRosHandOfGod::~GazeboRosHandOfGod() {}
 
-void GazeboRosHandOfGod::Load(gazebo::physics::ModelPtr _model, sdf::ElementPtr _sdf)
-{
+void GazeboRosHandOfGod::Load(gazebo::physics::ModelPtr _model, sdf::ElementPtr _sdf) {
   // Initialize ROS node
   impl_->ros_node_ = gazebo_ros::Node::Get(_sdf);
 
@@ -115,8 +107,7 @@ void GazeboRosHandOfGod::Load(gazebo::physics::ModelPtr _model, sdf::ElementPtr 
     auto link_name = _sdf->Get<std::string>("link_name");
     impl_->link_ = _model->GetLink(link_name);
     if (!impl_->link_) {
-      RCLCPP_ERROR(
-        impl_->ros_node_->get_logger(), "Link [%s] not found. Aborting", link_name.c_str());
+      RCLCPP_ERROR(impl_->ros_node_->get_logger(), "Link [%s] not found. Aborting", link_name.c_str());
       impl_->ros_node_.reset();
       return;
     }
@@ -137,11 +128,10 @@ void GazeboRosHandOfGod::Load(gazebo::physics::ModelPtr _model, sdf::ElementPtr 
 
   // Listen to the update event (broadcast every simulation iteration)
   impl_->update_connection_ = gazebo::event::Events::ConnectWorldUpdateBegin(
-    std::bind(&GazeboRosHandOfGodPrivate::OnUpdate, impl_.get(), std::placeholders::_1));
+      std::bind(&GazeboRosHandOfGodPrivate::OnUpdate, impl_.get(), std::placeholders::_1));
 }
 
-void GazeboRosHandOfGodPrivate::OnUpdate(const gazebo::common::UpdateInfo & info)
-{
+void GazeboRosHandOfGodPrivate::OnUpdate(const gazebo::common::UpdateInfo& info) {
 #ifdef IGN_PROFILER_ENABLE
   IGN_PROFILE("GazeboRosHandOfGodPrivate::OnUpdate");
   IGN_PROFILE_BEGIN("lookupTransform");
@@ -150,7 +140,7 @@ void GazeboRosHandOfGodPrivate::OnUpdate(const gazebo::common::UpdateInfo & info
   geometry_msgs::msg::TransformStamped hog_desired_tform;
   try {
     hog_desired_tform = buffer_->lookupTransform("world", frame_ + "_desired", tf2::TimePointZero);
-  } catch (const tf2::TransformException & ex) {
+  } catch (const tf2::TransformException& ex) {
     RCLCPP_WARN_ONCE(ros_node_->get_logger(), "%s", ex.what());
 #ifdef IGN_PROFILER_ENABLE
     IGN_PROFILE_END();
@@ -171,8 +161,8 @@ void GazeboRosHandOfGodPrivate::OnUpdate(const gazebo::common::UpdateInfo & info
 
   ignition::math::Vector3d err_pos = hog_desired.Pos() - world_pose.Pos();
   // Get exponential coordinates for rotation
-  ignition::math::Quaterniond err_rot = (ignition::math::Matrix4d(world_pose.Rot()).Inverse() *
-    ignition::math::Matrix4d(hog_desired.Rot())).Rotation();
+  ignition::math::Quaterniond err_rot =
+      (ignition::math::Matrix4d(world_pose.Rot()).Inverse() * ignition::math::Matrix4d(hog_desired.Rot())).Rotation();
 
   ignition::math::Vector3d err_vec(err_rot.Log().X(), err_rot.Log().Y(), err_rot.Log().Z());
 

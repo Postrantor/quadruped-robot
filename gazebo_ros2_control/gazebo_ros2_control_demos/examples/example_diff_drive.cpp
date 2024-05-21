@@ -3,17 +3,15 @@
  * @date 2024-03-04
  * @copyright Copyright (c) 2024
  */
+
 #include <memory>
-
 #include <rclcpp/rclcpp.hpp>
-
 #include <geometry_msgs/msg/twist.hpp>
 
 using namespace std::chrono_literals;
 
 int main(int argc, char* argv[]) {
   rclcpp::init(argc, argv);
-
   std::shared_ptr<rclcpp::Node> node = std::make_shared<rclcpp::Node>("diff_drive_test_node");
 
   auto publisher =

@@ -19,15 +19,13 @@
 
 #include <memory>
 
-namespace gazebo_ros
-{
+namespace gazebo_ros {
 
 class GazeboRosInitPrivate;
 
 /// Initializes ROS with the system arguments passed to Gazebo (i.e. calls rclcpp::init).
 /// Also publishes the latest simtime to /clock
-class GazeboRosInit : public gazebo::SystemPlugin
-{
+class GazeboRosInit : public gazebo::SystemPlugin {
 public:
   /// Constructor
   GazeboRosInit();
@@ -36,7 +34,7 @@ public:
   virtual ~GazeboRosInit();
 
   // Documentation inherited
-  void Load(int argc, char ** argv) override;
+  void Load(int argc, char** argv) override;
 
 private:
   std::unique_ptr<GazeboRosInitPrivate> impl_;

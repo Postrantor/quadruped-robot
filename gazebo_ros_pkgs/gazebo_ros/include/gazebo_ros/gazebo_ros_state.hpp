@@ -19,8 +19,7 @@
 
 #include <memory>
 
-namespace gazebo_ros
-{
+namespace gazebo_ros {
 
 class GazeboRosStatePrivate;
 
@@ -34,8 +33,7 @@ class GazeboRosStatePrivate;
 ///
 ///      set_entity_state (gazebo_msgs::srv::SetEntityState)
 ///          Set an entity's position and velocity.
-class GazeboRosState : public gazebo::WorldPlugin
-{
+class GazeboRosState : public gazebo::WorldPlugin {
 public:
   /// Constructor
   GazeboRosState();

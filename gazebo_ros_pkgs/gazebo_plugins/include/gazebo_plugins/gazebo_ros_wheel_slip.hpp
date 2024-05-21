@@ -20,8 +20,7 @@
 
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 class GazeboRosWheelSlipPrivate;
 
 /// A plugin for adjusting wheel slip parameters in gazebo.
@@ -130,8 +129,7 @@ class GazeboRosWheelSlipPrivate;
     </plugin>
   \endcode
 */
-class GazeboRosWheelSlip : public gazebo::WheelSlipPlugin
-{
+class GazeboRosWheelSlip : public gazebo::WheelSlipPlugin {
 public:
   /// Constructor
   GazeboRosWheelSlip();

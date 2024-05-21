@@ -23,12 +23,10 @@
 #include <string>
 #include <vector>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 class MultiCameraPluginPrivate;
 
-class GAZEBO_VISIBLE MultiCameraPlugin : public gazebo::SensorPlugin
-{
+class GAZEBO_VISIBLE MultiCameraPlugin : public gazebo::SensorPlugin {
 public:
   /// Constructor
   MultiCameraPlugin();
@@ -53,9 +51,12 @@ protected:
    * \param[in] _camera_num Index number of camera
    */
   virtual void OnNewMultiFrame(
-    const unsigned char * _image,
-    unsigned int _width, unsigned int _height,
-    unsigned int _depth, const std::string & _format, const int _camera_num);
+      const unsigned char* _image,
+      unsigned int _width,
+      unsigned int _height,
+      unsigned int _depth,
+      const std::string& _format,
+      const int _camera_num);
 
   // Pointer to multicamera sensor
   gazebo::sensors::MultiCameraSensorPtr parent_sensor_;

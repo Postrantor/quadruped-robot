@@ -19,8 +19,7 @@
 
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 class GazeboRosBumperPrivate;
 
 /// A plugin that publishes contact states of a body using contact sensor.
@@ -41,8 +40,7 @@ class GazeboRosBumperPrivate;
     </plugin>
   \endcode
 */
-class GazeboRosBumper : public gazebo::SensorPlugin
-{
+class GazeboRosBumper : public gazebo::SensorPlugin {
 public:
   /// Constructor
   GazeboRosBumper();

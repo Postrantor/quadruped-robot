@@ -48,14 +48,12 @@
 #include <string>
 #include <vector>
 
-namespace gazebo_plugins
-{
-class GazeboRosJointStatePublisherPrivate
-{
+namespace gazebo_plugins {
+class GazeboRosJointStatePublisherPrivate {
 public:
   /// Callback to be called at every simulation iteration.
   /// \param[in] info Updated simulation info.
-  void OnUpdate(const gazebo::common::UpdateInfo & info);
+  void OnUpdate(const gazebo::common::UpdateInfo& info);
 
   /// A pointer to the GazeboROS node.
   gazebo_ros::Node::SharedPtr ros_node_;
@@ -77,21 +75,16 @@ public:
 };
 
 GazeboRosJointStatePublisher::GazeboRosJointStatePublisher()
-: impl_(std::make_unique<GazeboRosJointStatePublisherPrivate>())
-{
-}
+    : impl_(std::make_unique<GazeboRosJointStatePublisherPrivate>()) {}
 
-GazeboRosJointStatePublisher::~GazeboRosJointStatePublisher()
-{
-}
+GazeboRosJointStatePublisher::~GazeboRosJointStatePublisher() {}
 
-void GazeboRosJointStatePublisher::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf)
-{
+void GazeboRosJointStatePublisher::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf) {
   // ROS node
   impl_->ros_node_ = gazebo_ros::Node::Get(sdf);
 
   // Get QoS profiles
-  const gazebo_ros::QoS & qos = impl_->ros_node_->get_qos();
+  const gazebo_ros::QoS& qos = impl_->ros_node_->get_qos();
 
   // Joints
   if (!sdf->HasElement("joint_name")) {
@@ -109,9 +102,7 @@ void GazeboRosJointStatePublisher::Load(gazebo::physics::ModelPtr model, sdf::El
       RCLCPP_ERROR(impl_->ros_node_->get_logger(), "Joint %s does not exist!", joint_name.c_str());
     } else {
       impl_->joints_.push_back(joint);
-      RCLCPP_INFO(
-        impl_->ros_node_->get_logger(), "Going to publish joint [%s]",
-        joint_name.c_str() );
+      RCLCPP_INFO(impl_->ros_node_->get_logger(), "Going to publish joint [%s]", joint_name.c_str());
     }
 
     joint_elem = joint_elem->GetNextElement("joint_name");
@@ -126,8 +117,7 @@ void GazeboRosJointStatePublisher::Load(gazebo::physics::ModelPtr model, sdf::El
   // Update rate
   double update_rate = 100.0;
   if (!sdf->HasElement("update_rate")) {
-    RCLCPP_INFO(
-      impl_->ros_node_->get_logger(), "Missing <update_rate>, defaults to %f", update_rate);
+    RCLCPP_INFO(impl_->ros_node_->get_logger(), "Missing <update_rate>, defaults to %f", update_rate);
   } else {
     update_rate = sdf->GetElement("update_rate")->Get<double>();
   }
@@ -142,15 +132,14 @@ void GazeboRosJointStatePublisher::Load(gazebo::physics::ModelPtr model, sdf::El
 
   // Joint state publisher
   impl_->joint_state_pub_ = impl_->ros_node_->create_publisher<sensor_msgs::msg::JointState>(
-    "joint_states", qos.get_publisher_qos("joint_states", rclcpp::QoS(1000)));
+      "joint_states", qos.get_publisher_qos("joint_states", rclcpp::QoS(1000)));
 
   // Callback on every iteration
   impl_->update_connection_ = gazebo::event::Events::ConnectWorldUpdateBegin(
-    std::bind(&GazeboRosJointStatePublisherPrivate::OnUpdate, impl_.get(), std::placeholders::_1));
+      std::bind(&GazeboRosJointStatePublisherPrivate::OnUpdate, impl_.get(), std::placeholders::_1));
 }
 
-void GazeboRosJointStatePublisherPrivate::OnUpdate(const gazebo::common::UpdateInfo & info)
-{
+void GazeboRosJointStatePublisherPrivate::OnUpdate(const gazebo::common::UpdateInfo& info) {
 #ifdef IGN_PROFILER_ENABLE
   IGN_PROFILE("GazeboRosJointStatePublisherPrivate::OnUpdate");
 #endif

@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 /*
  * Desc: Video plugin for displaying ROS image topics on Ogre textures
  * Author: Piyush Khandelwal
@@ -26,8 +25,7 @@
 
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 class GazeboRosVideoPrivate;
 
 /// Video plugin for displaying ROS image topics on Ogre textures
@@ -56,8 +54,7 @@ class GazeboRosVideoPrivate;
   \endcode
 */
 
-class GazeboRosVideo : public gazebo::VisualPlugin
-{
+class GazeboRosVideo : public gazebo::VisualPlugin {
 public:
   /// Constructor
   GazeboRosVideo();

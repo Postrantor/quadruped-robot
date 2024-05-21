@@ -19,8 +19,7 @@
 
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 
 class GazeboRosRaySensorPrivate;
 
@@ -69,8 +68,7 @@ class GazeboRosRaySensorPrivate;
     </plugin>
   \endcode
 */
-class GazeboRosRaySensor : public gazebo::SensorPlugin
-{
+class GazeboRosRaySensor : public gazebo::SensorPlugin {
 public:
   /// \brief Constructor
   GazeboRosRaySensor();

@@ -20,8 +20,7 @@
 
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 class GazeboRosHarnessPrivate;
 
 /// Harness plugin for gazebo.
@@ -103,8 +102,7 @@ class GazeboRosHarnessPrivate;
     </plugin>
   \endcode
 */
-class GazeboRosHarness : public gazebo::HarnessPlugin
-{
+class GazeboRosHarness : public gazebo::HarnessPlugin {
 public:
   /// Constructor
   GazeboRosHarness();

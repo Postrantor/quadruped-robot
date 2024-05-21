@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 #include <builtin_interfaces/msg/time.hpp>
 #include <gazebo_plugins/gazebo_ros_gps_sensor.hpp>
 #include <gazebo_ros/conversions/builtin_interfaces.hpp>
@@ -29,11 +28,9 @@
 #include <memory>
 #include <string>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 
-class GazeboRosGpsSensorPrivate
-{
+class GazeboRosGpsSensorPrivate {
 public:
   /// Node for ros communication
   gazebo_ros::Node::SharedPtr ros_node_;
@@ -54,21 +51,15 @@ public:
   void OnUpdate();
 };
 
-GazeboRosGpsSensor::GazeboRosGpsSensor()
-: impl_(std::make_unique<GazeboRosGpsSensorPrivate>())
-{
-}
+GazeboRosGpsSensor::GazeboRosGpsSensor() : impl_(std::make_unique<GazeboRosGpsSensorPrivate>()) {}
 
-GazeboRosGpsSensor::~GazeboRosGpsSensor()
-{
-}
+GazeboRosGpsSensor::~GazeboRosGpsSensor() {}
 
-void GazeboRosGpsSensor::Load(gazebo::sensors::SensorPtr _sensor, sdf::ElementPtr _sdf)
-{
+void GazeboRosGpsSensor::Load(gazebo::sensors::SensorPtr _sensor, sdf::ElementPtr _sdf) {
   impl_->ros_node_ = gazebo_ros::Node::Get(_sdf);
 
   // Get QoS profiles
-  const gazebo_ros::QoS & qos = impl_->ros_node_->get_qos();
+  const gazebo_ros::QoS& qos = impl_->ros_node_->get_qos();
 
   impl_->sensor_ = std::dynamic_pointer_cast<gazebo::sensors::GpsSensor>(_sensor);
   if (!impl_->sensor_) {
@@ -77,9 +68,9 @@ void GazeboRosGpsSensor::Load(gazebo::sensors::SensorPtr _sensor, sdf::ElementPt
   }
 
   impl_->pub_ = impl_->ros_node_->create_publisher<sensor_msgs::msg::NavSatFix>(
-    "~/out", qos.get_publisher_qos("~/out", rclcpp::SensorDataQoS().reliable()));
+      "~/out", qos.get_publisher_qos("~/out", rclcpp::SensorDataQoS().reliable()));
   impl_->vel_pub_ = impl_->ros_node_->create_publisher<geometry_msgs::msg::Vector3Stamped>(
-    "~/vel", qos.get_publisher_qos("~/vel", rclcpp::SensorDataQoS().reliable()));
+      "~/vel", qos.get_publisher_qos("~/vel", rclcpp::SensorDataQoS().reliable()));
 
   // Create message to be reused
   auto msg = std::make_shared<sensor_msgs::msg::NavSatFix>();
@@ -91,11 +82,11 @@ void GazeboRosGpsSensor::Load(gazebo::sensors::SensorPtr _sensor, sdf::ElementPt
   // Fill covariances
   using SNT = gazebo::sensors::SensorNoiseType;
   msg->position_covariance[0] =
-    gazebo_ros::NoiseVariance(impl_->sensor_->Noise(SNT::GPS_POSITION_LATITUDE_NOISE_METERS));
+      gazebo_ros::NoiseVariance(impl_->sensor_->Noise(SNT::GPS_POSITION_LATITUDE_NOISE_METERS));
   msg->position_covariance[4] =
-    gazebo_ros::NoiseVariance(impl_->sensor_->Noise(SNT::GPS_POSITION_LONGITUDE_NOISE_METERS));
+      gazebo_ros::NoiseVariance(impl_->sensor_->Noise(SNT::GPS_POSITION_LONGITUDE_NOISE_METERS));
   msg->position_covariance[8] =
-    gazebo_ros::NoiseVariance(impl_->sensor_->Noise(SNT::GPS_POSITION_ALTITUDE_NOISE_METERS));
+      gazebo_ros::NoiseVariance(impl_->sensor_->Noise(SNT::GPS_POSITION_ALTITUDE_NOISE_METERS));
   msg->position_covariance_type = sensor_msgs::msg::NavSatFix::COVARIANCE_TYPE_DIAGONAL_KNOWN;
 
   // Fill gps status
@@ -105,19 +96,18 @@ void GazeboRosGpsSensor::Load(gazebo::sensors::SensorPtr _sensor, sdf::ElementPt
   impl_->msg_ = msg;
   impl_->msg_vel_ = msg_vel;
 
-  impl_->sensor_update_event_ = impl_->sensor_->ConnectUpdated(
-    std::bind(&GazeboRosGpsSensorPrivate::OnUpdate, impl_.get()));
+  impl_->sensor_update_event_ =
+      impl_->sensor_->ConnectUpdated(std::bind(&GazeboRosGpsSensorPrivate::OnUpdate, impl_.get()));
 }
 
-void GazeboRosGpsSensorPrivate::OnUpdate()
-{
-  #ifdef IGN_PROFILER_ENABLE
+void GazeboRosGpsSensorPrivate::OnUpdate() {
+#ifdef IGN_PROFILER_ENABLE
   IGN_PROFILE("GazeboRosGpsSensorPrivate::OnUpdate");
   IGN_PROFILE_BEGIN("fill ROS message");
-  #endif
+#endif
   // Fill messages with the latest sensor data
-  msg_->header.stamp = msg_vel_->header.stamp = gazebo_ros::Convert<builtin_interfaces::msg::Time>(
-    sensor_->LastUpdateTime());
+  msg_->header.stamp = msg_vel_->header.stamp =
+      gazebo_ros::Convert<builtin_interfaces::msg::Time>(sensor_->LastUpdateTime());
   msg_->latitude = sensor_->Latitude().Degree();
   msg_->longitude = sensor_->Longitude().Degree();
   msg_->altitude = sensor_->Altitude();
@@ -125,16 +115,16 @@ void GazeboRosGpsSensorPrivate::OnUpdate()
   msg_vel_->vector.y = sensor_->VelocityNorth();
   msg_vel_->vector.z = sensor_->VelocityUp();
 
-  #ifdef IGN_PROFILER_ENABLE
+#ifdef IGN_PROFILER_ENABLE
   IGN_PROFILE_END();
   IGN_PROFILE_BEGIN("publish");
-  #endif
+#endif
   // Publish message
   pub_->publish(*msg_);
   vel_pub_->publish(*msg_vel_);
-  #ifdef IGN_PROFILER_ENABLE
+#ifdef IGN_PROFILER_ENABLE
   IGN_PROFILE_END();
-  #endif
+#endif
 }
 
 GZ_REGISTER_SENSOR_PLUGIN(GazeboRosGpsSensor)

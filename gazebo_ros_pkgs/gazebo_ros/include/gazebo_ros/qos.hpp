@@ -27,16 +27,12 @@
 #include <stdexcept>
 #include <string>
 
-namespace gazebo_ros
-{
+namespace gazebo_ros {
 
 /// Exception thrown when there is an invalid QoS configuration.
-class InvalidQoSException : public std::runtime_error
-{
+class InvalidQoSException : public std::runtime_error {
 public:
-  explicit InvalidQoSException(const std::string & msg)
-  : std::runtime_error(msg)
-  {}
+  explicit InvalidQoSException(const std::string& msg) : std::runtime_error(msg) {}
 };
 
 // Forward declare private implementation
@@ -53,8 +49,7 @@ struct QoSPrivate;
  * For example, two publishers using the same topic will have the same QoS returned by this class.
  * \include gazebo_ros/qos.hpp
  */
-class GAZEBO_ROS_NODE_PUBLIC_TYPE QoS
-{
+class GAZEBO_ROS_NODE_PUBLIC_TYPE QoS {
 public:
   QoS();
 
@@ -128,11 +123,10 @@ public:
    * \throws gazebo_ros::InvalidQoSException if there is an invalid QoS value or a topic element
    *   is missing a "name" attribute.
    */
-  QoS(
-    sdf::ElementPtr _sdf,
-    const std::string node_name,
-    const std::string node_namespace,
-    const rclcpp::NodeOptions & options);
+  QoS(sdf::ElementPtr _sdf,
+      const std::string node_name,
+      const std::string node_namespace,
+      const rclcpp::NodeOptions& options);
 
   /// Get the QoS for a publisher
   /*
@@ -140,8 +134,7 @@ public:
    * \param[in] default_qos: The default quality of service used for settings that have not been
    *   overridden.
    */
-  rclcpp::QoS get_publisher_qos(
-    const std::string topic, rclcpp::QoS default_qos = rclcpp::QoS(10)) const;
+  rclcpp::QoS get_publisher_qos(const std::string topic, rclcpp::QoS default_qos = rclcpp::QoS(10)) const;
 
   /// Get the QoS for a subscription
   /*
@@ -149,24 +142,23 @@ public:
    * \param[in] default_qos: The default quality of service used for settings that have not been
    *   overridden.
    */
-  rclcpp::QoS get_subscription_qos(
-    const std::string topic, rclcpp::QoS default_qos = rclcpp::QoS(10)) const;
+  rclcpp::QoS get_subscription_qos(const std::string topic, rclcpp::QoS default_qos = rclcpp::QoS(10)) const;
 
   /// QoS is copyable
   // need explicit copy constructor due to `std::unique_ptr` `impl_`
-  QoS(const QoS & other);
+  QoS(const QoS& other);
 
   /// QoS is movable
   // this is needed due to rule of five
-  QoS(QoS && other);
+  QoS(QoS&& other);
 
   /// QoS is copy assignable
   // need explicit copy assignment due to `std::unique_ptr` `impl_`
-  QoS & operator=(const QoS & other);
+  QoS& operator=(const QoS& other);
 
   /// QoS is move assignable
   // this is needed due to rule of five
-  QoS & operator=(QoS && other);
+  QoS& operator=(QoS&& other);
 
   // this is needed due to rule of five
   ~QoS();

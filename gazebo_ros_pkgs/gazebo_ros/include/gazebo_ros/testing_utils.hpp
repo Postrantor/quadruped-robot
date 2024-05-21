@@ -25,17 +25,14 @@
 #include <vector>
 #include <string>
 
-namespace gazebo_ros
-{
-
+namespace gazebo_ros {
 
 /// Helper class to run gzserver in a separate process and later terminate that process
-class GazeboProcess
-{
+class GazeboProcess {
 public:
   /// Start gzserver with a list of arguments
   /// \note The path and --verbose are automatically added
-  explicit GazeboProcess(const std::vector<const char *> & args);
+  explicit GazeboProcess(const std::vector<const char *> &args);
 
   /// Destructor
   ~GazeboProcess();
@@ -56,20 +53,15 @@ private:
   int pid_ = -1;
 };
 
-GazeboProcess::GazeboProcess(const std::vector<const char *> & args)
-{
+GazeboProcess::GazeboProcess(const std::vector<const char *> &args) {
   arguments = {"/usr/bin/gzserver", "--verbose"};
   arguments.insert(arguments.end(), args.begin(), args.end());
   arguments.push_back(nullptr);
 }
 
-GazeboProcess::~GazeboProcess()
-{
-  Terminate();
-}
+GazeboProcess::~GazeboProcess() { Terminate(); }
 
-int GazeboProcess::Run()
-{
+int GazeboProcess::Run() {
   // Fork process so gazebo can be run as child
   pid_ = fork();
 
@@ -91,8 +83,7 @@ int GazeboProcess::Run()
   return pid_;
 }
 
-int GazeboProcess::Terminate()
-{
+int GazeboProcess::Terminate() {
   // Return -1
   if (pid_ < 0) {
     return ECHILD;
@@ -111,19 +102,15 @@ int GazeboProcess::Terminate()
   return 0;
 }
 
-
 /// Helper function to get the next message on a ROS topic with a timeout
 /// \param node Pointer to a node to use to subscribe to the topic
 /// \param topic Topic to subscribe to for message
 /// \param timeout Maximum time to wait for message
 /// \tparam T Message type to get
 /// \return Shared pointer to new message, or nullptr if none received before timeout
-template<typename T>
-typename T::SharedPtr
-get_message_or_timeout(
-  rclcpp::Node::SharedPtr node, const std::string & topic,
-  rclcpp::Duration timeout = rclcpp::Duration(10, 0))
-{
+template <typename T>
+typename T::SharedPtr get_message_or_timeout(
+    rclcpp::Node::SharedPtr node, const std::string &topic, rclcpp::Duration timeout = rclcpp::Duration(10, 0)) {
   rclcpp::Clock clock;
   rclcpp::executors::SingleThreadedExecutor executor;
   executor.add_node(node);
@@ -132,16 +119,15 @@ get_message_or_timeout(
   typename T::SharedPtr msg = nullptr;
 
   auto sub = node->create_subscription<T>(
-    topic, rclcpp::QoS(rclcpp::KeepLast(1)).transient_local(),
-    [&msg_received, &msg](typename T::SharedPtr _msg) {
-      // If this is the first message from this topic, increment the counter
-      if (!msg_received.exchange(true)) {
-        msg = _msg;
-      }
-    });
+      topic, rclcpp::QoS(rclcpp::KeepLast(1)).transient_local(), [&msg_received, &msg](typename T::SharedPtr _msg) {
+        // If this is the first message from this topic, increment the counter
+        if (!msg_received.exchange(true)) {
+          msg = _msg;
+        }
+      });
 
   // Wait for topic to be available
-  using namespace std::literals::chrono_literals; // NOLINT
+  using namespace std::literals::chrono_literals;  // NOLINT
   auto timeout_absolute = clock.now() + timeout * 0.5;
   while (node->count_publishers(topic) == 0) {
     executor.spin_once(200ms);
@@ -157,7 +143,6 @@ get_message_or_timeout(
 
   return msg;
 }
-
 
 }  // namespace gazebo_ros
 

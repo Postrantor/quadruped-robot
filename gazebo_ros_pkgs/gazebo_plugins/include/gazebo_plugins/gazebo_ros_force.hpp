@@ -20,8 +20,7 @@
 
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 class GazeboRosForcePrivate;
 
 /// This plugin collects data from a ROS topic and applies wrench to a link accordingly.
@@ -53,8 +52,7 @@ class GazeboRosForcePrivate;
   \endcode
 */
 
-class GazeboRosForce : public gazebo::ModelPlugin
-{
+class GazeboRosForce : public gazebo::ModelPlugin {
 public:
   /// Constructor
   GazeboRosForce();

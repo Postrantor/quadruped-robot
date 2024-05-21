@@ -251,7 +251,7 @@ class SpawnEntityNode(Node):
             else:
                 self.get_logger().error('Service %s/unpause_physics unavailable. \
                                          Was Gazebo started with GazeboRosInit?' % (
-                                             self.args.gazebo_namespace))
+                    self.args.gazebo_namespace))
 
         # If bond enabled, setup shutdown callback and wait for shutdown
         if self.args.bond:

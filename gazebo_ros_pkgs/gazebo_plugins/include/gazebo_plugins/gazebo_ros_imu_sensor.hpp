@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 #ifndef GAZEBO_PLUGINS__GAZEBO_ROS_IMU_SENSOR_HPP_
 #define GAZEBO_PLUGINS__GAZEBO_ROS_IMU_SENSOR_HPP_
 
@@ -22,8 +21,7 @@
 #include <string>
 #include <memory>
 
-namespace gazebo_plugins
-{
+namespace gazebo_plugins {
 
 class GazeboRosImuSensorPrivate;
 
@@ -45,8 +43,7 @@ class GazeboRosImuSensorPrivate;
     </sensor>
   \endcode
 */
-class GazeboRosImuSensor : public gazebo::SensorPlugin
-{
+class GazeboRosImuSensor : public gazebo::SensorPlugin {
 public:
   /// Constructor.
   GazeboRosImuSensor();

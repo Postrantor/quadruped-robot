@@ -19,15 +19,13 @@
 
 #include <memory>
 
-namespace gazebo_ros
-{
+namespace gazebo_ros {
 
 class GazeboRosFactoryPrivate;
 
 /// Factoryializes ROS with the system arguments passed to Gazebo (i.e. calls rclcpp::init) and
 /// provides services to spawn and delete entities from the world.
-class GazeboRosFactory : public gazebo::SystemPlugin
-{
+class GazeboRosFactory : public gazebo::SystemPlugin {
 public:
   /// Constructor
   GazeboRosFactory();
@@ -36,7 +34,7 @@ public:
   virtual ~GazeboRosFactory();
 
   // Documentation inherited
-  void Load(int argc, char ** argv) override;
+  void Load(int argc, char** argv) override;
 
 private:
   std::unique_ptr<GazeboRosFactoryPrivate> impl_;

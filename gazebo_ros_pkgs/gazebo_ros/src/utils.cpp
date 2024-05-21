@@ -17,11 +17,9 @@
 
 #include <string>
 
-namespace gazebo_ros
-{
+namespace gazebo_ros {
 
-double NoiseVariance(const gazebo::sensors::Noise & _noise)
-{
+double NoiseVariance(const gazebo::sensors::Noise &_noise) {
   if (gazebo::sensors::Noise::NoiseType::GAUSSIAN == _noise.GetNoiseType()) {
     auto gm = dynamic_cast<const gazebo::sensors::GaussianNoiseModel &>(_noise);
     return gm.GetStdDev() * gm.GetStdDev();
@@ -31,14 +29,14 @@ double NoiseVariance(const gazebo::sensors::Noise & _noise)
   return -1.;
 }
 
-double NoiseVariance(const gazebo::sensors::NoisePtr & _noise_ptr)
-{
-  if (!_noise_ptr) {return 0.;}
+double NoiseVariance(const gazebo::sensors::NoisePtr &_noise_ptr) {
+  if (!_noise_ptr) {
+    return 0.;
+  }
   return NoiseVariance(*_noise_ptr);
 }
 
-std::string ScopedNameBase(const std::string & str)
-{
+std::string ScopedNameBase(const std::string &str) {
   // Get index of last :: scope marker
   auto idx = str.rfind("::");
   // If not found or at end, return original string
@@ -49,8 +47,7 @@ std::string ScopedNameBase(const std::string & str)
   return str.substr(idx + 2);
 }
 
-std::string SensorFrameID(const gazebo::sensors::Sensor & _sensor, const sdf::Element & _sdf)
-{
+std::string SensorFrameID(const gazebo::sensors::Sensor &_sensor, const sdf::Element &_sdf) {
   // Return frame from sdf tag if present
   if (_sdf.HasElement("frame_name")) {
     return _sdf.Get<std::string>("frame_name");
@@ -60,14 +57,9 @@ std::string SensorFrameID(const gazebo::sensors::Sensor & _sensor, const sdf::El
   return gazebo_ros::ScopedNameBase(_sensor.ParentName());
 }
 
-Throttler::Throttler(const double _hz)
-: period_(1.0 / _hz),
-  last_time_(0, 0)
-{
-}
+Throttler::Throttler(const double _hz) : period_(1.0 / _hz), last_time_(0, 0) {}
 
-bool Throttler::IsReady(const gazebo::common::Time & _now)
-{
+bool Throttler::IsReady(const gazebo::common::Time &_now) {
   // If time went backwards, reset
   if (_now < last_time_) {
     last_time_ = _now;
