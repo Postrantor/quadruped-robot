@@ -58,13 +58,10 @@
 #include <controller_manager/controller_manager.h>
 #include <transmission_interface/transmission_parser.h>
 
-namespace gazebo_ros_control
-{
+namespace gazebo_ros_control {
 
-class GazeboRosControlPlugin : public gazebo::ModelPlugin
-{
+class GazeboRosControlPlugin : public gazebo::ModelPlugin {
 public:
-
   virtual ~GazeboRosControlPlugin();
 
   // Overloaded Gazebo entry point
@@ -86,7 +83,7 @@ protected:
   void eStopCB(const std_msgs::BoolConstPtr& e_stop_active);
 
   // Node Handles
-  ros::NodeHandle model_nh_; // namespaces to robot name
+  ros::NodeHandle model_nh_;  // namespaces to robot name
 
   // Pointer to the model
   gazebo::physics::ModelPtr parent_model_;
@@ -124,8 +121,6 @@ protected:
   // e_stop_active_ is true if the emergency stop is active.
   bool e_stop_active_, last_e_stop_active_;
   ros::Subscriber e_stop_sub_;  // Emergency stop subscriber
-
 };
 
-
-}
+}  // namespace gazebo_ros_control
