@@ -1531,4 +1531,3 @@ GZ_REGISTER_MODEL_PLUGIN(QuadrupedController)
 ```
 
 通过这个示例，你可以根据需要设置关节的力矩或位置，并利用 PID 控制器实现精确控制。这些方法可以帮助你更好地与 Gazebo 仿真进行交互和控制。
-
