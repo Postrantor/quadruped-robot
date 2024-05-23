@@ -1,8 +1,8 @@
 FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND noninteractive
-ENV GZ_VERSION fortress
-ENV ROS_DISTRO rolling
+ENV IGNITION_VERSION fortress
+ENV ROS_DISTRO humble
 
 # Make sure everything is up to date before building from source
 RUN apt-get update \
@@ -29,7 +29,11 @@ RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o 
 
 RUN mkdir -p /home/ros2_ws/src \
     && cd /home/ros2_ws/src \
-    && git clone https://github.com/ros-controls/gz_ros2_control/ \
+    && if [ "${ROS_DISTRO}" = "rolling" ] ; then \
+      git clone https://github.com/ros-controls/gz_ros2_control/; \
+    else \
+      git clone https://github.com/ros-controls/gz_ros2_control/ -b ${ROS_DISTRO}; \
+    fi \
     && rosdep init && rosdep update \
     && rosdep install --from-paths ./ -i -y --rosdistro ${ROS_DISTRO}
 
@@ -40,4 +44,4 @@ RUN cd /home/ros2_ws/ \
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ros2 launch gz_ros2_control_demos cart_example_position.launch.py
+CMD ros2 launch ign_ros2_control_demos cart_example_position.launch.py
