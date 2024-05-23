@@ -23,3 +23,12 @@ The ros_gz library makes heavy use of templates which causes compilers to consum
 > ros_gz 库大量使用模板，导致编译器消耗大量内存。如果您的构建因 c++: fatal error: Killed signal terminated program cc1plus 失败，请尝试使用 `colcon build --parallel-workers=1 --executor sequential` 构建。您可能还必须在运行 colcon build 之前设置 `export MAKEFLAGS="-j 1"` 以限制用于构建单个包的处理器数量。
 
 > https://github.com/gazebosim/ros_gz/blob/ros2/README.md
+
+## reference
+
+[gazebo_ros_control - Search](https://www.bing.com/search?q=gazebo_ros_control&PC=U316&FPIG=0B29160E8E2C4E6E837A897E8AA1DAA2&first=11&FORM=PORE)
+[gazebo_ros_control - ROS Wiki](http://wiki.ros.org/gazebo_ros_control)
+[gazebo_ros_control: Main Page](https://docs.ros.org/en/indigo/api/gazebo_ros_control/html/index.html)
+[Gazebo : Tutorial : ROS control](https://classic.gazebosim.org/tutorials?tut=ros_control)
+[joint_state ROS topic from Gazebo and ros_control - Gazebo: Q&A Forum](https://answers.gazebosim.org/question/4205/joint_state-ros-topic-from-gazebo-and-ros_control/)
+[Tutorial 10: Robot Control — 240AR060 - Introduction to ROS](https://sir.upc.edu/projects/rostutorials/10-gazebo_control_tutorial/index.html)
