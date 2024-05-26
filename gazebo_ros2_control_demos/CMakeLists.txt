@@ -16,7 +16,9 @@ add_executable(example_robot
 )
 ament_target_dependencies(example_robot
   rclcpp
+  std_msgs
   geometry_msgs
+  control_msgs
 )
 
 install(
