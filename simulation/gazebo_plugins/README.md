@@ -2,7 +2,7 @@
     <img src=".image/logo.png" alt="Gazebo Awesome Plugins" width="100%">
 </p>
 
---------------------
+---
 
 GAP is a set of tools written in C++ for [Gazebo] which provide an interface to interact programatically with the simulator.
 We built GAP to support our research in **Domain Randomization**.
@@ -19,7 +19,7 @@ They include:
 
 This project was originally conceived so we could develop a [scene generator] in Gazebo, employing domain randomisation in an attempt to bridge the **reality gap** between real life images and synthetically generated frames.
 
-Check out [`tf-object-detection`](https://github.com/jsbruglie/tf-shape-detection), in which we trained a *state--of--the--art* deep CNN using this synthetic dataset.
+Check out [`tf-object-detection`](https://github.com/jsbruglie/tf-shape-detection), in which we trained a _state--of--the--art_ deep CNN using this synthetic dataset.
 
 ### Examples
 
@@ -38,7 +38,6 @@ Check out the [examples] and see what you can achieve with these plugins.
 
 Take a look at the automatic [documentation] for file and class description.
 
-
 ### Dependencies
 
 The code has been tested in Gazebo 9.0.0 from the official stable repository as well as built from source 9.4.1 and running on Ubuntu 16.04.5 and 18.04.
@@ -51,6 +50,7 @@ Eigen 3 is required for [scene_example].
 sudo apt install protobuf-compiler  # Required
 sudo apt install libeigen3-dev      # Required for scene_example
 ```
+
 For custom texture generation, we have developed a [pattern generation tool], which can randomly generate a high number of 4 different types of textures and produces materials in a format Gazebo can recognise.
 
 ### Compilation
