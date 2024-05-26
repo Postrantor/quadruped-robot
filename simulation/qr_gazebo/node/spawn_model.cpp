@@ -2,8 +2,7 @@
 
 #include "qr_gazebo/gazebo_model_spawn.h"
 
-int main(int argc, char **argv)
-{
+int main(int argc, char** argv) {
   ros::init(argc, argv, "spawn_model");
   ros::NodeHandle nh;
 
@@ -17,7 +16,7 @@ int main(int argc, char **argv)
 
   /// "robot_description" was loaded in .launch file
   /// make sure the robot hasn't been created
-  if(!manager.spawn_model("robot_description")){
+  if (!manager.spawn_model("robot_description")) {
     ROS_ERROR("Fail to spawn model in gazebo: %s", type_cstr);
     return 1;
   }
@@ -36,7 +35,7 @@ int main(int argc, char **argv)
 
   getchar();
 
-  if(!manager.stop_controllers()){
+  if (!manager.stop_controllers()) {
     ROS_ERROR("Fail to stop controllers in gazebo: %s", type_cstr);
     return 1;
   }

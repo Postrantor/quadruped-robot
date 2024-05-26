@@ -9,13 +9,8 @@
 #include <controller_manager_msgs/UnloadController.h>
 
 class GazeboSpawner {
-
 public:
-
-  GazeboSpawner(const std::string robot_type,
-                ros::NodeHandle& nh): d_robot_type(robot_type), d_nh(nh){
-    ;
-  }
+  GazeboSpawner(const std::string robot_type, ros::NodeHandle& nh) : d_robot_type(robot_type), d_nh(nh) { ; }
 
   bool spawn_model(std::string urdf_param);
 
@@ -34,13 +29,11 @@ public:
   void set_model_orientation(double w, double x, double y, double z);
 
 protected:
-
   static const std::vector<std::string> controller_list;
 
   static geometry_msgs::Pose model_pose;
 
 private:
-
   std::string d_robot_type;
 
   ros::NodeHandle d_nh;
@@ -48,7 +41,6 @@ private:
   void load_controller_once(std::string controller_name);
 
   void unload_controller_once(std::string controller_name);
-
 };
 
-#endif // GAZEBO_MODEL_SPAWN_H
+#endif  // GAZEBO_MODEL_SPAWN_H

@@ -12,40 +12,38 @@ foreach(ITR ${GAZEBO_INCLUDE_DIRS})
   endif()
 endforeach()
 
-# Get list of every proto source
-# Results in overhead in compilation
+# Get list of every proto source Results in overhead in compilation
 file(GLOB PROTOBUF_SOURCES ${PROTOBUF_IMPORT_DIRS}/*.proto)
 
 # Obtain set of proto messages definitions
-set (msgs
-  # CameraUtils messages
-  camera_utils_request.proto
-  camera_utils_response.proto
-  point_projection.proto
-  # VisualUtils messages
-  visual_utils_request.proto
-  visual_utils_response.proto
-  # WorldUtils Messages
-  world_utils_request.proto
-  world_utils_response.proto
-  object.proto
-  # Domain Randomization Plugin messages
-  model_cmd.proto
-  dr_request.proto
-  dr_response.proto
-  # Message dependencies
-  ${PROTOBUF_SOURCES}
-)
+set(msgs
+    # CameraUtils messages
+    camera_utils_request.proto
+    camera_utils_response.proto
+    point_projection.proto
+    # VisualUtils messages
+    visual_utils_request.proto
+    visual_utils_response.proto
+    # WorldUtils Messages
+    world_utils_request.proto
+    world_utils_response.proto
+    object.proto
+    # Domain Randomization Plugin messages
+    model_cmd.proto
+    dr_request.proto
+    dr_response.proto
+    # Message dependencies
+    ${PROTOBUF_SOURCES})
 
 # Generate Protobuf sources
-PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS ${msgs})
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${msgs})
 # Compile shared library
 add_library(gap_msgs SHARED ${PROTO_SRCS})
 # Link Protobuf library
 target_link_libraries(gap_msgs ${PROTOBUF_LIBRARY})
 
 # Obtain header include string
-set (headers_list)
+set(headers_list)
 foreach(FIL ${msgs})
   get_filename_component(FIL_WE ${FIL} NAME_WE)
   set(headers_list ${headers_list} "\n\#include \"${FIL_WE}.pb.h\"")
@@ -53,11 +51,9 @@ endforeach()
 string(REPLACE ";" "" message_headers "${headers_list}")
 
 # Configure header for message types
-configure_file (${PROJECT_SOURCE_DIR}/msgs/MessageTypes.hh.in
-  ${CMAKE_CURRENT_BINARY_DIR}/MessageTypes.hh )
+configure_file(${PROJECT_SOURCE_DIR}/msgs/MessageTypes.hh.in
+               ${CMAKE_CURRENT_BINARY_DIR}/MessageTypes.hh)
 
 # Install library
-install(TARGETS gap_msgs
-  DESTINATION "${msgs_lib_dest}")
-install(FILES ${PROTO_HDRS}
-  DESTINATION "${msgs_include_dest}")
+install(TARGETS gap_msgs DESTINATION "${msgs_lib_dest}")
+install(FILES ${PROTO_HDRS} DESTINATION "${msgs_include_dest}")

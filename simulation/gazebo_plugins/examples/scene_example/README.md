@@ -25,6 +25,7 @@ You may want to concatenate each resulting `.material` script into a single one,
 
 Open up two terminals in the root directory of the repository.
 On terminal 1 run gazebo server:
+
 ```bash
 cd ~/workspace/gap/ &&
 source setup.sh &&
@@ -32,9 +33,10 @@ gzserver worlds/spawner.world
 ```
 
 On terminal 2 run the example client:
+
 ```bash
 cd ~/workspace/gap/ &&
-./build/bin/scene_example -s 200 -d ./train/SHAPES2018/dataset/ -i ./train/SHAPES2018/images/ 
+./build/bin/scene_example -s 200 -d ./train/SHAPES2018/dataset/ -i ./train/SHAPES2018/images/
 ```
 
 This should generate a dataset with 200 images, spread across two subdirectories 000 and 100.
@@ -45,7 +47,8 @@ You can use `scene_example --help` to obtain an explanation of each command-line
 
 We provide a [debugging tool] written in Python 3, which relies on Tkinter and Pillow to create the GUI, and shows the resulting dataset, one image at a time.
 To install Tkinter and Pillow in Ubuntu systems run
-``` bash
+
+```bash
 sudo apt install python3-tk &&
 sudo pip3 install Pillow
 ```

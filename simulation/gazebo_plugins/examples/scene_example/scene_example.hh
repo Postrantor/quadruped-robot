@@ -4,9 +4,9 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- *      
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -76,13 +76,13 @@
 // Moving viewpoint, change in position and rotation
 #define MOVING_VIEW_POS_ROT 2
 
-// Do not raise documentation error 
+// Do not raise documentation error
 //! @cond DoNotRaiseWarning
 
 /// Matches name field in <model name=""> XML tag
 #define REGEX_XML_MODEL "<model name=(\"([^\"]|\"\")*\")>"
 /// Matches string enclosed in <uid> XML tags
-#define REGEX_XML_UID   "<uid>[\\s\\S]*?<\\/uid>"
+#define REGEX_XML_UID "<uid>[\\s\\S]*?<\\/uid>"
 
 //! @endcond
 
@@ -93,69 +93,66 @@
 // Camera utils
 
 /// Request to move camera to given pose
-#define MOVE_REQUEST            gap::msgs::CameraUtilsRequest::MOVE
+#define MOVE_REQUEST gap::msgs::CameraUtilsRequest::MOVE
 /// Response acknowledging move camera request
-#define MOVE_RESPONSE           gap::msgs::CameraUtilsResponse::MOVE
+#define MOVE_RESPONSE gap::msgs::CameraUtilsResponse::MOVE
 /// Request to capture a frame and save it to disk
-#define CAPTURE_REQUEST         gap::msgs::CameraUtilsRequest::CAPTURE
+#define CAPTURE_REQUEST gap::msgs::CameraUtilsRequest::CAPTURE
 /// Response acknowledging captured frame
-#define CAPTURE_RESPONSE        gap::msgs::CameraUtilsResponse::CAPTURE
+#define CAPTURE_RESPONSE gap::msgs::CameraUtilsResponse::CAPTURE
 /// Request 3D to 2D point projection
-#define PROJECTION_REQUEST      gap::msgs::CameraUtilsRequest::PROJECTION
+#define PROJECTION_REQUEST gap::msgs::CameraUtilsRequest::PROJECTION
 /// Response 3D to 2D point projection
-#define PROJECTION_RESPONSE     gap::msgs::CameraUtilsResponse::PROJECTION
+#define PROJECTION_RESPONSE gap::msgs::CameraUtilsResponse::PROJECTION
 /// Request to change camera plugin settings
-#define OPTIONS                 gap::msgs::CameraUtilsRequest::OPTIONS
+#define OPTIONS gap::msgs::CameraUtilsRequest::OPTIONS
 
 // Visual utils
 
 /// Request update
-#define UPDATE      gap::msgs::VisualUtilsRequest::UPDATE
+#define UPDATE gap::msgs::VisualUtilsRequest::UPDATE
 /// Visual updated response
-#define UPDATED     gap::msgs::VisualUtilsResponse::UPDATED
+#define UPDATED gap::msgs::VisualUtilsResponse::UPDATED
 
 // World utils
 
 /// Spawn entity
-#define SPAWN           gap::msgs::WorldUtilsRequest::SPAWN
+#define SPAWN gap::msgs::WorldUtilsRequest::SPAWN
 /// Move entity
-#define WORLD_MOVE      gap::msgs::WorldUtilsRequest::MOVE
+#define WORLD_MOVE gap::msgs::WorldUtilsRequest::MOVE
 /// Start or stop physcis simulation
-#define PHYSICS         gap::msgs::WorldUtilsRequest::PHYSICS
+#define PHYSICS gap::msgs::WorldUtilsRequest::PHYSICS
 
 /// Spawn custom object
-#define CUSTOM          gap::msgs::Object::CUSTOM
+#define CUSTOM gap::msgs::Object::CUSTOM
 /// Spawn custom light object
-#define CUSTOM_LIGHT    gap::msgs::Object::CUSTOM_LIGHT
+#define CUSTOM_LIGHT gap::msgs::Object::CUSTOM_LIGHT
 
 //////////////////////////////////////////////////
 
 // API Topics
 
 /// Topic monitored by CameraUtils plugin for incoming requests
-#define CAMERA_UTILS_TOPIC          "~/gap/camera_utils"
+#define CAMERA_UTILS_TOPIC "~/gap/camera_utils"
 /// Topic for receiving replies from CameraUtils plugin
 #define CAMERA_UTILS_RESPONSE_TOPIC "~/gap/camera_utils/response"
 /// Topic monitored by VisualUtils plugin for incoming requests
-#define VISUAL_UTILS_TOPIC          "~/gap/visual_utils"
+#define VISUAL_UTILS_TOPIC "~/gap/visual_utils"
 /// Topic for receiving replies from VisualUtils plugin
 #define VISUAL_UTILS_RESPONSE_TOPIC "~/gap/visual_utils/response"
 /// Topic monitored by WorldUtils plugin for incoming requests
-#define WORLD_UTILS_TOPIC           "~/gap/world_utils"
+#define WORLD_UTILS_TOPIC "~/gap/world_utils"
 /// Topic for receiving replies from WorldUtils plugin
-#define WORLD_UTILS_RESPONSE_TOPIC  "~/gap/world_utils/response"
+#define WORLD_UTILS_RESPONSE_TOPIC "~/gap/world_utils/response"
 
 // Message pointer typedefs
 
 /// Pointer to CameraUtils response message
-typedef const boost::shared_ptr<const gap::msgs::CameraUtilsResponse>
-    CameraUtilsResponsePtr;
+typedef const boost::shared_ptr<const gap::msgs::CameraUtilsResponse> CameraUtilsResponsePtr;
 /// Pointer to VisualUtils request message
-typedef const boost::shared_ptr<const gap::msgs::VisualUtilsResponse>
-    VisualUtilsResponsePtr;
+typedef const boost::shared_ptr<const gap::msgs::VisualUtilsResponse> VisualUtilsResponsePtr;
 /// Pointer to WorldUtils request message
-typedef const boost::shared_ptr<const gap::msgs::WorldUtilsResponse>
-    WorldUtilsResponsePtr;
+typedef const boost::shared_ptr<const gap::msgs::WorldUtilsResponse> WorldUtilsResponsePtr;
 
 //////////////////////////////////////////////////
 
@@ -164,16 +161,14 @@ typedef const boost::shared_ptr<const gap::msgs::WorldUtilsResponse>
 /// \brief Adds an SDF model to a WorldUtils request
 /// \param msg  WorldUtils request message
 /// \param file SDF file with model
-void addModelFromFile(
-    gap::msgs::WorldUtilsRequest & msg,
-    const std::string & file);
+void addModelFromFile(gap::msgs::WorldUtilsRequest& msg, const std::string& file);
 
 /// \brief Add objects in global grid to WorldUtils spawn request
 /// \param msg  WorldUtils request message
-void addDynamicModels(gap::msgs::WorldUtilsRequest & msg);
+void addDynamicModels(gap::msgs::WorldUtilsRequest& msg);
 
 /// \brief Add objects in global grid to VisualUtils update request
-void updateObjects(gap::msgs::VisualUtilsRequest & msg);
+void updateObjects(gap::msgs::VisualUtilsRequest& msg);
 
 /// \brief Add move object command to WorldUtils request
 /// \param msg      WordlUtils request
@@ -181,10 +176,10 @@ void updateObjects(gap::msgs::VisualUtilsRequest & msg);
 /// \param is_light Whether object is a light
 /// \param pose     New object pose
 void addMoveObject(
-    gap::msgs::WorldUtilsRequest & msg,
-    const std::string & name,
+    gap::msgs::WorldUtilsRequest& msg,
+    const std::string& name,
     const bool is_light,
-    const ignition::math::Pose3d & pose);
+    const ignition::math::Pose3d& pose);
 
 /// \brief Obtain random camera pose in dome
 /// \return New random camera pose
@@ -218,22 +213,22 @@ bool waitForProjections();
 void createNameSet();
 
 /// \brief Add 3D points to projection request
-void addProjections(gap::msgs::CameraUtilsRequest & msg);
+void addProjections(gap::msgs::CameraUtilsRequest& msg);
 
 /// \brief Move camera to global camera pose
 void moveCamera(gazebo::transport::PublisherPtr pub);
 
 /// \brief Callback function for CameraUtils response
 /// \param _msg Incoming message
-void onCameraUtilsResponse(CameraUtilsResponsePtr & _msg);
+void onCameraUtilsResponse(CameraUtilsResponsePtr& _msg);
 
 /// \brief Callback function for VisualUtils response
 /// \param _msg Incoming message
-void onVisualUtilsResponse(VisualUtilsResponsePtr & _msg);
+void onVisualUtilsResponse(VisualUtilsResponsePtr& _msg);
 
 /// \brief Callback function for WorldUtils response
 /// \param _msg Incoming message
-void onWorldUtilsResponse(WorldUtilsResponsePtr & _msg);
+void onWorldUtilsResponse(WorldUtilsResponsePtr& _msg);
 
 /// \brief Enables/disables physics engine
 /// \param pub WorldUtils publisher ptr
@@ -242,11 +237,9 @@ void setPhysics(gazebo::transport::PublisherPtr pub, bool enable);
 
 /// \brief Debug function to visualise scene
 /// Debug function to visualise acquired frame and object bounding boxes
-void visualizeData(const std::string & image_dir, int iteration);
+void visualizeData(const std::string& image_dir, int iteration);
 
 /// \brief Store current scene annotations
 /// \param path         Path to dataset folder
 /// \param iteration    Current iteration
-void storeAnnotations(
-    const std::string & path,
-    const int iteration);
+void storeAnnotations(const std::string& path, const int iteration);

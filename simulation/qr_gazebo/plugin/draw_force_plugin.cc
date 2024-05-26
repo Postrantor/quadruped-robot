@@ -17,69 +17,61 @@ Use of this source code is governed by the MPL-2.0 license, see LICENSE.
 #include <boost/bind.hpp>
 #include <geometry_msgs/WrenchStamped.h>
 
-namespace gazebo
-{
-    class UnitreeDrawForcePlugin : public VisualPlugin
-    {
-        public:
-        UnitreeDrawForcePlugin():line(NULL){}
-        ~UnitreeDrawForcePlugin(){
-            this->visual->DeleteDynamicLine(this->line);
-        }
+namespace gazebo {
+class UnitreeDrawForcePlugin : public VisualPlugin {
+public:
+  UnitreeDrawForcePlugin() : line(NULL) {}
+  ~UnitreeDrawForcePlugin() { this->visual->DeleteDynamicLine(this->line); }
 
-        void Load(rendering::VisualPtr _parent, sdf::ElementPtr _sdf )
-        {
-            this->visual = _parent;
-            this->visual_namespace = "visual/";
-            if (!_sdf->HasElement("topicName")){
-                ROS_INFO("Force draw plugin missing <topicName>, defaults to /default_force_draw");
-                this->topic_name = "/default_force_draw";
-            } else{
-                this->topic_name = _sdf->Get<std::string>("topicName");
-            }
-            if (!ros::isInitialized()){
-                int argc = 0;
-                char** argv = NULL;
-                ros::init(argc,argv,"gazebo_visual",ros::init_options::NoSigintHandler|ros::init_options::AnonymousName);
-            }
+  void Load(rendering::VisualPtr _parent, sdf::ElementPtr _sdf) {
+    this->visual = _parent;
+    this->visual_namespace = "visual/";
+    if (!_sdf->HasElement("topicName")) {
+      ROS_INFO("Force draw plugin missing <topicName>, defaults to /default_force_draw");
+      this->topic_name = "/default_force_draw";
+    } else {
+      this->topic_name = _sdf->Get<std::string>("topicName");
+    }
+    if (!ros::isInitialized()) {
+      int argc = 0;
+      char** argv = NULL;
+      ros::init(argc, argv, "gazebo_visual", ros::init_options::NoSigintHandler | ros::init_options::AnonymousName);
+    }
 
-            this->line = this->visual->CreateDynamicLine(rendering::RENDERING_LINE_STRIP);
-            this->line->AddPoint(ignition::math::Vector3d(0, 0, 0));
-            this->line->AddPoint(ignition::math::Vector3d(1, 1, 1));
-            this->line->setMaterial("Gazebo/Purple");
-            this->line->setVisibilityFlags(GZ_VISIBILITY_GUI);
-            this->visual->SetVisible(true);
+    this->line = this->visual->CreateDynamicLine(rendering::RENDERING_LINE_STRIP);
+    this->line->AddPoint(ignition::math::Vector3d(0, 0, 0));
+    this->line->AddPoint(ignition::math::Vector3d(1, 1, 1));
+    this->line->setMaterial("Gazebo/Purple");
+    this->line->setVisibilityFlags(GZ_VISIBILITY_GUI);
+    this->visual->SetVisible(true);
 
-            this->rosnode = new ros::NodeHandle(this->visual_namespace);
-            this->force_sub = this->rosnode->subscribe(this->topic_name+"/"+"the_force", 30, &UnitreeDrawForcePlugin::GetForceCallback, this);
-            this->update_connection = event::Events::ConnectPreRender(boost::bind(&UnitreeDrawForcePlugin::OnUpdate, this));
-            ROS_INFO("Load %s Draw Force plugin.", this->topic_name.c_str());
-        }
+    this->rosnode = new ros::NodeHandle(this->visual_namespace);
+    this->force_sub = this->rosnode->subscribe(
+        this->topic_name + "/" + "the_force", 30, &UnitreeDrawForcePlugin::GetForceCallback, this);
+    this->update_connection = event::Events::ConnectPreRender(boost::bind(&UnitreeDrawForcePlugin::OnUpdate, this));
+    ROS_INFO("Load %s Draw Force plugin.", this->topic_name.c_str());
+  }
 
-        void OnUpdate()
-        {
-            this->line->SetPoint(1, ignition::math::Vector3d(Fx, Fy, Fz));
-        }
+  void OnUpdate() { this->line->SetPoint(1, ignition::math::Vector3d(Fx, Fy, Fz)); }
 
-        void GetForceCallback(const geometry_msgs::WrenchStamped & msg)
-        {
-            // Fx = msg.wrench.force.x/20.0;
-            // Fy = msg.wrench.force.y/20.0;
-            // Fz = msg.wrench.force.z/20.0;
-            Fx = msg.wrench.force.x;
-            Fy = msg.wrench.force.y;
-            Fz = msg.wrench.force.z;
-        }
+  void GetForceCallback(const geometry_msgs::WrenchStamped& msg) {
+    // Fx = msg.wrench.force.x/20.0;
+    // Fy = msg.wrench.force.y/20.0;
+    // Fz = msg.wrench.force.z/20.0;
+    Fx = msg.wrench.force.x;
+    Fy = msg.wrench.force.y;
+    Fz = msg.wrench.force.z;
+  }
 
-        private:
-            ros::NodeHandle* rosnode;
-            std::string topic_name;
-            rendering::VisualPtr visual;
-            rendering::DynamicLines *line;
-            std::string visual_namespace;
-            ros::Subscriber force_sub;
-            double Fx=0, Fy=0, Fz=0;
-            event::ConnectionPtr update_connection;
-    };
-    GZ_REGISTER_VISUAL_PLUGIN(UnitreeDrawForcePlugin)
-}
+private:
+  ros::NodeHandle* rosnode;
+  std::string topic_name;
+  rendering::VisualPtr visual;
+  rendering::DynamicLines* line;
+  std::string visual_namespace;
+  ros::Subscriber force_sub;
+  double Fx = 0, Fy = 0, Fz = 0;
+  event::ConnectionPtr update_connection;
+};
+GZ_REGISTER_VISUAL_PLUGIN(UnitreeDrawForcePlugin)
+}  // namespace gazebo

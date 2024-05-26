@@ -5,12 +5,12 @@ This multi-purpose Domain Randomization plugin allows changing both physical and
 1. Change gravity 3D vector;
 1. Scale spawned model;
 1. Change individual link properties, such as:
-    1. Link's mass;
-    1. Link's inertia tensor;
+   1. Link's mass;
+   1. Link's inertia tensor;
 1. Change individual joint properties, such as:
-    1. Joint limits (angle, effort and velocity);
-    1. Joint friction;
-    1. Joint damping;
+   1. Joint limits (angle, effort and velocity);
+   1. Joint friction;
+   1. Joint damping;
 1. Change joint PID controller parameters and target;
 1. Change individual link's visual colors;
 1. Change individual collision surface properties.

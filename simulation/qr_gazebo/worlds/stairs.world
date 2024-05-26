@@ -3,31 +3,31 @@
     <world name="default">
 
         <physics type="ode">
-        <max_step_size>0.001</max_step_size>
-        <real_time_factor>1</real_time_factor>
-        <real_time_update_rate>1000</real_time_update_rate>
-        <gravity>0 0 -9.81</gravity>
+            <max_step_size>0.001</max_step_size>
+            <real_time_factor>1</real_time_factor>
+            <real_time_update_rate>1000</real_time_update_rate>
+            <gravity>0 0 -9.81</gravity>
             <ode>
                 <solver>
-                <type>quick</type>  
-                <iters>50</iters> 
-                <sor>1.3</sor>
-                </solver>  
+                    <type>quick</type>
+                    <iters>50</iters>
+                    <sor>1.3</sor>
+                </solver>
                 <constraints>
-                <cfm>0.0</cfm>
-                <erp>0.2</erp>
-                <contact_max_correcting_vel>10.0</contact_max_correcting_vel>
-                <contact_surface_layer>0.001</contact_surface_layer>
-                </constraints>  
+                    <cfm>0.0</cfm>
+                    <erp>0.2</erp>
+                    <contact_max_correcting_vel>10.0</contact_max_correcting_vel>
+                    <contact_surface_layer>0.001</contact_surface_layer>
+                </constraints>
             </ode>
         </physics>
 
         <scene>
-        <sky>
-            <clouds>
-                <speed>12</speed>
-            </clouds>
-        </sky>
+            <sky>
+                <clouds>
+                    <speed>12</speed>
+                </clouds>
+            </sky>
         </scene>
         <!-- A global light source -->
         <include>
@@ -37,11 +37,11 @@
         <include>
             <uri>model://ground_plane</uri>
         </include>
-        
+
         <!-- environment blocks, obstacles or stairs -->
         <model name="static_environment">
             <static>true</static>
-            
+
             <link name="static_box1">
                 <pose>1.5 0 0.05 0 0 0</pose>
                 <collision name="static_box_collision">
@@ -84,7 +84,7 @@
                     </material>
                 </visual>
             </link>
-            
+
             <link name="static_box3">
                 <pose>1.9 0 0.25 0 0 0</pose>
                 <collision name="static_box_collision">

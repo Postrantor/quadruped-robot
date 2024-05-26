@@ -3,10 +3,12 @@
 In order to build your own client you need only perform the following steps:
 
 1. Install our tools as a CMake package, provided it was already compiled:
+
 ```bash
 cd ~/workspace/gap/build
 sudo make install
 ```
+
 The package can easily be uninstalled by running `sudo make uninstall`
 
 2. Add our package to your CMakeLists.txt
@@ -32,10 +34,13 @@ You can check the provided sample external client for a complete example.
 ### Troubleshooting
 
 - Make sure to run Gazebo in verbose mode, by adding `--verbose` flag:
+
 ```bash
 gazebo --version
 ```
+
 - Gazebo instance can not load `libgap_msgs.so`. It is likely that Gazebo has no way to find this library when instancing a plugin. To fix this you can simply use the environment variable `LD_LIBRARY_PATH`. For `gap-1.5`:
+
 ```bash
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib/gap-1.5
 ```

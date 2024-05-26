@@ -18,7 +18,7 @@
             <uri>model://slope15/meshes/slope15.stl</uri>
           </mesh>
         </geometry>
-        
+
       </collision>
     </link>
     <static>1</static>

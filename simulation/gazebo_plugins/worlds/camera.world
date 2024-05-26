@@ -1,15 +1,15 @@
-<?xml version="1.0"?> 
+<?xml version="1.0"?>
 <gazebo version="1.0">
   <world name="default">
-   
-   <include>
+
+    <include>
       <uri>model://ground_plane</uri>
     </include>
 
     <include>
       <uri>model://sun</uri>
     </include>
-    
+
     <model name="box">
       <link name="link">
         <origin pose="0 0 0.5 0 0 0"/>
@@ -21,7 +21,7 @@
           <geometry>
             <box size="1 1 1"/>
           </geometry>
-         <surface>
+          <surface>
             <friction>
               <ode mu="0" mu2="0"/>
             </friction>

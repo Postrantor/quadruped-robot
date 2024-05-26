@@ -42,9 +42,7 @@ namespace Quadruped {
  * @return the inverse mass matrix.
  */
 Eigen::Matrix<float, 6, 12> ComputeMassMatrix(
-    float robotMass,
-    Eigen::Matrix<float, 3, 3> robotInertia,
-    Eigen::Matrix<float, 4, 3> footPositions);
+    float robotMass, Eigen::Matrix<float, 3, 3> robotInertia, Eigen::Matrix<float, 4, 3> footPositions);
 
 /**
  * @brief Compute the inverse mass matrix of the force balance problem in world frame.
@@ -78,7 +76,7 @@ std::tuple<Eigen::Matrix<float, 12, 24>, Eigen::Matrix<float, 24, 1>> ComputeCon
     float frictionCoef,
     float fMinRatio,
     float fMaxRatio,
-    Vec3<float> surfaceNormal={0.f, 0.f, 1.f});
+    Vec3<float> surfaceNormal = {0.f, 0.f, 1.f});
 
 /**
  * @brief ComputeConstraintMatrix
@@ -93,14 +91,14 @@ std::tuple<Eigen::Matrix<float, 12, 24>, Eigen::Matrix<float, 24, 1>> ComputeCon
  * @return the constraint matrix.
  */
 std::tuple<Eigen::Matrix<float, 12, 24>, Eigen::Matrix<float, 24, 1>> ComputeConstraintMatrix(
-  float bodyMass,
-  Eigen::Matrix<bool, 4, 1> contacts,
-  float frictionCoef,
-  Vec4<float> fMinRatio,
-  Vec4<float> fMaxRatio,
-  Vec3<float> normal,
-  Vec3<float> tangent1,
-  Vec3<float> tangent2);
+    float bodyMass,
+    Eigen::Matrix<bool, 4, 1> contacts,
+    float frictionCoef,
+    Vec4<float> fMinRatio,
+    Vec4<float> fMaxRatio,
+    Vec3<float> normal,
+    Vec3<float> tangent1,
+    Vec3<float> tangent2);
 
 /**
  * @brief Compute the objective matrix of the quadratic problem.
@@ -125,7 +123,7 @@ std::tuple<Eigen::Matrix<float, 12, 12>, Eigen::Matrix<float, 12, 1>> ComputeObj
  * @param contacts: the contact state of 4 legs.
  * @return a regulation weight matrix.
  */
-Eigen::Matrix<float,12,12> ComputeWeightMatrix(qrRobot *robot, const Eigen::Matrix<bool, 4, 1>& contacts);
+Eigen::Matrix<float, 12, 12> ComputeWeightMatrix(qrRobot *robot, const Eigen::Matrix<bool, 4, 1> &contacts);
 
 /**
  * @brief Compute the desired contact force by force balance method.
@@ -143,15 +141,15 @@ Eigen::Matrix<float,12,12> ComputeWeightMatrix(qrRobot *robot, const Eigen::Matr
  */
 Eigen::Matrix<float, 3, 4> ComputeContactForce(
     qrRobot *robot,
-    qrGroundSurfaceEstimator* groundEstimator,
+    qrGroundSurfaceEstimator *groundEstimator,
     Eigen::Matrix<float, 6, 1> desiredAcc,
     Eigen::Matrix<bool, 4, 1> contacts,
     Eigen::Matrix<float, 6, 1> accWeight,
     float regWeight = 1e-4,
     float frictionCoef = 0.5f,
     float fMinRatio = 0.01f,
-    float fMaxRatio =10.f);
-    
+    float fMaxRatio = 10.f);
+
 /**
  * @brief Compute the desired contact force by force balance method.
  * This function calculates the contact force in world frame.
@@ -181,6 +179,6 @@ Eigen::Matrix<float, 3, 4> ComputeContactForce(
     float regWeight = 1e-4,
     float frictionCoef = 0.6f);
 
-} // namespace Quadruped
+}  // namespace Quadruped
 
-#endif // QR_QP_TORQUE_OPTIMIZER_H
+#endif  // QR_QP_TORQUE_OPTIMIZER_H

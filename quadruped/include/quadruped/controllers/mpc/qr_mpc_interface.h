@@ -35,112 +35,109 @@
 namespace Quadruped {
 
 class MPCRobotState {
-
 public:
+  /**
+   * @brief Print the robot state.
+   */
+  void print();
 
-    /**
-     * @brief Print the robot state.
-     */
-    void print();
+  /**
+   * @brief Position in world frame.
+   */
+  Eigen::Matrix<float, 3, 1> p;
 
-    /**
-     * @brief Position in world frame.
-     */
-    Eigen::Matrix<float, 3, 1> p;
+  /**
+   * @brief Linear velocity in world frame.
+   */
+  Eigen::Matrix<float, 3, 1> v;
 
-    /**
-     * @brief Linear velocity in world frame.
-     */
-    Eigen::Matrix<float, 3, 1> v;
+  /**
+   * @brief Angular velocity in base frame.
+   */
+  Eigen::Matrix<float, 3, 1> w;
 
-    /**
-     * @brief Angular velocity in base frame.
-     */
-    Eigen::Matrix<float, 3, 1> w;
+  /**
+   * @brief Foothold positions in base frame.
+   */
+  Eigen::Matrix<float, 3, 4> footPosInBaseFrame;
 
-    /**
-     * @brief Foothold positions in base frame.
-     */
-    Eigen::Matrix<float, 3, 4> footPosInBaseFrame;
+  /**
+   * @brief Rotation matrix from base frame to world frame.
+   */
+  Mat3<float> rotMat;
 
-    /**
-     * @brief Rotation matrix from base frame to world frame.
-     */
-    Mat3<float> rotMat;
+  /**
+   * @brief Rotation matrix only considering yaw.
+   */
+  Mat3<float> yawRotMat;
 
-    /**
-     * @brief Rotation matrix only considering yaw.
-     */
-    Mat3<float> yawRotMat;
+  /**
+   * @brief Inertia matrix in base frame.
+   */
+  Mat3<float> bodyInertia;
 
-    /**
-     * @brief Inertia matrix in base frame.
-     */
-    Mat3<float> bodyInertia;
+  /**
+   * @brief Quaternion in world frame.
+   */
+  Eigen::Quaternionf quat;
 
-    /**
-     * @brief Quaternion in world frame.
-     */
-    Eigen::Quaternionf quat;
+  /**
+   * @brief roll pitch yaw of the robot.
+   */
+  Eigen::Matrix<float, 3, 1> rpy;
 
-    /**
-     * @brief roll pitch yaw of the robot.
-     */
-    Eigen::Matrix<float, 3, 1> rpy;
+  /**
+   * @brief The mass of the robot.
+   */
+  float mass = 12;
 
-    /**
-     * @brief The mass of the robot.
-     */
-    float mass = 12;
+  /**
+   * @brief Predicted trajectory of the robot. Allow 16 future horizons at most.
+   */
+  float traj[12 * K_MAX_GAIT_SEGMENTS];
 
-    /**
-     * @brief Predicted trajectory of the robot. Allow 16 future horizons at most.
-     */
-    float traj[12 * K_MAX_GAIT_SEGMENTS];
-
-    /**
-     * @brief Gait state for each legs. Each value is STANCE or SWING.
-     */
-    float gait[4 * K_MAX_GAIT_SEGMENTS];
+  /**
+   * @brief Gait state for each legs. Each value is STANCE or SWING.
+   */
+  float gait[4 * K_MAX_GAIT_SEGMENTS];
 };
 
 struct ProblemConfig {
+  /**
+   * @brief Time for one step of MPC.
+   */
+  float dt;
 
-    /**
-     * @brief Time for one step of MPC.
-     */
-    float dt;
+  /**
+   * @brief Defines the interaction force effect between foot and env.
+   */
+  float frictionCoeff;
 
-    /**
-     * @brief Defines the interaction force effect between foot and env.
-     */
-    float frictionCoeff;
+  /**
+   * @brief Max force of every leg that can exert.
+   */
+  float fMax;
 
-    /**
-     * @brief Max force of every leg that can exert.
-     */
-    float fMax;
+  /**
+   * @brief The length of the prediction horizon of the MPC.
+   */
+  int horizon;
 
-    /**
-     * @brief The length of the prediction horizon of the MPC.
-     */
-    int horizon;
+  /**
+   * @brief The total mass of the quadruped.
+   */
+  float totalMass;
 
-    /**
-     * @brief The total mass of the quadruped.
-     */
-    float totalMass;
+  /**
+   * @brief Weight for the 12 quadruped states, including pose and twist.
+   */
+  float weights[12];
 
-    /**
-     * @brief Weight for the 12 quadruped states, including pose and twist.
-     */
-    float weights[12];
-
-    /**
-     * @brief Weight for the force. This term is used in the quadratic problem to minimize the force.
-     * Also used to trade off between state norm and force norm.
-     */
-    float alpha;
+  /**
+   * @brief Weight for the force. This term is used in the quadratic problem to minimize the force.
+   * Also used to trade off between state norm and force norm.
+   */
+  float alpha;
 };
 
 /**
@@ -154,8 +151,15 @@ struct ProblemConfig {
  * @param weight: a 12-element weight vector for pose and twist.
  * @param alpha: a weight for forces in QP formulation.
  */
-void SetupProblem(double dt, int horizon, double frictionCoeff, double fMax,
-                  double totalMass, float *inertia, float *weight, float alpha);
+void SetupProblem(
+    double dt,
+    int horizon,
+    double frictionCoeff,
+    double fMax,
+    double totalMass,
+    float *inertia,
+    float *weight,
+    float alpha);
 
 /**
  * @brief Resize the static matrices before constructing MPC problem.
@@ -182,8 +186,12 @@ void ConvertToDiscreteQP(Eigen::Matrix<float, 13, 13> Ac, Eigen::Matrix<float, 1
  * @param [out] B: output, the matrice multiplying the input vector.
  */
 void ComputeContinuousTimeStateSpaceMatrices(
-    Mat3<float> I_world, float mass, Eigen::Matrix<float, 3, 4> r_feet, Mat3<float> yawRotMat,
-    Eigen::Matrix<float, 13, 13> &A, Eigen::Matrix<float, 13, 12> &B);
+    Mat3<float> I_world,
+    float mass,
+    Eigen::Matrix<float, 3, 4> r_feet,
+    Mat3<float> yawRotMat,
+    Eigen::Matrix<float, 13, 13> &A,
+    Eigen::Matrix<float, 13, 12> &B);
 
 /**
  * @brief Solve the MPC problem.
@@ -197,9 +205,15 @@ void ComputeContinuousTimeStateSpaceMatrices(
  * @param state_trajectory: future state trajectory generated before.
  * @param gait: gait state in %horizon steps. Usually STANCE or SWING.
  */
-void SolveMPCKernel(Vec3<float>& p, Vec3<float>& v, Quat<float>& q, Vec3<float>& w,
-                            Eigen::Matrix<float,3,4> &r, Vec3<float>& rpy,
-                            float *state_trajectory, float *gait);
+void SolveMPCKernel(
+    Vec3<float> &p,
+    Vec3<float> &v,
+    Quat<float> &q,
+    Vec3<float> &w,
+    Eigen::Matrix<float, 3, 4> &r,
+    Vec3<float> &rpy,
+    float *state_trajectory,
+    float *gait);
 
 /**
  * @brief Solve the MPC problem. Prepare essential data for MPC and call %SolveMPCKernel to solve it.
@@ -214,6 +228,6 @@ void SolveMPC(ProblemConfig *setup);
  */
 double GetMPCSolution(int index);
 
-} // Namespace Quadruped
+}  // Namespace Quadruped
 
-#endif // QR_MPC_INTERFACE
+#endif  // QR_MPC_INTERFACE

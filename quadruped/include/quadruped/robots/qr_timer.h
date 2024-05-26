@@ -30,144 +30,123 @@
 #include <time.h>
 #include <ros/ros.h>
 
-
 class qrTimer {
-
 public:
+  /**
+   * @brief Constructor of class qrTimer
+   */
+  qrTimer() {
+    start = clock();
+    startTime = (double)start;
+  };
 
-    /**
-     * @brief Constructor of class qrTimer
-     */
-    qrTimer() {
-        start = clock();
-        startTime = (double)start;
-    };
+  virtual ~qrTimer() = default;
 
-    virtual ~qrTimer() = default;
+  /**
+   * @brief Get time since robot reset.
+   * @return time since reset.
+   */
+  virtual double GetTimeSinceReset() {
+    finish = clock();
+    double timeSinceReset = (double)(finish - startTime) / CLOCKS_PER_SEC;  // second(s)
+    return timeSinceReset;
+  };
 
-    /**
-     * @brief Get time since robot reset.
-     * @return time since reset.
-     */
-    virtual double GetTimeSinceReset() {
-        finish = clock();
-        double timeSinceReset = (double)(finish - startTime) / CLOCKS_PER_SEC; // second(s)
-        return timeSinceReset;
-    };
-
-    /**
-     * @brief Set current time as start time
-     */
-    virtual double ResetStartTime() {
-        start = clock();
-        startTime = (double)start;
-        return startTime;
-    };
+  /**
+   * @brief Set current time as start time
+   */
+  virtual double ResetStartTime() {
+    start = clock();
+    startTime = (double)start;
+    return startTime;
+  };
 
 private:
+  /**
+   * @brief Start time.
+   */
+  clock_t start;
 
-    /**
-     * @brief Start time.
-     */
-    clock_t start;
+  /**
+   * @brief Finish time.
+   */
+  clock_t finish;
 
-    /**
-     * @brief Finish time.
-     */
-    clock_t finish;
-
-    /**
-     * @brief Start time
-     */
-    double startTime;
-
+  /**
+   * @brief Start time
+   */
+  double startTime;
 };
 
-
-class qrRosTimer: public qrTimer {
-
+class qrRosTimer : public qrTimer {
 public:
+  /**
+   * @brief Constructor of class qrRosTimer
+   */
+  qrRosTimer() { startRos = ros::Time::now().toSec(); };
 
-    /**
-     * @brief Constructor of class qrRosTimer
-     */
-    qrRosTimer() {
-        startRos = ros::Time::now().toSec();
-    };
+  virtual ~qrRosTimer() = default;
 
-    virtual ~qrRosTimer() = default;
+  /**
+   * @see qrTimer::GetTimeSinceReset
+   */
+  virtual double GetTimeSinceReset() {
+    double timeSinceReset = ros::Time::now().toSec() - startRos;
+    return timeSinceReset;
+  };
 
-    /**
-     * @see qrTimer::GetTimeSinceReset
-     */
-    virtual double GetTimeSinceReset() {
-        double timeSinceReset = ros::Time::now().toSec() - startRos;
-        return timeSinceReset;
-    };
-
-    /**
-     * @see qrTimer::ResetStartTime
-     */
-    virtual double ResetStartTime() {
-        startRos = ros::Time::now().toSec();
-        return startRos;
-    };
+  /**
+   * @see qrTimer::ResetStartTime
+   */
+  virtual double ResetStartTime() {
+    startRos = ros::Time::now().toSec();
+    return startRos;
+  };
 
 private:
-
-    /**
-     * @brief Start time in ROS.
-     */
-    double startRos;
-
+  /**
+   * @brief Start time in ROS.
+   */
+  double startRos;
 };
-
 
 class qrTimerInterface {
-
 public:
+  /**
+   * @brief Constructor of class TimerInterface.
+   * @param useRosTimeIn: whether to use ROS timer tools.
+   */
+  qrTimerInterface(bool useRosTimeIn = false) : useRosTime(useRosTimeIn), timerPtr(nullptr) {
+    if (useRosTime) {
+      timerPtr = new qrRosTimer();
+    } else {
+      timerPtr = new qrTimer();
+    }
 
-    /**
-     * @brief Constructor of class TimerInterface.
-     * @param useRosTimeIn: whether to use ROS timer tools.
-     */
-    qrTimerInterface(bool useRosTimeIn=false) : useRosTime(useRosTimeIn), timerPtr(nullptr) {
-        if (useRosTime) {
-            timerPtr = new qrRosTimer();
-        } else {
-            timerPtr = new qrTimer();
-        }
+    startTime = 0;
+    timeSinceReset = 0;
+  };
 
-        startTime = 0;
-        timeSinceReset = 0;
-    };
+  /**
+   * @brief Destructor of qrTimerInterface.
+   */
+  ~qrTimerInterface() { delete timerPtr; };
 
-    /**
-     * @brief Destructor of qrTimerInterface.
-     */
-    ~qrTimerInterface() {
-        delete timerPtr;
-    };
+  double GetTimeSinceReset() {
+    timeSinceReset = timerPtr->GetTimeSinceReset();
+    return timeSinceReset;
+  };
 
-    double GetTimeSinceReset() {
-        timeSinceReset = timerPtr->GetTimeSinceReset();
-        return timeSinceReset;
-    };
-
-    void ResetStartTime() {
-        startTime = timerPtr->ResetStartTime();
-    };
+  void ResetStartTime() { startTime = timerPtr->ResetStartTime(); };
 
 private:
+  bool useRosTime;
 
-    bool useRosTime;
+  qrTimer* timerPtr;
 
-    qrTimer* timerPtr;
+  double startTime;
 
-    double startTime;
-
-    double timeSinceReset;
-
+  double timeSinceReset;
 };
 
-#endif // QR_TIMER_H
+#endif  // QR_TIMER_H

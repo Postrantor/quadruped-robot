@@ -29,61 +29,54 @@
 #include <vector>
 #include <string>
 
-
 class StatisticAnalysis {
-
 public:
+  StatisticAnalysis(float mean = 0.f);
 
-    StatisticAnalysis(float mean=0.f);
+  ~StatisticAnalysis() = default;
 
-    ~StatisticAnalysis() = default;
+  void Update(float in);
 
-    void Update(float in);
+  void Reset(float mean = 0.f);
 
-    void Reset(float mean=0.f);
+  float GetMean();
 
-    float GetMean();
+  float GetStandradVar();
 
-    float GetStandradVar();
+  void PrintStatistics();
 
-    void PrintStatistics();
+  float defaultMean;
 
-    float defaultMean;
+  float mean_;
 
-    float mean_;
+  float var_;
 
-    float var_;
+  float sigma_;
 
-    float sigma_;
+  float sum_;
 
-    float sum_;
+  int num;
 
-    int num;
-
-    std::vector<float> data;
-
+  std::vector<float> data;
 };
 
 class Visualization2D {
-
 public:
+  Visualization2D();
 
-    Visualization2D();
+  ~Visualization2D() = default;
 
-    ~Visualization2D() = default;
+  void Show();
 
-    void Show();
+  void SetLabelNames(std::vector<std::string>);
 
-    void SetLabelNames(std::vector<std::string>);
+  std::vector<float> datax;
 
-    std::vector<float> datax;
+  std::vector<float> datay1, datay2, datay3, datay4, datay5, datay6;
 
-    std::vector<float> datay1,datay2,datay3,datay4,datay5,datay6;
+  std::vector<std::string> labelNames;
 
-    std::vector<std::string> labelNames;
-
-    StatisticAnalysis sa[6];
-
+  StatisticAnalysis sa[6];
 };
 
-#endif // QR_VISUALIZATION_H
+#endif  // QR_VISUALIZATION_H

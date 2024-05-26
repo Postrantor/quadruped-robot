@@ -15,11 +15,11 @@ Furthermore, we provide simples example client applications to interact with eac
 
 - [visual_example], for changing object visuals using VisualUtils
 
-- world_example was **deprecated** as most of its object generation utilities will no longer be supported. 
+- world_example was **deprecated** as most of its object generation utilities will no longer be supported.
 
 [Shadow's Dexterous Hand]: https://www.shadowrobot.com/products/dexterous-hand/
 [example client]: dr_example
 [external_example]: external_example
 [scene generation]: scene_example
-[camera_example]: camera_example 
+[camera_example]: camera_example
 [visual_example]: visual_example

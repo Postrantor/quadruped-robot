@@ -31,40 +31,33 @@
 #include <ros/ros.h>
 #include <std_msgs/Int8.h>
 
-
 namespace Quadruped {
 
 /**
  * @brief Receive locomotion switch command from state machine.
  */
 class qrSwitchModeReceiver {
-
 public:
+  qrSwitchModeReceiver(ros::NodeHandle &nhIn, ros::NodeHandle &privateNhIn);
 
-    qrSwitchModeReceiver(ros::NodeHandle &nhIn, ros::NodeHandle &privateNhIn);
+  ~qrSwitchModeReceiver() = default;
 
-    ~qrSwitchModeReceiver() = default;
+  void SwitchModeCallback(const std_msgs::Int8::ConstPtr &input);
 
-    void SwitchModeCallback(const std_msgs::Int8::ConstPtr &input);
+  inline int GetSwitchMode() { return switchMode; };
 
-    inline int GetSwitchMode() {
-        return switchMode;
-    };
+  ros::NodeHandle &nh;
 
-    ros::NodeHandle &nh;
+  ros::NodeHandle &privateNh;
 
-    ros::NodeHandle &privateNh;
+  ros::Subscriber switchModeSub;
 
-    ros::Subscriber switchModeSub;
-
-    std::string switchModeTopic = "/switch_mode";
+  std::string switchModeTopic = "/switch_mode";
 
 private:
-
-    int switchMode = 2;
-
+  int switchMode = 2;
 };
 
-} // Namespace Quadruped
+}  // Namespace Quadruped
 
-#endif // QR_SWITCH_MODE_RECEIVER_H
+#endif  // QR_SWITCH_MODE_RECEIVER_H

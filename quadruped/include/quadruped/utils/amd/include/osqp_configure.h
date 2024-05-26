@@ -1,9 +1,9 @@
 #ifndef OSQP_CONFIGURE_H
-# define OSQP_CONFIGURE_H
+#define OSQP_CONFIGURE_H
 
-# ifdef __cplusplus
+#ifdef __cplusplus
 extern "C" {
-# endif /* ifdef __cplusplus */
+#endif /* ifdef __cplusplus */
 
 /* Operative system */
 #define IS_LINUX
@@ -31,9 +31,8 @@ extern "C" {
 /* ENABLE_MKL_PARDISO */
 #define ENABLE_MKL_PARDISO
 
-
-# ifdef __cplusplus
+#ifdef __cplusplus
 }
-# endif /* ifdef __cplusplus */
+#endif /* ifdef __cplusplus */
 
 #endif /* ifndef OSQP_CONFIGURE_H */

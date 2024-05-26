@@ -4,9 +4,9 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- *  
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- *      
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,11 +45,11 @@
 // Default arg values
 
 /// Default number of scenes
-#define ARG_SCENES_DEFAULT      10
+#define ARG_SCENES_DEFAULT 10
 /// Default index of the first scene
-#define ARG_START_DEFAULT       0
+#define ARG_START_DEFAULT 0
 /// Default image directory
-#define ARG_IMGS_DIR_DEFAULT    "imgs"
+#define ARG_IMGS_DIR_DEFAULT "imgs"
 /// Default dataset directory
 #define ARG_DATASET_DIR_DEFAULT "dataset"
 
@@ -67,17 +67,12 @@ const std::string getUsage(const char* argv_0);
 /// \param imgs_dir     Image output directory
 /// \param dataset_dir  Dataset annotations output directory
 void parseArgs(
-    int argc,
-    char** argv,
-    unsigned int & scenes,
-    unsigned int & start,
-    std::string & imgs_dir,
-    std::string & dataset_dir);
+    int argc, char** argv, unsigned int& scenes, unsigned int& start, std::string& imgs_dir, std::string& dataset_dir);
 
 /// \brief Creates the directory given its path
 /// \param path The path string
 /// \return true on success
-bool createDirectory(std::string & path);
+bool createDirectory(std::string& path);
 
 /// \brief Get a random integer in a given interval
 ///
@@ -98,4 +93,4 @@ int getRandomInt(int min, int max);
 double getRandomDouble(double min, double max);
 
 /// \brief Randomly shuffles an integer vector
-void shuffleIntVector(std::vector<int> & vector);
+void shuffleIntVector(std::vector<int>& vector);

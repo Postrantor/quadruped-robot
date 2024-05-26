@@ -7,8 +7,8 @@ link_directories(${GAZEBO_LIBRARY_DIRS})
 list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
 
 # Find packages
-include (FindPkgConfig)
-if (PKG_CONFIG_FOUND)
+include(FindPkgConfig)
+if(PKG_CONFIG_FOUND)
   pkg_check_modules(GAZEBO gazebo)
   pkg_check_modules(SDF sdformat)
 endif()
@@ -22,8 +22,6 @@ link_directories(${PROJECT_BINARY_DIR}/msgs)
 
 # Gazebo world utils plugin
 add_library(WorldUtils SHARED WorldUtils.cc MoveObject.cc)
-target_link_libraries(WorldUtils
-    gap_msgs
-    ${Boost_LIBRARIES} ${GAZEBO_LIBRARIES} ${SDF_LIBRARIES})
-add_dependencies(WorldUtils
-    gap_msgs)
+target_link_libraries(WorldUtils gap_msgs ${Boost_LIBRARIES}
+                      ${GAZEBO_LIBRARIES} ${SDF_LIBRARIES})
+add_dependencies(WorldUtils gap_msgs)

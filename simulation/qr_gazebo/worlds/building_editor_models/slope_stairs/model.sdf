@@ -18,7 +18,7 @@
             <uri>model://slope_stairs/meshes/slope.stl</uri>
           </mesh>
         </geometry>
-        
+
       </collision>
     </link>
     <static>1</static>

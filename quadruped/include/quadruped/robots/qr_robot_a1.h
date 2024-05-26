@@ -29,49 +29,47 @@
 
 namespace Quadruped {
 
-class qrRobotA1: public qrRobot {
-
+class qrRobotA1 : public qrRobot {
 public:
+  /**
+   * @brief Constructor method of class qrRobotA1.
+   * @param config_file_path: the path to config file.
+   */
+  qrRobotA1(std::string config_file_path);
 
-    /**
-     * @brief Constructor method of class qrRobotA1.
-     * @param config_file_path: the path to config file.
-     */
-    qrRobotA1(std::string config_file_path);
+  ~qrRobotA1() = default;
 
-    ~qrRobotA1() = default;
+  /**
+   * @see qrRobot::ReceiveObservation
+   */
+  void ReceiveObservation() override;
 
-    /**
-     * @see qrRobot::ReceiveObservation
-     */
-    void ReceiveObservation() override;
+  /**
+   * @see qrRobot::ApplyAction
+   */
+  void ApplyAction(const Eigen::MatrixXf &motorCommands, MotorMode motorControlMode) override;
 
-    /**
-     * @see qrRobot::ApplyAction
-     */
-    void ApplyAction(const Eigen::MatrixXf &motorCommands, MotorMode motorControlMode) override;
+  /**
+   * @see qrRobot::ApplyAction
+   */
+  void ApplyAction(const std::vector<qrMotorCommand> &motorCommands, MotorMode motorControlMode) override;
 
-    /**
-     * @see qrRobot::ApplyAction
-     */
-    void ApplyAction(const std::vector<qrMotorCommand> &motorCommands, MotorMode motorControlMode) override;
+  /**
+   * @see qrRobot::Step
+   */
+  void Step(const Eigen::MatrixXf &action, MotorMode motorControlMode) override;
 
-    /**
-     * @see qrRobot::Step
-     */
-    void Step(const Eigen::MatrixXf &action, MotorMode motorControlMode) override;
-    
-    /**
-     * @see qrRobot::BuildDynamicModel
-     */
-    virtual bool BuildDynamicModel() override;
-    
-    /**
-     * @brief The interface to communicate with A1 robot.
-     */
-    RobotInterface robotInterface;       
+  /**
+   * @see qrRobot::BuildDynamicModel
+   */
+  virtual bool BuildDynamicModel() override;
+
+  /**
+   * @brief The interface to communicate with A1 robot.
+   */
+  RobotInterface robotInterface;
 };
 
-} // Namespace Quadruped
+}  // Namespace Quadruped
 
-#endif // QR_A1_ROBOT_H
+#endif  // QR_A1_ROBOT_H

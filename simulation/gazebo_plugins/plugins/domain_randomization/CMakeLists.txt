@@ -8,8 +8,8 @@ link_directories(${GAZEBO_LIBRARY_DIRS})
 list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
 
 # Find packages
-include (FindPkgConfig)
-if (PKG_CONFIG_FOUND)
+include(FindPkgConfig)
+if(PKG_CONFIG_FOUND)
   pkg_check_modules(GAZEBO gazebo)
   pkg_check_modules(SDF sdformat)
 endif()
@@ -26,16 +26,10 @@ include_directories(${PROJECT_BINARY_DIR}/utils)
 link_directories(${PROJECT_BINARY_DIR}/utils)
 
 # Gazebo visual utils plugin
-add_library(DRPlugin SHARED
-	DRPlugin.cc )
-target_link_libraries(DRPlugin
-    gap_msgs
-    gap_debug
-    ${GAZEBO_LIBRARIES} ${SDF_LIBRARIES})
-add_dependencies(DRPlugin
-	gap_debug
-    gap_msgs)
+add_library(DRPlugin SHARED DRPlugin.cc)
+target_link_libraries(DRPlugin gap_msgs gap_debug ${GAZEBO_LIBRARIES}
+                      ${SDF_LIBRARIES})
+add_dependencies(DRPlugin gap_debug gap_msgs)
 
 # Install library
-install(TARGETS DRPlugin
-  DESTINATION "${plugins_lib_dest}")
+install(TARGETS DRPlugin DESTINATION "${plugins_lib_dest}")
