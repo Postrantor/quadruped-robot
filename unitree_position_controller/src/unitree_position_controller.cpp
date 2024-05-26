@@ -182,11 +182,11 @@ CallbackReturn UnitreePositionController::on_shutdown(const rclcpp_lifecycle::St
 
 /**
  * @brief update controller
- * - sub command => `desired_state`
- * - read()->motor => `target_state`
- * - calc `control_command=pid_controller(desired_state, target_state, time, period)`
- * - get `read_command=safety(control_command)`
- * - write()->motor <= `read_command`
+ *     - sub command => `desired_state`
+ *     - read()->motor => `target_state`
+ *     - calc `control_command=pid_controller(desired_state, target_state, time, period)`
+ *     - get `read_command=safety(control_command)`
+ *     - write()->motor <= `read_command`
  * @param time
  * @param period
  * @return controller_interface::return_type
