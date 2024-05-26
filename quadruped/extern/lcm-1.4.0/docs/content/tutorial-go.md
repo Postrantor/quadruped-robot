@@ -1,5 +1,5 @@
-Go Tutorial {#tut_go}
-====
+# Go Tutorial {#tut_go}
+
 \brief Sending and receiving LCM messages using Go
 
 # Introduction {#tut_go_intro}
@@ -45,11 +45,11 @@ package main
 import "github.com/lcm-proj/lcm/lcm-go/lcm"
 
 func main() {
-    lc, err := lcm.New()
-    if err != nil {
-        panic(err)
-    }
-    defer lc.Destroy()
+lc, err := lcm.New()
+if err != nil {
+panic(err)
+}
+defer lc.Destroy()
 }
 \endcode
 
@@ -77,13 +77,13 @@ is returned. This is an error channel that you have to check for any errors that
 could potentially occur.
 
 Finally, make sure that you are actually sending (LCM) encoded data down the
-channel. So where do you get that from? *From the Go bindings that you have
-generated earlier!*
+channel. So where do you get that from? _From the Go bindings that you have
+generated earlier!_
 
 \code
-    // Skipping the code above...
-    // Create a pointer to a new ExampleT object.
-    example := &exlcm.ExampleT{}
+// Skipping the code above...
+// Create a pointer to a new ExampleT object.
+example := &exlcm.ExampleT{}
 
     publisher, errs := lc.Publisher("EXAMPLE")
 
@@ -91,7 +91,7 @@ generated earlier!*
         defer close(publisher)
 
         // Let's send that a couple of times
-        for i := 0; i < 100; i++ {            
+        for i := 0; i < 100; i++ {
             // Encode the data.
             encEx, err := example.Encode()
             if err != nil {
@@ -104,15 +104,15 @@ generated earlier!*
     }()
 
 FOR_SELECT:
-    for {
-        select {
-            err, ok := <- errs:
-            if !ok {
-                break FOR_SELECT
-            }
-            panic(err)
-        }
-    }
+for {
+select {
+err, ok := <- errs:
+if !ok {
+break FOR_SELECT
+}
+panic(err)
+}
+}
 \endcode
 
 As you can see, it does not require much code to send something through LCM
@@ -123,7 +123,7 @@ values.
 An important note: as soon as you are done with sending to a channel, you should
 close the corresponding publisher channel, as we are doing in the `defer`
 statement. This is necessary, so that you do not end up in a potential deadlock.
-The errs channel is only closed *after* the publisher one is.
+The errs channel is only closed _after_ the publisher one is.
 
 # Receiving LCM Messages {#tut_go_receive}
 
@@ -138,23 +138,23 @@ Go channel. Usually, deserialize the received data back into a suitable object
 is a reasonable way to do here.
 
 \code
-    // Skipping the code from the initialization part.
-    // Subscribe to the previously used EXAMPLE channel. The subscription Go
-    // channel has a buffer size 5, whenever more messages are pending than the
-    // buffer size they are dropped.
-    if subscription, err := lc.Subscribe("EXAMPLE", 5); if err != nil {
-        panic(err)
-    }
-    // Not explicitly necessary, as Destroy() also unsubscribes to all
-    // subscriptions.
-    defer lc.Unsubscribe(subscription)
+// Skipping the code from the initialization part.
+// Subscribe to the previously used EXAMPLE channel. The subscription Go
+// channel has a buffer size 5, whenever more messages are pending than the
+// buffer size they are dropped.
+if subscription, err := lc.Subscribe("EXAMPLE", 5); if err != nil {
+panic(err)
+}
+// Not explicitly necessary, as Destroy() also unsubscribes to all
+// subscriptions.
+defer lc.Unsubscribe(subscription)
 
 FOR:
-    for {
-        select {
-        // Usually you have a timeout to not deadlock.
-        case <-time.After(5 * time.Second):
-            break FOR
+for {
+select {
+// Usually you have a timeout to not deadlock.
+case <-time.After(5 \* time.Second):
+break FOR
 
         case data, ok := <- subscription.ReceiveChan:
             if !ok {
@@ -176,6 +176,7 @@ FOR:
 
         }
     }
+
 \endcode
 
 Done!
@@ -194,7 +195,7 @@ application (such as the use of panic for error handling).
 Throughout the tutorial you might have noticed that the original type name which
 was called `example_t` got transferred into something like `ExampleT`. This is
 was an actively chosen design decision. As it is Go best-practice to use
-Camel-Casing, every _ will be removed and the following character will be
+Camel-Casing, every \_ will be removed and the following character will be
 capitalized. Furthermore, the casing describes if a member or function gets
 exported or not in Go: capitalized member/function name = exported function;
 small-cased member/function name = unexported function. Therefore, every type

@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
 #include "../lcm/lcm_version.h"
 #include "lcmgen.h"
 

@@ -1,6 +1,6 @@
-# Using LuaRocks #
+# Using LuaRocks
 
-## Linux Instructions ##
+## Linux Instructions
 
 The LCM Lua module is normally built by the LCM Autotools build. The LCM Lua
 module can also be built by LuaRocks. A rockspec has been provided for your
@@ -15,9 +15,9 @@ depend on the LCM library; the LCM sources are compiled in.
 
 LuaRocks will look for:
 
-  * `glib.h` in `GLIB_INCDIR`
-  * `glibconfig.h` in `GLIB_CONFIG_INCDIR`
-  * `libglib-2.0.so` in `GLIB_LIBDIR`
+- `glib.h` in `GLIB_INCDIR`
+- `glibconfig.h` in `GLIB_CONFIG_INCDIR`
+- `libglib-2.0.so` in `GLIB_LIBDIR`
 
 Depending your machine, you may need to specify these directories. On my
 machine (Ubuntu 14.04), LuaRocks must be invoked in the following way:
@@ -66,7 +66,7 @@ In most cases, you should be able to just `eval` the result.
 $ eval $(luarocks path)
 ```
 
-## Windows Instructions ##
+## Windows Instructions
 
 If you are trying to build this rock on Windows... Good luck! But seriously,
 it's just like the Linux install with a few extra twists. This has been tested
@@ -75,7 +75,7 @@ with the windows compiler; the MinGW compiler has not been tested.
 First, you will need to install GLib. The all-in-one package is recommended. You
 can get it here:
 
-  [http://www.gtk.org/download/](http://www.gtk.org/download/)
+[http://www.gtk.org/download/](http://www.gtk.org/download/)
 
 Once GLib is installed (to somewhere like `C:\GLIB`) you will need to add the
 bin directory to your PATH. This is necessary so Lua will be able to find
@@ -106,7 +106,7 @@ CFLAGS="/TP"
 You will also probably need to tell the Lua interpreter where to find the rock.
 You will most likely need to modify the LUA_CPATH environment variable.
 
-## Troubleshooting ##
+## Troubleshooting
 
 On my machine, I ran into a problem where `luarocks` was building the module for
 5.1, but then the default `lua` was actually running 5.2. If you are seeing

@@ -1,15 +1,13 @@
 #include <assert.h>
 #include <errno.h>
 #include <getopt.h>
+#include <glib.h>
+#include <glib/gstdio.h>
+#include <lcm/lcm.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
-#include <glib.h>
-#include <glib/gstdio.h>
-
-#include <lcm/lcm.h>
 
 // GRegex was new in GLib 2.14.0
 #if GLIB_CHECK_VERSION(2, 14, 0)
@@ -536,7 +534,7 @@ int main(int argc, char *argv[])
     }
 
     logger.time0 = timestamp_now();
-    logger.max_write_queue_size = (int64_t)(max_write_queue_size_mb * (1 << 20));
+    logger.max_write_queue_size = (int64_t) (max_write_queue_size_mb * (1 << 20));
 
     if (0 != open_logfile(&logger))
         return 1;

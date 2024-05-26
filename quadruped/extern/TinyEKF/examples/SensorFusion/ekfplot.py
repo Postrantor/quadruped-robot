@@ -7,13 +7,13 @@ Copyright (C) 2015 Simon D. Levy
 MIT License
 '''
 
+from time import sleep
+import numpy as np
+from realtime_plot import RealtimePlotter
+from serial import Serial
 ARDUINO_PORT = '/dev/ttyACM0'
 ARDUINO_BAUD = 9600
 
-from serial import Serial
-from realtime_plot import RealtimePlotter
-import numpy as np
-from time import sleep
 
 class EKF_Plotter(RealtimePlotter):
 
@@ -26,25 +26,26 @@ class EKF_Plotter(RealtimePlotter):
         p_range = p_lo, p_hi
 
         t_lo = 20
-        t_hi = 40 
+        t_hi = 40
         t_range = t_lo, t_hi
 
-        t_ticks = tuple(range(t_lo,t_hi,2))
-        p_ticks = tuple(range(p_lo,p_hi,2))
+        t_ticks = tuple(range(t_lo, t_hi, 2))
+        p_ticks = tuple(range(p_lo, p_hi, 2))
 
         RealtimePlotter.__init__(self, [p_range, t_range, t_range, p_range, t_range],
-                window_name='EKF demo',
-                yticks = [p_ticks, t_ticks, t_ticks, p_ticks, t_ticks],
-                styles = ['r--', 'b-', 'g-', 'k-', 'k-'], 
-                ylabels=['Baro Press (mb)','Baro Temp(C)', 'LM35 Temp(C)', 'Baro EKF', 'Temp EKF'],
-                interval_msec=1)
+                                 window_name='EKF demo',
+                                 yticks=[p_ticks, t_ticks, t_ticks, p_ticks, t_ticks],
+                                 styles=['r--', 'b-', 'g-', 'k-', 'k-'],
+                                 ylabels=['Baro Press (mb)', 'Baro Temp(C)', 'LM35 Temp(C)', 'Baro EKF', 'Temp EKF'],
+                                 interval_msec=1)
 
-        self.pbaro, self.tbaro, self.tlm35, self.p_ekf, self.t_ekf = 0,0,0,0,0
+        self.pbaro, self.tbaro, self.tlm35, self.p_ekf, self.t_ekf = 0, 0, 0, 0, 0
         self.msg = ''
 
     def getValues(self):
 
-       return self.pbaro, self.tbaro, self.tlm35, self.p_ekf, self.t_ekf
+        return self.pbaro, self.tbaro, self.tlm35, self.p_ekf, self.t_ekf
+
 
 def _update(plotter):
 
@@ -56,7 +57,7 @@ def _update(plotter):
             if c == '\n':
                 try:
                     plotter.pbaro, plotter.tbaro, plotter.tlm35, plotter.p_ekf, plotter.t_ekf = \
-                        map(lambda s:float(s), plotter.msg.split())
+                        map(lambda s: float(s), plotter.msg.split())
                 except:
                     None
                 plotter.msg = ''
@@ -68,15 +69,15 @@ def _update(plotter):
         # yield to other thread
         sleep(0)
 
+
 if __name__ == '__main__':
 
     import threading
 
     plotter = EKF_Plotter()
 
-    thread = threading.Thread(target=_update, args = (plotter,))
+    thread = threading.Thread(target=_update, args=(plotter,))
     thread.daemon = True
     thread.start()
 
     plotter.start()
- 

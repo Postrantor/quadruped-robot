@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type = "text/xsl" href = "http://www.coin-or.org/projects/autoGen.xsl"?>
-<projectData xmlns="coin-or.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="coin-or.org http://www.coin-or.org/projects/autoGen.xsd">
+<projectData xmlns="coin-or.org"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="coin-or.org http://www.coin-or.org/projects/autoGen.xsd">
   <projectBasics>
     <projectName>qpOASES</projectName>
     <projectDescription>

@@ -1,14 +1,12 @@
-matplotlib-cpp
-==============
+# matplotlib-cpp
 
 Welcome to matplotlib-cpp, possibly the simplest C++ plotting library.
 It is built to resemble the plotting API used by Matlab and matplotlib.
 
+## Usage
 
-
-Usage
------
 Complete minimal example:
+
 ```cpp
 #include "matplotlibcpp.h"
 namespace plt = matplotlibcpp;
@@ -17,6 +15,7 @@ int main() {
     plt::show();
 }
 ```
+
     g++ minimal.cpp -std=c++11 -I/usr/include/python2.7 -lpython2.7
 
 **Result:**
@@ -24,6 +23,7 @@ int main() {
 ![Minimal example](./examples/minimal.png)
 
 A more comprehensive example:
+
 ```cpp
 #include "matplotlibcpp.h"
 #include <cmath>
@@ -59,6 +59,7 @@ int main()
     plt::save("./basic.png");
 }
 ```
+
     g++ basic.cpp -I/usr/include/python2.7 -lpython2.7
 
 **Result:**
@@ -66,6 +67,7 @@ int main()
 ![Basic example](./examples/basic.png)
 
 Alternatively, matplotlib-cpp also supports some C++11-powered syntactic sugar:
+
 ```cpp
 #include <cmath>
 #include "matplotlibcpp.h"
@@ -94,13 +96,15 @@ int main()
     plt::show();
 }
 ```
+
     g++ modern.cpp -std=c++11 -I/usr/include/python2.7 -lpython
 
 **Result:**
 
 ![Modern example](./examples/modern.png)
 
-Or some *funny-looking xkcd-styled* example:
+Or some _funny-looking xkcd-styled_ example:
+
 ```cpp
 #include "matplotlibcpp.h"
 #include <vector>
@@ -124,6 +128,7 @@ int main() {
 }
 
 ```
+
     g++ xkcd.cpp -std=c++11 -I/usr/include/python2.7 -lpython2.7
 
 **Result:**
@@ -131,6 +136,7 @@ int main() {
 ![xkcd example](./examples/xkcd.png)
 
 When working with vector fields, you might be interested in quiver plots:
+
 ```cpp
 #include "../matplotlibcpp.h"
 
@@ -153,6 +159,7 @@ int main()
     plt::show();
 }
 ```
+
     g++ quiver.cpp -std=c++11 -I/usr/include/python2.7 -lpython2.7
 
 **Result:**
@@ -160,6 +167,7 @@ int main()
 ![quiver example](./examples/quiver.png)
 
 When working with 3d functions, you might be interested in 3d plots:
+
 ```cpp
 #include "../matplotlibcpp.h"
 
@@ -189,8 +197,7 @@ int main()
 
 ![surface example](./examples/surface.png)
 
-Installation
-------------
+## Installation
 
 matplotlib-cpp works by wrapping the popular python plotting library matplotlib. (matplotlib.org)
 This means you have to have a working python installation, including development headers.
@@ -210,7 +217,6 @@ against `libpython` in order to user matplotlib-cpp. Most versions should
 work, although python likes to randomly break compatibility from time to time
 so some caution is advised when using the bleeding edge.
 
-
 # CMake
 
 The C++ code is compatible to both python2 and python3. However, the `CMakeLists.txt`
@@ -219,7 +225,7 @@ has to be changed manually. (a PR that adds a cmake option for this would be hig
 welcomed)
 
 **NOTE**: By design (of python), only a single python interpreter can be created per
-process. When using this library, *no other* library that is spawning a python
+process. When using this library, _no other_ library that is spawning a python
 interpreter internally can be used.
 
 To compile the code without using cmake, the compiler invocation should look like
@@ -240,9 +246,8 @@ You can download and install matplotlib-cpp using the [vcpkg](https://github.com
     ./bootstrap-vcpkg.sh
     ./vcpkg integrate install
     vcpkg install matplotlib-cpp
-  
-The matplotlib-cpp port in vcpkg is kept up to date by Microsoft team members and community contributors. If the version is out of date, please [create an issue or pull request](https://github.com/Microsoft/vcpkg) on the vcpkg repository.
 
+The matplotlib-cpp port in vcpkg is kept up to date by Microsoft team members and community contributors. If the version is out of date, please [create an issue or pull request](https://github.com/Microsoft/vcpkg) on the vcpkg repository.
 
 # C++11
 
@@ -253,10 +258,8 @@ Note that support for c++98 was dropped more or less accidentally, so if you hav
 with an ancient compiler and still want to enjoy the latest additional features, I'd
 probably merge a PR that restores support.
 
+## Why?
 
-
-Why?
-----
 I initially started this library during my diploma thesis. The usual approach of
 writing data from the c++ algorithm to a file and afterwards parsing and plotting
 it in python using matplotlib proved insufficient: Keeping the algorithm
@@ -274,21 +277,20 @@ The general approach of providing a simple C++ API for utilizing python code
 was later generalized and extracted into a separate, more powerful
 library in another project of mine, [wrappy](http://www.github.com/lava/wrappy).
 
+## Todo/Issues/Wishlist
 
-Todo/Issues/Wishlist
---------------------
-* This library is not thread safe. Protect all concurrent access with a mutex.
+- This library is not thread safe. Protect all concurrent access with a mutex.
   Sadly, this is not easy to fix since it is not caused by the library itself but
   by the python interpreter, which is itself not thread-safe.
 
-* It would be nice to have a more object-oriented design with a Plot class which would allow
+- It would be nice to have a more object-oriented design with a Plot class which would allow
   multiple independent plots per program.
 
-* Right now, only a small subset of matplotlibs functionality is exposed. Stuff like xlabel()/ylabel() etc. should
+- Right now, only a small subset of matplotlibs functionality is exposed. Stuff like xlabel()/ylabel() etc. should
   be easy to add.
 
-* If you use Anaconda on Windows, you might need to set PYTHONHOME to Anaconda home directory and QT_QPA_PLATFORM_PLUGIN_PATH to %PYTHONHOME%Library/plugins/platforms. The latter is for especially when you get the error which says 'This application failed to start because it could not find or load the Qt platform plugin "windows"
-in "".'
+- If you use Anaconda on Windows, you might need to set PYTHONHOME to Anaconda home directory and QT_QPA_PLATFORM_PLUGIN_PATH to %PYTHONHOME%Library/plugins/platforms. The latter is for especially when you get the error which says 'This application failed to start because it could not find or load the Qt platform plugin "windows"
+  in "".'
 
-* MacOS: `Unable to import matplotlib.pyplot`. Cause: In mac os image rendering back end of matplotlib (what-is-a-backend to render using the API of Cocoa by default). There is Qt4Agg and GTKAgg and as a back-end is not the default. Set the back end of macosx that is differ compare with other windows or linux os.
-Solution is described [here](https://stackoverflow.com/questions/21784641/installation-issue-with-matplotlib-python?noredirect=1&lq=1), additional information can be found there too(see links in answers).
+- MacOS: `Unable to import matplotlib.pyplot`. Cause: In mac os image rendering back end of matplotlib (what-is-a-backend to render using the API of Cocoa by default). There is Qt4Agg and GTKAgg and as a back-end is not the default. Set the back end of macosx that is differ compare with other windows or linux os.
+  Solution is described [here](https://stackoverflow.com/questions/21784641/installation-issue-with-matplotlib-python?noredirect=1&lq=1), additional information can be found there too(see links in answers).

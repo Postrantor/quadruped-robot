@@ -1,7 +1,8 @@
 #include <Python.h>
+
 #include "pylcm_subscription.h"
 
-//#define dbg(...) fprintf (stderr, __VA_ARGS__)
+// #define dbg(...) fprintf (stderr, __VA_ARGS__)
 #define dbg(...)
 
 // to support python 2.5 and earlier

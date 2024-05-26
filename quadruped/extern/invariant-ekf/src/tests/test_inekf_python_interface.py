@@ -1,3 +1,7 @@
+from robot_interface import RobotInterface  # pytype: disable=import-error
+from inekf_interface import INEKFInterface  # pytype: disable=import-error
+import numpy as np
+import time
 import os
 import inspect
 # currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -5,11 +9,6 @@ import inspect
 # os.sys.path.insert(0, parentdir)
 os.sys.path.insert(0, "/home/ascend/Documents/motion_imitation-master")
 os.sys.path.insert(0, "/home/ascend/Documents/invariant-ekf/build")
-
-import time
-import numpy as np
-from inekf_interface import INEKFInterface # pytype: disable=import-error
-from robot_interface import RobotInterface # pytype: disable=import-error
 
 
 class INEKF_ON_A1():
@@ -57,14 +56,13 @@ class INEKF_ON_A1():
         T = time.time()
         self._inekf_interface.receive_imu_data(T, self.getImuData())
         self._estimated_state = self._inekf_interface.update()
-    
+
     def update_contact(self, is_constact):
         """
         Input: 
            is_contact is numpy.array or list of bool values.
         """
         self._inekf_interface.update_contact(is_constact)
-    
 
     @property
     def estimated_state(self):
@@ -77,7 +75,7 @@ def main():
     time.sleep(2)
     estimator.update_contact(np.array([1, 0, 0, 1], dtype=np.bool))
     estimator.update()
-    s = estimator.estimated_state # class: RobotState
+    s = estimator.estimated_state  # class: RobotState
     r = s.getRotation()
     print(r)
     raise

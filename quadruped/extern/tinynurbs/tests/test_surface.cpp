@@ -1,23 +1,21 @@
-#include <tinynurbs/tinynurbs.h>
+#include "catch.hpp"
+#include <cmath>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
-#include <cmath>
-#include "catch.hpp"
+#include <tinynurbs/tinynurbs.h>
 
 using namespace std;
 
-tinynurbs::Surface3f getBilinearPatch() {
+tinynurbs::Surface3f getBilinearPatch()
+{
     tinynurbs::Surface3f srf;
     srf.degree_u = 1;
     srf.degree_v = 1;
     srf.knots_u = {0, 0, 1, 1};
     srf.knots_v = {0, 0, 1, 1};
     // 2x2 grid (tinynurbs::array2) of control points
-    srf.control_points = {2, 2, 
-                          {glm::vec3(-1, 0, 1), glm::vec3(-1, 0, -1),
-                           glm::vec3(1, 0, 1), glm::vec3(1, 0, -1)
-                          }
-                         };
+    srf.control_points = {
+        2, 2, {glm::vec3(-1, 0, 1), glm::vec3(-1, 0, -1), glm::vec3(1, 0, 1), glm::vec3(1, 0, -1)}};
     return srf;
 }
 
@@ -48,7 +46,6 @@ TEST_CASE("surfaceTangent (non-rational)", "[surface, non-rational, evaluate]")
     REQUIRE(tgt_v.y == Approx(0));
     REQUIRE(tgt_v.z == Approx(-1));
 }
-
 
 TEST_CASE("surfaceNormal (non-rational)", "[surface, non-rational, evaluate]")
 {
@@ -89,7 +86,7 @@ TEST_CASE("surfaceInsertKnotU (non-rational)", "[surface, non-rational, modify]"
     unsigned int repeat = 1;
 
     glm::vec3 pt = tinynurbs::surfacePoint(srf, 0.25f, 0.5f);
-    
+
     size_t n_knots_prev = srf.knots_u.size();
     size_t n_control_points_prev = srf.control_points.rows();
 
@@ -112,7 +109,7 @@ TEST_CASE("surfaceInsertKnotV (non-rational)", "[surface, non-rational, modify]"
     unsigned int repeat = 1;
 
     glm::vec3 pt = tinynurbs::surfacePoint(srf, 0.25f, 0.5f);
-    
+
     size_t n_knots_prev = srf.knots_v.size();
     size_t n_control_points_prev = srf.control_points.cols();
 
@@ -147,12 +144,14 @@ TEST_CASE("surfaceSplitU (non-rational)", "[surface, non-rational, modify]")
     REQUIRE(left.degree_v == srf.degree_v);
     REQUIRE(right.degree_v == srf.degree_v);
 
-    for (int i = 0; i < left.degree_u + 1; ++i) {
+    for (int i = 0; i < left.degree_u + 1; ++i)
+    {
         int d = left.knots_u.size() - (left.degree_u + 1);
-        REQUIRE(left.knots_u[d+i] == Approx(u));
+        REQUIRE(left.knots_u[d + i] == Approx(u));
     }
 
-    for (int i = 0; i < right.degree_u + 1; ++i) {
+    for (int i = 0; i < right.degree_u + 1; ++i)
+    {
         REQUIRE(right.knots_u[i] == Approx(u));
     }
 
@@ -184,12 +183,14 @@ TEST_CASE("surfaceSplitV (non-rational)", "[surface, non-rational, modify]")
     REQUIRE(left.degree_v == srf.degree_v);
     REQUIRE(right.degree_v == srf.degree_v);
 
-    for (int i = 0; i < left.degree_v + 1; ++i) {
+    for (int i = 0; i < left.degree_v + 1; ++i)
+    {
         int d = left.knots_v.size() - (left.degree_v + 1);
-        REQUIRE(left.knots_v[d+i] == Approx(v));
+        REQUIRE(left.knots_v[d + i] == Approx(v));
     }
 
-    for (int i = 0; i < right.degree_v + 1; ++i) {
+    for (int i = 0; i < right.degree_v + 1; ++i)
+    {
         REQUIRE(right.knots_v[i] == Approx(v));
     }
 
@@ -206,24 +207,28 @@ TEST_CASE("surfaceSplitV (non-rational)", "[surface, non-rational, modify]")
 TEST_CASE("surfaceReadOBJ and surfaceSaveOBJ (non-rational)", "[surface, non-rational, obj]")
 {
     auto srf = getBilinearPatch();
-    
+
     tinynurbs::surfaceSaveOBJ("surface_nonrational.obj", srf);
     auto read_srf = tinynurbs::surfaceReadOBJ<float>("surface_nonrational.obj");
-    
+
     REQUIRE(srf.degree_u == read_srf.degree_u);
     REQUIRE(srf.degree_v == read_srf.degree_v);
     REQUIRE(srf.knots_u.size() == read_srf.knots_u.size());
-    for (int i = 0; i < srf.knots_u.size(); ++i) {
+    for (int i = 0; i < srf.knots_u.size(); ++i)
+    {
         REQUIRE(srf.knots_u[i] == Approx(read_srf.knots_u[i]));
     }
     REQUIRE(srf.knots_v.size() == read_srf.knots_v.size());
-    for (int i = 0; i < srf.knots_v.size(); ++i) {
+    for (int i = 0; i < srf.knots_v.size(); ++i)
+    {
         REQUIRE(srf.knots_v[i] == Approx(read_srf.knots_v[i]));
     }
     REQUIRE(srf.control_points.rows() == read_srf.control_points.rows());
     REQUIRE(srf.control_points.cols() == read_srf.control_points.cols());
-    for (int i = 0; i < srf.control_points.rows(); ++i) {
-        for (int j = 0; j < srf.control_points.cols(); ++j) {
+    for (int i = 0; i < srf.control_points.rows(); ++i)
+    {
+        for (int j = 0; j < srf.control_points.cols(); ++j)
+        {
             REQUIRE(srf.control_points(i, j).x == Approx(read_srf.control_points(i, j).x));
             REQUIRE(srf.control_points(i, j).y == Approx(read_srf.control_points(i, j).y));
             REQUIRE(srf.control_points(i, j).z == Approx(read_srf.control_points(i, j).z));

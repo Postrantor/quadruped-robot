@@ -8,32 +8,32 @@ variety of programming languages.
 
 # Quick Links
 
-* [LCM downloads](https://github.com/lcm-proj/lcm/releases)
-* [Website and documentation](http://lcm-proj.github.io)
+- [LCM downloads](https://github.com/lcm-proj/lcm/releases)
+- [Website and documentation](http://lcm-proj.github.io)
 
 # Features
 
-* Low-latency inter-process communication
-* Efficient broadcast mechanism using UDP Multicast
-* Type-safe message marshalling
-* User-friendly logging and playback
-* No centralized "database" or "hub" -- peers communicate directly
-* No daemons
-* Few dependencies
+- Low-latency inter-process communication
+- Efficient broadcast mechanism using UDP Multicast
+- Type-safe message marshalling
+- User-friendly logging and playback
+- No centralized "database" or "hub" -- peers communicate directly
+- No daemons
+- Few dependencies
 
 ## Supported platforms and languages
 
-* Platforms:
-  * GNU/Linux
-  * OS X
-  * Windows
-  * Any POSIX-1.2001 system (e.g., Cygwin, Solaris, BSD, etc.)
-* Languages
-  * C
-  * C++
-  * C#
-  * Go
-  * Java
-  * Lua
-  * MATLAB
-  * Python
+- Platforms:
+  - GNU/Linux
+  - OS X
+  - Windows
+  - Any POSIX-1.2001 system (e.g., Cygwin, Solaris, BSD, etc.)
+- Languages
+  - C
+  - C++
+  - C#
+  - Go
+  - Java
+  - Lua
+  - MATLAB
+  - Python

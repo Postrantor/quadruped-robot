@@ -10,5 +10,5 @@ if(PYTHON_EXECUTABLE)
   find_package(PythonLibs)
 endif()
 
-find_package_handle_standard_args(Python
-  REQUIRED_VARS PYTHON_EXECUTABLE PYTHON_INCLUDE_DIR PYTHON_LIBRARY)
+find_package_handle_standard_args(
+  Python REQUIRED_VARS PYTHON_EXECUTABLE PYTHON_INCLUDE_DIR PYTHON_LIBRARY)

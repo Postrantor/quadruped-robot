@@ -1,5 +1,4 @@
-Build Instructions {#build_instructions}
-====
+# Build Instructions {#build_instructions}
 
 [TOC]
 
@@ -38,12 +37,14 @@ the scope of these instructions.
 # Ubuntu / Debian {#build_ubuntu_debian}
 
 Required packages:
-  - build-essential
-  - libglib2.0-dev
+
+- build-essential
+- libglib2.0-dev
 
 Strongly recommended packages:
-  - default-jdk (or openjdk-9-jdk)
-  - python-dev
+
+- default-jdk (or openjdk-9-jdk)
+- python-dev
 
 From a terminal, run the following commands.
 
@@ -64,7 +65,7 @@ Install Homebrew packages
 
     $ brew install glib pkg-config
 
-Install Java.  Type `javac` in a terminal, then follow the instructions.
+Install Java. Type `javac` in a terminal, then follow the instructions.
 
 Download and build LCM.
 
@@ -77,14 +78,16 @@ Download and build LCM.
 # Windows {#build_windows}
 
 Requirements:
- - GLib for Windows (http://www.gtk.org).  You'll need the following packages
-  - GLib (Run-time, dev)
-  - gettext-runtime (Run-time)
+
+- GLib for Windows (http://www.gtk.org). You'll need the following packages
+- GLib (Run-time, dev)
+- gettext-runtime (Run-time)
 
 Building:
-  1. Follow the instructions in WinSpecific/README.txt to setup GLib.
-  2. Use the CMake GUI to configure LCM.
-  3. Open the VS Solution created by CMake and build it.
+
+1. Follow the instructions in WinSpecific/README.txt to setup GLib.
+2. Use the CMake GUI to configure LCM.
+3. Open the VS Solution created by CMake and build it.
 
 LCM is officially supported on Visual Studio 2015.
 
@@ -92,8 +95,8 @@ LCM is officially supported on Visual Studio 2015.
 
 On other POSIX.1-2001 systems (e.g., other GNU/Linux distributions, FreeBSD,
 Solaris, etc.) the only major requirement is to install the GLib 2.x
-development files.  If possible, a Java development kit and Python should also
-be installed.  Then follow the same instructions as for
+development files. If possible, a Java development kit and Python should also
+be installed. Then follow the same instructions as for
 [Ubuntu / Debian](#build_ubuntu_debian).
 
 # Post Install {#build_post}

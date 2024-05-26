@@ -22,19 +22,8 @@ target_link_libraries(lcm-buftest-receiver lcm GLib2::glib)
 add_executable(lcm-buftest-sender buftest-sender.c)
 target_link_libraries(lcm-buftest-sender lcm GLib2::glib)
 
-install(TARGETS
-  lcm-sink
-  lcm-source
-  lcm-tester
-  lcm-example
-  lcm-logfilter
-  DESTINATION bin
-)
+install(TARGETS lcm-sink lcm-source lcm-tester lcm-example lcm-logfilter
+        DESTINATION bin)
 
-install(FILES
-  lcm-example.1
-  lcm-sink.1
-  lcm-source.1
-  lcm-tester.1
-  DESTINATION share/man/man1
-)
+install(FILES lcm-example.1 lcm-sink.1 lcm-source.1 lcm-tester.1
+        DESTINATION share/man/man1)

@@ -1,22 +1,22 @@
-CMake Tutorial {#tut_cmake}
-====
+# CMake Tutorial {#tut_cmake}
+
 \brief Generating LCM type bindings with CMake
 
 This tutorial will walk you through writing a `CMakeLists.txt` to generate
-bindings for your LCM message types. Please note that this is *not* meant to
+bindings for your LCM message types. Please note that this is _not_ meant to
 serve as a general CMake tutorial. This tutorial assumes that you are already
 familiar with CMake.
 
 \note
-  This tutorial assumes that you are using CMake 3.1 or later. Some of the
-  features used, especially those related to the creation of a convenient
-  `INTERFACE` library for C++ bindings, are not available in older versions of
-  CMake. If you are using an older version of CMake, you may need to refer to
-  the implementation details of LCM's helper functions, found in
-  `lcmUtilities.cmake`, in order to manually accomplish the tasks that the
-  helper functions would normally do. Note that *all* of the helper functions
-  require CMake 3.1 or later on Windows, and that it is much more difficult to
-  use `lcm-gen` on Windows from within CMake prior to CMake 3.1.
+This tutorial assumes that you are using CMake 3.1 or later. Some of the
+features used, especially those related to the creation of a convenient
+`INTERFACE` library for C++ bindings, are not available in older versions of
+CMake. If you are using an older version of CMake, you may need to refer to
+the implementation details of LCM's helper functions, found in
+`lcmUtilities.cmake`, in order to manually accomplish the tasks that the
+helper functions would normally do. Note that _all_ of the helper functions
+require CMake 3.1 or later on Windows, and that it is much more difficult to
+use `lcm-gen` on Windows from within CMake prior to CMake 3.1.
 
 ### Initial Setup
 
@@ -311,7 +311,7 @@ tasks.)
 
 Note that exporting JAR files requires CMake 3.7 or later, or copying
 `UseJava.cmake` into your project. See LCM itself for an example of the latter.
-(Note that *consumers* of exported JAR's don't require CMake 3.7; the created
+(Note that _consumers_ of exported JAR's don't require CMake 3.7; the created
 export files are perfectly usable with much older versions of CMake.)
 
 ### Other Useful Tidbits

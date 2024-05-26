@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-int getopt(int argc, char * const argv[], const char *optstring);
+int getopt(int argc, char *const argv[], const char *optstring);
 extern char *optarg;
 extern int optind, opterr, optopt;
 #include "getopt_long.h"
@@ -14,4 +14,4 @@ extern int optind, opterr, optopt;
 }
 #endif
 
-#endif   /* GETOPT_H */
+#endif /* GETOPT_H */

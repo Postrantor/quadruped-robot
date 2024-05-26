@@ -1,11 +1,11 @@
-Lua Tutorial {#tut_lua}
-====
+# Lua Tutorial {#tut_lua}
+
 \brief Sending and receiving LCM messages with Lua
 
 # Introduction {#tut_lua_intro}
 
 This tutorial will walk you through the main tasks for exchanging LCM messages
-using the Lua API.  The topics covered
+using the Lua API. The topics covered
 in this tutorial are:
 
 \li Initialize LCM in your application.
@@ -26,9 +26,9 @@ exlcm/init.lua
 \endcode
 
 The first file contains the Lua bindings for the \c example_t message type,
-and the \c init.lua file sets up a Lua package.  If you have the time,
+and the \c init.lua file sets up a Lua package. If you have the time,
 take a moment to open up the files and inspect the generated
-code.  Note that if \c exlcm/init.lua already existed, then it will be
+code. Note that if \c exlcm/init.lua already existed, then it will be
 regenerated as necessary.
 
 # Initializing LCM {#tut_lua_initialize}
@@ -47,8 +47,8 @@ The constructor initializes communications resources, and has a single optional
 argument.
 If no argument is given, as above, then the LCM instance is initialized to
 reasonable defaults, which are suitable for communicating with other LCM
-applications on the local computer.  The argument can also be a string
-specifying the underlying communications mechanisms.  The LCM Lua class
+applications on the local computer. The argument can also be a string
+specifying the underlying communications mechanisms. The LCM Lua class
 itself is a wrapper around the C LCM library, so for information on setting the
 class up for communication across computers, or other usages such as reading
 data from an LCM logfile (e.g., to post-process or analyze previously collected
@@ -59,12 +59,12 @@ If an error occurs initializing LCM, then the initializer will throw a Lua error
 # Publishing a message {#tut_lua_publishing}
 
 When you create an LCM data type and generate Lua code with <tt>lcm-gen</tt>,
-that data type will then be available as a Lua class with the same name.  For
+that data type will then be available as a Lua class with the same name. For
 <tt>example_t</tt>, the Lua class that gets generated looks like this:
 
 \verbatim
 local example_t = {}
-example_t.__index = example_t
+example_t.\_\_index = example_t
 
 example_t.name = 'exlcm.example_t'
 example_t.packagename = 'exlcm'
@@ -72,25 +72,25 @@ example_t.shortname = 'example_t'
 
 function example_t:new()
 
-  local obj = {}
+local obj = {}
 
-  obj.timestamp = 0
-  obj.position = {}
-  for d0 = 1, 3 do
-    obj.position[d0] = 0.0
-  end
-  obj.orientation = {}
-  for d0 = 1, 4 do
-    obj.orientation[d0] = 0.0
-  end
-  obj.num_ranges = 0
-  obj.ranges = {}
-  obj.name = ''
-  obj.enabled = false
+obj.timestamp = 0
+obj.position = {}
+for d0 = 1, 3 do
+obj.position[d0] = 0.0
+end
+obj.orientation = {}
+for d0 = 1, 4 do
+obj.orientation[d0] = 0.0
+end
+obj.num_ranges = 0
+obj.ranges = {}
+obj.name = ''
+obj.enabled = false
 
-  setmetatable(obj, self)
+setmetatable(obj, self)
 
-  return obj
+return obj
 end
 \endverbatim
 
@@ -116,7 +116,7 @@ msg.timestamp = 0
 msg.position = {1, 2, 3}
 msg.orientation = {1, 0, 0, 0}
 for i = 1, 15 do
-  table.insert(msg.ranges, i)
+table.insert(msg.ranges, i)
 end
 msg.num_ranges = #msg.ranges
 msg.name = "example string"
@@ -128,12 +128,12 @@ lc:publish("EXAMPLE", msg:encode())
 The full example is available in runnable form as
 <tt>examples/lua/send-message.lua</tt> in the LCM source distribution.
 
-For the most part, this example should be pretty straightforward.  The
+For the most part, this example should be pretty straightforward. The
 application creates a message, fills in the message data fields, then
 initializes LCM and publishes the message.
 
 The call to \ref lcm_userdata_publish serializes the data into a byte stream and
-transmits the packet to any interested receivers.  The string
+transmits the packet to any interested receivers. The string
 <tt>"EXAMPLE"</tt> is the <em>channel</em> name, which is a string
 transmitted with each packet that identifies the contents to receivers.
 Receivers subscribe to different channels using this identifier, allowing
@@ -142,16 +142,16 @@ uninteresting data to be discarded quickly and efficiently.
 # Receiving LCM Messages {#tut_lua_receive}
 
 As discussed above, each LCM message is transmitted with an attached channel
-name.  You can use these channel names to determine which LCM messages your
-application receives, by subscribing to the channels of interest.  It is
+name. You can use these channel names to determine which LCM messages your
+application receives, by subscribing to the channels of interest. It is
 important for senders and receivers to agree on the channel names which will
 be used for each message type.
 
 Here is a sample program that sets up LCM and adds a subscription to the
-<tt>"EXAMPLE"</tt> channel.  Whenever a message is received on this
-channel, its contents are printed out.  If messages on other channels are
+<tt>"EXAMPLE"</tt> channel. Whenever a message is received on this
+channel, its contents are printed out. If messages on other channels are
 being transmitted over the network, this program will not see them because it
-only has a subscription to the <tt>"EXAMPLE"</tt> channel.  A
+only has a subscription to the <tt>"EXAMPLE"</tt> channel. A
 particular instance of LCM may have an unlimited number of subscriptions.
 
 \verbatim
@@ -163,32 +163,32 @@ package.path = './?/init.lua;' .. package.path
 local exlcm = require('exlcm')
 
 function array_to_str(array)
-  str = '{'
-  for i = 1, #array - 1 do
-    str = str .. array[i] .. ', '
-  end
-  return str .. array[#array] .. '}'
+str = '{'
+for i = 1, #array - 1 do
+str = str .. array[i] .. ', '
+end
+return str .. array[#array] .. '}'
 end
 
 function my_handler(channel, data)
 
-  local msg = exlcm.example_t.decode(data)
+local msg = exlcm.example_t.decode(data)
 
-  print(string.format("Received message on channel \"%s\"", channel))
-  print(string.format("   timestamp   = %d", msg.timestamp))
-  print(string.format("   position    = %s", array_to_str(msg.position)))
-  print(string.format("   orientation = %s", array_to_str(msg.orientation)))
-  print(string.format("   ranges: %s", array_to_str(msg.ranges)))
-  print(string.format("   name        = '%s'", msg.name))
-  print(string.format("   enabled     = %s", tostring(msg.enabled)))
-  print("")
+print(string.format("Received message on channel \"%s\"", channel))
+print(string.format(" timestamp = %d", msg.timestamp))
+print(string.format(" position = %s", array_to_str(msg.position)))
+print(string.format(" orientation = %s", array_to_str(msg.orientation)))
+print(string.format(" ranges: %s", array_to_str(msg.ranges)))
+print(string.format(" name = '%s'", msg.name))
+print(string.format(" enabled = %s", tostring(msg.enabled)))
+print("")
 end
 
 lc = lcm.lcm.new()
 sub = lc:subscribe("EXAMPLE", my_handler)
 
 while true do
-  lc:handle()
+lc:handle()
 end
 
 -- all remaining subscriptions are unsubed at garbage collection

@@ -1,5 +1,4 @@
 #include <Python.h>
-
 #include <lcm/eventlog.h>
 #ifdef WIN32
 #include <lcm/windows/WinPorting.h>

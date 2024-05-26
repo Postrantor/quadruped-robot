@@ -21,14 +21,12 @@
  *
  */
 
-
 /**
  *	\file include/qpOASES.hpp
  *	\author Hans Joachim Ferreau, Andreas Potschka, Christian Kirches
  *	\version 3.2
  *	\date 2007-2017
  */
-
 
 #if defined(__SINGLE_OBJECT__) || defined(__C_WRAPPER__)
 

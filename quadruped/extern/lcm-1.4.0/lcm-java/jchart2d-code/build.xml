@@ -2,7 +2,7 @@
 <project name="jchart2d" default="makejarBinary">
 	<description>
   A swing-widget for precise visualisation of charts.
- </description>
+	</description>
 
 	<!-- General Properties -->
 
@@ -227,7 +227,7 @@
      Create a jar file that is shrinked by proguard for
      faster download. Only the codepath for the applet
      init will be kept.
-    </description>
+		</description>
 
 		<proguard obfuscate="false" shrink="true" overloadaggressively="false" warn="true" verbose="true" ignorewarnings="true" printmapping="true" allowaccessmodification="false" optimize="false">
 			<libraryjar name="${java.home}/lib/rt.jar" />
@@ -247,13 +247,13 @@
 				<method access="public" name="**" />
 			</keep>
 		</proguard>
-	    <!--
-		<genkey alias="jchart2.sourceforge.net" storepass="password" keystore="${basedir}/.keystore" >
+		<!--
+		<genkey alias="jchart2.sourceforge.net" storepass="password" keystore="${basedir}/.keystore">
 		  <dname>
 		    <param name="CN" value="Achim Westermann"/>
 		    <param name="OU" value="JChart2D"/>
-		    <param name="O"  value="monitorenter.info"/>
-		    <param name="C"  value="DE"/>
+		    <param name="O" value="monitorenter.info"/>
+		    <param name="C" value="DE"/>
 		  </dname>
 			
 		</genkey>
@@ -265,7 +265,7 @@
 	<!-- Dependency only for ensuring validity -->
 	<target name="makezipEclipseProject" depends="build">
 		<property name="sourcezip" value="${project.name}-eclipse-project-${project.version}.zip"/>
-	    <delete file="${basedir}/${sourcezip}"/>
+		<delete file="${basedir}/${sourcezip}"/>
 		<zip destfile="${sourcezip}" basedir="${basedir}/.." update="false">
 			<include name="${project.name}/src/**/*.java" />
 			<include name="${project.name}/test/**/*.java" />
@@ -278,7 +278,7 @@
 			<include name="${project.name}/formatting.xml" />
 			<include name="${project.name}/history.txt" />
 			<include name="${project.name}/doc/docs/javadoc/jchart2d.css" />
-			<!-- Works when  defaultexcludes="no" is set -->
+			<!-- Works when defaultexcludes="no" is set -->
 			<include name="${project.name}/.cvsignore" />
 			<!-- The eclipse builders -->
 			<include name="${project.name}/.externalToolBuilders/**/*" />
@@ -294,73 +294,70 @@
 			<classpath refid="classpath" />
 			<bottom>
 				<![CDATA[<i>Copyright &#169; 2001 - 2010 <a href="http://www.opensource.org/licenses/lgpl-license.php" target="_blank">LGPL</a>, All Rights Footloose.</i>]]></bottom>
-		<fileset refid="sourcefiles" />
-		<link offline="false" href="http://java.sun.com/j2se/1.5.0/docs/api/" packagelistLoc="${java.home}/docs/api/" />
-		<link offline="false" href="http://logging.apache.org/log4j/1.2/apidocs/" packagelistLoc="http://logging.apache.org/log4j/1.2/apidocs/package-list" />
-	</javadoc>
-</target>
+			<fileset refid="sourcefiles" />
+			<link offline="false" href="http://java.sun.com/j2se/1.5.0/docs/api/" packagelistLoc="${java.home}/docs/api/" />
+			<link offline="false" href="http://logging.apache.org/log4j/1.2/apidocs/" packagelistLoc="http://logging.apache.org/log4j/1.2/apidocs/package-list" />
+		</javadoc>
+	</target>
 
-<target name="zip.javadoc" depends="javadoc">
-	<description>
+	<target name="zip.javadoc" depends="javadoc">
+		<description>
         Zip the javadoc API documentation to a zip named after the property project.name.
-      </description>
-	<zip basedir="${basedir}/doc/docs/javadoc/" destfile="${basedir}/${project.name}-doc-${project.version}.zip" includes="**/*.html,**/*.css,package-list" />
-</target>
+		</description>
+		<zip basedir="${basedir}/doc/docs/javadoc/" destfile="${basedir}/${project.name}-doc-${project.version}.zip" includes="**/*.html,**/*.css,package-list" />
+	</target>
 
-<!-- remove all resources in builddir and the current jar file-->
-<target name="delete.classfiles">
-	<delete verbose="true" failonerror="true">
-		<fileset dir="${builddir}" />
-		<file file="${outjar}" />
-	</delete>
-</target>
+	<!-- remove all resources in builddir and the current jar file-->
+	<target name="delete.classfiles">
+		<delete verbose="true" failonerror="true">
+			<fileset dir="${builddir}" />
+			<file file="${outjar}" />
+		</delete>
+	</target>
 
 
-<target name="delete.doc">
-	<description>Delete the generated documentation.</description>
-	<delete includeEmptyDirs="true" verbose="true">
-		<fileset dir="${basedir}">
-			<include name="doc/docs/javadoc/**/*" />
-			<!-- Also delete the zip file with the doc! -->
-			<include name="${project.name}doc.zip" />
-			<exclude name="doc/docs/javadoc/jchart2d.css" />
-		</fileset>
-	</delete>
-</target>
+	<target name="delete.doc">
+		<description>Delete the generated documentation.</description>
+		<delete includeEmptyDirs="true" verbose="true">
+			<fileset dir="${basedir}">
+				<include name="doc/docs/javadoc/**/*" />
+				<!-- Also delete the zip file with the doc! -->
+				<include name="${project.name}doc.zip" />
+				<exclude name="doc/docs/javadoc/jchart2d.css" />
+			</fileset>
+		</delete>
+	</target>
 
-<target name="delete.local" depends="delete.classfiles,delete.doc">
-	<description>
+	<target name="delete.local" depends="delete.classfiles,delete.doc">
+		<description>
       Delete only the local generated files. This target is intended to
       be used before the project is checked in into the cmvc.
-     </description>
-</target>
+		</description>
+	</target>
 
-<!--
+	<!--
      Hard rebuild: scrubbing all classfiles and the generated *.java files of antlr before
      invoking compilation.
     -->
-<target name="rebuild" depends="delete.classfiles,build" />
+	<target name="rebuild" depends="delete.classfiles,build" />
 
-<target name="profile.runningchart">
-	<description>
+	<target name="profile.runningchart">
+		<description>
     	Runs info.monitorenter.gui.chart.demos.RunningChart with 
     	the JIP (java interactive profiler). Change project to java 1.5 
         as it requires the new -javaagent: argument. 
-    </description>
-	<!-- 
-    <exec dir="${basedir}"
-            executable="java"
-            os="Windows 2000"
-            output="profiler-output.txt">
+		</description>
+		<!-- 
+    <exec dir="${basedir}" executable="java" os="Windows 2000" output="profiler-output.txt">
           <arg line="-version" />
       </exec>
 -->
-	<exec dir="${basedir}" executable="java" os="Windows 2000" output="profiler-output.txt">
-		<arg line="-javaagent:${basedir}/ext/build/profile.jar -Xmx100M -Dprofile.properties=${basedir}/ext/build/profiler.properties -classpath ${basedir}/bin/;${basedir}/ext/build/junit.jar info.monitorenter.gui.chart.demos.RunningChart" />
-	</exec>
-	<exec dir="${basedir}" executable="java" os="Windows 2000">
-		<arg line="-classpath ${basedir}/ext/build/jipViewer.jar com.tivo.jipviewer.JipViewer profiler.xml" />
-	</exec>
-</target>
+		<exec dir="${basedir}" executable="java" os="Windows 2000" output="profiler-output.txt">
+			<arg line="-javaagent:${basedir}/ext/build/profile.jar -Xmx100M -Dprofile.properties=${basedir}/ext/build/profiler.properties -classpath ${basedir}/bin/;${basedir}/ext/build/junit.jar info.monitorenter.gui.chart.demos.RunningChart" />
+		</exec>
+		<exec dir="${basedir}" executable="java" os="Windows 2000">
+			<arg line="-classpath ${basedir}/ext/build/jipViewer.jar com.tivo.jipviewer.JipViewer profiler.xml" />
+		</exec>
+	</target>
 
 </project>

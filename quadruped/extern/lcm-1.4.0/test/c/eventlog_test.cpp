@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
+#include <lcm/lcm.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include <lcm/lcm.h>
 #include "common.h"
 
 TEST(LCM_C, EventLogBasic)

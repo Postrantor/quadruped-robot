@@ -1,5 +1,5 @@
-.NET Tutorial {#tut_dotnet}
-====
+# .NET Tutorial {#tut_dotnet}
+
 \brief An example use case in C#.NET
 
 # Introduction {#tut_dotnet_intro}
@@ -10,30 +10,30 @@ tries to be functionally equivalent while maintaining C#.NET naming
 conventions and other platform specifics. All sample code is written in C# (as
 well as the port itself), but the principles are applicable to any of the
 languages supported by the .NET Framework.
-    
+
 The tutorial doesn't cover the very basics of the LCM (message transmision
 principles, message definition format etc.) - please see the rest of the
-documentation before further reading. 
-    
+documentation before further reading.
+
 \section Generating C#.NET-specific message files
-  
+
 To demonstrate basic functionality, this tutorial will use the same message
 format and application logic as the \ref tut_java to accent similarities and
 differences between Java and .NET ports. Let's have the following type
 specification, saved to a file named \p temperature_t.lcm:
-  
+
 \code
 package exlcm;
 
 struct example_t
 {
-    int64_t  timestamp;
-    double   position[3];
-    double   orientation[4]; 
-    int32_t  num_ranges;
-    int16_t  ranges[num_ranges];
-    string   name;
-    boolean  enabled;
+int64_t timestamp;
+double position[3];
+double orientation[4];
+int32_t num_ranges;
+int16_t ranges[num_ranges];
+string name;
+boolean enabled;
 }
 \endcode
 
@@ -102,7 +102,7 @@ LCM.LCM myLCM = LCM.LCM.Singleton;
 
 You can also instantiate the class and take care of the object's singularity
 by yourself:
-  
+
 \code
 LCM.LCM myLCM = new LCM.LCM();
 \endcode
@@ -117,16 +117,16 @@ For detailed information on the LCM .NET API please see the
 [.NET API reference](lcm-dotnet/index.html).
 
 # Publishing a message {#tut_dotnet_publish}
-  
+
 In order to use LCM types, you can either build an assembly containing
 generated classes (needed when using LCM from other .NET language then C#), or
-include the classes directly to application project.  Utilization of the
+include the classes directly to application project. Utilization of the
 generated classes is then fairly straightforward:
-  
+
 \code
 exlcm.example_t msg = new exlcm.example_t();
 TimeSpan span = DateTime.Now - new DateTime(1970, 1, 1);
-msg.timestamp = span.Ticks * 100;
+msg.timestamp = span.Ticks \* 100;
 msg.position = new double[] { 1, 2, 3 };
 msg.orientation = new double[] { 1, 0, 0, 0 };
 msg.ranges = new short[] { 0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 };
@@ -142,25 +142,25 @@ Passing the message object to the \p Publish method of the LCM object places
 it to specified channel of the communication bus (channel "EXAMPLE" here).
 
 # Subscribing to messages {#tut_dotnet_subscribe}
-  
+
 In order to receive messages, you have two options:
-  
+
 \li write a class implementing the LCMSubscriber interface (just one
-    handler-method MessageReceived) to assynchronously handle incoming
+handler-method MessageReceived) to assynchronously handle incoming
 messages
 \li use standard class MessageAggregator (that internally implements
-    LCMSubscriber interface) for synchronous blocking or not blocking
-     message delivery
-      
+LCMSubscriber interface) for synchronous blocking or not blocking
+message delivery
+
 This tutorial exploits the former option - the class \p SimpleSubscriber is defined
 as internal inside the demo application class:
-  
+
 \code
 internal class SimpleSubscriber : LCM.LCMSubscriber
 {
-    public void MessageReceived(LCM.LCM lcm, string channel, LCM.LCMDataInputStream dins)
-    {
-        Console.WriteLine("RECV: " + channel);
+public void MessageReceived(LCM.LCM lcm, string channel, LCM.LCMDataInputStream dins)
+{
+Console.WriteLine("RECV: " + channel);
 
         if (channel == "EXAMPLE")
         {
@@ -185,6 +185,7 @@ internal class SimpleSubscriber : LCM.LCMSubscriber
             Console.WriteLine("  enabled      = '" + msg.enabled + "'");
         }
     }
+
 }
 \endcode
 
@@ -193,19 +194,19 @@ received messages to our subscriber class. When selective subscription is needed
 (i.e. in almost all real-world cases as we usually don't to listen to all channels),
 method \p Subscribe that takes the channel name pattern as an argument is to
 be used.
-  
+
 \code
 myLCM.SubscribeAll(new SimpleSubscriber());
 \endcode
 
 # Putting it all together {#tut_dotnet_together}
 
-Distribution of the LCM library includes a directory of examples.  One of them
+Distribution of the LCM library includes a directory of examples. One of them
 is a couple of programs implementing all described features. Please go to
 \p examples/csharp/ to find Visual Studio solution ready to be built.
 
 The complete example transmitter application:
-  
+
 \code
 using System;
 using System.Collections.Generic;
@@ -215,16 +216,16 @@ using LCM;
 
 namespace LCM.Examples
 {
-    /// <summary>
-    /// Demo transmitter, see LCM .NET tutorial for more information
-    /// </summary>
-    class ExampleTransmit
-    {
-        public static void Main(string[] args)
-        {
-            try
-            {
-                LCM.LCM myLCM = LCM.LCM.Singleton;
+/// <summary>
+/// Demo transmitter, see LCM .NET tutorial for more information
+/// </summary>
+class ExampleTransmit
+{
+public static void Main(string[] args)
+{
+try
+{
+LCM.LCM myLCM = LCM.LCM.Singleton;
 
                 exlcm.example_t msg = new exlcm.example_t();
                 TimeSpan span = DateTime.Now - new DateTime(1970, 1, 1);
@@ -244,6 +245,7 @@ namespace LCM.Examples
             }
         }
     }
+
 }
 \endcode
 
@@ -258,15 +260,15 @@ using LCM;
 
 namespace LCM.Examples
 {
-    /// <summary>
-    /// Demo listener, demonstrating interoperability with other implementations
-    /// Just run this listener and use any of the example_t message senders
-    /// </summary>
-    class ExampleDisplay
-    {
-        public static void Main(string[] args)
-        {
-            LCM.LCM myLCM;
+/// <summary>
+/// Demo listener, demonstrating interoperability with other implementations
+/// Just run this listener and use any of the example_t message senders
+/// </summary>
+class ExampleDisplay
+{
+public static void Main(string[] args)
+{
+LCM.LCM myLCM;
 
             try
             {
@@ -315,6 +317,7 @@ namespace LCM.Examples
             }
         }
     }
+
 }
 \endcode
 

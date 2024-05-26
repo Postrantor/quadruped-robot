@@ -1,15 +1,14 @@
-LCM Log File format {#log_file_format}
-====
+# LCM Log File format {#log_file_format}
 
-Conceptually, an LCM Log file is an ordered list of events.  Each event has
+Conceptually, an LCM Log file is an ordered list of events. Each event has
 four fields:
 
-Field Name     | Field Description
----------------|------------------
-event number | monotonically increasing 64-bit integer that identifies each event.  It should start at zero, and increase in increments of one.
-timestamp    | monotonically increasing 64-bit integer that identifies the number of microseconds since the epoch (00:00:00 UTC on January 1, 1970) at which the event was received.
-channel      | UTF-8 string identifying the LCM channel on which the message was received.
-data         | binary blob consisting of the exact message received.
+| Field Name   | Field Description                                                                                                                                                     |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| event number | monotonically increasing 64-bit integer that identifies each event. It should start at zero, and increase in increments of one.                                       |
+| timestamp    | monotonically increasing 64-bit integer that identifies the number of microseconds since the epoch (00:00:00 UTC on January 1, 1970) at which the event was received. |
+| channel      | UTF-8 string identifying the LCM channel on which the message was received.                                                                                           |
+| data         | binary blob consisting of the exact message received.                                                                                                                 |
 
 # Event Encoding
 
@@ -45,6 +44,6 @@ channel name.
 data.
 
 Each header is immediately followed by the UTF-8 encoding of the LCM channel,
-and then the message data.  The channel is not NULL-terminated.
+and then the message data. The channel is not NULL-terminated.
 
 All integers are packed in network order (big endian)

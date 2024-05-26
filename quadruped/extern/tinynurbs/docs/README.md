@@ -24,6 +24,7 @@ The entire API consists of free functions named `curve*` and `surface*` which ac
 Some example usage is given below.
 
 Create a non-rational planar curve:
+
 ```cpp
 tinynurbs::Curve<float> crv; // Planar curve using float32
 crv.control_points = {glm::vec3(-1, 0, 0), // std::vector of 3D points
@@ -35,6 +36,7 @@ crv.degree = 2;
 ```
 
 Check if created curve is valid:
+
 ```cpp
 if (!tinynurbs::curveIsValid(crv)) {
     // check if degree, knots and control points are configured as per
@@ -43,6 +45,7 @@ if (!tinynurbs::curveIsValid(crv)) {
 ```
 
 Evaluate point and tangent on curve:
+
 ```cpp
 glm::vec3 pt = tinynurbs::curvePoint(crv, 0.f);
 // Outputs a point [-1, 0]
@@ -51,19 +54,24 @@ glm::vec3 tgt = tinynurbs::curveTangent(crv, 0.5f);
 ```
 
 Insert a single knot at u=0.25 and double knot at u=0.75:
+
 ```cpp
 crv = tinynurbs::curveKnotInsert(crv, 0.25);
 crv = tinynurbs::curveKnotInsert(crv, 0.75, 2);
 ```
+
 Left: original curve, Right: after knot insertion
 
 ![curve knotinsert](curve-knot-insert.png)
 
 Write the curve to an OBJ file:
+
 ```cpp
 tinynurbs::curveSaveOBJ("output_curve.obj", crv);
 ```
+
 creates a file with the following contents:
+
 ```
 v -1 0 0 1
 v -0.75 0.5 0 1
@@ -89,7 +97,7 @@ srf.knots_v = {0, 0, 0, 0, 1, 1, 1, 1};
 
 // 2D array of control points using tinynurbs::array2<T> container
 // Example from geometrictools.com/Documentation/NURBSCircleSphere.pdf
-srf.control_points = {4, 4, 
+srf.control_points = {4, 4,
                       {glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1),
                        glm::vec3(2, 0, 1), glm::vec3(2, 4, 1),  glm::vec3(-2, 4, 1),  glm::vec3(-2, 0, 1),
                        glm::vec3(2, 0, -1), glm::vec3(2, 4, -1), glm::vec3(-2, 4, -1), glm::vec3(-2, 0, -1),
@@ -106,19 +114,24 @@ srf.weights = {4, 4,
 ```
 
 Split the surface into two along v=0.25:
+
 ```cpp
 tinynurbs::RationalSurface<float> left, right;
 std::tie(left, right) = tinynurbs::surfaceSplitV(srf, 0.25);
 ```
+
 Left: original surface, Right: after splitting
 
 ![split surface](split-surface.png)
 
 Write the surface to an OBJ file:
+
 ```cpp
 tinynurbs::surfaceSaveOBJ("output_surface.obj", srf);
 ```
+
 creates a file with the following contents:
+
 ```
 v 0 0 1 1
 v 2 0 1 0.333333

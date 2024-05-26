@@ -18,11 +18,10 @@ else()
 endif()
 set(EXTRA_LIBS -pthread libunitree_legged_sdk_${ARCH}.so lcm)
 
-
 set(CMAKE_CXX_FLAGS "-O3 -fPIC")
 
-#add_subdirectory(pybind11)
-#pybind11_add_module(robot_interface python_interface.cpp)
+# add_subdirectory(pybind11) pybind11_add_module(robot_interface
+# python_interface.cpp)
 add_library(robot_interface_3.5 SHARED unitree_interface.cpp)
 # add_executable(robot_interface unitree_interface.cpp)
 target_link_libraries(robot_interface_3.5 ${EXTRA_LIBS})
@@ -55,11 +54,17 @@ add_executable(lcm_server examples/lcm_server.cpp)
 target_link_libraries(lcm_server ${EXTRA_LIBS})
 
 # install
-install(TARGETS
-  example_position example_velocity example_torque example_walk example_wirelessHandle
-  udp_send_test udp_recv_test
-  lcm_server
+install(
+  TARGETS example_position
+          example_velocity
+          example_torque
+          example_walk
+          example_wirelessHandle
+          udp_send_test
+          udp_recv_test
+          lcm_server
   DESTINATION bin)
-install(DIRECTORY lib/
+install(
+  DIRECTORY lib/
   DESTINATION lib
   USE_SOURCE_PERMISSIONS)

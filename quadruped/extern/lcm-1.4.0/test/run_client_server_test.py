@@ -3,6 +3,7 @@ import os
 import sys
 import subprocess
 
+
 def main(server, *client):
     # Start the test server
     print("Starting test server")
@@ -19,6 +20,7 @@ def main(server, *client):
 
     # Report
     return test_result
+
 
 if __name__ == "__main__":
     sys.exit(main(*sys.argv[1:]))

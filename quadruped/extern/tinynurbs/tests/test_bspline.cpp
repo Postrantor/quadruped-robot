@@ -1,37 +1,25 @@
-#include <tinynurbs/tinynurbs.h>
+#include <cmath>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
-#include <cmath>
+#include <tinynurbs/tinynurbs.h>
 
 #include "catch.hpp"
 
 using namespace std;
 
 // Unit circle
-tinynurbs::Curve3f getShape() {
+tinynurbs::Curve3f getShape()
+{
     tinynurbs::Curve3f crv;
-    crv.control_points = {glm::vec3(-1, 0, 0),
-                          glm::vec3(1, 0, 0),
-                          glm::vec3(3, 0, 0),
-                          glm::vec3(3, 1, 0),
-                          glm::vec3(3, 2, 0),
-                          glm::vec3(3, 3, 0),
-                          glm::vec3(5, 3, 0),
-                          glm::vec3(6, 3, 0),
-                          glm::vec3(8, 3.5, 0),
-                          glm::vec3(9, 5, 0)
-                         };
+    crv.control_points = {glm::vec3(-1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(3, 0, 0),
+                          glm::vec3(3, 1, 0),  glm::vec3(3, 2, 0), glm::vec3(3, 3, 0),
+                          glm::vec3(5, 3, 0),  glm::vec3(6, 3, 0), glm::vec3(8, 3.5, 0),
+                          glm::vec3(9, 5, 0)};
     // const float sqrt2_over_2 = std::sqrt(2.f) / 2.f;
     // crv.weights = {1, sqrt2_over_2, 1, sqrt2_over_2, 1,
     //                sqrt2_over_2, 1, sqrt2_over_2, 1
     //               };
-    crv.knots = {0.f, 0, 0,
-                0,0,0,
-                0,0,0, 0,
-                1,1,1,
-                1,1,1,
-                1,1,1,1
-                };
+    crv.knots = {0.f, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
     crv.degree = 9;
     return crv;
 }
@@ -40,7 +28,7 @@ TEST_CASE("curvePoint2 (non-rational)", "[curve, non-rational, evaluate]")
 {
     auto crv = getShape();
     glm::vec3 pt1 = tinynurbs::curvePoint(crv, 0.f);
-    printf("pt1 = %f, %f, %f\n", pt1.x,pt1.y,pt1.z);
+    printf("pt1 = %f, %f, %f\n", pt1.x, pt1.y, pt1.z);
     REQUIRE(pt1.x == Approx(-1));
     REQUIRE(pt1.y == Approx(0));
     REQUIRE(pt1.z == Approx(0));
@@ -84,7 +72,7 @@ TEST_CASE("curvePoint2 (non-rational)", "[curve, non-rational, evaluate]")
 // {
 //     auto crv = getCircle();
 //     glm::vec3 pt = tinynurbs::curvePoint(crv, 0.25f);
-    
+
 //     size_t n_knots_prev = crv.knots.size();
 //     size_t n_control_points_prev = crv.control_points.size();
 

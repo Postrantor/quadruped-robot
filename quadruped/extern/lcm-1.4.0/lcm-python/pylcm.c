@@ -20,8 +20,8 @@
     } while (0)
 #endif
 
-//#define dbg(...) fprintf (stderr, __VA_ARGS__)
-//#define dbg(...)
+// #define dbg(...) fprintf (stderr, __VA_ARGS__)
+// #define dbg(...)
 
 // to support python 2.5 and earlier
 #ifndef Py_TYPE

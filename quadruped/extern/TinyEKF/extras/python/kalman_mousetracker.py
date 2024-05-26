@@ -13,19 +13,19 @@ MIT License
 '''
 
 # This delay will affect the Kalman update rate
+from tinyekf import EKF
+from sys import exit
+import numpy as np
+import cv2
 DELAY_MSEC = 100
 
 # Arbitrary display params
 WINDOW_NAME = 'Kalman Mousetracker [ESC to quit]'
 WINDOW_SIZE = 500
 
-import cv2
-import numpy as np
-from sys import exit
-
-from tinyekf import EKF
 
 LINE_AA = cv2.LINE_AA if cv2.__version__[0] == '3' else cv2.CV_AA
+
 
 class TrackerEKF(EKF):
     '''
@@ -47,6 +47,7 @@ class TrackerEKF(EKF):
         # Observation function is identity
         return x, np.eye(2)
 
+
 class MouseInfo(object):
     '''
     A class to store X,Y points
@@ -59,6 +60,7 @@ class MouseInfo(object):
     def __str__(self):
 
         return '%4d %4d' % (self.x, self.y)
+
 
 def mouseCallback(event, x, y, flags, mouse_info):
     '''
@@ -99,11 +101,10 @@ def newImage():
     Returns a new image
     '''
 
-    return np.zeros((500,500,3), np.uint8) 
+    return np.zeros((500, 500, 3), np.uint8)
 
 
 if __name__ == '__main__':
-
 
     # Create a new image in a named window
     img = newImage()
@@ -122,7 +123,6 @@ if __name__ == '__main__':
         cv2.imshow(WINDOW_NAME, img)
         if cv2.waitKey(1) == 27:
             exit(0)
-
 
     # These will get the trajectories for mouse location and Kalman estiamte
     measured_points = []
@@ -145,14 +145,14 @@ if __name__ == '__main__':
         estimate = kalfilt.step((mouse_info.x, mouse_info.y))
 
         # Add the estimate to the trajectory
-        estimated = [int (c) for c in estimate]
+        estimated = [int(c) for c in estimate]
         kalman_points.append(estimated)
 
         # Display the trajectories and current points
-        drawLines(img, kalman_points,   0,   255, 0)
-        drawCross(img, estimated,       255, 255, 255)
+        drawLines(img, kalman_points, 0, 255, 0)
+        drawCross(img, estimated, 255, 255, 255)
         drawLines(img, measured_points, 255, 255, 0)
-        drawCross(img, measured, 0,   0,   255)
+        drawCross(img, measured, 0, 0, 255)
 
         # Delay for specified interval, quitting on ESC
         cv2.imshow(WINDOW_NAME, img)

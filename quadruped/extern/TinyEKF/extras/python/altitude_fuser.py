@@ -14,32 +14,36 @@ MIT License
 '''
 
 # for plotting
-BARO_RANGE    = 20
-SONAR_RANGE   = 200
+from math import sin, pi
+import threading
+from time import sleep
+from realtime_plot import RealtimePlotter
+from tinyekf import EKF
+import numpy as np
+BARO_RANGE = 20
+SONAR_RANGE = 200
 BARO_BASELINE = 97420
 
-import numpy as np
-from tinyekf import EKF
-from realtime_plot import RealtimePlotter
-from time import sleep
-import threading
-from math import sin, pi
 
 # ground-truth AGL to sonar measurement, empirically determined:
 # see http://diydrones.com/profiles/blogs/altitude-hold-with-mb1242-sonar
-def sonarfun( agl):
+def sonarfun(agl):
 
     return 0.933 * agl - 2.894
 
 # Convert ASL cm to Pascals: see http://www.engineeringtoolbox.com/air-altitude-pressure-d_462.html
-def asl2baro( asl):
+
+
+def asl2baro(asl):
 
     return 101325 * pow((1 - 2.25577e-7 * asl), 5.25588)
 
 # Convert Pascals to cm ASL
-def baro2asl( pa):
 
-    return (1.0 - pow(pa/ 101325.0, 0.190295)) * 4433000.0
+
+def baro2asl(pa):
+
+    return (1.0 - pow(pa / 101325.0, 0.190295)) * 4433000.0
 
 
 class ASL_EKF(EKF):
@@ -57,7 +61,6 @@ class ASL_EKF(EKF):
 
         # State-transition function is identity
         return np.copy(x), np.eye(1)
-
 
     def h(self, x):
 
@@ -100,18 +103,18 @@ class ASL_Plotter(RealtimePlotter):
         baromin = BARO_BASELINE - BARO_RANGE
         baromax = BARO_BASELINE + BARO_RANGE
 
-        max_asl_cm      = int(baro2asl(baromin))
-        min_asl_cm      = int(baro2asl(baromax))
+        max_asl_cm = int(baro2asl(baromin))
+        min_asl_cm = int(baro2asl(baromax))
 
-        RealtimePlotter.__init__(self, [(min_asl_cm,max_asl_cm), (baromin,baromax), (0,SONAR_RANGE)], 
-                window_name='Altitude Sensor Fusion',
-                yticks = [
-                    range(min_asl_cm, max_asl_cm, 50),  # Fused
-                    range(baromin,baromax,int((baromax-baromin)/10.)),    # Baro
-                    range(0, SONAR_RANGE, 20)                             # Sonar
-                    ],
-                styles = ['r','b', 'g'], 
-                ylabels=['Fused ASL (cm)', 'Baro (Pa)', 'Sonar ASL (cm)'])
+        RealtimePlotter.__init__(self, [(min_asl_cm, max_asl_cm), (baromin, baromax), (0, SONAR_RANGE)],
+                                 window_name='Altitude Sensor Fusion',
+                                 yticks=[
+            range(min_asl_cm, max_asl_cm, 50),  # Fused
+            range(baromin, baromax, int((baromax - baromin) / 10.)),    # Baro
+            range(0, SONAR_RANGE, 20)                             # Sonar
+        ],
+            styles=['r', 'b', 'g'],
+            ylabels=['Fused ASL (cm)', 'Baro (Pa)', 'Sonar ASL (cm)'])
 
         self.xcurr = 0
         self.fused = 0
@@ -150,14 +153,15 @@ class _Sim_ASLPlotter(ASL_Plotter):
 
         # Model up-and-down motion with a sine wave
         self.count = (self.count + 1) % LOOPSIZE
-        sine = sin(self.count/float(LOOPSIZE) * 2 * pi)
+        sine = sin(self.count / float(LOOPSIZE) * 2 * pi)
 
-        baro  = BARO_BASELINE + sine * BARO_RANGE
+        baro = BARO_BASELINE + sine * BARO_RANGE
 
         # Add noise to simulated sonar at random intervals
-        sonar = sonarfun(50*(1-sine)) + (50 if np.random.rand()>0.9 else 0)
+        sonar = sonarfun(50 * (1 - sine)) + (50 if np.random.rand() > 0.9 else 0)
 
         return baro, sonar
+
 
 if __name__ == '__main__':
 

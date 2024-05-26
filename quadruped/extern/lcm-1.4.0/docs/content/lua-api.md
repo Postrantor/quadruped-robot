@@ -1,5 +1,4 @@
-The Lua LCM API {#lua_api}
-====
+# The Lua LCM API {#lua_api}
 
 The Lua API wraps the LCM C API, and is meant to mirror its functionality and organization. The bulk of the Lua API is represented by the LCM userdata, which basically wraps \ref LcmC_lcm_t "lcm_t and related functions".
 
@@ -104,8 +103,8 @@ local msg_t = require('msg_t') -- or any other message type
 local lc = lcm.lcm.new()
 
 local function handler(channel, encoded_msg)
-  local msg = msg_t.decode(encoded_msg)
-  -- ...
+local msg = msg_t.decode(encoded_msg)
+-- ...
 end
 
 local sub = lc:subscribe('somechannel', handler)
@@ -136,8 +135,8 @@ local msg_t = require('msg_t') -- or any other message type
 local lc = lcm.lcm.new()
 
 local function handler(channel, encoded_msg)
-  local msg = msg_t.decode(encoded_msg)
-  -- ...
+local msg = msg_t.decode(encoded_msg)
+-- ...
 end
 
 local sub = lc:subscribe('somechannel', handler)
@@ -198,8 +197,8 @@ local lc = lcm.lcm.new()
 
 local ok = lc:handle_timeout(500)
 if not ok then
-  print('timed out!')
- end
+print('timed out!')
+end
 \endverbatim
 
 <hr>
@@ -229,6 +228,6 @@ local lc = lcm.lcm.new()
 
 local ok = lc:timedhandle(0.5)
 if not ok then
-  print('timed out!')
- end
+print('timed out!')
+end
 \endverbatim

@@ -3,6 +3,7 @@ import unittest
 
 import lcmtest
 
+
 class TestBools(unittest.TestCase):
 
     def test_bool(self):
@@ -32,11 +33,11 @@ class TestBools(unittest.TestCase):
 
         self.assertEqual(bool, type(decoded.one_bool))
         self.assertTrue(all([type(elem) == bool
-            for elem in decoded.fixed_array]))
+                             for elem in decoded.fixed_array]))
         for sublist in decoded.two_dim_array:
             self.assertTrue(all([type(elem) == bool for elem in sublist]))
         self.assertTrue(all([type(elem) == bool
-            for elem in decoded.one_dim_array]))
+                             for elem in decoded.one_dim_array]))
 
         for a_index in xrange(msg.num_a):
             for b_index in xrange(msg.num_b):

@@ -55,7 +55,7 @@ format:
 
   # Format keywords consistently as 'lower' or 'upper' case
   # unchanged is valid too
-  keyword_case: 'upper'
+  keyword_case: "upper"
 
   # A list of command names which should always be wrapped
   always_wrap: []

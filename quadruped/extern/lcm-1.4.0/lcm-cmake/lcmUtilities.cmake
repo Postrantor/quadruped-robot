@@ -1,30 +1,19 @@
-# Usage:
-#   lcm_wrap_types([C_HEADERS <VARIABLE_NAME> C_SOURCES <VARIABLE_NAME>
-#                   [C_INCLUDE <PATH>] [C_EXPORT <NAME>]
-#                   [C_NOPUBSUB] [C_TYPEINFO]]
-#                  [CPP_HEADERS <VARIABLE_NAME>
-#                   [CPP_INCLUDE <PATH>] [CPP11]]
-#                  [JAVA_SOURCES <VARIABLE_NAME>]
-#                  [PYTHON_SOURCES <VARIABLE_NAME>]
-#                  [LUA_SOURCES <VARIABLE_NAME>]
-#                  [GO_SOURCES <VARIABLE_NAME>]
-#                  [DESTINATION <PATH>]
-#                  [GO_DESTINATION <PATH>]
-#                  <FILE> [<FILE>...])
-#     generate bindings for specified LCM type definition files
+# Usage: lcm_wrap_types([C_HEADERS <VARIABLE_NAME> C_SOURCES <VARIABLE_NAME>
+# [C_INCLUDE <PATH>] [C_EXPORT <NAME>] [C_NOPUBSUB] [C_TYPEINFO]] [CPP_HEADERS
+# <VARIABLE_NAME> [CPP_INCLUDE <PATH>] [CPP11]] [JAVA_SOURCES <VARIABLE_NAME>]
+# [PYTHON_SOURCES <VARIABLE_NAME>] [LUA_SOURCES <VARIABLE_NAME>] [GO_SOURCES
+# <VARIABLE_NAME>] [DESTINATION <PATH>] [GO_DESTINATION <PATH>] <FILE>
+# [<FILE>...]) generate bindings for specified LCM type definition files
 #
-#   lcm_add_library(<NAME> C [STATIC|SHARED|MODULE] <SOURCES>)
-#   lcm_add_library(<NAME> CPP <SOURCES>)
-#     declare library for LCM type bindings
+# lcm_add_library(<NAME> C [STATIC|SHARED|MODULE] <SOURCES>)
+# lcm_add_library(<NAME> CPP <SOURCES>) declare library for LCM type bindings
 #
-#   lcm_target_link_libraries(<TARGET> <...>)
-#     link libraries, adding dependencies as needed for C++ bindings
+# lcm_target_link_libraries(<TARGET> <...>) link libraries, adding dependencies
+# as needed for C++ bindings
 #
-#   lcm_install_headers([DESTINATION <PATH>]
-#                       <FILE> [<FILE>...])
+# lcm_install_headers([DESTINATION <PATH>] <FILE> [<FILE>...])
 #
-#   lcm_install_python([DESTINATION <PATH>]
-#                      <FILE> [<FILE>...])
+# lcm_install_python([DESTINATION <PATH>] <FILE> [<FILE>...])
 
 if(WIN32)
   # Need 'cmake -E env'
@@ -34,15 +23,17 @@ else()
 endif()
 include(CMakeParseArguments)
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 function(_lcm_extract_token OUT INDEX)
   string(STRIP "${ARGN}" _text)
   string(REGEX REPLACE " +" ";" _tokens "${_text}")
   list(GET _tokens ${INDEX} _token)
-  set(${OUT} "${_token}" PARENT_SCOPE)
+  set(${OUT}
+      "${_token}"
+      PARENT_SCOPE)
 endfunction()
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 macro(_lcm_add_outputs VAR)
   foreach(_file ${ARGN})
     list(APPEND ${${VAR}} ${_DESTINATION}/${_file})
@@ -50,7 +41,7 @@ macro(_lcm_add_outputs VAR)
   endforeach()
 endmacro()
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 macro(_lcm_add_go_outputs VAR)
   foreach(_file ${ARGN})
     list(APPEND ${${VAR}} ${_GO_DESTINATION}/${_file})
@@ -58,36 +49,36 @@ macro(_lcm_add_go_outputs VAR)
   endforeach()
 endmacro()
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 macro(_lcm_parent_list_append VAR)
   list(APPEND ${VAR} ${ARGN})
-  set(${VAR} "${${VAR}}" PARENT_SCOPE)
+  set(${VAR}
+      "${${VAR}}"
+      PARENT_SCOPE)
 endmacro()
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 macro(_lcm_export VAR)
   if(DEFINED ${VAR})
-    set(${${VAR}} "${${${VAR}}}" PARENT_SCOPE)
+    set(${${VAR}}
+        "${${${VAR}}}"
+        PARENT_SCOPE)
   endif()
 endmacro()
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 function(_lcm_create_aggregate_header NAME VAR)
   set(_header "${_DESTINATION}/${NAME}")
   list(FIND _aggregate_headers "${_header}" _index)
   if(_index EQUAL -1)
     string(REPLACE "/" "_" _guard "__lcmtypes_${NAME}__")
-    file(WRITE ${_header}
-      "#ifndef ${_guard}\n"
-      "#define ${_guard}\n"
-      "\n"
-    )
+    file(WRITE ${_header} "#ifndef ${_guard}\n" "#define ${_guard}\n" "\n")
     _lcm_parent_list_append(_aggregate_headers ${_header})
     _lcm_parent_list_append(${${VAR}} ${_header})
   endif()
 endfunction()
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 function(_lcm_add_aggregate_include AGGREGATE_HEADER TYPE_HEADER)
   set(_header "${_DESTINATION}/${AGGREGATE_HEADER}")
   if(ARGC GREATER 2)
@@ -98,7 +89,7 @@ function(_lcm_add_aggregate_include AGGREGATE_HEADER TYPE_HEADER)
   endif()
 endfunction()
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 function(_lcm_add_python_package PATH)
   list(FIND _python_packages "${PATH}" _index)
   if(_index EQUAL -1)
@@ -106,17 +97,17 @@ function(_lcm_add_python_package PATH)
     if(EXISTS ${_init})
       file(REMOVE ${_init})
     endif()
-    file(APPEND ${_init}
+    file(
+      APPEND ${_init}
       "\"\"\"LCM package __init__.py file\n"
       "This file automatically generated by lcm_wrap_types.\n"
-      "DO NOT MODIFY BY HAND!!!!\n"
-      "\"\"\"\n\n")
+      "DO NOT MODIFY BY HAND!!!!\n" "\"\"\"\n\n")
     _lcm_parent_list_append(_python_packages ${PATH})
     _lcm_parent_list_append(${_PYTHON_SOURCES} ${_init})
   endif()
 endfunction()
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 function(_lcm_add_lua_package PATH)
   list(FIND _lua_packages "${PATH}" _index)
   if(_index EQUAL -1)
@@ -127,26 +118,26 @@ function(_lcm_add_lua_package PATH)
   endif()
 endfunction()
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 function(_lcm_add_python_type PACKAGE TYPE)
   set(_init "${_DESTINATION}/${PACKAGE}/__init__.py")
   file(APPEND ${_init} "from .${TYPE} import ${TYPE}\n")
 endfunction()
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 function(_lcm_add_lua_type PACKAGE TYPE)
   set(_init "${_DESTINATION}/${PACKAGE}/init.lua")
   file(APPEND ${_init} "M.${TYPE} = require('${PACKAGE}.${TYPE}')\n")
 endfunction()
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 function(_lcm_finalize_aggregate_headers)
   foreach(_header ${_aggregate_headers})
     file(APPEND "${_header}" "\n#endif\n")
   endforeach()
 endfunction()
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 function(_lcm_finalize_lua_packages)
   foreach(_package ${_lua_packages})
     set(_init "${_DESTINATION}/${_package}/init.lua")
@@ -154,7 +145,7 @@ function(_lcm_finalize_lua_packages)
   endforeach()
 endfunction()
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 function(_lcm_install_files DESTINATION RELATIVE_PATH)
   foreach(_file ${ARGN})
     file(RELATIVE_PATH _package_dir ${RELATIVE_PATH} ${_file})
@@ -163,51 +154,53 @@ function(_lcm_install_files DESTINATION RELATIVE_PATH)
   endforeach()
 endfunction()
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 function(lcm_wrap_types)
   # Parse arguments
-  set(_flags
-    C_NOPUBSUB C_TYPEINFO
-    CPP11
-    CREATE_C_AGGREGATE_HEADER
-    CREATE_CPP_AGGREGATE_HEADER
-  )
+  set(_flags C_NOPUBSUB C_TYPEINFO CPP11 CREATE_C_AGGREGATE_HEADER
+             CREATE_CPP_AGGREGATE_HEADER)
   set(_sv_opts
-    C_HEADERS C_SOURCES C_INCLUDE C_EXPORT
-    CPP_HEADERS CPP_INCLUDE
-    JAVA_SOURCES
-    PYTHON_SOURCES
-    LUA_SOURCES
-    GO_SOURCES
-    DESTINATION
-    GO_DESTINATION
-    PACKAGE_PREFIX
-  )
+      C_HEADERS
+      C_SOURCES
+      C_INCLUDE
+      C_EXPORT
+      CPP_HEADERS
+      CPP_INCLUDE
+      JAVA_SOURCES
+      PYTHON_SOURCES
+      LUA_SOURCES
+      GO_SOURCES
+      DESTINATION
+      GO_DESTINATION
+      PACKAGE_PREFIX)
   set(_mv_opts "")
   cmake_parse_arguments("" "${_flags}" "${_sv_opts}" "${_mv_opts}" ${ARGN})
 
   # Check that either both or neither of C_SOURCES, C_HEADERS are given
   if(DEFINED _C_HEADERS AND NOT DEFINED _C_SOURCES)
-    message(SEND_ERROR
-      "lcm_wrap_types: C_SOURCES must be speficied if C_HEADERS is used")
+    message(
+      SEND_ERROR
+        "lcm_wrap_types: C_SOURCES must be speficied if C_HEADERS is used")
     return()
   endif()
   if(NOT DEFINED _C_HEADERS AND DEFINED _C_SOURCES)
-    message(SEND_ERROR
-      "lcm_wrap_types: C_HEADERS must be speficied if C_SOURCES is used")
+    message(
+      SEND_ERROR
+        "lcm_wrap_types: C_HEADERS must be speficied if C_SOURCES is used")
     return()
   endif()
 
   # Check for at least one language specified
-  if(NOT DEFINED _C_HEADERS AND
-     NOT DEFINED _CPP_HEADERS AND
-     NOT DEFINED _JAVA_SOURCES AND
-     NOT DEFINED _PYTHON_SOURCES AND
-     NOT DEFINED _LUA_SOURCES AND
-     NOT DEFINED _GO_SOURCES)
-    message(SEND_ERROR
-      "lcm_wrap_types: at least one of C_HEADERS, CPP_HEADERS, JAVA_SOURCES,"
-      " PYTHON_SOURCES, LUA_SOURCES or GO_SOURCES is required")
+  if(NOT DEFINED _C_HEADERS
+     AND NOT DEFINED _CPP_HEADERS
+     AND NOT DEFINED _JAVA_SOURCES
+     AND NOT DEFINED _PYTHON_SOURCES
+     AND NOT DEFINED _LUA_SOURCES
+     AND NOT DEFINED _GO_SOURCES)
+    message(
+      SEND_ERROR
+        "lcm_wrap_types: at least one of C_HEADERS, CPP_HEADERS, JAVA_SOURCES,"
+        " PYTHON_SOURCES, LUA_SOURCES or GO_SOURCES is required")
     return()
   endif()
 
@@ -222,7 +215,14 @@ function(lcm_wrap_types)
   # Set up arguments for invoking lcm-gen
   set(_args "")
   if(DEFINED _C_HEADERS)
-    list(APPEND _args --c --c-cpath ${_DESTINATION} --c-hpath ${_DESTINATION})
+    list(
+      APPEND
+      _args
+      --c
+      --c-cpath
+      ${_DESTINATION}
+      --c-hpath
+      ${_DESTINATION})
     if(DEFINED _C_EXPORT)
       string(TOUPPER "${_C_EXPORT}_EXPORT" _C_EXPORT_SYMBOL)
       list(APPEND _args --c-export-symbol ${_C_EXPORT_SYMBOL})
@@ -305,14 +305,14 @@ function(lcm_wrap_types)
           _lcm_add_outputs(_C_SOURCES ${_package_pre}_${_type}.c)
           if(_CREATE_CPP_AGGREGATE_HEADER)
             _lcm_add_aggregate_include("${_package_dir}.h"
-              "${_package_pre}_${_type}.h")
+                                       "${_package_pre}_${_type}.h")
           endif()
         endif()
         if(DEFINED _CPP_HEADERS)
           _lcm_add_outputs(_CPP_HEADERS ${_package_dir}/${_type}.hpp)
           if(_CREATE_CPP_AGGREGATE_HEADER)
-            _lcm_add_aggregate_include("${_package_dir}.hpp"
-              "${_type}.hpp" "${_package_dir}")
+            _lcm_add_aggregate_include("${_package_dir}.hpp" "${_type}.hpp"
+                                       "${_package_dir}")
           endif()
         endif()
         if(DEFINED _PYTHON_SOURCES)
@@ -340,15 +340,13 @@ function(lcm_wrap_types)
       add_custom_command(
         OUTPUT ${_outputs}
         COMMAND ${CMAKE_COMMAND} -E env "PATH=${LCM_LCMGEN_PATH}"
-          $<TARGET_FILE:${LCM_NAMESPACE}lcm-gen> ${_args} ${_lcmtype_full}
-        DEPENDS ${_lcmtype}
-      )
+                $<TARGET_FILE:${LCM_NAMESPACE}lcm-gen> ${_args} ${_lcmtype_full}
+        DEPENDS ${_lcmtype})
     else()
       add_custom_command(
         OUTPUT ${_outputs}
         COMMAND ${LCM_NAMESPACE}lcm-gen ${_args} ${_lcmtype_full}
-        DEPENDS ${_lcmtype}
-      )
+        DEPENDS ${_lcmtype})
     endif()
   endforeach()
 
@@ -366,7 +364,7 @@ function(lcm_wrap_types)
   _lcm_export(_GO_SOURCES)
 endfunction()
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 if(NOT CMAKE_VERSION VERSION_LESS 3.1)
   function(lcm_add_library NAME LANGUAGE)
     string(TOUPPER ${LANGUAGE} LANGUAGE)
@@ -388,11 +386,12 @@ if(NOT CMAKE_VERSION VERSION_LESS 3.1)
       # Add library
       add_library(${NAME} ${_type} ${ARGN})
       add_dependencies(${NAME} ${NAME}.sources)
-      target_link_libraries(${NAME}
+      target_link_libraries(
+        ${NAME}
         PRIVATE ${LCM_NAMESPACE}lcm
         PUBLIC ${LCM_NAMESPACE}lcm-coretypes)
 
-    # C++ library
+      # C++ library
     elseif(LANGUAGE MATCHES "CXX|CPP|C\\+\\+")
 
       # Add dependency target for generated sources
@@ -402,32 +401,31 @@ if(NOT CMAKE_VERSION VERSION_LESS 3.1)
       add_library(${NAME} INTERFACE)
       target_link_libraries(${NAME} INTERFACE ${LCM_NAMESPACE}lcm-coretypes)
 
-      # Add dependency on generated sources
-      # NOTE: dependencies on INTERFACE targets not supported before CMake 3.3
+      # Add dependency on generated sources NOTE: dependencies on INTERFACE
+      # targets not supported before CMake 3.3
       if(NOT CMAKE_VERSION VERSION_LESS 3.3)
         add_dependencies(${NAME} ${NAME}.sources)
       endif()
 
-    # Unsupported library language
+      # Unsupported library language
     else()
-      message(SEND_ERROR
-        "lcm_add_library: library language must be C or CPP")
+      message(SEND_ERROR "lcm_add_library: library language must be C or CPP")
     endif()
   endfunction()
 endif()
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 if(NOT CMAKE_VERSION VERSION_LESS 3.1)
   function(lcm_target_link_libraries TARGET)
     target_link_libraries(${TARGET} ${ARGN})
 
-    # NOTE: with CMake 3.3 or later, lcm_add_library creates a dependency on
-    # the C++ bindings library that its headers have been created first. This
-    # relies on adding a dependency to an INTERFACE library, which was not
-    # supported prior to CMake 3.3. For older versions of CMake, check if any
-    # argument appears to be a C++ bindings library that was created with
-    # lcm_add_library and, if so, manually add a dependency to the consumer
-    # to ensure the bindings are generated before trying to build the consumer.
+    # NOTE: with CMake 3.3 or later, lcm_add_library creates a dependency on the
+    # C++ bindings library that its headers have been created first. This relies
+    # on adding a dependency to an INTERFACE library, which was not supported
+    # prior to CMake 3.3. For older versions of CMake, check if any argument
+    # appears to be a C++ bindings library that was created with lcm_add_library
+    # and, if so, manually add a dependency to the consumer to ensure the
+    # bindings are generated before trying to build the consumer.
     if(CMAKE_VERSION VERSION_LESS 3.3)
       foreach(_target ${ARGN})
         if(TARGET ${_target} AND TARGET ${_target}.sources)
@@ -438,7 +436,7 @@ if(NOT CMAKE_VERSION VERSION_LESS 3.1)
   endfunction()
 endif()
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 function(lcm_install_headers)
   # Parse arguments
   set(_flags "")
@@ -457,7 +455,7 @@ function(lcm_install_headers)
   _lcm_install_files(${_DESTINATION} ${_RELATIVE_PATH} ${_UNPARSED_ARGUMENTS})
 endfunction()
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 function(lcm_install_python)
   # Parse arguments
   set(_flags "")
@@ -468,9 +466,10 @@ function(lcm_install_python)
   # Set default destination and relative path, if none given
   if(NOT DEFINED _DESTINATION)
     if(NOT PYTHONINTERP_FOUND)
-      message(SEND_ERROR
-        "lcm_install_python: no DESTINATION given"
-        " and no Python interpreter found (required to guess DESTINATION)")
+      message(
+        SEND_ERROR
+          "lcm_install_python: no DESTINATION given"
+          " and no Python interpreter found (required to guess DESTINATION)")
       return()
     endif()
     execute_process(
