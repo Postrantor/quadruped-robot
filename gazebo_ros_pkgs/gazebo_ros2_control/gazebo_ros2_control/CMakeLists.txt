@@ -56,8 +56,8 @@ ament_target_dependencies(gazebo_hardware_plugins
 
 ## Install
 install(TARGETS
-  ${PROJECT_NAME}
-  gazebo_hardware_plugins
+    ${PROJECT_NAME}
+    gazebo_hardware_plugins
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin

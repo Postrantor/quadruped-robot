@@ -19,7 +19,7 @@ Furthermore, Gazebo Classic is not released to Ubuntu Noble. As a consequence, g
 
 This package provides a Gazebo plugin which instantiates a _ros2_control_ controller manager and connects it to a Gazebo model.
 
-> 该软件包提供了一个 GAZEBO 插件，该插件可以实例化 _ROS2_CONTROL_ 控制器管理器并将其连接到 GAZEBO 模型。
+> 该软件包提供了一个 Gazebo 插件，该插件可以实例化 _ROS2_Control_ 控制器管理器并将其连接到 Gazebo 模型。
 
 ![Cart](./0c8e63a38bd8dff196b53a1ed74f5e55308a93e2.gif)
 ![DiffBot](./ced519dc35fc420722a7d65558e7b3bce01b0f54.gif)
@@ -57,7 +57,7 @@ gzclient
 
 To run the demo with GUI we are going to use [rocker](https://github.com/osrf/rocker/) which is a tool to run docker images with customized local support injected for things like nvidia support. And user id specific files for cleaner mounting file permissions. You can install this tool with the following [instructions](https://github.com/osrf/rocker/#installation).
 
-> 要使用 GUI 运行演示，我们将使用[Rocker](https：//github.com/osrf/rocker/)，这是运行 Docker Image 的工具，并使用自定义的本地支持注入了 Nvidia Support 等物品。和用户 ID 特定文件，用于清洁程序安装文件权限。您可以使用以下[指令](https://github.com/osrf/rocker/#installation)安装此工具。
+> 要使用 GUI 运行演示，我们将使用[rocker](https：//github.com/osrf/rocker/)，这是运行 Docker Image 的工具，并使用自定义的本地支持注入了 Nvidia Support 等物品。和用户 ID 特定文件，用于清洁程序安装文件权限。您可以使用以下[指令](https://github.com/osrf/rocker/#installation)安装此工具。
 
 The following command will launch Gazebo Classic:
 
@@ -79,7 +79,7 @@ ros2 run gazebo_ros2_control_demos example_position
 
 To use _ros2_control_ with your robot, you need to add some additional elements to your URDF. You should include the tag `<ros2_control>` to access and control the robot interfaces. We should include
 
-> 要与机器人一起使用 _ROS2_CONTROL_，您需要在 URDF 中添加一些其他元素。您应该包括标签`<ros2_control>`以访问和控制机器人接口。我们应该包括
+> 要与机器人一起使用 _ROS2_Control_，您需要在 URDF 中添加一些其他元素。您应该包括标签`<ros2_control>`以访问和控制机器人接口。我们应该包括
 
 - a specific `<plugin>` for our robot
 - `<joint>` tag including the robot controllers: commands and states.
@@ -152,7 +152,7 @@ You cannot have both command interfaces set to position and position_PID for the
 
 To create a system with one joint that can be controlled using both position_PID and velocity_PID, follow this example:
 
-> 要创建一个可以使用 position_pid 和 velocity_pid 控制一个关节的系统，请按照以下示例：
+> 要创建一个可以使用 position_PID 和 velocity_PID 控制一个关节的系统，请按照以下示例：
 
 ```xml
 <ros2_control name="GazeboSystem" type="system">
@@ -195,7 +195,7 @@ The same definitions apply to the `vel_*` parameters.
 
 In addition to the _ros2_control_ tags, a Gazebo plugin needs to be added to your URDF that actually parses the _ros2_control_ tags and loads the appropriate hardware interfaces and controller manager. By default the _gazebo_ros2_control_ plugin is very simple, though it is also extensible via an additional plugin architecture to allow power users to create their own custom robot hardware interfaces between _ros2_control_ and Gazebo Classic.
 
-> 除了 _ROS2_Control_ 标签外，还需要将 GAZEBO 插件添加到您的 urdf 中，该插件实际上解析了 _ROS2_Control_ 标签并加载适当的硬件接口和控制器管理器。默认情况下，_GAZEBO_ROS2_CONTROL_ 插件非常简单，尽管它也可以通过附加的插件体系结构扩展，以允许 Power 用户在 _ROS2_Control_ 和 Gazebo Classic 之间创建自己的自定义机器人硬件接口。
+> 除了 _ros2_control_ 标签外，还需要将 Gazebo 插件添加到您的 urdf 中，该插件实际上解析了 _ros2_control_ 标签并加载适当的硬件接口和控制器管理器。默认情况下，_Gazebo_ROS2_Control_ 插件非常简单，尽管它也可以通过附加的插件体系结构扩展，以允许 Power 用户在 _ROS2_Control_ 和 Gazebo Classic 之间创建自己的自定义机器人硬件接口。
 
 ```xml
 <gazebo>
@@ -235,11 +235,11 @@ The default behavior provides the following ros2_control interfaces:
 
 The _gazebo_ros2_control_ Gazebo plugin also provides a pluginlib-based interface to implement custom interfaces between Gazebo Classic and _ros2_control_ for simulating more complex mechanisms (nonlinear springs, linkages, etc).
 
-> _GAZEBO_ROS2_CONTROL_ GEAZEBO 插件还提供了基于插件的接口，以实现 Gazebo Classic 和 _ROS2_Control_ 之间的自定义接口，以模拟更复杂的机制(非线性弹簧，链接，链接，等)。
+> _Gazebo_ROS2_Control_ GEAZEBO 插件还提供了基于插件的接口，以实现 Gazebo Classic 和 _ROS2_Control_ 之间的自定义接口，以模拟更复杂的机制(非线性弹簧，链接，链接，等)。
 
 These plugins must inherit `gazebo_ros2_control::GazeboSystemInterface` which implements a simulated _ros2_control_ `hardware_interface::SystemInterface`. SystemInterface provides API-level access to read and command joint properties.
 
-> 这些插件必须继承 `gazebo_ros2_control::GazeboSystemInterface`，该插件实现了模拟 _ROS2_CONTROL_ `hardware_interface::SystemInterface`。SystemInterface 提供了读取和命令联合属性的 API 级访问。
+> 这些插件必须继承 `gazebo_ros2_control::GazeboSystemInterface`，该插件实现了模拟 _ROS2_Control_ `hardware_interface::SystemInterface`。SystemInterface 提供了读取和命令关节属性的 API 级访问。
 
 The respective GazeboSystemInterface sub-class is specified in a URDF model and is loaded when the robot model is loaded. For example, the following XML will load the default plugin:
 
@@ -278,8 +278,8 @@ The following is a basic configuration of the controllers:
 - `joint_state_broadcaster`: This controller publishes the state of all resources registered to a `hardware_interface::StateInterface` to a topic of type `sensor_msgs/msg/JointState`.
 - `joint_trajectory_controller`: This controller creates an action called `/joint_trajectory_controller/follow_joint_trajectory` of type `control_msgs::action::FollowJointTrajectory`.
 
-- `joint_state_broadcaster`：此控制器将注册到 `hardware_interface::StateInterface` 的所有资源的状态发布到类型为 `sensor_msgs/msg/JointState` 的主题。
-- `joint_trajectory_controller`：此控制器创建一个名为 `/joint_trajectory_controller/follow_joint_trajectory` 的操作，其类型为 `control_msgs::action::FollowJointTrajectory`。
+> - `joint_state_broadcaster`：此控制器将注册到 `hardware_interface::StateInterface` 的所有资源的状态发布到类型为 `sensor_msgs/msg/JointState` 的主题。
+> - `joint_trajectory_controller`：此控制器创建一个名为 `/joint_trajectory_controller/follow_joint_trajectory` 的操作，其类型为 `control_msgs::action::FollowJointTrajectory`。
 
 ::: {.literalinclude language="yaml"}
 ../gazebo_ros2_control_demos/config/cart_controller.yaml
@@ -309,7 +309,7 @@ ros2 launch gazebo_ros2_control_demos cart_example_effort.launch.py
 
 When the Gazebo world is launched you can run some of the following commands to move the cart.
 
-> 当启动 GAZEBO 世界时，您可以运行以下一些命令来移动购物车。
+> 当启动 Gazebo 世界时，您可以运行以下一些命令来移动购物车。
 
 ```shell
 ros2 run gazebo_ros2_control_demos example_position
@@ -329,7 +329,7 @@ ros2 launch gazebo_ros2_control_demos tricycle_drive.launch.py
 
 When the Gazebo world is launched you can run some of the following commands to move the robots.
 
-> 当启动 GAZEBO 世界时，您可以运行以下一些命令来移动机器人。
+> 当启动 Gazebo 世界时，您可以运行以下一些命令来移动机器人。
 
 ```shell
 ros2 run gazebo_ros2_control_demos example_diff_drive

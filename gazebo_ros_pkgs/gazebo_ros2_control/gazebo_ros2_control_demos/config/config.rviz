@@ -79,13 +79,10 @@ Visualization Manager:
         odom:
           base_link:
             chassis:
-              left_wheel:
-                {}
-              right_wheel:
-                {}
+              left_wheel: {}
+              right_wheel: {}
               steering_link:
-                wheel_front_link:
-                  {}
+                wheel_front_link: {}
       Update Interval: 0
       Value: true
     - Alpha: 1
