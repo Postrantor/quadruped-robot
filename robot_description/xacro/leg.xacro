@@ -2,8 +2,8 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
     <xacro:include filename="$(find robot_description)/xacro/transmission.xacro"/>
 
-    <!-- <xacro:property name="damping" value="0.3" />
-    <xacro:property name="friction" value="0.3" /> -->
+    <!-- <xacro:property name="damping" value="0.3" /> -->
+    <!-- <xacro:property name="friction" value="0.3" /> -->
 
     <xacro:macro name="leg" params="name mirror mirror_dae front_hind front_hind_dae *origin">
 

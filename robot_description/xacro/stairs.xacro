@@ -5,7 +5,6 @@
     <xacro:property name="stair_height" value="0.170" />
 
     <xacro:macro name="stairs" params="stairs xpos ypos zpos">
-
         <joint name="stair_joint_origin" type="fixed">
             <origin rpy="0 0 0" xyz="0 0 0"/>
             <parent link="world"/>

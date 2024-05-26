@@ -1,54 +1,36 @@
 <?xml version="1.0"?>
 <robot>
-    <!-- ros_control plugin -->
+
+    <!-- <ros2_control name="GazeboSystem" type="system">
+        <hardware>
+            <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+        </hardware>
+        <joint name="left_wheel_joint">
+            <command_interface name="velocity">
+                <param name="min">-1</param>
+                <param name="max">1</param>
+            </command_interface>
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+        <joint name="right_wheel_joint">
+            <command_interface name="velocity">
+                <param name="min">-1</param>
+                <param name="max">1</param>
+            </command_interface>
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+    </ros2_control> -->
+
+    <!-- ros2_control plugin -->
     <gazebo>
-        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-            <robotNamespace>/a1_gazebo</robotNamespace>
-            <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+        <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+            <parameters>$(find robot_description)/config/controller.yaml</parameters>
+            <!-- <robotNamespace>/a1_gazebo</robotNamespace> -->
+            <!-- <robotSimType>gazebo_ros2_control/DefaultRobotHWSim</robotSimType> -->
         </plugin>
     </gazebo>
-
-    <!-- Show the trajectory of trunk center. -->
-
-    <!-- <gazebo>
-        <plugin name="3dplot" filename="libLinkPlot3DPlugin.so">
-            <frequency>10</frequency>
-            <plot>
-                <link>base</link>
-                <pose>0 0 0 0 0 0</pose>
-                <material>Gazebo/Yellow</material>
-            </plot>
-        </plugin>
-    </gazebo> -->
-
-    <!-- Show the trajectory of foot. You can add another trajectory about another foot. -->
-    <!-- <gazebo>
-        <plugin name="3dplot" filename="libLinkPlot3DPlugin.so">
-            <frequency>100</frequency>
-            <plot>
-                <link>FL_calf</link>
-                <pose>0 0 -0.2 0 0 0</pose>
-                <material>Gazebo/Green</material>
-            </plot>
-        </plugin>
-    </gazebo>
-    <gazebo>
-        <plugin name="3dplot" filename="libLinkPlot3DPlugin.so">
-            <frequency>100</frequency>
-            <plot>
-                <link>FR_calf</link>
-                <pose>0 0 -0.2 0 0 0</pose>
-                <material>Gazebo/Red</material>
-            </plot>
-        </plugin>
-    </gazebo> -->
-
-    <!-- <gazebo>
-       <plugin filename="libgazebo_ros_force.so" name="gazebo_ros_force">
-           <bodyName>trunk</bodyName>
-           <topicName>/apply_force/trunk</topicName>
-       </plugin>
-    </gazebo> -->
 
     <gazebo reference="imu_link">
         <gravity>true</gravity>
@@ -107,45 +89,6 @@
             </contact>
         </sensor>
     </gazebo>
-
-    <!-- visualization of foot contacts. -->
-    <!-- <gazebo reference="FR_foot">
-        <visual>
-            <plugin name="drawForcePlugin" filename="libunitreeDrawForcePlugin.so">
-                <topicName>FR_foot_contact</topicName>
-            </plugin>
-        </visual>
-    </gazebo>
-    <gazebo reference="FL_foot">
-        <visual>
-            <plugin name="drawForcePlugin" filename="libunitreeDrawForcePlugin.so">
-                <topicName>FL_foot_contact</topicName>
-            </plugin>
-        </visual>
-    </gazebo>
-    <gazebo reference="RR_foot">
-        <visual>
-            <plugin name="drawForcePlugin" filename="libunitreeDrawForcePlugin.so">
-                <topicName>RR_foot_contact</topicName>
-            </plugin>
-        </visual>
-    </gazebo>
-    <gazebo reference="RL_foot">
-        <visual>
-            <plugin name="drawForcePlugin" filename="libunitreeDrawForcePlugin.so">
-                <topicName>RL_foot_contact</topicName>
-            </plugin>
-        </visual>
-    </gazebo> -->
-
-    <!-- Show planned pose location -->
-    <!-- <gazebo reference="base">
-        <visual>
-            <plugin name="drawLinesPlugin" filename="libdrawLinesPlugin.so">
-                <topicName>pose_planner</topicName>
-            </plugin>
-        </visual>
-    </gazebo> -->
 
     <gazebo reference="base">
         <material>Gazebo/Green</material>
@@ -282,5 +225,4 @@
         <kp value="1000000.0"/>
         <kd value="1.0"/>
     </gazebo>
-
 </robot>

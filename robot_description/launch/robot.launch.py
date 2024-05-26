@@ -22,7 +22,7 @@ ARGUMENTS = [
 
 def generate_launch_description():
     pkg_robot_description = get_package_share_directory('robot_description')
-    xacro_file = PathJoinSubstitution([pkg_robot_description, 'urdf', 'robot.xacro.urdf'])
+    xacro_file = PathJoinSubstitution([pkg_robot_description, 'xacro', 'robot.xacro.urdf'])
     rviz2_config = PathJoinSubstitution([pkg_robot_description, 'config', 'robot.rviz'])
     namespace = LaunchConfiguration('namespace')
 

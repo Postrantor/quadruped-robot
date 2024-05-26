@@ -1,8 +1,7 @@
-<!-- ros2 run xacro xacro robot.xacro -o robot.urdf USE_CAMERA:=false DEBUG:=false -->
-
 <?xml version="1.0"?>
 <robot name="robot_description"
     xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <!-- ros2 run xacro xacro robot.xacro -o robot.urdf USE_CAMERA:=false DEBUG:=false -->
 
     <xacro:include filename="$(find robot_description)/xacro/const.xacro"/>
     <xacro:include filename="$(find robot_description)/xacro/materials.xacro"/>
@@ -13,7 +12,7 @@
         <xacro:include filename="$(find realsense_ros_gazebo)/xacro/depthcam.xacro"/>
     </xacro:if>
 
-    <!-- <xacro:include filename="$(find a1_gazebo)/launch/stairs.urdf.xacro"/> -->
+    <!-- <xacro:include filename="$(find robot_description)/launch/stairs.urdf.xacro"/> -->
     <!-- <xacro:stairs stairs="15" xpos="0" ypos="0" zpos="0" /> -->
 
     <!-- rollover protection mode will add an additional stick on the top, use "true" or "false" to switch it. -->

@@ -4,6 +4,7 @@
 <!-- |    EDITING THIS FILE BY HAND IS NOT RECOMMENDED                                 | -->
 <!-- =================================================================================== -->
 <robot name="robot_description">
+  <!-- ros2 run xacro xacro robot.xacro -o robot.urdf USE_CAMERA:=false DEBUG:=false -->
   <material name="black">
     <color rgba="0.0 0.0 0.0 1.0"/>
   </material>
@@ -31,53 +32,16 @@
   <material name="white">
     <color rgba="1.0 1.0 1.0 1.0"/>
   </material>
-  <!-- <xacro:property name="damping" value="0.3" />
-    <xacro:property name="friction" value="0.3" /> -->
-  <!-- ros_control plugin -->
+  <!-- <xacro:property name="damping" value="0.3" /> -->
+  <!-- <xacro:property name="friction" value="0.3" /> -->
+  <!-- ros2_control plugin -->
   <gazebo>
-    <plugin filename="libgazebo_ros_control.so" name="gazebo_ros_control">
-      <robotNamespace>/a1_gazebo</robotNamespace>
-      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+    <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+      <parameters>/home/trantor/project/demo_ws/install/robot_description/share/robot_description/config/controller.yaml</parameters>
+      <!-- <robotNamespace>/a1_gazebo</robotNamespace> -->
+      <!-- <robotSimType>gazebo_ros2_control/DefaultRobotHWSim</robotSimType> -->
     </plugin>
   </gazebo>
-  <!-- Show the trajectory of trunk center. -->
-  <!-- <gazebo>
-        <plugin name="3dplot" filename="libLinkPlot3DPlugin.so">
-            <frequency>10</frequency>
-            <plot>
-                <link>base</link>
-                <pose>0 0 0 0 0 0</pose>
-                <material>Gazebo/Yellow</material>
-            </plot>
-        </plugin>
-    </gazebo> -->
-  <!-- Show the trajectory of foot. You can add another trajectory about another foot. -->
-  <!-- <gazebo>
-        <plugin name="3dplot" filename="libLinkPlot3DPlugin.so">
-            <frequency>100</frequency>
-            <plot>
-                <link>FL_calf</link>
-                <pose>0 0 -0.2 0 0 0</pose>
-                <material>Gazebo/Green</material>
-            </plot>
-        </plugin>
-    </gazebo>
-    <gazebo>
-        <plugin name="3dplot" filename="libLinkPlot3DPlugin.so">
-            <frequency>100</frequency>
-            <plot>
-                <link>FR_calf</link>
-                <pose>0 0 -0.2 0 0 0</pose>
-                <material>Gazebo/Red</material>
-            </plot>
-        </plugin>
-    </gazebo> -->
-  <!-- <gazebo>
-       <plugin filename="libgazebo_ros_force.so" name="gazebo_ros_force">
-           <bodyName>trunk</bodyName>
-           <topicName>/apply_force/trunk</topicName>
-       </plugin>
-    </gazebo> -->
   <gazebo reference="imu_link">
     <gravity>true</gravity>
     <sensor name="imu_sensor" type="imu">
@@ -134,43 +98,6 @@
       </contact>
     </sensor>
   </gazebo>
-  <!-- visualization of foot contacts. -->
-  <!-- <gazebo reference="FR_foot">
-        <visual>
-            <plugin name="drawForcePlugin" filename="libunitreeDrawForcePlugin.so">
-                <topicName>FR_foot_contact</topicName>
-            </plugin>
-        </visual>
-    </gazebo>
-    <gazebo reference="FL_foot">
-        <visual>
-            <plugin name="drawForcePlugin" filename="libunitreeDrawForcePlugin.so">
-                <topicName>FL_foot_contact</topicName>
-            </plugin>
-        </visual>
-    </gazebo>
-    <gazebo reference="RR_foot">
-        <visual>
-            <plugin name="drawForcePlugin" filename="libunitreeDrawForcePlugin.so">
-                <topicName>RR_foot_contact</topicName>
-            </plugin>
-        </visual>
-    </gazebo>
-    <gazebo reference="RL_foot">
-        <visual>
-            <plugin name="drawForcePlugin" filename="libunitreeDrawForcePlugin.so">
-                <topicName>RL_foot_contact</topicName>
-            </plugin>
-        </visual>
-    </gazebo> -->
-  <!-- Show planned pose location -->
-  <!-- <gazebo reference="base">
-        <visual>
-            <plugin name="drawLinesPlugin" filename="libdrawLinesPlugin.so">
-                <topicName>pose_planner</topicName>
-            </plugin>
-        </visual>
-    </gazebo> -->
   <gazebo reference="base">
     <material>Gazebo/Green</material>
     <turnGravityOff>false</turnGravityOff>
@@ -299,7 +226,7 @@
     <kp value="1000000.0"/>
     <kd value="1.0"/>
   </gazebo>
-  <!-- <xacro:include filename="$(find a1_gazebo)/launch/stairs.urdf.xacro"/> -->
+  <!-- <xacro:include filename="$(find robot_description)/launch/stairs.urdf.xacro"/> -->
   <!-- <xacro:stairs stairs="15" xpos="0" ypos="0" zpos="0" /> -->
   <link name="base">
     <visual>
