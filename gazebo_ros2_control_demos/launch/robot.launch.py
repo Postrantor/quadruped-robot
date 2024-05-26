@@ -40,6 +40,16 @@ def generate_launch_description():
         output='screen'
     )
 
+    # TODO(zhiqi.jia)::gazebo replace read this yaml, should be create parameter server by controller.yaml
+    # move to urdf `gazebo` tag
+    # robot_controllers = PathJoinSubstitution([
+    #     FindPackageShare("unitree_motor_example"), "config", "unitree_motor_controllers.yaml",])
+    # control_node = Node(
+    #     package="controller_manager",
+    #     executable="ros2_control_node",
+    #     parameters=[robot_description, robot_controllers],
+    #     output="both",)
+
     # 加载 joint_state_broadcaster 控制器
     load_joint_state_broadcaster = Node(
         package='controller_manager',
