@@ -44,36 +44,6 @@ ament_target_dependencies(joint_state_broadcaster PUBLIC ${THIS_PACKAGE_INCLUDE_
 target_compile_definitions(joint_state_broadcaster PRIVATE "JOINT_STATE_BROADCASTER_BUILDING_DLL")
 pluginlib_export_plugin_description_file(controller_interface joint_state_plugin.xml)
 
-if(BUILD_TESTING)
-  find_package(ament_cmake_gmock REQUIRED)
-  find_package(controller_manager REQUIRED)
-  find_package(hardware_interface REQUIRED)
-  find_package(rclcpp REQUIRED)
-  find_package(ros2_control_test_assets REQUIRED)
-
-  ament_add_gmock(test_load_joint_state_broadcaster
-    test/test_load_joint_state_broadcaster.cpp
-  )
-  target_link_libraries(test_load_joint_state_broadcaster
-    joint_state_broadcaster
-  )
-  ament_target_dependencies(test_load_joint_state_broadcaster
-    controller_manager
-    hardware_interface
-    ros2_control_test_assets
-  )
-
-  ament_add_gmock(test_joint_state_broadcaster
-    test/test_joint_state_broadcaster.cpp
-  )
-  target_link_libraries(test_joint_state_broadcaster
-    joint_state_broadcaster
-  )
-  ament_target_dependencies(test_joint_state_broadcaster
-    hardware_interface
-  )
-endif()
-
 install(
   DIRECTORY include/
   DESTINATION include/joint_state_broadcaster

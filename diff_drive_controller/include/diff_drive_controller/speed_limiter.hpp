@@ -1,17 +1,3 @@
-// Copyright 2020 PAL Robotics S.L.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 /*
  * Author: Enrique Fernández
  */
@@ -21,10 +7,8 @@
 
 #include <cmath>
 
-namespace diff_drive_controller
-{
-class SpeedLimiter
-{
+namespace diff_drive_controller {
+class SpeedLimiter {
 public:
   /**
    * \brief Constructor
@@ -39,10 +23,15 @@ public:
    * \param [in] max_jerk Maximum jerk [m/s^3], usually >= 0
    */
   SpeedLimiter(
-    bool has_velocity_limits = false, bool has_acceleration_limits = false,
-    bool has_jerk_limits = false, double min_velocity = NAN, double max_velocity = NAN,
-    double min_acceleration = NAN, double max_acceleration = NAN, double min_jerk = NAN,
-    double max_jerk = NAN);
+      bool has_velocity_limits = false,
+      bool has_acceleration_limits = false,
+      bool has_jerk_limits = false,
+      double min_velocity = NAN,
+      double max_velocity = NAN,
+      double min_acceleration = NAN,
+      double max_acceleration = NAN,
+      double min_jerk = NAN,
+      double max_jerk = NAN);
 
   /**
    * \brief Limit the velocity and acceleration
@@ -52,14 +41,14 @@ public:
    * \param [in]      dt Time step [s]
    * \return Limiting factor (1.0 if none)
    */
-  double limit(double & v, double v0, double v1, double dt);
+  double limit(double& v, double v0, double v1, double dt);
 
   /**
    * \brief Limit the velocity
    * \param [in, out] v Velocity [m/s]
    * \return Limiting factor (1.0 if none)
    */
-  double limit_velocity(double & v);
+  double limit_velocity(double& v);
 
   /**
    * \brief Limit the acceleration
@@ -68,7 +57,7 @@ public:
    * \param [in]      dt Time step [s]
    * \return Limiting factor (1.0 if none)
    */
-  double limit_acceleration(double & v, double v0, double dt);
+  double limit_acceleration(double& v, double v0, double dt);
 
   /**
    * \brief Limit the jerk
@@ -79,7 +68,7 @@ public:
    * \return Limiting factor (1.0 if none)
    * \see http://en.wikipedia.org/wiki/Jerk_%28physics%29#Motion_control
    */
-  double limit_jerk(double & v, double v0, double v1, double dt);
+  double limit_jerk(double& v, double v0, double v1, double dt);
 
 private:
   // Enable/Disable velocity/acceleration/jerk limits:
