@@ -27,7 +27,7 @@ def generate_launch_description():
     pkg_description = get_package_share_directory('gazebo_ros2_control_demos')
     rviz2_config = PathJoinSubstitution([pkg_description, 'config', 'model.rviz'])
     xacro_file = PathJoinSubstitution([pkg_description, 'urdf', 'robot.urdf'])
-    namespace = LaunchConfiguration('namespace')
+    # namespace = LaunchConfiguration('namespace')
 
     node_robot_state_publisher = Node(
         package='robot_state_publisher',
