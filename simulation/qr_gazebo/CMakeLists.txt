@@ -34,10 +34,8 @@ add_library(qr_gazebo ${sources})
 link_directories(${GAZEBO_LIBRARY_DIRS})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GAZEBO_CXX_FLAGS}")
 
-# # Declare a C++ library add_library(${PROJECT_NAME} src/body.cpp )
-
+# Declare a C++ library add_library(${PROJECT_NAME} src/body.cpp )
 # add_dependencies(${PROJECT_NAME} unitree_legged_msgs_gencpp)
-
 # target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${EXTRA_LIBS} )
 
 link_libraries(${catkin_LIBRARIES} qr_gazebo)

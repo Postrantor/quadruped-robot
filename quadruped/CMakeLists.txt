@@ -163,15 +163,12 @@ endif()
 
 # add include files
 list(APPEND includePath "config/")
-
 list(APPEND includePath ".")
 
 # create library
 add_library(quadruped SHARED ${sources} ${TinyEKF_SRC})
-
 target_include_directories(quadruped PUBLIC ${includePath}
                                             ${catkin_INCLUDE_DIRS})
-
 target_link_directories(quadruped PUBLIC ${linkPath})
 
 target_link_libraries(
