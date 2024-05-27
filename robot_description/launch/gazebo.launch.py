@@ -1,10 +1,37 @@
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, RegisterEventHandler, GroupAction
+from launch.actions import IncludeLaunchDescription, RegisterEventHandler, DeclareLaunchArgument, GroupAction, TimerAction
 from launch.substitutions import Command, PathJoinSubstitution
 from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
+from launch.substitutions.launch_configuration import LaunchConfiguration
+
+ARGUMENTS = [
+    DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='false',
+        choices=['true', 'false'],
+        description='use_sim_time'),
+    DeclareLaunchArgument(
+        'robot_name',
+        default_value='robot_a1',
+        description='robot name'),
+    DeclareLaunchArgument(
+        'namespace',
+        default_value=LaunchConfiguration('robot_name'),
+        description='robot namespace'),
+    DeclareLaunchArgument(
+        'use_camera',
+        default_value='false',
+        description='Enable the camera'
+    ),
+    DeclareLaunchArgument(
+        'debug',
+        default_value='false',
+        description='debug'
+    ),
+]
 
 
 def generate_launch_description():
@@ -15,7 +42,7 @@ def generate_launch_description():
     # 文件路径定义
     gazebo_launch_file = PathJoinSubstitution([pkg_gazebo_ros, 'launch', 'gazebo.launch.py'])
     rviz2_config_file = PathJoinSubstitution([pkg_description, 'config', 'robot.rviz'])
-    xacro_file = PathJoinSubstitution([pkg_description, 'urdf', 'robot.urdf'])
+    xacro_file = PathJoinSubstitution([pkg_description, 'xacro', 'robot.xacro.urdf'])
 
     # 启动 Gazebo
     gazebo = IncludeLaunchDescription(PythonLaunchDescriptionSource(gazebo_launch_file))
@@ -24,10 +51,18 @@ def generate_launch_description():
     node_robot_state_publisher = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
+        name='robot_state_publisher',
         parameters=[
-            {'use_sim_time': False},
-            {'robot_description': Command(['xacro', ' ', xacro_file])},
-        ],
+            {'use_sim_time': LaunchConfiguration('use_sim_time')},
+            {'robot_description': Command([
+                'xacro', ' ', xacro_file, ' '
+                'USE_CAMERA:=', LaunchConfiguration('use_camera'), ' '
+                'DEBUG:=', LaunchConfiguration('debug'), ' '
+                'gazebo:=ignition', ' ',
+                'namespace:=', LaunchConfiguration('namespace')])},],
+        remappings=[
+            ('/tf', 'tf'),
+            ('/tf_static', 'tf_static')],
         output='screen',
     )
 
@@ -35,7 +70,7 @@ def generate_launch_description():
     spawn_entity = Node(
         package='gazebo_ros',
         executable='spawn_entity.py',
-        arguments=['-topic', 'robot_description', '-entity', 'diffbot'],
+        arguments=['-topic', 'robot_description', '-entity', LaunchConfiguration('robot_name')],
         output='screen'
     )
 
@@ -65,16 +100,6 @@ def generate_launch_description():
         output='screen',
     )
 
-    # 启动 RViz2
-    robot_rviz = Node(
-        package='rviz2',
-        executable='rviz2',
-        name='rviz2',
-        arguments=['-d', rviz2_config_file],
-        parameters=[{'use_sim_time': False}],
-        output='screen'
-    )
-
     # 事件处理器，用于在特定节点退出后启动其他节点
     event_handlers = [
         RegisterEventHandler(
@@ -93,11 +118,11 @@ def generate_launch_description():
 
     # 启动描述符
     ld = LaunchDescription([
+        *ARGUMENTS,
         gazebo,
         node_robot_state_publisher,
         spawn_entity,
-        robot_rviz,
-        *event_handlers
+        # *event_handlers
     ])
 
     return ld

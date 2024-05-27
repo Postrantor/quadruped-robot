@@ -38,15 +38,14 @@ ARGUMENTS = [
 
 def generate_launch_description():
     pkg_robot_description = get_package_share_directory('robot_description')
+
     xacro_file = PathJoinSubstitution([pkg_robot_description, 'xacro', 'robot.xacro'])
     rviz2_config = PathJoinSubstitution([pkg_robot_description, 'config', 'robot.rviz'])
-    namespace = LaunchConfiguration('namespace')
 
     robot_state_publisher = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
         name='robot_state_publisher',
-        output='screen',
         parameters=[
             {'use_sim_time': LaunchConfiguration('use_sim_time')},
             {'robot_description': Command([
@@ -54,10 +53,12 @@ def generate_launch_description():
                 'USE_CAMERA:=', LaunchConfiguration('use_camera'), ' '
                 'DEBUG:=', LaunchConfiguration('debug'), ' '
                 'gazebo:=ignition', ' ',
-                'namespace:=', namespace])},],
+                'namespace:=', LaunchConfiguration('namespace')])},],
         remappings=[
             ('/tf', 'tf'),
-            ('/tf_static', 'tf_static')])
+            ('/tf_static', 'tf_static')],
+        output='screen',
+    )
 
     joint_state_publisher = Node(
         package='joint_state_publisher',

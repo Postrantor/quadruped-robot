@@ -23,10 +23,9 @@
         </joint>
     </ros2_control> -->
 
-    <!-- ros2_control plugin -->
     <gazebo>
         <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
-            <parameters>$(find robot_description)/config/controller.yaml</parameters>
+            <!-- <parameters>$(find robot_description)/config/controller.yaml</parameters> -->
             <!-- <robotNamespace>/a1_gazebo</robotNamespace> -->
             <!-- <robotSimType>gazebo_ros2_control/DefaultRobotHWSim</robotSimType> -->
         </plugin>
