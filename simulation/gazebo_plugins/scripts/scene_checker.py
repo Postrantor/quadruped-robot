@@ -6,9 +6,7 @@
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
-    
         http://www.apache.org/licenses/LICENSE-2.0
-        
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,7 +18,8 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 # Command line args
-import sys, getopt
+import sys
+import getopt
 # XML parsing
 import xml.etree.ElementTree as ET
 
@@ -49,6 +48,7 @@ CYLINDER_COLOR = '#36d129'
 # Text color
 TEXT_COLOR = 'white'
 
+
 def parseArgs(argv):
     '''
     Parses command-line options.
@@ -65,14 +65,14 @@ def parseArgs(argv):
 
     try:
         opts, args = getopt.getopt(argv[1:],
-            "hi:d:s:n:e:",["img_dir=","data_dir=","scenes=","first=","img_ext"])
+                                   "hi:d:s:n:e:", ["img_dir=", "data_dir=", "scenes=", "first=", "img_ext"])
     except getopt.GetoptError:
-        print (usage)
+        print(usage)
         sys.exit(2)
 
     for opt, arg in opts:
         if opt == '-h':
-            print (usage)
+            print(usage)
             sys.exit()
         elif opt in ("-i", "--img_dir"):
             img_dir = arg
@@ -84,18 +84,19 @@ def parseArgs(argv):
             first = int(arg)
         elif opt in ("-e", "--img_ext"):
             img_ext = arg
-    
+
     if not data_dir or not img_dir:
-        print (usage)
+        print(usage)
         sys.exit(2)
 
-    print ('Image directory      ', img_dir)
-    print ('Dataset directory    ', data_dir)
-    print ('Number of scenes     ', scenes)
-    print ('Index of first scene ', first)
-    print ('Image file extension ', img_ext)
+    print('Image directory      ', img_dir)
+    print('Dataset directory    ', data_dir)
+    print('Number of scenes     ', scenes)
+    print('Index of first scene ', first)
+    print('Image file extension ', img_ext)
 
     return [data_dir, img_dir, scenes, first, img_ext]
+
 
 class ImageViewer(tk.Frame):
     '''
@@ -124,14 +125,14 @@ class ImageViewer(tk.Frame):
 
         # Configure window
         self.parent.maxsize(
-            width = self.parent.winfo_screenwidth(),
-            height= self.parent.winfo_screenheight())
+            width=self.parent.winfo_screenwidth(),
+            height=self.parent.winfo_screenheight())
         self.parent.title(APP_TITLE)
 
         # Create canvas in main window
         self.canvas = tk.Canvas(self.parent,
-            width =self.parent.winfo_screenwidth(),
-            height=self.parent.winfo_screenheight())
+                                width=self.parent.winfo_screenwidth(),
+                                height=self.parent.winfo_screenheight())
         self.canvas.pack()
 
         # Bind events
@@ -159,7 +160,7 @@ class ImageViewer(tk.Frame):
 
         # Update scene image
         try:
-            image = Image.open(img_file) 
+            image = Image.open(img_file)
             photo = ImageTk.PhotoImage(image)
         except:
             print('Could not open ' + img_file + '.Exiting...')
@@ -182,42 +183,44 @@ class ImageViewer(tk.Frame):
         if SHOW_HELP:
             # Commands
             self.canvas.create_rectangle(40, 40, 300, 230,
-                fill="gray", stipple="gray50", width=0)
+                                         fill="gray", stipple="gray50", width=0)
             # Draw label with cur / total scene indicator
             label = 'Scene ' + str(self.cur) + '/' + str(self.first + self.scenes - 1)
             self.canvas.create_text(45, 45, text=label, fill="white",
-                font=('arial', '18'), anchor=tk.NW)
+                                    font=('arial', '18'), anchor=tk.NW)
             # Draw help label
-            label = 'Commands\n'            + \
-                    'Left\tPrevious\n'      + \
-                    'Right\tNext\n'         + \
-                    'Spacebar\tExport\n'    + \
+            label = 'Commands\n' + \
+                    'Left\tPrevious\n' + \
+                    'Right\tNext\n' + \
+                    'Spacebar\tExport\n' + \
                     'Return\tExit'
             self.canvas.create_text(45, 80, text=label, fill="white",
-                font=('arial', '18'), anchor=tk.NW)
+                                    font=('arial', '18'), anchor=tk.NW)
 
         # Draw bounding boxes
         for obj in annotation.findall('object'):
             name = obj.find('name').text
             color = BOX_COLOR
-            if   (name == "sphere"):   color = SPHERE_COLOR
-            elif (name == "cylinder"): color = CYLINDER_COLOR
-            
+            if (name == "sphere"):
+                color = SPHERE_COLOR
+            elif (name == "cylinder"):
+                color = CYLINDER_COLOR
+
             for bnd_box in obj.findall('bndbox'):
                 x_min = int(bnd_box.find('xmin').text)
                 y_min = int(bnd_box.find('ymin').text)
                 x_max = int(bnd_box.find('xmax').text)
                 y_max = int(bnd_box.find('ymax').text)
                 rect = self.canvas.create_rectangle(x_min, y_min, x_max, y_max,
-                    outline=color, width=2)
-                text = self.canvas.create_text(x_min, y_min-25, text=name,
-                    fill=TEXT_COLOR, font=('arial', '16'), anchor=tk.NW)
+                                                    outline=color, width=2)
+                text = self.canvas.create_text(x_min, y_min - 25, text=name,
+                                               fill=TEXT_COLOR, font=('arial', '16'), anchor=tk.NW)
                 background = self.canvas.create_rectangle(self.canvas.bbox(text),
-                    outline=color, fill=color)
+                                                          outline=color, fill=color)
                 self.canvas.tag_lower(background, text)
 
     def onSave(self, event):
-        
+
         export_name = "export/" + str(self.cur) + ".ps"
         self.canvas.postscript(file=export_name)
         print('Exported ' + export_name)
@@ -226,20 +229,24 @@ class ImageViewer(tk.Frame):
         '''
         Updates counter and calls update function.
         '''
-        if (self.cur == 0): return
+        if (self.cur == 0):
+            return
 
         self.cur = self.cur - 1
-        if (self.cur >= self.first + self.scenes): sys.exit(0) 
+        if (self.cur >= self.first + self.scenes):
+            sys.exit(0)
         self.onUpdate()
 
     def onRight(self, event):
         '''
         Updates counter and calls update function.
         '''
-        if (self.cur == self.first + self.scenes - 1): return
+        if (self.cur == self.first + self.scenes - 1):
+            return
 
         self.cur = self.cur + 1
-        if (self.cur >= self.first + self.scenes): sys.exit(0) 
+        if (self.cur >= self.first + self.scenes):
+            sys.exit(0)
         self.onUpdate()
 
     def onQuit(self, event):
@@ -249,12 +256,13 @@ class ImageViewer(tk.Frame):
         self.parent.destroy()
         sys.exit(0)
 
+
 def main(argv):
     '''
     Simple tool to open image and overlay bounding box data to check
     whether or not a scene dataset is correct.
     '''
-    
+
     # Obtain command-line arguments
     [data_dir, img_dir, scenes, first, img_ext] = parseArgs(argv)
 
@@ -265,5 +273,6 @@ def main(argv):
     # Main loop
     root.mainloop()
 
+
 if __name__ == "__main__":
-   main(sys.argv)
+    main(sys.argv)

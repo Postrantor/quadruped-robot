@@ -10,12 +10,9 @@ Unlike most similar software, these tools **do not** strictly depend on [ROS].
 They include:
 
 1. **[NEW]** [Domain Randomization plugin], a multi-purpose plugin to change physical properties of models, as well as visual appearence.
-
-1. [Camera Utils plugin], to control camera objects, namely moving the camera and saving rendered frames at specific instants.
-
-1. [Visual Utils plugin], to control the visual appearance of an object during simulation, including changing the Visual object's pose, material and scale.
-
-1. [World Utils plugin], that allows you to spawn models either by a uri reference or directly with an sdf string.
+2. [Camera Utils plugin], to control camera objects, namely moving the camera and saving rendered frames at specific instants.
+3. [Visual Utils plugin], to control the visual appearance of an object during simulation, including changing the Visual object's pose, material and scale.
+4. [World Utils plugin], that allows you to spawn models either by a uri reference or directly with an sdf string.
 
 This project was originally conceived so we could develop a [scene generator] in Gazebo, employing domain randomisation in an attempt to bridge the **reality gap** between real life images and synthetically generated frames.
 
