@@ -6,6 +6,7 @@ from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 
+
 def generate_launch_description():
     # 获取共享目录路径
     pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
@@ -14,12 +15,7 @@ def generate_launch_description():
     # 文件路径定义
     gazebo_launch_file = PathJoinSubstitution([pkg_gazebo_ros, 'launch', 'gazebo.launch.py'])
     rviz2_config_file = PathJoinSubstitution([pkg_description, 'config', 'robot.rviz'])
-    xacro_file = PathJoinSubstitution([pkg_description, 'urdf', 'robot.urdf'])
-
-    # 启动 Gazebo
-    gazebo = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(gazebo_launch_file),
-    )
+    xacro_file = PathJoinSubstitution([pkg_description, 'xacro', 'robot.urdf'])
 
     # 机器人状态发布器节点
     node_robot_state_publisher = Node(
@@ -32,11 +28,14 @@ def generate_launch_description():
         output='screen',
     )
 
+    # 启动 Gazebo
+    gazebo = IncludeLaunchDescription(PythonLaunchDescriptionSource(gazebo_launch_file))
+
     # 生成机器人实体节点
     spawn_entity = Node(
         package='gazebo_ros',
         executable='spawn_entity.py',
-        arguments=['-topic', 'robot_description', '-entity', 'diffbot'],
+        arguments=['-topic', 'robot_description', '-entity', 'diffdrive'],
         output='screen'
     )
 
@@ -97,7 +96,7 @@ def generate_launch_description():
         gazebo,
         node_robot_state_publisher,
         spawn_entity,
-        robot_rviz,
+        # robot_rviz,
         *event_handlers
     ])
 
