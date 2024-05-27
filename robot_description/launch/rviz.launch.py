@@ -10,19 +10,35 @@ from launch.conditions import IfCondition
 
 
 ARGUMENTS = [
-    DeclareLaunchArgument('use_sim_time', default_value='false',
-                          choices=['true', 'false'],
-                          description='use_sim_time'),
-    DeclareLaunchArgument('robot_name', default_value='a1_description',
-                          description='robot name'),
-    DeclareLaunchArgument('namespace', default_value=LaunchConfiguration('robot_name'),
-                          description='robot namespace'),
+    DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='false',
+        choices=['true', 'false'],
+        description='use_sim_time'),
+    DeclareLaunchArgument(
+        'robot_name',
+        default_value='robot_description',
+        description='robot name'),
+    DeclareLaunchArgument(
+        'namespace',
+        default_value=LaunchConfiguration('robot_name'),
+        description='robot namespace'),
+    DeclareLaunchArgument(
+        'use_camera',
+        default_value='false',
+        description='Enable the camera'
+    ),
+    DeclareLaunchArgument(
+        'debug',
+        default_value='false',
+        description='debug'
+    ),
 ]
 
 
 def generate_launch_description():
     pkg_robot_description = get_package_share_directory('robot_description')
-    xacro_file = PathJoinSubstitution([pkg_robot_description, 'xacro', 'robot.xacro.urdf'])
+    xacro_file = PathJoinSubstitution([pkg_robot_description, 'xacro', 'robot.xacro'])
     rviz2_config = PathJoinSubstitution([pkg_robot_description, 'config', 'robot.rviz'])
     namespace = LaunchConfiguration('namespace')
 
@@ -34,7 +50,9 @@ def generate_launch_description():
         parameters=[
             {'use_sim_time': LaunchConfiguration('use_sim_time')},
             {'robot_description': Command([
-                'xacro', ' ', xacro_file, ' ',
+                'xacro', ' ', xacro_file, ' '
+                'USE_CAMERA:=', LaunchConfiguration('use_camera'), ' '
+                'DEBUG:=', LaunchConfiguration('debug'), ' '
                 'gazebo:=ignition', ' ',
                 'namespace:=', namespace])},],
         remappings=[
