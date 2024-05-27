@@ -1,7 +1,7 @@
+#include <ros/package.h>
+
 #include "quadruped/exec/qr_robot_runner.h"
 #include "quadruped/ros/qr_control2gazebo_msg.h"
-
-#include <ros/package.h>
 
 using namespace std;
 using namespace Quadruped;

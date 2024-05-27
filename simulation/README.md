@@ -6,7 +6,8 @@ tip: translate by google@2024-05-27 20:55:36
 
 Here are the ROS simulation packages of Unitree robots, You can load robots and joint controllers in Gazebo, so you can do low-level control(control the torque, position and angular velocity) on the robot joints. Please watch out that the Gazebo simulation cannot do high-level control, namely walking. Besides of these simulation functions, you can also control your real robots in ROS by the [unitree_ros_to_real](https://github.com/unitreerobotics) packages. For real robots, you can do high-level and low-level control by our ROS packages.
 
-> 这是 Unitree 机器人的 ROS 模拟包，您可以在 Gazebo 中加载机器人和关节控制器，因此您可以在机器人接头上进行低级控制(控制扭矩，位置和角速度)。请注意，Gazebo 模拟不能进行高级控制，即行走。除了这些仿真功能的功能外，您还可以通过[unitree_ros_to_real](https://github.com/unitreerobotics)软件包在 ROS 中控制您的真实机器人。对于真正的机器人，您可以通过 ROS 包装进行高级和低级控制。
+> 这是 Unitree 机器人的 ROS 模拟包，您可以在 Gazebo 中加载机器人和关节控制器，因此您可以在机器人接头上进行低级控制(控制扭矩，位置和角速度)。请注意，Gazebo 模拟不能进行高级控制，即行走。
+> 除了这些仿真功能的功能外，您还可以通过[unitree_ros_to_real](https://github.com/unitreerobotics)软件包在 ROS 中控制您的真实机器人。对于真正的机器人，您可以通过 ROS 包装进行高级和低级控制。
 
 ## Packages:
 
@@ -63,7 +64,7 @@ If you face a dependency problem, you can just run `catkin_make` again.
 
 It contains the joints controllers for Gazebo simulation, which allows users to control joints with position, velocity and torque. Refer to "unitree_ros/unitree_controller/src/servo.cpp" for joint control examples in different modes.
 
-> 它包含用于 Gazebo 模拟的接头控制器，该控制器允许用户控制以位置，速度和扭矩的接头。有关不同模式中的联合控制示例，请参阅 `unitree_ros/unitree_controller/src/servo.cpp`。
+> 它包含用于 Gazebo 模拟的关节控制器，该控制器允许用户控制以位置，速度和扭矩的关节。有关不同模式中的联合控制示例，请参阅 `unitree_ros/unitree_controller/src/servo.cpp`。
 
 ## The description of robots:
 

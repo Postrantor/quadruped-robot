@@ -1,21 +1,20 @@
-#include "quadruped/exec/qr_robot_runner.h"
-#include "quadruped/robots/qr_robot_a1_sim.h"
-#include "quadruped/ros/qr_control2gazebo_msg.h"
-
+#include <controller_manager/controller_manager.h>
+#include <controller_manager_msgs/ControllerState.h>
+#include <controller_manager_msgs/ListControllerTypes.h>
+#include <controller_manager_msgs/ListControllers.h>
+#include <controller_manager_msgs/LoadController.h>
+#include <controller_manager_msgs/ReloadControllerLibraries.h>
+#include <controller_manager_msgs/SwitchController.h>
+#include <controller_manager_msgs/UnloadController.h>
 #include <gazebo_msgs/ModelState.h>
-#include <gazebo_msgs/SetModelState.h>
 #include <gazebo_msgs/SetModelConfiguration.h>
+#include <gazebo_msgs/SetModelState.h>
 #include <gazebo_msgs/SetPhysicsProperties.h>
 #include <std_srvs/Empty.h>
 
-#include <controller_manager/controller_manager.h>
-#include <controller_manager_msgs/ListControllerTypes.h>
-#include <controller_manager_msgs/ListControllers.h>
-#include <controller_manager_msgs/ReloadControllerLibraries.h>
-#include <controller_manager_msgs/LoadController.h>
-#include <controller_manager_msgs/UnloadController.h>
-#include <controller_manager_msgs/SwitchController.h>
-#include <controller_manager_msgs/ControllerState.h>
+#include "quadruped/exec/qr_robot_runner.h"
+#include "quadruped/robots/qr_robot_a1_sim.h"
+#include "quadruped/ros/qr_control2gazebo_msg.h"
 
 using namespace std;
 using namespace Quadruped;
@@ -50,15 +49,36 @@ bool ResetRobot(ros::ServiceClient& modelStateClient, ros::ServiceClient& jointS
   setmodelstate.request.model_state = modelState;
   setjointstate.request.model_name = "a1_gazebo";
   setjointstate.request.urdf_param_name = "robot_description";
-  setjointstate.request.joint_names = {"FR_hip_joint",   "FR_thigh_joint", "FR_calf_joint",  "FL_hip_joint",
-                                       "FL_thigh_joint", "FL_calf_joint",  "RR_hip_joint",   "RR_thigh_joint",
-                                       "RR_calf_joint",  "RL_hip_joint",   "RL_thigh_joint", "RL_calf_joint"};
+  setjointstate.request.joint_names = {
+      "FR_hip_joint",    //
+      "FR_thigh_joint",  //
+      "FR_calf_joint",   //
+      "FL_hip_joint",    //
+      "FL_thigh_joint",  //
+      "FL_calf_joint",   //
+      "RR_hip_joint",    //
+      "RR_thigh_joint",  //
+      "RR_calf_joint",   //
+      "RL_hip_joint",    //
+      "RL_thigh_joint",  //
+      "RL_calf_joint"};
   double hip_angle = 0.3;
   double thigh_angle = 1.1;
   double calf_angle = -2.2;
 
-  setjointstate.request.joint_positions = {-hip_angle, thigh_angle, calf_angle, hip_angle, thigh_angle, calf_angle,
-                                           -hip_angle, thigh_angle, calf_angle, hip_angle, thigh_angle, calf_angle};
+  setjointstate.request.joint_positions = {
+      -hip_angle,   //
+      thigh_angle,  //
+      calf_angle,   //
+      hip_angle,    //
+      thigh_angle,  //
+      calf_angle,
+      -hip_angle,   //
+      thigh_angle,  //
+      calf_angle,   //
+      hip_angle,    //
+      thigh_angle,  //
+      calf_angle};
 
   ros::service::waitForService("/gazebo/set_model_state", -1);
   modelStateClient.call(setmodelstate);

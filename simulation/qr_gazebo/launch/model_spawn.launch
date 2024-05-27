@@ -10,9 +10,6 @@
     <rosparam file="$(arg dollar)$(arg robot_path)/config/robot_control.yaml" command="load"/>
 
     <!-- Load the URDF into the ROS Parameter Server -->
-    <group if="$(arg use_xacro)">
-        <param name="robot_description" command="$(find xacro)/xacro --inorder '$(arg dollar)$(arg robot_path)/xacro/robot.xacro' DEBUG:=$(arg user_debug) USE_CAMERA:=$(arg use_camera)"/>
-    </group>
     <group unless="$(arg use_xacro)">
         <param name="robot_description" command="cat $(arg dollar)$(arg robot_path)/urdf/robot.urdf"/>
     </group>
