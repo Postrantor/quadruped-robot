@@ -9,48 +9,30 @@ tip: translate by baidu@2024-01-15 05:49:32
   - [Step 1: Install the third party dependencies](#step-1-install-the-third-party-dependencies)
   - [Step 2: Compile the codes](#step-2-compile-the-codes)
 - [4. Run the Project in Gazebo Simulator](#4-run-the-project-in-gazebo-simulator)
-  - [Step 1: Set up the ROS environment](#step-1-set-up-the-ros-environment)
   - [Step 2: Start the Gazebo simulator and load a robot](#step-2-start-the-gazebo-simulator-and-load-a-robot)
   - [Step 3: Run an example](#step-3-run-an-example)
 - [5. Control A Robot to Move Around using Keyboard](#5-control-a-robot-to-move-around-using-keyboard)
-  - [Step 1: Run a keyboard node](#step-1-run-a-keyboard-node)
   - [Step 2: Control robot by keyboard](#step-2-control-robot-by-keyboard)
 - [6. Control A Robot to Move Around using Joystick](#6-control-a-robot-to-move-around-using-joystick)
-  - [Step 1: Install the ROS dependencies](#step-1-install-the-ros-dependencies)
-  - [Step 2: Run a joy\_node in ROS](#step-2-run-a-joy_node-in-ros)
-  - [Step 3: Control robot by handle](#step-3-control-robot-by-handle)
 - [7. Run on Real Robot](#7-run-on-real-robot)
 
 # 0. command
 
-```sh
+```bash
 roslaunch qr_gazebo gazebo_startup.launch wname:=earth
 roslaunch qr_gazebo model_spawn.launch rname:=a1 use_xacro:=true use_camera:=false
 rosrun examples example_a1_sim
 rosrun examples example_keyboard
+  # L --> J
 ```
 
 # 1. Overview
 
-This project branch integrates some advanced algrithms such as MPC and WBC to control quadruped robots.
+This project branch integrates some advanced algrithms such as MPC and WBC to control quadruped robots. This branch have been tested in **ROS Noetic** under **Ubuntu 20.04**. Some users report it can run in **ROS Melodic** under **Ubuntu 18.04**. To ensure optimal performance, we recommend testing this branch in **ROS Noetic** under **Ubuntu 20.04**. Note that this branch is different from the one in the `main` branch. The architecture and major modules are shown below The codes are tested for Unitree A1 and DeepRobotics Lite3. To fine-tune the MPC and WBC algorithms, you can adjust the corresponding parameters (e.g. KP and KD in **quadruped/src/controllers/wbc/task_set** or weights in WBC locomotion controller).
+![](./img/mpc-wbc process diagram.png)
 
-> 该项目分支集成了一些先进的算法，如 MPC 和 WBC 来控制四足机器人。
-
-This branch have been tested in **ROS Noetic** under **Ubuntu 20.04**. Some users report it can run in **ROS Melodic** under **Ubuntu 18.04**. To ensure optimal performance, we recommend testing this branch in **ROS Noetic** under **Ubuntu 20.04**.
-
-> 此分支已在 `Ubuntu 20.04` 下的 `ROS Noetic` 中进行了测试。一些用户报告它可以在 `Ubuntu 18.04` 下 `ROS Melodic` 中运行。为了确保最佳性能，我们建议在 `Ubuntu 20.04` 下 `ROS Nootic` 中测试此分支。
-
-Note that this branch is different from the one in the `main` branch. The architecture and major modules are shown below
-
-> 请注意，此分支与 `main` 分支中的分支不同。体系结构和主要模块如下所示
-
-<div align="center">
-  <img src="./img/mpc-wbc process diagram.png">
-</div>
-
-The codes are tested for Unitree A1 and DeepRobotics Lite3. To fine-tune the MPC and WBC algorithms, you can adjust the corresponding parameters (e.g. KP and KD in **quadruped/src/controllers/wbc/task_set** or weights in WBC locomotion controller).
-
-> 这些代码针对 `Unitree A1` 和 `DeepRobotics Lite3` 进行了测试。要微调 MPC 和 WBC 算法，您可以调整相应的参数(例如`quadruped/src/controllers/WBC/task_set`中的 `KP` 和 `KD` 或 `WBC` 运动控制器中的权重)。
+> 该项目分支集成了一些先进的算法，如 MPC 和 WBC 来控制四足机器人。此分支已在 `Ubuntu 20.04` 下的 `ROS Noetic` 中进行了测试。
+> 这些代码针对 `Unitree A1` 和 `DeepRobotics Lite3` 进行了测试。要微调 MPC 和 WBC 算法，您可以调整相应的参数(例如 `quadruped/src/controllers/WBC/task_set` 中的 `KP` 和 `KD` 或 `WBC` 运动控制器中的权重)。
 
 # 2. Source Code Structure
 
@@ -62,11 +44,11 @@ The source code includes five major directories
 - **simulation** contains the necessary environment to run examples in the simulator.
 - **xpp** contains a visualization tool for robots.
 
-> - **examples** 包含一些示例，帮助用户了解使用方法和项目架构；
-> - **quadruped** 包含定义机器人、控制器、规划器、动力学和支持算法的主要模块；
-> - **robot_description** 包含表示机器人模型所需的文件；
-> - **simulation** 包含在模拟器中运行示例所需的环境；
-> - **xpp** 包含一个机器人可视化工具；
+> - `examples` 包含一些示例，帮助用户了解使用方法和项目架构；
+> - `quadruped` 包含定义机器人、控制器、规划器、动力学和支持算法的主要模块；
+> - `robot_description` 包含表示机器人模型所需的文件；
+> - `simulation` 包含在模拟器中运行示例所需的环境；
+> - `xpp` 包含一个机器人可视化工具；
 
 # 3. Build the Project
 
@@ -74,7 +56,7 @@ The source code includes five major directories
 
 Please ensure that all required dependencies have been installed before building the project
 
-```sh
+```bash
 apt install libyaml-cpp-dev libeigen3-dev liblcm-dev libglm-dev
 ```
 
@@ -82,7 +64,7 @@ apt install libyaml-cpp-dev libeigen3-dev liblcm-dev libglm-dev
 
 Navigate to your workspace, build the project using ROS tool `catkin_make`
 
-```sh
+```bash
 cd ${your_workspace}
 catkin_make
 ```
@@ -107,25 +89,16 @@ option(USE_BLAS "USE MKL BLAS" ON)
 
 > - 要提高在英特尔芯片上运行的程序的性能，请考虑使用 MKL 库。要安装 MKL，请下载“英特尔 oneAPI 数学内核库脱机安装程序”。安装后，在工作区上运行`catkin_make`之前，请执行以下命令。
 
-```sh
+```bash
 source /opt/intel/oneapi/setvars.sh
 ```
 
 # 4. Run the Project in Gazebo Simulator
 
-## Step 1: Set up the ROS environment
-
-To set up the ROS development environment, execute the following command.
-
-```sh
-source ${your_workspace}/devel/setup.bash
-```
-
 ## Step 2: Start the Gazebo simulator and load a robot
 
-Run the Gazebo simulator
-
-```sh
+```bash
+source ${your_workspace}/devel/setup.bash
 roslaunch qr_gazebo gazebo_startup.launch wname:=earth
 ```
 
@@ -134,9 +107,8 @@ The `wname` (optional) parameter specifies the world to be loaded in Gazebo. The
 > `wname`(可选)参数指定要在 Gazebo 中加载的世界。默认值为`earth`。
 > 在一个新的终端中，生成一个机器人模型，并在模拟环境中管理控制器。
 
-```sh
+```bash
 roslaunch qr_gazebo model_spawn.launch rname:=a1 use_xacro:=true use_camera:=false
-# or
 roslaunch qr_gazebo model_spawn.launch rname:=lite3 use_xacro:=true use_camera:=false
 ```
 
@@ -155,36 +127,24 @@ roslaunch qr_gazebo model_spawn.launch rname:=lite3 use_xacro:=true use_camera:=
 ## Step 3: Run an example
 
 Here is an example to control Unitree robot A1 (or DeepRobotics Lite3) to move around. Please check the `user_parameters.yaml` file in the **quadruped/config** folder is properly configured for the robot.
-
-> 这里是一个控制 Unitree 机器人 A1(或 DeepRobotics Lite3)四处移动的例子。请检查`quadruped/config`文件夹中的`user_parameters.yaml`文件是否已为机器人正确配置。
-
-To run an example, open a new terminal and execute
-
-```sh
-rosrun examples example_a1_sim
-```
-
 If you want to switch from robot A1 to Lite3, modify the parameters in the `user_parameters.yaml` file and ensure they are set for the new robot. Then execute
 
+> 这里是一个控制 Unitree 机器人 A1(或 DeepRobotics Lite3)四处移动的例子。请检查`quadruped/config`文件夹中的`user_parameters.yaml`文件是否已为机器人正确配置。
 > 如果要从 robot A1 切换到 Lite3，请修改`user_parameters.yaml`文件中的参数，并确保为新 robot 设置了这些参数。然后执行
 
-```sh
+```bash
+rosrun examples example_a1_sim
 rosrun examples example_lite3_sim
 ```
 
 # 5. Control A Robot to Move Around using Keyboard
 
-## Step 1: Run a keyboard node
-
-Open a new terminal and run the keyboard node
-
-```sh
-rosrun examples example_keyboard
-```
-
 ## Step 2: Control robot by keyboard
 
-Control the quadruped robot using the following keys.
+```bash
+rosrun examples example_keyboard
+# L --> J
+```
 
 `K` : switch control mode
 `J` : change the gait
@@ -195,33 +155,15 @@ Control the quadruped robot using the following keys.
 
 # 6. Control A Robot to Move Around using Joystick
 
-Utilizing the ROS joy package, you can operate a quadruped robot by using a game joystick (e.g., Logitech F710) to send speed commands.
+Utilizing the ROS joy package, you can operate a quadruped robot by using a game joystick (e.g., Logitech F710) to send speed commands. Once you launch the joy node, activate joy-control mode by pressing the `A` button, then maneuver the joystick handle to control the robot to move.
 
 > 利用 ROS joy，您可以通过使用游戏操纵杆(例如 Logitech F710)发送速度命令来操作四足机器人。
-
-Once you launch the joy node, activate joy-control mode by pressing the `A` button, then maneuver the joystick handle to control the robot to move.
-
 > 启动 joy 节点后，按下 `A` 按钮激活 joy-control 模式，然后操纵操纵杆手柄控制机器人移动。
 
-## Step 1: Install the ROS dependencies
-
-Install the joystick dependencies in ROS before using joystick to control the robot
-
-> 在使用操纵杆控制机器人之前，在 ROS 中安装操纵杆相关性
-
-```sh
+```bash
 apt install ros-${your_ros_version}-joy
-```
-
-## Step 2: Run a joy_node in ROS
-
-Run a `joy_node` to receive joy’s command
-
-```sh
 rosrun joy joy_node
 ```
-
-## Step 3: Control robot by handle
 
 Control the quadruped robot using joystick handle.
 
@@ -246,7 +188,7 @@ set(CMAKE_CXX_COMPILER "aarch64-linux-gnu-g++")
 
 Launch a ROS master node. To run an example code on a real robot (A1), open a new terminal and execute
 
-```sh
+```bash
 rosrun examples example_a1_real
 # or
 rosrun examples example_lite3_real
