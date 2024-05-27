@@ -55,8 +55,7 @@ Visualization Manager:
       Enabled: true
       Marker Topic: /xpp/terrain
       Name: terrain
-      Namespaces:
-        {}
+      Namespaces: {}
       Queue Size: 100
       Value: true
     - Alpha: 1

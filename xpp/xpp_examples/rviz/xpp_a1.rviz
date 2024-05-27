@@ -55,8 +55,7 @@ Visualization Manager:
       Enabled: true
       Marker Topic: /xpp/terrain
       Name: terrain
-      Namespaces:
-        {}
+      Namespaces: {}
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -241,8 +240,7 @@ Visualization Manager:
       Show Arrows: true
       Show Axes: true
       Show Names: true
-      Tree:
-        {}
+      Tree: {}
       Update Interval: 0
       Value: false
   Enabled: true
@@ -369,7 +367,7 @@ Visualization Manager:
         Target Frame: base_link
         Value: Orbit (rviz)
         Yaw: 5.115
-      
+
 Window Geometry:
   Displays:
     collapsed: false
@@ -387,5 +385,5 @@ Window Geometry:
     collapsed: false
   Width: 1918
   X: 812 #3831
-  Y: 241  #-8
+  Y: 241 #-8
 

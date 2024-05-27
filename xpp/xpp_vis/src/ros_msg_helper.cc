@@ -84,7 +84,8 @@ std_msgs::Header getHeaderMsg(const std::string& frame_id, const ros::Time& time
   return header;
 }
 
-visualization_msgs::Marker getLineMsg(std::vector<geometry_msgs::Point>&& points, std::array<double, 3> color, double lineWidth) {
+visualization_msgs::Marker getLineMsg(
+    std::vector<geometry_msgs::Point>&& points, std::array<double, 3> color, double lineWidth) {
   visualization_msgs::Marker line;
   line.type = visualization_msgs::Marker::LINE_STRIP;
   line.scale.x = lineWidth;
@@ -103,7 +104,6 @@ std_msgs::ColorRGBA getColor(std::array<double, 3> rgb, double alpha /* = 1.0*/)
   return colorMsg;
 }
 
-
 std_msgs::ColorRGBA getColor(Color color, double alpha) {
   const auto rgb = getRGB(color);
   std_msgs::ColorRGBA colorMsg;
@@ -113,7 +113,6 @@ std_msgs::ColorRGBA getColor(Color color, double alpha) {
   colorMsg.a = alpha;
   return colorMsg;
 }
-
 
 visualization_msgs::Marker getLineMsg(std::vector<geometry_msgs::Point>&& points, Color color, double lineWidth) {
   visualization_msgs::Marker line;

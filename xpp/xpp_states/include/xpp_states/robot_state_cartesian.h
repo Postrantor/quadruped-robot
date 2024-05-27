@@ -30,8 +30,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _XPP_STATES_ROBOT_STATE_CARTESIAN_H_
 #define _XPP_STATES_ROBOT_STATE_CARTESIAN_H_
 
-#include <xpp_states/state.h>
 #include <xpp_states/endeffectors.h>
+#include <xpp_states/state.h>
 
 namespace xpp {
 
@@ -46,7 +46,6 @@ namespace xpp {
  */
 class RobotStateCartesian {
 public:
-
   /**
    * @brief  Constructs a zero initialized robot state with n_ee endeffectors.
    * @param  n_ee  Number of endeffectors.

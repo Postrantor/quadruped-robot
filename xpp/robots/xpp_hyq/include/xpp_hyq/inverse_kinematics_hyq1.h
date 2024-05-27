@@ -30,8 +30,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef XPP_VIS_INVERSEKINEMATICS_HYQ1_H_
 #define XPP_VIS_INVERSEKINEMATICS_HYQ1_H_
 
-#include <xpp_vis/inverse_kinematics.h>
 #include <xpp_hyq/hyqleg_inverse_kinematics.h>
+#include <xpp_vis/inverse_kinematics.h>
 
 namespace xpp {
 

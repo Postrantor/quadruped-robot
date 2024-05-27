@@ -28,27 +28,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ******************************************************************************/
 
 #include <ros/ros.h>
-
-#include <xpp_vis/urdf_visualizer.h>
-
 #include <xpp_msgs/RobotStateCartesian.h>
 #include <xpp_msgs/topic_names.h>
+#include <xpp_vis/urdf_visualizer.h>
 
 using namespace xpp;
 
 ros::Publisher joint_state_pub;
 
 // convert cartesian to joint state message (just by extracting base)
-void StateCallback(const xpp_msgs::RobotStateCartesian& msg)
-{
+void StateCallback(const xpp_msgs::RobotStateCartesian& msg) {
   xpp_msgs::RobotStateJoint joint_msg;
   joint_msg.base = msg.base;
   joint_state_pub.publish(joint_msg);
 }
 
-
-int main(int argc, char *argv[])
-{
+int main(int argc, char* argv[]) {
   ::ros::init(argc, argv, "quadrotor_urdf_visualizer");
 
   ::ros::NodeHandle n;
@@ -64,4 +59,3 @@ int main(int argc, char *argv[])
 
   return 0;
 }
-

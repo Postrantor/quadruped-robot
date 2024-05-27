@@ -31,17 +31,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace xpp {
 
-RobotStateCartesian::RobotStateCartesian(int n_ee)
-{
+RobotStateCartesian::RobotStateCartesian(int n_ee) {
   ee_motion_.SetCount(n_ee);
   ee_foothold_.SetCount(n_ee);
   ee_forces_.SetCount(n_ee);
   ee_contact_.SetCount(n_ee);
   ee_contact_.SetAll(true);
-  joint_states.resize(n_ee*3);
+  joint_states.resize(n_ee * 3);
   std::fill(joint_states.begin(), joint_states.end(), 0.);
   t_global_ = 0.0;
 };
 
 } /* namespace xpp */
-

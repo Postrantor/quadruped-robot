@@ -3,7 +3,7 @@
 
 	<!-- trunk macro definition -->
 	<xacro:macro name="hyq_trunk" params="name">
-	
+
 		<!-- Floating-base Joint -->
 		<joint name="floating_base" type="fixed">
 			<origin xyz="0 0 0" rpy="0 0 0"/>
@@ -19,7 +19,7 @@
 				</geometry>
 			</visual>
 		</link>
-		
+
 		<!-- Trunk link -->
 		<link name="trunk">
 			<visual>

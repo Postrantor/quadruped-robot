@@ -30,12 +30,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef XPP_VIS_CARTESIAN_JOINT_CONVERTER_H_
 #define XPP_VIS_CARTESIAN_JOINT_CONVERTER_H_
 
-#include <string>
-
 #include <ros/publisher.h>
 #include <ros/subscriber.h>
-
 #include <xpp_msgs/RobotStateCartesian.h>
+
+#include <string>
 
 #include "inverse_kinematics.h"
 
@@ -56,16 +55,15 @@ public:
    * @param  cart_topic  The ROS topic containing the Cartesian robot state.
    * @param  joint_topic The ROS topic to publish for the URDF visualization.
    */
-  CartesianJointConverter (const InverseKinematics::Ptr& ik,
-                           const std::string& cart_topic,
-                           const std::string& joint_topic);
-  virtual ~CartesianJointConverter () = default;
+  CartesianJointConverter(
+      const InverseKinematics::Ptr& ik, const std::string& cart_topic, const std::string& joint_topic);
+  virtual ~CartesianJointConverter() = default;
 
 private:
   void StateCallback(const xpp_msgs::RobotStateCartesian& msg);
 
   ros::Subscriber cart_state_sub_;
-  ros::Publisher  joint_state_pub_;
+  ros::Publisher joint_state_pub_;
 
   InverseKinematics::Ptr inverse_kinematics_;
 };

@@ -10,8 +10,7 @@
       <geometry>
         <mesh filename="package://xpp_quadrotor/meshes/quadrotor_base.dae" scale=".1 .1 .1"/>
       </geometry>
-    </visual>   
+    </visual>
   </link>
 
 </robot>
-

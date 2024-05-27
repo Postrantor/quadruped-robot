@@ -27,18 +27,18 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ******************************************************************************/
 /*
-* Copyright (c) Huawei Technologies Co., Ltd. 2021-2022. All rights reserved.
-* Description: for a1 robot
-* Author: Zhu Yijie
-* Create: 2022-1-10
-* Notes: xx
-* Modify: 
-*/
+ * Copyright (c) Huawei Technologies Co., Ltd. 2021-2022. All rights reserved.
+ * Description: for a1 robot
+ * Author: Zhu Yijie
+ * Create: 2022-1-10
+ * Notes: xx
+ * Modify:
+ */
 #ifndef XPP_VIS_INVERSEKINEMATICS_HYQ4_H_
 #define XPP_VIS_INVERSEKINEMATICS_HYQ4_H_
 
-#include <xpp_vis/inverse_kinematics.h>
 #include <xpp_hyq/hyqleg_inverse_kinematics.h>
+#include <xpp_vis/inverse_kinematics.h>
 
 namespace xpp {
 

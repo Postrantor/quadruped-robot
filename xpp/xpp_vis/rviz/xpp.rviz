@@ -56,8 +56,7 @@ Visualization Manager:
       Enabled: true
       Marker Topic: /xpp/terrain
       Name: terrain
-      Namespaces:
-        {}
+      Namespaces: {}
       Queue Size: 100
       Value: true
     - Alpha: 1
@@ -79,8 +78,7 @@ Visualization Manager:
       Enabled: true
       Marker Topic: /xpp/rviz_markers
       Name: CartesianVisualization
-      Namespaces:
-        {}
+      Namespaces: {}
       Queue Size: 100
       Value: true
     - Class: rviz/Group
@@ -91,32 +89,28 @@ Visualization Manager:
               Enabled: true
               Marker Topic: /legged_robot/feetTrajectory/LF
               Name: Marker
-              Namespaces:
-                {}
+              Namespaces: {}
               Queue Size: 100
               Value: true
             - Class: rviz/Marker
               Enabled: true
               Marker Topic: /legged_robot/feetTrajectory/LH
               Name: Marker
-              Namespaces:
-                {}
+              Namespaces: {}
               Queue Size: 100
               Value: true
             - Class: rviz/Marker
               Enabled: true
               Marker Topic: /legged_robot/feetTrajectory/RF
               Name: Marker
-              Namespaces:
-                {}
+              Namespaces: {}
               Queue Size: 100
               Value: true
             - Class: rviz/Marker
               Enabled: true
               Marker Topic: /legged_robot/feetTrajectory/RH
               Name: Marker
-              Namespaces:
-                {}
+              Namespaces: {}
               Queue Size: 100
               Value: true
           Enabled: false
@@ -125,8 +119,7 @@ Visualization Manager:
           Enabled: true
           Marker Topic: /legged_robot/baseTrajectory
           Name: Target Base Trajectory
-          Namespaces:
-            {}
+          Namespaces: {}
           Queue Size: 100
           Value: true
       Enabled: true
