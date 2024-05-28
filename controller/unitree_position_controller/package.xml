@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>unitree_position_controller</name>
+  <version>0.1.0</version>
+  <description>Controller for unitree m8010-6 motor</description>
+  <maintainer email="postrantor@gmail.com">trantor</maintainer>
+
+  <license>Apache License 2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <build_depend>generate_parameter_library</build_depend>
+
+  <depend>backward_ros</depend>
+  <depend>pluginlib</depend>
+  <depend>realtime_tools</depend>
+  <depend>controller_interface</depend>
+  <depend>hardware_interface</depend>
+  <depend>rclcpp</depend>
+  <depend>rclcpp_lifecycle</depend>
+  <depend>rcpputils</depend>
+  <!-- <depend>tf2</depend>
+  <depend>tf2_msgs</depend> -->
+  <!-- <depend>nav_msgs</depend> -->
+  <depend>geometry_msgs</depend>
+  <depend>unitree_msgs</depend>
+  <depend>unitree_sdk</depend>
+
+  <test_depend>ament_cmake_gmock</test_depend>
+  <test_depend>controller_manager</test_depend>
+  <test_depend>hardware_interface_testing</test_depend>
+  <!-- <test_depend>ros2_control_test_assets</test_depend> -->
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
