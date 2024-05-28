@@ -34,72 +34,90 @@
   </material>
   <!-- <xacro:property name="damping" value="0.3" /> -->
   <!-- <xacro:property name="friction" value="0.3" /> -->
-  <!-- ros2_control plugin -->
-
+  <!-- <ros2_control name="GazeboSystem" type="system">
+        <hardware>
+            <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+        </hardware>
+        <joint name="left_wheel_joint">
+            <command_interface name="velocity">
+                <param name="min">-1</param>
+                <param name="max">1</param>
+            </command_interface>
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+        <joint name="right_wheel_joint">
+            <command_interface name="velocity">
+                <param name="min">-1</param>
+                <param name="max">1</param>
+            </command_interface>
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+    </ros2_control> -->
   <gazebo>
     <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
-        <!-- <parameters>$(find robot_description)/config/controller.yaml</parameters> -->
-        <!-- <robotNamespace>/a1_gazebo</robotNamespace> -->
-        <!-- <robotSimType>gazebo_ros2_control/DefaultRobotHWSim</robotSimType> -->
+      <!-- <parameters>$(find robot_description)/config/controller.yaml</parameters> -->
+      <!-- <robotNamespace>/a1_gazebo</robotNamespace> -->
+      <!-- <robotSimType>gazebo_ros2_control/DefaultRobotHWSim</robotSimType> -->
     </plugin>
-</gazebo>
-
-  <gazebo reference="imu_link">
-    <gravity>true</gravity>
-    <sensor name="imu_sensor" type="imu">
-      <always_on>true</always_on>
-      <update_rate>1000</update_rate>
-      <visualize>true</visualize>
-      <topic>__default_topic__</topic>
-      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
-        <topicName>trunk_imu</topicName>
-        <bodyName>imu_link</bodyName>
-        <updateRateHZ>1000.0</updateRateHZ>
-        <gaussianNoise>0.0</gaussianNoise>
-        <xyzOffset>0 0 0</xyzOffset>
-        <rpyOffset>0 0 0</rpyOffset>
-        <frameName>imu_link</frameName>
-      </plugin>
-      <pose>0 0 0 0 0 0</pose>
-    </sensor>
   </gazebo>
+  <!-- <gazebo reference="imu_link">
+        <gravity>true</gravity>
+        <sensor name="imu_sensor" type="imu">
+            <always_on>true</always_on>
+            <update_rate>1000</update_rate>
+            <visualize>true</visualize>
+            <topic>__default_topic__</topic>
+            <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+                <topicName>trunk_imu</topicName>
+                <bodyName>imu_link</bodyName>
+                <updateRateHZ>1000.0</updateRateHZ>
+                <gaussianNoise>0.0</gaussianNoise>
+                <xyzOffset>0 0 0</xyzOffset>
+                <rpyOffset>0 0 0</rpyOffset>
+                <frameName>imu_link</frameName>
+            </plugin>
+            <pose>0 0 0 0 0 0</pose>
+        </sensor>
+    </gazebo> -->
   <!-- Foot contacts. -->
-  <gazebo reference="FR_calf">
-    <sensor name="FR_foot_contact" type="contact">
-      <update_rate>100</update_rate>
-      <plugin filename="libunitreeFootContactPlugin.so" name="contactPlugin"/>
-      <contact>
-        <collision>FR_calf_fixed_joint_lump__FR_foot_collision_1</collision>
-      </contact>
-    </sensor>
-  </gazebo>
-  <gazebo reference="FL_calf">
-    <sensor name="FL_foot_contact" type="contact">
-      <update_rate>100</update_rate>
-      <plugin filename="libunitreeFootContactPlugin.so" name="contactPlugin"/>
-      <contact>
-        <collision>FL_calf_fixed_joint_lump__FL_foot_collision_1</collision>
-      </contact>
-    </sensor>
-  </gazebo>
-  <gazebo reference="RR_calf">
-    <sensor name="RR_foot_contact" type="contact">
-      <update_rate>100</update_rate>
-      <plugin filename="libunitreeFootContactPlugin.so" name="contactPlugin"/>
-      <contact>
-        <collision>RR_calf_fixed_joint_lump__RR_foot_collision_1</collision>
-      </contact>
-    </sensor>
-  </gazebo>
-  <gazebo reference="RL_calf">
-    <sensor name="RL_foot_contact" type="contact">
-      <update_rate>100</update_rate>
-      <plugin filename="libunitreeFootContactPlugin.so" name="contactPlugin"/>
-      <contact>
-        <collision>RL_calf_fixed_joint_lump__RL_foot_collision_1</collision>
-      </contact>
-    </sensor>
-  </gazebo>
+  <!-- <gazebo reference="FR_calf">
+        <sensor name="FR_foot_contact" type="contact">
+            <update_rate>100</update_rate>
+            <plugin name="contactPlugin" filename="libunitreeFootContactPlugin.so"/>
+            <contact>
+                <collision>FR_calf_fixed_joint_lump__FR_foot_collision_1</collision>
+            </contact>
+        </sensor>
+    </gazebo>
+    <gazebo reference="FL_calf">
+        <sensor name="FL_foot_contact" type="contact">
+            <update_rate>100</update_rate>
+            <plugin name="contactPlugin" filename="libunitreeFootContactPlugin.so"/>
+            <contact>
+                <collision>FL_calf_fixed_joint_lump__FL_foot_collision_1</collision>
+            </contact>
+        </sensor>
+    </gazebo>
+    <gazebo reference="RR_calf">
+        <sensor name="RR_foot_contact" type="contact">
+            <update_rate>100</update_rate>
+            <plugin name="contactPlugin" filename="libunitreeFootContactPlugin.so"/>
+            <contact>
+                <collision>RR_calf_fixed_joint_lump__RR_foot_collision_1</collision>
+            </contact>
+        </sensor>
+    </gazebo>
+    <gazebo reference="RL_calf">
+        <sensor name="RL_foot_contact" type="contact">
+            <update_rate>100</update_rate>
+            <plugin name="contactPlugin" filename="libunitreeFootContactPlugin.so"/>
+            <contact>
+                <collision>RL_calf_fixed_joint_lump__RL_foot_collision_1</collision>
+            </contact>
+        </sensor>
+    </gazebo> -->
   <gazebo reference="base">
     <material>Gazebo/Green</material>
     <turnGravityOff>false</turnGravityOff>
@@ -253,7 +271,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robot_description/meshes/trunk.dae" scale="1 1 1"/>
+        <mesh filename="/home/trantor/project/model_control_ws/install/robot_description/share/robot_description/meshes/trunk.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -306,7 +324,7 @@
     <visual>
       <origin rpy="3.141592653589793 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robot_description/meshes/hip.dae" scale="1 1 1"/>
+        <mesh filename="/home/trantor/project/model_control_ws/install/robot_description/share/robot_description/meshes/hip.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -348,7 +366,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robot_description/meshes/thigh_mirror.dae" scale="1 1 1"/>
+        <mesh filename="/home/trantor/project/model_control_ws/install/robot_description/share/robot_description/meshes/thigh_mirror.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -376,7 +394,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robot_description/meshes/calf.dae" scale="1 1 1"/>
+        <mesh filename="/home/trantor/project/model_control_ws/install/robot_description/share/robot_description/meshes/calf.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -458,7 +476,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robot_description/meshes/hip.dae" scale="1 1 1"/>
+        <mesh filename="/home/trantor/project/model_control_ws/install/robot_description/share/robot_description/meshes/hip.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -500,7 +518,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robot_description/meshes/thigh.dae" scale="1 1 1"/>
+        <mesh filename="/home/trantor/project/model_control_ws/install/robot_description/share/robot_description/meshes/thigh.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -528,7 +546,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robot_description/meshes/calf.dae" scale="1 1 1"/>
+        <mesh filename="/home/trantor/project/model_control_ws/install/robot_description/share/robot_description/meshes/calf.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -610,7 +628,7 @@
     <visual>
       <origin rpy="3.141592653589793 3.141592653589793 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robot_description/meshes/hip.dae" scale="1 1 1"/>
+        <mesh filename="/home/trantor/project/model_control_ws/install/robot_description/share/robot_description/meshes/hip.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -652,7 +670,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robot_description/meshes/thigh_mirror.dae" scale="1 1 1"/>
+        <mesh filename="/home/trantor/project/model_control_ws/install/robot_description/share/robot_description/meshes/thigh_mirror.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -680,7 +698,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robot_description/meshes/calf.dae" scale="1 1 1"/>
+        <mesh filename="/home/trantor/project/model_control_ws/install/robot_description/share/robot_description/meshes/calf.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -762,7 +780,7 @@
     <visual>
       <origin rpy="0 3.141592653589793 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robot_description/meshes/hip.dae" scale="1 1 1"/>
+        <mesh filename="/home/trantor/project/model_control_ws/install/robot_description/share/robot_description/meshes/hip.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -804,7 +822,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robot_description/meshes/thigh.dae" scale="1 1 1"/>
+        <mesh filename="/home/trantor/project/model_control_ws/install/robot_description/share/robot_description/meshes/thigh.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
@@ -832,7 +850,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robot_description/meshes/calf.dae" scale="1 1 1"/>
+        <mesh filename="/home/trantor/project/model_control_ws/install/robot_description/share/robot_description/meshes/calf.dae" scale="1 1 1"/>
       </geometry>
       <material name="orange"/>
     </visual>
