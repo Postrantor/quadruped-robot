@@ -69,7 +69,7 @@ endif()
 lcm_option(LCM_ENABLE_GO "Build Go utilities, bindings is source distributed"
            GO_FOUND Go)
 
-option(LCM_ENABLE_TESTS "Build unit tests" ON)
+option(LCM_ENABLE_TESTS "Build unit tests" OFF)
 if(LCM_ENABLE_TESTS)
   enable_testing()
   add_subdirectory(test)
