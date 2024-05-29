@@ -25,28 +25,20 @@ namespace Quadruped {
 class qrCmdVelReceiver {
 public:
   qrCmdVelReceiver(ros::NodeHandle &nhIn, ros::NodeHandle &privateNhIn);
-
   ~qrCmdVelReceiver() = default;
 
   void CmdVelCallback(const geometry_msgs::Twist::ConstPtr &input);
-
   inline Eigen::Matrix<float, 3, 1> GetLinearVelocity() { return linearVel; }
-
   inline float GetAngularVelocity() { return angularVel[2]; }
 
   geometry_msgs::Twist cmdVel;
-
   ros::NodeHandle &nh;
-
   ros::NodeHandle &privateNh;
-
   ros::Subscriber cmdVelSub;
-
   std::string cmdVelTopic = "/cmd_vel";
 
 private:
   Eigen::Matrix<float, 3, 1> linearVel = Eigen::Matrix<float, 3, 1>::Zero();
-
   Eigen::Matrix<float, 3, 1> angularVel = Eigen::Matrix<float, 3, 1>::Zero();
 };
 

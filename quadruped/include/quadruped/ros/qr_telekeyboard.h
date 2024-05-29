@@ -18,58 +18,56 @@
 #include <vector>
 
 /**
- * @brief Class qrTeleKeyboard is used to convert the message received from the keyboard
- *        to Twist message which could be received by qrVelocityParamReceiver.
+ * @brief qrTeleKeyboard 类用于将键盘接收到的消息转换为 Twist 消息，以便 qrVelocityParamReceiver 接收。
  */
 class qrTeleKeyboard {
 public:
   /**
-   * @brief Constructor of qrTeleKeyboard.
-   * @param nh The ros node which this class create from.
+   * @brief qrTeleKeyboard 的构造函数。
+   * @param nh 该类创建的 ROS 节点。
    */
   qrTeleKeyboard(ros::NodeHandle &nhIn);
 
   /**
-   * @brief Default destructor of qrJoy2Twist.
+   * @brief qrTeleKeyboard 的默认析构函数。
    */
   ~qrTeleKeyboard() {}
 
   /**
-   * @brief Get the event from the keyboard and convert it to corresponding char.
-   *        For non-blocking keyboard inputs.
-   * @return The number of the event's index.
+   * @brief 从键盘获取事件并将其转换为相应的字符。
+   *        用于非阻塞键盘输入。
+   * @return 事件的索引号。
    */
   int getch();
 
   /**
-   * @brief Keep receiving the event from the keyboard. Keep running until input
-   *        Ctrl+C.
+   * @brief 不断地从键盘接收事件，直到输入 Ctrl+C。
    */
   void run();
 
   /**
-   * @brief Keep sending the default Twist message.
+   * @brief 不断地发送默认的 Twist 消息。
    */
   void run_default();
 
   /**
-   * @brief If the keyboard stop receiving event.
+   * @brief 键盘是否停止接收事件。
    */
   bool finish;
 
   /**
-   * @brief mutex used to synchronize run and run_default thread.
+   * @brief 用于同步 run 和 run_default 线程的互斥锁。
    */
   bool mutex;
 
 private:
   /**
-   * @brief The topic which the converted message to publish to.
+   * @brief 转换后的消息要发布到的主题。
    */
   std::string cmdTopic = "/joy";
 
   /**
-   * @brief The ros node which this class create from.
+   * @brief 该类创建的 ROS 节点。
    */
   ros::NodeHandle &nh;
 };

@@ -15,12 +15,12 @@
 namespace Quadruped {
 
 /**
- * @brief send motor commond to uitree_sdk
- * @param p double, position, joint angle
- * @param Kp double, position factor
- * @param d double, joint velocity
- * @param Kd double, velocity factor
- * @param tua double, torque
+ * @brief 将电机命令发送到 uitree_sdk
+ * @param p double，位置，关节角度
+ * @param Kp double，位置系数
+ * @param d double，关节速度
+ * @param Kd double，速度系数
+ * @param tua double，扭矩
  */
 struct qrMotorCommand {
   double p;
@@ -32,42 +32,42 @@ struct qrMotorCommand {
   qrMotorCommand() = default;
 
   /**
-   * @brief constructor of qrMotorCommand
-   * @param pIn: joint angle input
-   * @param KpIn: position stiffness input
-   * @param dIn: joint velocity input
-   * @param KdIn: velocity stiffness input
-   * @param tuaIn:torque input
+   * @brief qrMotorCommand 的构造函数
+   * @param pIn: 关节角度输入
+   * @param KpIn: 位置刚度输入
+   * @param dIn: 关节速度输入
+   * @param KdIn: 速度刚度输入
+   * @param tuaIn: 扭矩输入
    */
   qrMotorCommand(double pIn, double KpIn, double dIn, double KdIn, double tuaIn)
       : p(pIn), Kp(KpIn), d(dIn), Kd(KdIn), tua(tuaIn){};
 
   /**
-   * @brief constructor of qrMotorCommand
-   * @param cmd: vector of p, Kp, d, Kd and tau
+   * @brief qrMotorCommand 的构造函数
+   * @param cmd: p, Kp, d, Kd 和 tau 的向量
    */
   qrMotorCommand(const Eigen::Matrix<float, 5, 1> &cmd);
 
   /**
-   * @brief set p, Kp, d, Kd and tau to 0
+   * @brief 将 p, Kp, d, Kd 和 tau 设置为 0
    */
   void SetZero();
 
   /**
-   * @brief convert p, Kp, d, Kd and tau to Vector
-   * @return vector of < p, Kp, d, Kd and tau >
+   * @brief 将 p, Kp, d, Kd 和 tau 转换为向量
+   * @return 向量 < p, Kp, d, Kd 和 tau >
    */
   Eigen::Matrix<float, 5, 1> convertToVector() const;
 
   /**
-   * @brief operator reload to output the motor command
+   * @brief 重载 << 运算符以输出电机命令
    */
   friend std::ostream &operator<<(std::ostream &os, qrMotorCommand &data);
 
   /**
-   * @brief convert vector of commands to eigen matrix
-   * @param MotorCommands: vector of cmds
-   * @return command matrix
+   * @brief 将命令向量转换为 Eigen 矩阵
+   * @param MotorCommands: 命令向量
+   * @return 命令矩阵
    */
   static Eigen::Matrix<float, 5, 12> convertToMatix(const std::vector<qrMotorCommand> &MotorCommands) {
     Eigen::Matrix<float, 5, 12> MotorCommandMatrix;

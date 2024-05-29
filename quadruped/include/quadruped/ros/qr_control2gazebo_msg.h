@@ -37,31 +37,18 @@ public:
 
 private:
   qrRobot *robot;
-
   qrLocomotionController *locomotionController;
-
   qrPosePlanner *posePlanner;
-
   ros::NodeHandle &nh;
-
   ros::Publisher gazeboStatePublish;
-
   ros::Publisher gazeboParamPublish;
-
   ros::Publisher posePlannerPublish;
-
   ros::ServiceClient baseStateClient;
-
   tf::TransformBroadcaster desiredPoseFramebr;
-
   tf::Transform transform;
-
   Vec3<float> rIB;
-
   Quat<float> quat;
-
   ros::Time currentTime;
-
   ros::Time lastTime;
 };
 

@@ -47,7 +47,7 @@ T clip(T command, const T& minVal, const T& maxVal) {
 }
 
 /**
- * @brief Square a number.
+ * @brief 平方一个数字。
  */
 template <typename T>
 T square(T a) {
@@ -55,7 +55,7 @@ T square(T a) {
 }
 
 /**
- * @brief Are two eigen matrices almost equal.
+ * @brief 两个 Eigen 矩阵几乎相等。
  */
 template <typename T, typename T2>
 bool almostEqual(const Eigen::MatrixBase<T>& a, const Eigen::MatrixBase<T>& b, T2 tol) {
@@ -79,7 +79,7 @@ bool almostEqual(const Eigen::MatrixBase<T>& a, const Eigen::MatrixBase<T>& b, T
 }
 
 /**
- * @brief Are two float type number almost equal.
+ * @brief 两个浮点数几乎相等。
  */
 template <typename T>
 bool almostEqual(const T& a, const T b, T tol) {
@@ -91,10 +91,10 @@ bool almostEqual(const T& a, const T b, T tol) {
 }
 
 /**
- * @brief Compute the pseudo inverse of a matrix.
- * @param matrix: input matrix.
- * @param sigmaThreshold: threshold for singular values being zero.
- * @param invMatrix: output matrix.
+ * @brief 计算矩阵的伪逆。
+ * @param matrix：输入矩阵。
+ * @param sigmaThreshold：奇异值的阈值为零。
+ * @param invMatrix：输出矩阵。
  */
 template <typename T>
 void pseudoInverse(const DMat<T>& matrix, double sigmaThreshold, DMat<T>& invMatrix) {
@@ -109,7 +109,7 @@ void pseudoInverse(const DMat<T>& matrix, double sigmaThreshold, DMat<T>& invMat
   }
 
   Eigen::JacobiSVD<DMat<T>> svd(matrix, Eigen::ComputeThinU | Eigen::ComputeThinV);
-  /* not sure if we need to svd.sort()... probably not. */
+  /* 不确定是否需要 svd.sort()... 可能不需要。 */
   const int nrows(svd.singularValues().rows());
   DMat<T> invS = DMat<T>::Zero(nrows, nrows);
   for (int ii(0); ii < nrows; ++ii) {

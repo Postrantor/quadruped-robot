@@ -21,7 +21,7 @@ namespace robotics {
 namespace math {
 
 /**
- * @brief Linear interpolate between two point in state space.
+ * @brief 在状态空间中线性插值两个点。
  * @example
  *  robotics::math::Segment<float, Vec6<float>> segment;
  *  Vec6<float> s = Vec6<float>::Zero();
@@ -36,7 +36,7 @@ template <class t = float, class T = Vec6<t>>
 class qrSegment {
 public:
   /**
-   * @brief Contructor of class qrSegment.
+   * @brief qrSegment类的构造函数。
    */
   qrSegment() = default;
 
@@ -46,7 +46,7 @@ public:
   }
 
   /**
-   * @brief Destructor of class Segment.
+   * @brief qrSegment类的析构函数。
    */
   ~qrSegment() = default;
 
@@ -80,14 +80,14 @@ private:
 class qrCubicSplineInSO3 {
 public:
   /**
-   * @brief Contructor of class qrCubicSplineInSO3.
+   * @brief qrCubicSplineInSO3类的构造函数。
    */
   qrCubicSplineInSO3() = default;
 
   qrCubicSplineInSO3(Mat3<float> R1, Mat3<float> R2, float t0, float duration, Mat3<float> inertial);
 
   /**
-   * @brief Destructor of class CubicSplineInSO3.
+   * @brief qrCubicSplineInSO3类的析构函数。
    */
   ~qrCubicSplineInSO3() = default;
 
@@ -95,43 +95,31 @@ public:
 
 private:
   float t0;
-
   float dt;
-
   float lastTime;
-
   Mat3<float> R1;
-
   Mat3<float> lastR;
-
   Mat3<float> R2;
-
   Mat3<float> dR1;
-
   Mat3<float> dR2;
-
   Mat3<float> M0;
-
   Mat3<float> M1;
-
   Mat3<float> M2;
-
   Mat3<float> M3;
-
   Mat3<float> W;
 };
 
 /**
- * @brief Spline class defines an abstract class for different spline interpolations
+ * @brief Spline类定义了一个抽象类，用于不同的样条插值。
  */
 class qrSpline {
 public:
   /**
-   * @brief record the spatial information, including the time dervative.
+   * @brief 记录空间信息，包括时间导数。
    */
   struct Point {
     /**
-     * @brief Contructor of struct Point.
+     * @brief 结构体Point的构造函数。
      */
     Point() : x(0.0), xd(0.0), xdd(0.0) {}
 
@@ -159,83 +147,83 @@ public:
   }
 
   /**
-   * @brief Contructor of class Spline.
+   * @brief Spline类的构造函数。
    */
   qrSpline() : initial_time_(0.), duration_(0.) {}
 
   /**
-   * @brief Contructor of class Spline.
-   * @param initial_time: Initial time
-   * @param duration: Duration of the spline
-   * @param start: Start point
-   * @param end: End point
+   * @brief Spline类的构造函数。
+   * @param initial_time: 初始时间
+   * @param duration:样条的持续时间
+   * @param start: 起点
+   * @param end: 终点
    */
   qrSpline(const float &initial_time, const float &duration, const Point &start, const Point &end);
 
   /**
-   * @brief Contructor of class Spline.
-   * @param initial_time: Initial time
-   * @param duration: Duration of the spline
-   * @param start_p: Start point
-   * @param end_p: End point
+   * @brief Spline 类的构造函数。
+   * @param initial_time: 初始时间
+   * @param duration: Spline 的持续时间
+   * @param start_p: 起始点
+   * @param end_p: 终点
    */
   qrSpline(const float &initial_time, const float &duration, float start_p, float end_p);
 
   /**
-   * @brief Destructor of class Spline.
+   * @brief Spline 类的析构函数。
    */
   virtual ~qrSpline() = default;
 
   /**
-   * @brief Sets the boundary of the spline
-   * @param initial_time: Initial time
-   * @param duration: Duration of the spline
-   * @param start_p: Start point
-   * @param end_p: End point
+   * @brief 设置 Spline 的边界
+   * @param initial_time: 初始时间
+   * @param duration: Spline 的持续时间
+   * @param start_p: 起始点
+   * @param end_p: 终点
    */
   void setBoundary(const float &initial_time, const float &duration, const Point &start_p, const Point &end_p);
 
   /**
-   * @brief Sets the boundary of the spline
-   * @param initial_time: Initial time
-   * @param duration: Duration of the spline
-   * @param start_p: Start point
-   * @param end_p: End point
+   * @brief 设置 Spline 的边界
+   * @param initial_time: 初始时间
+   * @param duration: Spline 的持续时间
+   * @param start_p: 起始点
+   * @param end_p: 终点
    */
   void setBoundary(const float &initial_time, const float &duration, const float &start_p, const float &end_p);
 
   /**
-   * @brief Gets the value of the point according to the spline interpolation.
-   * @param current_time: Current time
-   * @param p: Point value
+   * @brief 根据 Spline 插值获取点的值
+   * @param current_time: 当前时间
+   * @param p: 点值
    */
   virtual bool getPoint(const float &current_time, Point &p) = 0;
 
   /**
-   * @brief Gets the value of the point according to the spline interpolation.
-   * @param current_time: Current time
-   * @param p: Point value
+   * @brief 根据 Spline 插值获取点的值
+   * @param current_time: 当前时间
+   * @param p: 点值
    */
   virtual bool getPoint(const float &current_time, float &p) = 0;
 
   bool isTimeElapsed(float &time);
 
 protected:
-  /** @brief Initial time of the spline */
+  /** @brief Spline 的初始时间 */
   float initial_time_;
 
-  /** @brief Duration of the spline */
+  /** @brief Spline 的持续时间 */
   float duration_;
 
-  /** Start point of the spline */
+  /** Spline 的起始点 */
   Point start_;
 
-  /** @brief End point of the spline */
+  /** @brief Spline 的终点 */
   Point end_;
 };
 
 inline bool qrSpline::isTimeElapsed(float &t) {
-  /* This makes sense only without the time interval */
+  /* 这只在时间间隔之外有效 */
   if ((t - initial_time_) > duration_)
     return true;
   else
@@ -245,50 +233,50 @@ inline bool qrSpline::isTimeElapsed(float &t) {
 class qrQuadraticSpline : public qrSpline {
 public:
   /**
-   * @brief Contructor of class qrQuadraticSpline.
+   * @brief 二次 Spline 的构造函数。
    */
   qrQuadraticSpline() = default;
 
   /**
-   * @brief Contructor of class QuadraticSpline.
-   * @param initial_time: Initial time
-   * @param duration: Duration of the spline
-   * @param start: Start point
-   * @param end: End point
+   * @brief 二次 Spline 的构造函数。
+   * @param initial_time: 初始时间
+   * @param duration: Spline 的持续时间
+   * @param start: 起始点
+   * @param end: 终点
    */
   qrQuadraticSpline(const float &initial_time, const float &duration, const Point &start, const Point &end)
       : qrSpline(initial_time, duration, start, end) {}
 
   /**
-   * @brief Contructor of class QuadraticSpline.
-   * @param initial_time: Initial time
-   * @param duration: Duration of the spline
-   * @param start: Start point
-   * @param end: End point
+   * @brief 二次 Spline 的构造函数。
+   * @param initial_time: 初始时间
+   * @param duration: Spline 的持续时间
+   * @param start: 起始点
+   * @param end: 终点
    */
   qrQuadraticSpline(const float &initial_time, const float &duration, float start, float end)
       : qrSpline(initial_time, duration, start, end) {}
 
   /**
-   * @brief Destructor of class QuadraticSpline.
+   * @brief 二次 Spline 的析构函数。
    */
   ~qrQuadraticSpline() = default;
 
   /**
-   * @brief Gets the value of the point according to the spline interpolation.
-   * @param current_time: Current time
-   * @param mid: Mid point value
-   * @param p: Point value
+   * @brief 根据 Spline 插值获取点的值
+   * @param current_time: 当前时间
+   * @param mid: 中间点值
+   * @param p: 点值
    */
   bool getPoint(const float &current_time, float mid, Point &p);
 
   virtual bool getPoint(const float &current_time, Point &p);
 
   /**
-   * @brief Gets the value of the point according to the spline interpolation.
-   * @param current_time: Current time
-   * @param mid: Mid point value
-   * @param p: Point value
+   * @brief 根据 Spline 插值获取点的值
+   * @param current_time: 当前时间
+   * @param mid: 中间点值
+   * @param p: 点值
    */
   bool getPoint(const float &current_time, float mid, float &p);
 
@@ -296,137 +284,137 @@ public:
 };
 
 /**
- * @brief CubicSpline class defines a cubic spline interpolation
+ * @brief 三次样条插值类
  */
 class qrCubicSpline : public qrSpline {
 public:
   /**
-   * @brief Contructor of class CubicSpline.
+   * @brief 构造函数
    */
   qrCubicSpline() = default;
 
   /**
-   * @brief Contructor of class CubicSpline.
-   * @param initial_time: Initial time
-   * @param duration: Duration of the spline
-   * @param start: Start point
-   * @param end: End point
+   * @brief 构造函数
+   * @param initial_time: 初始时间
+   * @param duration: 插值持续时间
+   * @param start: 起始点
+   * @param end: 终点
    */
   qrCubicSpline(const float &initial_time, const float &duration, const Point &start, const Point &end)
       : qrSpline(initial_time, duration, start, end) {}
 
   /**
-   * @brief Contructor of class CubicSpline.
-   * @param initial_time: Initial time
-   * @param duration: Duration of the spline
-   * @param start: Start point
-   * @param end: End point
+   * @brief 构造函数
+   * @param initial_time: 初始时间
+   * @param duration: 插值持续时间
+   * @param start: 起始点
+   * @param end: 终点
    */
   qrCubicSpline(const float &initial_time, const float &duration, float start, float end)
       : qrSpline(initial_time, duration, start, end) {}
 
   /**
-   * @brief Destructor of class CubicSpline.
+   * @brief 析构函数
    */
   ~qrCubicSpline() = default;
 
   /**
-   * @brief Gets the value of the point according to the spline interpolation.
-   * @param current_time: Current time
-   * @param p: Point value
+   * @brief 根据插值获取点值
+   * @param current_time: 当前时间
+   * @param p: 点值
    */
   bool getPoint(const float &current_time, Point &p);
 
   /**
-   * @brief Gets the value of the point according to the spline interpolation.
-   * @param current_time: Current time
-   * @param p: Point value
+   * @brief 根据插值获取点值
+   * @param current_time: 当前时间
+   * @param p: 点值
    */
   bool getPoint(const float &current_time, float &p);
 };
 
 /**
- * @brief FifthOrderPolySpline class defines a 5-order spline interpolation
+ * @brief 五次多项式插值类
  */
 class qrFifthOrderPolySpline : public qrSpline {
 public:
   /**
-   * @brief Contructor of class FifthOrderPolySpline.
+   * @brief 构造函数
    */
   qrFifthOrderPolySpline() = default;
 
   /**
-   * @brief Contructor of class FifthOrderPolySpline.
-   * @param initial_time: Initial time
-   * @param duration: Duration of the spline
-   * @param start: Start point
-   * @param end: End point
+   * @brief 构造函数
+   * @param initial_time: 初始时间
+   * @param duration: 插值持续时间
+   * @param start: 起始点
+   * @param end: 终点
    */
   qrFifthOrderPolySpline(const float &initial_time, const float &duration, const Point &start, const Point &end)
       : qrSpline(initial_time, duration, start, end) {}
 
   /**
-   * @brief Destructor of class FifthOrderPolySpline.
+   * @brief 析构函数
    */
   ~qrFifthOrderPolySpline() = default;
 
   /**
-   * @brief Gets the value of the point according to the spline interpolation.
-   * @param current_time: Current time
-   * @param p: Point value
+   * @brief 根据插值获取点值
+   * @param current_time: 当前时间
+   * @param p: 点值
    */
   bool getPoint(const float &current_time, Point &p);
 
   /**
-   * @brief Gets the value of the point according to the spline interpolation.
-   * @param current_time: Current time
-   * @param p: Point value
+   * @brief 根据插值获取点值
+   * @param current_time: 当前时间
+   * @param p: 点值
    */
   bool getPoint(const float &current_time, float &p);
 };
 
 /**
- * @brief LinearSpline class defines a linear spline interpolation.
+ * @brief 线性插值类
  */
 class qrLinearSpline : public qrSpline {
 public:
   /**
-   * @brief Contructor of class LinearSpline.
+   * @brief 构造函数
    */
   qrLinearSpline() = default;
 
   /**
-   * @brief Contructor of class LinearSpline.
-   * @param initial_time: Initial time
-   * @param duration: Duration of the spline
-   * @param start: Start point
-   * @param end: End point
+   * @brief 构造函数
+   * @param initial_time: 初始时间
+   * @param duration: 插值持续时间
+   * @param start: 起始点
+   * @param end: 终点
    */
   qrLinearSpline(const float &initial_time, const float &duration, const Point &start, const Point &end)
       : qrSpline(initial_time, duration, start, end) {}
 
   /**
-   * @brief Destructor of class LinearSpline.
+   * @brief 析构函数
    */
   ~qrLinearSpline() = default;
 
   /**
-   * @brief Gets the value of the point according to the spline interpolation.
-   * @param current_time: Current time
-   * @param p: Point value
+   * @brief 根据插值获取点值
+   * @param current_time: 当前时间
+   * @param p: 点值
    */
   bool getPoint(const float &current_time, Point &p);
 
   /**
-   * @brief Gets the value of the point according to the spline interpolation.
-   * @param current_time: Current time
-   * @param p: Point value
+   * @brief 根据插值获取点值
+   * @param current_time: 当前时间
+   * @param p: 点值
    */
   bool getPoint(const float &current_time, float &p);
 };
 
 /**
- * @brief Linear interpolation between y0 and yf.  x is between 0 and 1.
+ * @brief 线性插值
  */
 template <typename y_t, typename x_t>
 y_t lerp(y_t y0, y_t yf, x_t x) {
@@ -436,7 +424,7 @@ y_t lerp(y_t y0, y_t yf, x_t x) {
 }
 
 /**
- * @brief Cubic bezier interpolation between y0 and yf.  x is between 0 and 1.
+ * @brief 三次贝塞尔插值
  */
 template <typename y_t, typename x_t>
 y_t cubicBezier(y_t y0, y_t yf, x_t x) {
@@ -448,7 +436,7 @@ y_t cubicBezier(y_t y0, y_t yf, x_t x) {
 }
 
 /**
- * @brief Cubic bezier interpolation derivative between y0 and yf.  x is between 0 and 1.
+ * @brief 三次贝塞尔插值一阶导数
  */
 template <typename y_t, typename x_t>
 y_t cubicBezierFirstDerivative(y_t y0, y_t yf, x_t x) {
@@ -460,7 +448,7 @@ y_t cubicBezierFirstDerivative(y_t y0, y_t yf, x_t x) {
 }
 
 /**
- * @brief Cubic bezier interpolation derivative between y0 and yf.  x is between 0 and 1.
+ * @brief 三次贝塞尔插值二阶导数
  */
 template <typename y_t, typename x_t>
 y_t cubicBezierSecondDerivative(y_t y0, y_t yf, x_t x) {

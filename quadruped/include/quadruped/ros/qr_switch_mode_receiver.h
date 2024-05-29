@@ -22,19 +22,14 @@ namespace Quadruped {
 class qrSwitchModeReceiver {
 public:
   qrSwitchModeReceiver(ros::NodeHandle &nhIn, ros::NodeHandle &privateNhIn);
-
   ~qrSwitchModeReceiver() = default;
 
   void SwitchModeCallback(const std_msgs::Int8::ConstPtr &input);
-
   inline int GetSwitchMode() { return switchMode; };
 
   ros::NodeHandle &nh;
-
   ros::NodeHandle &privateNh;
-
   ros::Subscriber switchModeSub;
-
   std::string switchModeTopic = "/switch_mode";
 
 private:

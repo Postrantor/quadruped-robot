@@ -14,14 +14,14 @@
 namespace Quadruped {
 
 /**
- * @brief plan the foothold fpr next swing stage.
+ * @brief 计划下一个摆动阶段的脚部placement。
  */
 class qrFootholdPlanner {
 public:
   /**
-   * @brief Constructor of qrFootholdPlanner.
-   * @param robotIn The robot object pointer.
-   * @param groundEstimator The ground estimator.
+   * @brief qrFootholdPlanner 的构造函数。
+   * @param robotIn 机器人对象指针。
+   * @param groundEstimator 地面估算器。
    */
   qrFootholdPlanner(
       qrRobot* quadrupedIn,
@@ -31,31 +31,31 @@ public:
       qrDesiredStateCommand* desiredStateCommandIn);
 
   /**
-   * @brief Deconstruct a qrFootholdPlanner object.
+   * @brief qrFootholdPlanner 对象的析构函数。
    */
   ~qrFootholdPlanner() = default;
 
   /**
-   * @brief Reset the foothold planner.
+   * @brief 重置 foothold 规划器。
    */
   void Reset(float t);
 
   /**
-   * @brief Update the foothold planner.
+   * @brief 更新 foothold 规划器。
    */
   void Update() {};
 
   /**
-   * @brief Only be called at the moment right before lift up legs.
+   * @brief 只在抬腿前一刻调用。
    */
   void UpdateOnce(Eigen::Matrix<float, 3, 4> currentFootholds, std::vector<int> legIds = {});
 
   /**
-   * @brief Compute desired foot-end position in walk mode.
-   * @param currentFootholds current foot-end position of all the leg.
-   * @param currentComPose current com postion and pose.
-   * @param desiredComPose desired com postion and pose.
-   * @param legIds the order of legs.
+   * @brief 计算走模式下的期望脚端位置。
+   * @param currentFootholds 当前所有腿的脚端位置。
+   * @param currentComPose 当前 COM 位移和姿态。
+   * @param desiredComPose 期望 COM 位移和姿态。
+   * @param legIds 腿的顺序。
    */
   Eigen::Matrix<float, 3, 4> ComputeNextFootholds(
       Eigen::Matrix<float, 3, 4>& currentFootholds,
@@ -64,8 +64,8 @@ public:
       std::vector<int>& legIds);
 
   /**
-   * @brief Compute desired foot-end position delta in position mode.
-   * @param currentFootholds current foot-end position of all the leg.
+   * @brief 计算位置模式下的脚端位置增量。
+   * @param currentFootholds 当前所有腿的脚端位置。
    */
   Eigen::Matrix<float, 3, 4> ComputeFootholdsOffset(
       Eigen::Matrix<float, 3, 4> currentFootholds,
@@ -74,18 +74,17 @@ public:
       std::vector<int> legIds);
 
   /**
-   * @brief Get desired com position and rpy.
+   * @brief 获取期望 COM 位移和姿态。
    */
   inline const Eigen::Matrix<float, 6, 1>& GetDesiredComPose() const { return desiredComPose; };
 
   /**
-   * @brief Get desired foot-end position delta.
-   * i.e. currentFootholds + desiredFootholdsOffset = desiredFootholds.
+   * @brief 获取期望脚端位置增量。
    */
   inline const Eigen::Matrix<float, 3, 4>& GetFootholdsOffset() const { return desiredFootholdsOffset; };
 
   /**
-   * @brief Get desired com position and rpy.
+   * @brief 获取期望 COM 位移和姿态。
    */
   inline Eigen::Matrix<float, 6, 1> GetComGoal(Eigen::Matrix<float, 6, 1> currentComPose) {
     desiredComPose << 0.f, 0.f, 0.f, 0.f, 0.f, 0.f;
@@ -93,131 +92,130 @@ public:
   };
 
   /**
-   * @brief For walk mode in world frame.
+   * @brief 获取世界坐标系下的脚部placement。
    */
   inline Vec3<float> GetFootholdInWorldFrame(int legId) { return desiredFootholds.col(legId); };
 
   /**
-   * @brief Compute desired foothold.
-   * @param swingFootIds: the leg which is swing.
+   * @brief 计算期望脚部placement。
+   * @param swingFootIds: 摆动腿的id。
    */
   void ComputeHeuristicFootHold(std::vector<u8> swingFootIds);
 
   /**
-   * @brief Compute desired foothold by MIT mehtod.
-   * @param swingFootIds: which leg for caculation.
+   * @brief 使用 MIT 方法计算期望脚部placement。
+   * @param swingFootIds: 摆动腿的id。
    */
   void ComputeMITFootHold(int legId);
 
 public:
   /**
-   * @brief qrRobot object.
+   * @brief 机器人对象。
    */
   qrRobot* robot;
 
   /**
-   * @brief gaitGenerator object.
+   * @brief 步态生成器对象。
    */
   qrGaitGenerator* gaitGenerator;
 
   /**
-   * @brief qrGroundSurfaceEstimator object.
+   * @brief 地面估计器对象。
    */
   qrGroundSurfaceEstimator* groundEsitmator;
 
   /**
-   * @brief Some parameters for computation, inlcude EKF,
-   * terrian, moving window, and so on;
+   * @brief 一些计算参数，包括 EKF、地形、滑动窗口等。
    */
   qrUserParameters* userParameters;
 
   /**
-   * @brief Desired state command for locomotion.
+   * @brief 期望状态命令。
    */
   qrDesiredStateCommand* desiredStateCommand;
 
   /**
-   * @brief qrFootStepper object.
+   * @brief qrFootStepper 对象。
    */
   qrFootStepper* footstepper;
 
   /**
-   * @brief Current time from robot when call the reset fuction.
+   * @brief 重置时的时间。
    */
   float resetTime;
 
   /**
-   * @brief Reset time for footStepper.
+   * @brief 重置时的时间 для footStepper。
    */
   float timeSinceReset;
 
   /**
-   * @brief The config of footStepper.
+   * @brief footStepper 的配置。
    */
   YAML::Node footStepperConfig;
 
   /**
-   * @brief Width of gap.
+   * @brief 缺口的宽度。
    */
   float gapWidth;
 
   /**
-   * @brief Foot-end position delta for position mode.
+   * @brief 位置模式下的脚端位置增量。
    */
   float footHoldOffset;
 
   /**
-   * @brief Describe gap information of the map.
+   * @brief 地图上的缺口信息。
    */
   std::vector<float> gaps;
 
   /**
-   * @brief Describe terrain information of the map.
+   * @brief 地形信息。
    */
   qrTerrain& terrain;
 
   /**
-   * @brief Default map size.
+   * @brief 默认的地图尺寸。
    */
-  constexpr static int N = 50;  // default map size
+  constexpr static int N = 50;  // 默认的地图尺寸
 
   /**
-   * @brief Current com position and rpy.
+   * @brief 当前的 COM 位移和姿态。
    */
   Eigen::Matrix<float, 6, 1> comPose;
 
   /**
-   * @brief Desired com position and rpy.
+   * @brief 期望的 COM 位移和姿态。
    */
   Eigen::Matrix<float, 6, 1> desiredComPose;
 
   /**
-   * @brief Desired foot-end position delta for position mode.
+   * @brief 期望的脚端位置增量。
    */
   Eigen::Matrix<float, 3, 4> desiredFootholdsOffset;
 
   /**
-   * @brief Desired foot-end position for walk mode.
+   * @brief 期望的脚端位置。
    */
   Eigen::Matrix<float, 3, 4> desiredFootholds;
 
   /**
-   * @brief The relative phase for the desired state.
+   * @brief 相对相位。
    */
   Vec4<float> phase;
 
   /**
-   * @brief Coefficient for desired foothold computation in swing leg.
+   * @brief 摆动腿的系数。
    */
   Vec3<float> swingKp;
 
   /**
-   * @brief The steps the dog move down.
+   * @brief 机器人下降的步数。
    */
   int moveDown[4] = {0, 0, 0, 0};
 
   /**
-   * @brief firstSwingBaseState: position, velocity, roll pitch yaw and roll pitch yaw rate when reset.
+   * @brief 首次摆动的基础状态。
    */
   Vec12<float> firstSwingBaseState;
 };

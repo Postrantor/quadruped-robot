@@ -20,19 +20,18 @@
 namespace Quadruped {
 
 /**
- * @brief plan the base position and base pose. note that the
- * base point and CoM point is not the same point.
+ * @brief 计划基准位置和基准姿态。注意，基准点和COM点不是同一个点。
  */
 class qrPosePlanner {
 public:
   /**
-   * @brief Reset time for footStepper.
+   * @brief footStepper 的重置时间。
    */
   float resetTime;
 
   /**
-   * @brief Leg id for each leg in counter clock wise order.
-   * leg id:
+   * @brief 每条腿的id，在逆时针顺序。
+   * 腿id：
    * 3---0
    * |   |
    * 1---2
@@ -40,8 +39,8 @@ public:
   const int legIdMap2CounterwiseOrder[4] = {0, 3, 1, 2};
 
   /**
-   * @brief Leg id for each leg in clock wise order.
-   * leg id:
+   * @brief 每条腿的id，在顺时针顺序。
+   * 腿id：
    * 1---0
    * |   |
    * 3---2
@@ -49,240 +48,240 @@ public:
   const int invLegIdMap2CounterwiseOrder[4] = {0, 2, 3, 1};
 
   /**
-   * @brief qrRobot object.
+   * @brief qrRobot 对象。
    */
   qrRobot* robot;
 
   /**
-   * @brief RobotEstimator object.
+   * @brief RobotEstimator 对象。
    */
   qrRobotEstimator* robotEstimator;
 
   /**
-   * @brief GroundSurfaceEstimator object.
+   * @brief GroundSurfaceEstimator 对象。
    */
   qrGroundSurfaceEstimator* groundEstimator;
 
   /**
-   * @brief GaitGenerator object.
+   * @brief GaitGenerator 对象。
    */
   qrGaitGenerator* gaitGenerator;
 
   /**
-   * @brief Hip (offset) position in base frame.
-   * note: see [ETH:qrRobot Dynamics Lecture Notes] for
-   * learing these representations.
+   * @brief 髋部（偏移）位置在基准框架中。
+   * 注意：见 [ETH:qrRobot Dynamics Lecture Notes] 了解这些表示。
    */
   Eigen::Matrix<float, 3, 4> rBH;
 
   /**
-   * @brief Base center position in World/Ineria frame.
+   * @brief 基准中心位置在世界/惯性框架中。
    */
   Vec3<float> rIB;
 
   /**
-   * @brief Project rIB to world XY plane.
+   * @brief 将 rIB 投影到世界XY平面。
    */
   Vec3<float> rIB_;
+
   /**
-   * @brief Foot position in base frame.
+   * @brief 足部位置在基准框架中。
    */
   Eigen::Matrix<float, 3, 4> rBF;
 
   /**
-   * @brief Foot position in world frame.
+   * @brief 足部位置在世界框架中。
    */
   Eigen::Matrix<float, 3, 4> rIF;
 
   /**
-   * @brief CoM position in base frame.
+   * @brief COM 位置在基准框架中。
    */
   Vec3<float> rBCOM;
 
   /**
-   * @brief CoM offset position in base frame.
+   * @brief COM 偏移位置在基准框架中。
    */
   Vec3<float> rICOMoffset;
 
   /**
-   * @brief Projected com offset position in base frame.
+   * @brief 投影的 COM 偏移位置在基准框架中。
    */
   Vec3<float> rICOMoffset_;
 
   /**
-   * @brief Support polgen center in world frame, including z axis.
+   * @brief 支撑多面体中心在世界框架中，包括 z 轴。
    */
   Vec3<float> rSP;
 
   /**
-   * @brief Projected rSP in xy plane.
+   * @brief 将 rSP 投影到 xy 平面。
    */
   Vec3<float> rSP_;
 
   /**
-   * @brief Num of legs which may contact.
+   * @brief 可能接触的腿的数量。
    */
   int N = 4;
 
   /**
-   * @brief Valid contact point of leg's Id.
+   * @brief 有效的接触点腿的 Id。
    */
   std::set<int> validContactPointId;
 
   /**
-   * @brief Allowed minimum length of leg.
+   * @brief 允许的最小腿长。
    */
   float lMin = 0.22;
 
   /**
-   * @brief Allowed maximum length of leg.
+   * @brief 允许的最大腿长。
    */
   float lMax = 0.35;
 
   /**
-   * @brief Used for gradient computation.
-   * Asp 's size maybe (3,3) or (4, 3)
+   * @brief 用于梯度计算。
+   * Asp 的大小可能是 (3,3) 或 (4, 3)
    */
   Eigen::MatrixXf Asp;
 
   /**
-   * @brief Used for gradient computation.
+   * @brief 用于梯度计算。
    */
   Eigen::MatrixXf bsp;
 
   /**
-   * @brief Used for QP solve.
+   * @brief 用于 QP 解算。
    */
   Eigen::MatrixXf G;
 
   /**
-   * @brief Lagrangue factors.
+   * @brief 拉格朗日因子。
    */
   Eigen::MatrixXf Lambda;
 
   /**
-   * @brief FootPosition in base frame.
+   * @brief 足部位置在基准框架中。
    */
   Eigen::Matrix<float, 3, 4> footPosition;
 
   /**
-   * @brief Is the foot contact with ground.
+   * @brief 足部是否与地面接触。
    */
   bool contactK[4];
 
   /**
-   * @brief The number of contacted legs.
+   * @brief 接触腿的数量。
    */
   float contactLegNumber;
 
   /**
-   * @brief Is it a swing foot.
+   * @brief 是否是摆动脚。
    */
   bool swingK[4];
 
   /**
-   * @brief Points of the support polygon in world frame.
+   * @brief 支撑多边形的顶点在世界框架中。
    */
   std::vector<Vec3<float>> supportPolygonVertices;
 
   /**
-   * @brief Projected points of the support polygon in world frame.
+   * @brief 投影的支撑多边形的顶点在世界框架中。
    */
   std::vector<Vec3<float>> projectedSupportPolygonVertices;
 
   /**
-   * @brief Length of array from foot tip to base.
+   * @brief 足尖到基准的数组长度。
    */
   std::vector<Vec3<float>> g;
 
   /**
-   * @brief Used for support polygon computation.
+   * @brief 用于支撑多边形计算。
    */
   Vec3<float> so3Phi;
 
   /**
-   * @brief Quaternion that express the base orientation.
+   * @brief 表示基准方向的四元数。
    */
   Quat<float> quat;
 
   /**
-   * @brief The base row-pitch-yaw in world frame.
+   * @brief 基准的 roll-pitch-yaw 在世界框架中。
    */
   Vec3<float> rpy;
 
   /**
-   * @brief Estimated base position in world frame.
+   * @brief 估算的基准位置在世界框架中。
    */
   Vec3<float> rIBSource;
 
   /**
-   * @brief Desired base pose and position.
+   * @brief 期望的基准姿态和位置。
    */
   Vec6<float> poseDest;
 
   /**
-   * @brief Estimated base pose and position in world frame.
+   * @brief 估算的基准姿态和位置在世界框架中。
    */
   Vec6<float> poseSource;
 
   /**
-   * @brief Base pose and position in world frame.
+   * @brief 基准姿态和位置在世界框架中。
    */
   Vec6<float> pose;
 
   /**
-   * @brief Base liner velocity and angular velocity in world frame.
+   * @brief 基准的线速度和角速度在世界框架中。
    */
   Vec6<float> twist;
 
   /**
-   * @brief Stores the given data.
+   * @brief 存储给定的数据。
    */
   robotics::math::qrSegment<float, Vec6<float>> segment;
 
   /**
-   * @brief Used for gradient cumputation.
+   * @brief 用于梯度计算。
    */
   float omega = 0.5;
 
   /**
-   * @brief Used for G cumputation.
+   * @brief 用于 G 计算。
    */
   float eps = 0.1;
 
   /**
-   * @brief Initial a1 robot body height.
+   * @brief 初始 A1 机器人身体高度。
    */
   const float bodyHight = A1_BODY_HIGHT;
 
 public:
   /**
-   * @brief Constructor of PosePlanner class.
-   * @param robotIn: the robot for pose planner.
-   * @param gaitGeneratorIn: generate desired gait.
-   * @param stateEstimators: estimate current kinematic state.
+   * @brief PosePlanner 类的构造函数。
+   * @param robotIn:PosePlanner 所需的机器人。
+   * @param gaitGeneratorIn: 生成期望的步态。
+   * @param stateEstimators: 估算当前运动状态。
    */
   qrPosePlanner(qrRobot* robotIn, qrGaitGenerator* gaitGeneratorIn, qrStateEstimatorContainer* stateEstimators);
 
   /**
-   * @brief Destructor of PosePlanner class.
+   * @brief PosePlanner 类的析构函数。
    */
   ~qrPosePlanner() = default;
 
   /**
-   * @brief Called during the start of a controller.
-   * @param current_time: The wall time in seconds.
+   * @brief 在控制器开始时调用。
+   * @param current_time:墙面时间，以秒为单位。
    */
   void Reset(float currentTime) {};
 
   /**
-   * @brief Getter method of member poseDest.
+   * @brief poseDest 成员的 getter 方法。
    */
   inline Vec6<float> GetBasePose() { return poseDest; };
 
   /**
-   * @brief Reset BasePose planner.
-   * @param currentTime: The wall time in seconds.
+   * @brief 重置 BasePose 规划器。
+   * @param currentTime:墙面时间，以秒为单位。
    */
   void ResetBasePose(float currentTime) {
     resetTime = currentTime;
@@ -296,9 +295,9 @@ public:
   };
 
   /**
-   * @brief Given the current time, get the corresponding position and pose.
-   * @param currentTime: The wall time in seconds.
-   * @return corresponding position and pose.
+   * @brief 给定当前时间，获取相应的位置和姿态。
+   * @param currentTime：墙面时间，以秒为单位。
+   * @return 相应的位置和姿态。
    */
   std::tuple<Vec6<float>, Vec6<float>> GetIntermediateBasePose(float currentTime) {
     float dt = currentTime - resetTime;
@@ -313,10 +312,10 @@ public:
   };
 
   /**
-   * @brief Given the current time, get the corresponding position and pose.
-   * @param phase: relative time in the gait cycle.
-   * @param currentTime: The wall time in seconds.
-   * @return corresponding position and pose.
+   * @brief 给定相对时间，获取相应的位置和姿态。
+   * @param phase：相对时间在步态周期中的位置。
+   * @param currentTime：墙面时间，以秒为单位。
+   * @return 相应的位置和姿态。
    */
   std::tuple<Vec6<float>, Vec6<float>> GetIntermediateBasePose(float phase, float currentTime) {
     phase *= 1.0;
@@ -341,63 +340,63 @@ public:
   };
 
   /**
-   * @brief Caculate the desired pose destination.
-   * @param currentTime: The wall time in seconds.
-   * @return desired pose destination.
+   * @brief 计算期望姿态目标。
+   * @param currentTime：墙面时间，以秒为单位。
+   * @return 期望姿态目标。
    */
   Vec6<float> Update(float currentTime);
 
   /**
-   * @brief Compute Gradient of F for QP.
-   * @return Gradient of F.
+   * @brief 计算 F 的梯度用于QP。
+   * @return F 的梯度。
    */
   Vec6<float> ComputeGradientF();
 
   /**
-   * @brief Compute Hessian of F for QP.
-   * @return Hessian of F.
+   * @brief 计算 F 的 Hessian 矩阵用于QP。
+   * @return F 的 Hessian 矩阵。
    */
   Mat6<float> ComputeHessianF();
 
   /**
-   * @brief Compute Gradient of G for QP.
-   * @return Gradient of G.
+   * @brief 计算 G 的梯度用于QP。
+   * @return G 的梯度。
    */
   Eigen::MatrixXf ComputeGradientG();
 
   /**
-   * @brief Compute Hessian of G for QP.
-   * @return Hessian of G.
+   * @brief 计算 G 的 Hessian 矩阵用于QP。
+   * @return G 的 Hessian 矩阵。
    */
   std::vector<Mat6<float>> ComputeHessianG();
 
   /**
-   * @brief Compute G.
-   * @return G.
+   * @brief 计算 G。
+   * @return G。
    */
   Eigen::MatrixXf ComputeG();
 
   /**
-   * @brief Compute F.
-   * @return F.
+   * @brief 计算 F。
+   * @return F。
    */
   float ComputeF();
 
   /**
-   * @brief Project a vector.
-   * @param input vector.
-   * @return projected vector.
+   * @brief  projection 向量。
+   * @param 输入向量。
+   * @return 投影后的向量。
    */
   Vec3<float> ProjectV(Vec3<float> v);
 
   /**
-   * @brief solve qp problem.
-   * @param hessF.
-   * @param hessGSum.
-   * @param gradientF.
-   * @param gradientG.
-   * @param GValue.
-   * @return desired pose and Lagrange factor.
+   * @brief 解决 qp 问题。
+   * @param hessF。
+   * @param hessGSum。
+   * @param gradientF。
+   * @param gradientG。
+   * @param GValue。
+   * @return 期望姿态和拉格朗日因子。
    */
   std::tuple<Vec6<float>, Eigen::MatrixXf> QpSolver(
       Mat6<float>& hessF,
@@ -407,8 +406,8 @@ public:
       Eigen::MatrixXf& GValue);
 
   /**
-   * @brief Permutate matrix cols in counter clock order.
-   * @param input&output matrix.
+   * @brief 将矩阵列进行逆时针旋转。
+   * @param 输入&输出矩阵。
    */
   void ToCounterClockOrder(Eigen::Matrix<float, 3, 4>& A) {
     Eigen::PermutationMatrix<4, 4> perm;
@@ -418,8 +417,8 @@ public:
   };
 
   /**
-   * @brief Permutate array cols in counter clock order.
-   * @param input&output array.
+   * @brief 将数组列进行逆时针旋转。
+   * @param 输入&输出数组。
    */
   void ToCounterClockOrder(bool array[4]) {
     bool temp = array[1];

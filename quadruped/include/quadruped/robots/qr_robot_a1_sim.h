@@ -23,18 +23,18 @@ namespace Quadruped {
 class qrRobotA1Sim : public qrRobot {
 public:
   /**
-   * @brief Constructor of class qrRobotA1Sim
-   * @param nhIn: ROS node handle.
-   * @param privateNhIn: private ROS node handle.
-   * @param configFilePath: config file path.
+   * @brief qrRobotA1Sim 类的构造函数
+   * @param nhIn: ROS 节点句柄。
+   * @param privateNhIn: 私有 ROS 节点句柄。
+   * @param configFilePath: 配置文件路径。
    */
   qrRobotA1Sim(ros::NodeHandle &nhIn, ros::NodeHandle &privateNhIn, std::string configFilePath);
 
   ~qrRobotA1Sim() = default;
 
   /**
-   * @brief Send command to gazebo.
-   * @param motorcmd: the commands to send.
+   * @brief 向 Gazebo 发送命令。
+   * @param motorcmd: 要发送的命令。
    */
   void SendCommand(const std::array<float, 60> motorcmd);
 
@@ -82,42 +82,42 @@ public:
   void RLfootCallback(const geometry_msgs::WrenchStamped &msg);
 
   /**
-   * @brief ROS node handle.
+   * @brief ROS 节点句柄。
    */
   ros::NodeHandle &nh;
 
   /**
-   * @brief ROS private node handle.
+   * @brief 私有 ROS 节点句柄。
    */
   ros::NodeHandle &privateNh;
 
   /**
-   * @brief Unitree low command that stores motor commands.
+   * @brief Unitree 低级命令，存储电机命令。
    */
   unitree_legged_msgs::LowCmd lowCmd;
 
   /**
-   * @brief Unitree low state that stores IMU and joint states.
+   * @brief Unitree 低级状态，存储 IMU 和关节状态。
    */
   unitree_legged_msgs::LowState lowState;
 
   /**
-   * @brief 12 joint command publishers.
+   * @brief 12个关节命令发布者。
    */
   ros::Publisher jointCmdPub[12];
 
   /**
-   * @brief 12 joint state subscribers.
+   * @brief 12个关节状态订阅者。
    */
   ros::Subscriber jointStateSub[12];
 
   /**
-   * @brief 4 force sensor subscribers.
+   * @brief 4个力传感器订阅者。
    */
   ros::Subscriber footForceSub[4];
 
   /**
-   * @brief Gazebo IMU subscribers.
+   * @brief Gazebo IMU 订阅者。
    */
   ros::Subscriber imuSub;
 };

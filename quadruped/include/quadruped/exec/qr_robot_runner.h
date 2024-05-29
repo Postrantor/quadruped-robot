@@ -54,38 +54,26 @@ void UpdateControllerParams(qrLocomotionController* controller, Eigen::Vector3f 
 class qrRobotRunner {
 public:
   qrRobotRunner(qrRobot* quadruped, std::string& homeDir, ros::NodeHandle& nh);
-
-  bool Update();
-
-  bool Step();
-
   ~qrRobotRunner();
 
+  bool Update();
+  bool Step();
+
   inline qrLocomotionController* GetLocomotionController() { return controlFSM->GetLocomotionController(); }
-
   inline qrStateEstimatorContainer* GetStateEstimator() { return stateEstimators; }
-
   inline qrDesiredStateCommand* GetDesiredStateCommand() { return desiredStateCommand; }
-
   inline qrGaitGenerator* GetGaitGenerator() { return gaitGenerator; }
 
 private:
   qrRobot* quadruped;
-
   qrGaitGenerator* gaitGenerator;
-
   qrUserParameters userParameters;
-
   qrStateEstimatorContainer* stateEstimators;
-
   qrDesiredStateCommand* desiredStateCommand;
-
   qrControlFSM<float>* controlFSM;
 
   float resetTime;
-
   float timeSinceReset;
-
   std::vector<qrMotorCommand> hybridAction;
 };
 
