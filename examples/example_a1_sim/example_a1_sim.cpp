@@ -49,36 +49,18 @@ bool ResetRobot(ros::ServiceClient& modelStateClient, ros::ServiceClient& jointS
   setmodelstate.request.model_state = modelState;
   setjointstate.request.model_name = "a1_gazebo";
   setjointstate.request.urdf_param_name = "robot_description";
-  setjointstate.request.joint_names = {
-      "FR_hip_joint",    //
-      "FR_thigh_joint",  //
-      "FR_calf_joint",   //
-      "FL_hip_joint",    //
-      "FL_thigh_joint",  //
-      "FL_calf_joint",   //
-      "RR_hip_joint",    //
-      "RR_thigh_joint",  //
-      "RR_calf_joint",   //
-      "RL_hip_joint",    //
-      "RL_thigh_joint",  //
-      "RL_calf_joint"};
+  setjointstate.request.joint_names = {"FR_hip_joint", "FR_thigh_joint", "FR_calf_joint",  //
+                                       "FL_hip_joint", "FL_thigh_joint", "FL_calf_joint",  //
+                                       "RR_hip_joint", "RR_thigh_joint", "RR_calf_joint",  //
+                                       "RL_hip_joint", "RL_thigh_joint", "RL_calf_joint"};
   double hip_angle = 0.3;
   double thigh_angle = 1.1;
   double calf_angle = -2.2;
 
-  setjointstate.request.joint_positions = {
-      -hip_angle,   //
-      thigh_angle,  //
-      calf_angle,   //
-      hip_angle,    //
-      thigh_angle,  //
-      calf_angle,
-      -hip_angle,   //
-      thigh_angle,  //
-      calf_angle,   //
-      hip_angle,    //
-      thigh_angle,  //
-      calf_angle};
+  setjointstate.request.joint_positions = {-hip_angle, thigh_angle, calf_angle,  //
+                                           hip_angle,  thigh_angle, calf_angle,  //
+                                           -hip_angle, thigh_angle, calf_angle,  //
+                                           hip_angle,  thigh_angle, calf_angle};
 
   ros::service::waitForService("/gazebo/set_model_state", -1);
   modelStateClient.call(setmodelstate);
