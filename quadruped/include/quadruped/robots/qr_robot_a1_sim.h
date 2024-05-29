@@ -64,37 +64,21 @@ public:
   virtual bool BuildDynamicModel() override;
 
   void ImuCallback(const sensor_msgs::Imu &msg);
-
   void FRhipCallback(const unitree_legged_msgs::MotorState &msg);
-
   void FRthighCallback(const unitree_legged_msgs::MotorState &msg);
-
   void FRcalfCallback(const unitree_legged_msgs::MotorState &msg);
-
   void FLhipCallback(const unitree_legged_msgs::MotorState &msg);
-
   void FLthighCallback(const unitree_legged_msgs::MotorState &msg);
-
   void FLcalfCallback(const unitree_legged_msgs::MotorState &msg);
-
   void RRhipCallback(const unitree_legged_msgs::MotorState &msg);
-
   void RRthighCallback(const unitree_legged_msgs::MotorState &msg);
-
   void RRcalfCallback(const unitree_legged_msgs::MotorState &msg);
-
   void RLhipCallback(const unitree_legged_msgs::MotorState &msg);
-
   void RLthighCallback(const unitree_legged_msgs::MotorState &msg);
-
   void RLcalfCallback(const unitree_legged_msgs::MotorState &msg);
-
   void FRfootCallback(const geometry_msgs::WrenchStamped &msg);
-
   void FLfootCallback(const geometry_msgs::WrenchStamped &msg);
-
   void RRfootCallback(const geometry_msgs::WrenchStamped &msg);
-
   void RLfootCallback(const geometry_msgs::WrenchStamped &msg);
 
   /**
