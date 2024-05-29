@@ -1,26 +1,9 @@
-// The MIT License
-
-// Copyright (c) 2022
-// Robot Motion and Vision Laboratory at East China Normal University
-// Contact: tophill.robotics@gmail.com
-
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+/**
+ * @author Robot Motion and Vision Laboratory at East China Normal University, tophill.robotics@gmail.com
+ * @brief
+ * @date 2022
+ * @copyright MIT License
+ */
 
 #ifndef QR_ROBOT_VELOCITY_ESTIMATOR_H
 #define QR_ROBOT_VELOCITY_ESTIMATOR_H
@@ -28,10 +11,10 @@
 #include <deque>
 #include <numeric>
 
-#include "utils/qr_se3.h"
-#include "robots/qr_robot.h"
-#include "gait/qr_openloop_gait_generator.h"
 #include "estimators/qr_moving_window_filter.hpp"
+#include "gait/qr_openloop_gait_generator.h"
+#include "robots/qr_robot.h"
+#include "utils/qr_se3.h"
 
 /* this is a external lib, but using some variables defined in qr_filter.hpp*/
 #include "TinyEKF.h"

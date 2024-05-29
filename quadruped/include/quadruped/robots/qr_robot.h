@@ -1,49 +1,32 @@
-// The MIT License
-
-// Copyright (c) 2022
-// Robot Motion and Vision Laboratory at East China Normal University
-// Contact: tophill.robotics@gmail.com
-
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
+/**
+ * @author Robot Motion and Vision Laboratory at East China Normal University, tophill.robotics@gmail.com
+ * @brief
+ * @date 2022
+ * @copyright MIT License
+ */
 
 #ifndef QR_ROBOT_H
 #define QR_ROBOT_H
 
+#include <yaml-cpp/yaml.h>
+
+#include <Eigen/Dense>
+#include <cmath>
 #include <iostream>
 #include <string>
-#include <cmath>
 #include <unordered_map>
-#include <Eigen/Dense>
-#include <yaml-cpp/yaml.h>
 
 #include "config/qr_config.h"
 #include "config/qr_enum_types.h"
-#include "robots/qr_timer.h"
-#include "robots/qr_motor.h"
-#include "utils/qr_se3.h"
-#include "utils/qr_tools.h"
-#include "utils/qr_print.hpp"
-#include "estimators/qr_moving_window_filter.hpp"
 #include "controllers/qr_state_dataflow.h"
 #include "dynamics/floating_base_model.hpp"
-
+#include "estimators/qr_moving_window_filter.hpp"
+#include "robots/qr_motor.h"
+#include "robots/qr_timer.h"
 #include "unitree_legged_sdk/unitree_interface.h"
+#include "utils/qr_print.hpp"
+#include "utils/qr_se3.h"
+#include "utils/qr_tools.h"
 
 namespace Quadruped {
 
@@ -87,7 +70,7 @@ public:
    * @param motor_commands: vector of commands to execute by the motors.
    * @param motor_control_mode: control mode such as BRAKE.
    */
-  virtual void ApplyAction(const std::vector<qrMotorCommand> &motor_commands, MotorMode motor_control_mode){};
+  virtual void ApplyAction(const std::vector<qrMotorCommand> &motor_commands, MotorMode motor_control_mode) {};
 
   /**
    * @brief Do Observation once and ApplyAction.

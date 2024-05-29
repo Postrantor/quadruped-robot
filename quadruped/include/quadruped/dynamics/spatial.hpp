@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <type_traits>
+
 #include "utils/qr_se3.h"
 
 namespace spatial {

@@ -82,7 +82,7 @@ static void* c_calloc(size_t num, size_t size) {
 #ifdef DLONG             // long integers
 typedef long long c_int; /* for indices */
 #else                    // standard integers
-typedef int c_int;     /* for indices */
+typedef int c_int; /* for indices */
 #endif                   /* ifdef DLONG */
 
 #ifndef DFLOAT          // Doubles

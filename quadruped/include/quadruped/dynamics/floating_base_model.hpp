@@ -19,6 +19,7 @@
 #define LIBBIOMIMETICS_FLOATINGBASEMODEL_H
 
 #include <eigen3/Eigen/StdVector>
+
 #include "dynamics/spatial.hpp"
 using namespace spatial;
 
