@@ -1,69 +1,135 @@
-a1_gazebo:
-  # publish all joint states
-  joint_state_controller:
-    type: joint_state_controller/JointStateController
-    publish_rate: 1000
+controller_manager:
+  ros__parameters:
+    update_rate: 100.0 # 控制器更新频率
 
-  # fl controllers
-  FL_hip_controller:
-    type: unitree_legged_control/UnitreeJointController
-    joint: FL_hip_joint
-    pid: { p: 100.0, i: 0.0, d: 5.0 }
+    # 定义 joint_state_broadcaster 用于发布所有关节状态
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
 
-  FL_thigh_controller:
-    type: unitree_legged_control/UnitreeJointController
-    joint: FL_thigh_joint
-    pid: { p: 300.0, i: 0.0, d: 8.0 }
+    # FL 控制器
+    FL_hip_controller:
+      type: unitree_legged_control/UnitreeJointController
+      joints:
+        - FL_hip_joint
+      pid:
+        p: 100.0
+        i: 0.0
+        d: 5.0
 
-  FL_calf_controller:
-    type: unitree_legged_control/UnitreeJointController
-    joint: FL_calf_joint
-    pid: { p: 300.0, i: 0.0, d: 8.0 }
+    FL_thigh_controller:
+      type: unitree_legged_control/UnitreeJointController
+      joints:
+        - FL_thigh_joint
+      pid:
+        p: 300.0
+        i: 0.0
+        d: 8.0
 
-  # fr controllers
-  FR_hip_controller:
-    type: unitree_legged_control/UnitreeJointController
-    joint: FR_hip_joint
-    pid: { p: 100.0, i: 0.0, d: 5.0 }
+    FL_calf_controller:
+      type: unitree_legged_control/UnitreeJointController
+      joints:
+        - FL_calf_joint
+      pid:
+        p: 300.0
+        i: 0.0
+        d: 8.0
 
-  FR_thigh_controller:
-    type: unitree_legged_control/UnitreeJointController
-    joint: FR_thigh_joint
-    pid: { p: 300.0, i: 0.0, d: 8.0 }
+    # FR 控制器
+    FR_hip_controller:
+      type: unitree_legged_control/UnitreeJointController
+      joints:
+        - FR_hip_joint
+      pid:
+        p: 100.0
+        i: 0.0
+        d: 5.0
 
-  FR_calf_controller:
-    type: unitree_legged_control/UnitreeJointController
-    joint: FR_calf_joint
-    pid: { p: 300.0, i: 0.0, d: 8.0 }
+    FR_thigh_controller:
+      type: unitree_legged_control/UnitreeJointController
+      joints:
+        - FR_thigh_joint
+      pid:
+        p: 300.0
+        i: 0.0
+        d: 8.0
 
-  # rl controllers
-  RL_hip_controller:
-    type: unitree_legged_control/UnitreeJointController
-    joint: RL_hip_joint
-    pid: { p: 100.0, i: 0.0, d: 5.0 }
+    FR_calf_controller:
+      type: unitree_legged_control/UnitreeJointController
+      joints:
+        - FR_calf_joint
+      pid:
+        p: 300.0
+        i: 0.0
+        d: 8.0
 
-  RL_thigh_controller:
-    type: unitree_legged_control/UnitreeJointController
-    joint: RL_thigh_joint
-    pid: { p: 300.0, i: 0.0, d: 8.0 }
+    # RL 控制器
+    RL_hip_controller:
+      type: unitree_legged_control/UnitreeJointController
+      joints:
+        - RL_hip_joint
+      pid:
+        p: 100.0
+        i: 0.0
+        d: 5.0
 
-  RL_calf_controller:
-    type: unitree_legged_control/UnitreeJointController
-    joint: RL_calf_joint
-    pid: { p: 300.0, i: 0.0, d: 8.0 }
+    RL_thigh_controller:
+      type: unitree_legged_control/UnitreeJointController
+      joints:
+        - RL_thigh_joint
+      pid:
+        p: 300.0
+        i: 0.0
+        d: 8.0
 
-  # rr controllers
-  RR_hip_controller:
-    type: unitree_legged_control/UnitreeJointController
-    joint: RR_hip_joint
-    pid: { p: 100.0, i: 0.0, d: 5.0 }
+    RL_calf_controller:
+      type: unitree_legged_control/UnitreeJointController
+      joints:
+        - RL_calf_joint
+      pid:
+        p: 300.0
+        i: 0.0
+        d: 8.0
 
-  RR_thigh_controller:
-    type: unitree_legged_control/UnitreeJointController
-    joint: RR_thigh_joint
-    pid: { p: 300.0, i: 0.0, d: 8.0 }
+    # RR 控制器
+    RR_hip_controller:
+      type: unitree_legged_control/UnitreeJointController
+      joints:
+        - RR_hip_joint
+      pid:
+        p: 100.0
+        i: 0.0
+        d: 5.0
 
-  RR_calf_controller:
-    type: unitree_legged_control/UnitreeJointController
-    joint: RR_calf_joint
-    pid: { p: 300.0, i: 0.0, d: 8.0 }
+    RR_thigh_controller:
+      type: unitree_legged_control/UnitreeJointController
+      joints:
+        - RR_thigh_joint
+      pid:
+        p: 300.0
+        i: 0.0
+        d: 8.0
+
+    RR_calf_controller:
+      type: unitree_legged_control/UnitreeJointController
+      joints:
+        - RR_calf_joint
+      pid:
+        p: 300.0
+        i: 0.0
+        d: 8.0
+
+    # 列出所有需要加载的控制器名称
+    controller_names:
+      - joint_state_broadcaster
+      - FL_hip_controller
+      - FL_thigh_controller
+      - FL_calf_controller
+      - FR_hip_controller
+      - FR_thigh_controller
+      - FR_calf_controller
+      - RL_hip_controller
+      - RL_thigh_controller
+      - RL_calf_controller
+      - RR_hip_controller
+      - RR_thigh_controller
+      - RR_calf_controller
