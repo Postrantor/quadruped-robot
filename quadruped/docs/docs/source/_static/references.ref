@@ -1,0 +1,10 @@
+.. |dicarloj2018iros| replace:: Di Carlo J, Wensing P M, Katz B, et al. Dynamic locomotion in the MIT Cheetah 3 through convex model-predictive control[C]//IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS). 2018: 1-9.
+.. |bledt2018iros| replace:: Bledt G, Powell M J, Katz B, et al. MIT Cheetah 3: Design and control of a robust, dynamic quadruped robot[C]//IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS). 2018: 2245-2252.
+.. |bledt2018icra| replace:: Bledt G, Wensing P M, Ingersoll S, et al. Contact model fusion for event-based locomotion in unstructured terrains[C]//IEEE International Conference on Robotics and Automation (ICRA). 2018: 4399-4406.
+.. |focchim2017ar| replace:: Focchi M, Del Prete A, Havoutis I, et al. High-slope terrain locomotion for torque-controlled quadruped robots[J]. Autonomous Robots, 2017, 41(1): 259-272.
+.. |leeyh2017iros| replace:: Lee Y H, Lee Y H, Lee H, et al. Trajectory design and control of quadruped robot for trotting over obstacles[C]//IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS). 2017: 4897-4902.
+.. |dax2020| replace:: Da X, Xie Z, Hoeller D, et al. Learning a contact-adaptive controller for robust, efficient legged locomotion[J]. arXiv preprint arXiv:2009.10019, 2020.
+.. |fankhauserp2018icra| replace:: Fankhauser P, Bjelonic M, Bellicoso C D, et al. Robust rough-terrain locomotion with a quadrupedal robot[C]//IEEE International Conference on Robotics and Automation (ICRA). 2018: 5761-5768.
+.. |fankhauserp2018eth| replace:: Fankhauser P. Perceptive locomotion for legged robots in rough terrain[D]. ETH Zurich, 2018.
+.. |kimd2019| replace:: Kim D, Di Carlo J, Katz B, et al. Highly dynamic quadruped locomotion via whole-body impulse control and model predictive control[J]. arXiv preprint arXiv:1909.06586, 2019.
+.. |Gonzalez2011book| replace:: Gonzalez de Santos P., Garcia E, Estremera J. Quadrupedal locomotion. Springer, 2011.
