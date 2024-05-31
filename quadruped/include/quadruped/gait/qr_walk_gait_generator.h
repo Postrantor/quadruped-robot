@@ -14,36 +14,32 @@
 namespace Quadruped {
 
 /**
- * @brief The gait generator for walk mode.
+ * @brief 步行模式下的步态生成器。
  */
 class qrWalkGaitGenerator : public qrGaitGenerator {
 public:
   /**
-   * @brief Constructor of WalkGaitGenerator class.
+   * @brief WalkGaitGenerator 类的构造函数。
    */
   qrWalkGaitGenerator(){};
 
   /**
-   * @brief Constructor of WalkGaitGenerator class.
-   * @param robot: robot for generate desired gait.
-   * @param configFilePath: configFilePath the given config file.
+   * @brief WalkGaitGenerator 类的构造函数。
+   * @param robot: 生成所需步态的机器人。
+   * @param configFilePath: 给定的配置文件路径。
    */
   qrWalkGaitGenerator(qrRobot *robot, std::string configFilePath);
 
   /**
-   * @brief Constructor of WalkGaitGenerator class.
-   * @param robot: the class of robot state.
-   * @param stateSwitchQue: store the order of the leg substates.
-   * @param stateRatioQue: store the proportion in a cycle of every leg substate.
-   * @param stanceDuration: stanceDuration specifies the amount of stance time for each leg in a gait cycle.
-   * @param dutyFactor: dutyFactor specifies the duty factor for each leg. dutyFactor represents the fraction of stance
-   * phase in the gait cycle.
-   * @param initialLegState: initialLegState specifies the state (SWING or STANCE) of each leg at the initialization of
-   * generating a gait.
-   * @param initialLegPhase: initialLegPhase specifies the relative phase for each leg at the initialization of
-   * generating a gait.
-   * @param contactDetectionPhaseThreshold: contactDetectionPhaseThreshold specifies the contact threshold when the leg
-   * state switches from SWING to STANCE.
+   * @brief WalkGaitGenerator 类的构造函数。
+   * @param robot: 机器人状态的类。
+   * @param stateSwitchQue: 存储腿子状态的顺序。
+   * @param stateRatioQue: 存储每个腿子状态在周期中的时间比例。
+   * @param stanceDuration: stanceDuration 指定每个腿在步态周期中的支撑时间。
+   * @param dutyFactor: dutyFactor 指定每个腿的占空比。dutyFactor 代表步态周期中的支撑相位部分。
+   * @param initialLegState: initialLegState 指定每个腿在生成步态时的初始状态（SWING 或 STANCE）。
+   * @param initialLegPhase: initialLegPhase 指定每个腿在生成步态时的相位。
+   * @param contactDetectionPhaseThreshold: contactDetectionPhaseThreshold 指定腿状态从 SWING 到 STANCE 的检测阈值。
    */
   qrWalkGaitGenerator(
       qrRobot *robot,
@@ -56,52 +52,51 @@ public:
       float contactDetectionPhaseThreshold = 0.1f);
 
   /**
-   * @brief Dstructor of should start from stand stateWalkGaitGenerator class.
+   * @brief WalkGaitGenerator 类的析构函数，应该从站立状态开始。
    */
   virtual ~qrWalkGaitGenerator() = default;
 
   /**
-   * @brief Reset the gait parameters using the given time.
-   * @param currentTime the given time.
+   * @brief 使用给定的时间重置步态参数。
+   * @param currentTime 给定的时间。
    */
   virtual void Reset(float currentTime);
 
   /**
-   * @brief Update of the gait parameters and leg states using the given time.
-   * @param currentTime: the given time.
+   * @brief 使用给定的时间更新步态参数和腿状态。
+   * @param currentTime 给定的时间。
    */
   virtual void Update(float currentTime);
 
   // private:
 
   /**
-   * @brief Store the order of the leg substates.
-   * it should start from stand state.
+   * @brief 存储腿子状态的顺序，应该从站立状态开始。
    */
   std::vector<SubLegState> stateSwitchQue;
 
   /**
-   * @brief Store the time proportion in a cycle of every leg substate.
+   * @brief 存储每个腿子状态在周期中的时间比例。
    */
   std::vector<float> stateRatioQue;
 
   /**
-   * @brief Accumulation of state ration in complete walk cycle.
+   * @brief 完整步态周期中的状态比例累积。
    */
   std::vector<float> accumStateRatioQue;
 
   /**
-   * @brief Index in the stateSwitchQue, used for changing substate.
+   * @brief stateSwitchQue 中的索引，用于改变子状态。
    */
   Vec4<int> stateIndexOfLegs;
 
   /**
-   * @brief Current substate ratio in a cycle.
+   * @brief 当前周期中的子状态比例。
    */
   Vec4<float> curStateRadio;
 
   /**
-   * @brief When "trueSwing" sub state start in swing cycle.
+   * @brief "trueSwing" 子状态在摆动周期中的启动相位。
    */
   float trueSwingStartPhaseInSwingCycle;
 };

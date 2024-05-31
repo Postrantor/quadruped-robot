@@ -1,8 +1,6 @@
 /*! @file spatial.h
- *  @brief Utility functions for manipulating spatial quantities
- *
- *  This file contains functions for working with spatial vectors and
- * transformation matrices.
+ * @brief 空间量操作实用函数
+ * 该文件包含了空间向量和变换矩阵的操作函数。
  */
 
 #ifndef LIBBIOMIMETICS_SPATIAL_H
@@ -18,8 +16,7 @@ using namespace robotics::math;
 enum class JointType { Prismatic, Revolute, FloatingBase, Nothing };
 
 /*!
- * Calculate the spatial coordinate transform from A to B where B is rotate by
- * theta about axis.
+ * 计算从A到B的空间坐标变换，B旋转 theta 角度关于axis轴。
  */
 template <typename T>
 SXform<T> spatialRotation(CoordinateAxis axis, T theta) {
@@ -32,8 +29,8 @@ SXform<T> spatialRotation(CoordinateAxis axis, T theta) {
 }
 
 /*!
- * Compute the spatial motion cross product matrix.
- * Prefer motionCrossProduct when possible.
+ * 计算空间运动叉乘矩阵。
+ * 如果可能，优先使用motionCrossProduct。
  */
 template <typename T>
 Mat6<typename T::Scalar> motionCrossMatrix(const Eigen::MatrixBase<T> &v) {
@@ -46,8 +43,8 @@ Mat6<typename T::Scalar> motionCrossMatrix(const Eigen::MatrixBase<T> &v) {
 }
 
 /*!
- * Compute spatial force cross product matrix.
- * Prefer forceCrossProduct when possible
+ * 计算空间力叉乘矩阵。
+ * 如果可能，优先使用forceCrossProduct。
  */
 template <typename T>
 Mat6<typename T::Scalar> forceCrossMatrix(const Eigen::MatrixBase<T> &v) {
@@ -58,8 +55,7 @@ Mat6<typename T::Scalar> forceCrossMatrix(const Eigen::MatrixBase<T> &v) {
 }
 
 /*!
- * Compute spatial motion cross product.  Faster than the matrix multiplication
- * version
+ * 计算空间运动叉乘。比矩阵乘法版本更快
  */
 template <typename T>
 SVec<typename T::Scalar> motionCrossProduct(const Eigen::MatrixBase<T> &a, const Eigen::MatrixBase<T> &b) {
@@ -72,8 +68,7 @@ SVec<typename T::Scalar> motionCrossProduct(const Eigen::MatrixBase<T> &a, const
 }
 
 /*!
- * Compute spatial force cross product.  Faster than the matrix multiplication
- * version
+ * 计算空间力叉乘。比矩阵乘法版本更快
  */
 template <typename T>
 SVec<typename T::Scalar> forceCrossProduct(const Eigen::MatrixBase<T> &a, const Eigen::MatrixBase<T> &b) {
@@ -86,7 +81,7 @@ SVec<typename T::Scalar> forceCrossProduct(const Eigen::MatrixBase<T> &a, const 
 }
 
 /*!
- * Convert a spatial transform to a homogeneous coordinate transformation
+ * 将空间变换转换为齐次坐标变换
  */
 template <typename T>
 Mat4<typename T::Scalar> sxformToHomogeneous(const Eigen::MatrixBase<T> &X) {
@@ -101,7 +96,7 @@ Mat4<typename T::Scalar> sxformToHomogeneous(const Eigen::MatrixBase<T> &X) {
 }
 
 /*!
- * Convert a homogeneous coordinate transformation to a spatial one
+ * 将齐次坐标变换转换为空间变换
  */
 template <typename T>
 Mat6<typename T::Scalar> homogeneousToSXform(const Eigen::MatrixBase<T> &H) {
@@ -116,7 +111,7 @@ Mat6<typename T::Scalar> homogeneousToSXform(const Eigen::MatrixBase<T> &H) {
 }
 
 /*!
- * Create spatial coordinate transformation from rotation and translation
+ * 从旋转矩阵和平移向量创建空间坐标变换
  */
 template <typename T, typename T2>
 Mat6<typename T::Scalar> createSXform(const Eigen::MatrixBase<T> &R, const Eigen::MatrixBase<T2> &r) {
@@ -130,7 +125,7 @@ Mat6<typename T::Scalar> createSXform(const Eigen::MatrixBase<T> &R, const Eigen
 }
 
 /*!
- * Get rotation matrix from spatial transformation
+ * 从空间变换中获取旋转矩阵
  */
 template <typename T>
 RotMat<typename T::Scalar> rotationFromSXform(const Eigen::MatrixBase<T> &X) {
@@ -140,7 +135,7 @@ RotMat<typename T::Scalar> rotationFromSXform(const Eigen::MatrixBase<T> &X) {
 }
 
 /*!
- * Get translation vector from spatial transformation
+ * 从空间变换中获取平移向量
  */
 template <typename T>
 Vec3<typename T::Scalar> translationFromSXform(const Eigen::MatrixBase<T> &X) {
@@ -151,7 +146,7 @@ Vec3<typename T::Scalar> translationFromSXform(const Eigen::MatrixBase<T> &X) {
 }
 
 /*!
- * Invert a spatial transformation (much faster than matrix inverse)
+ * 反转空间变换（比矩阵逆运算快得多）
  */
 template <typename T>
 SXform<typename T::Scalar> invertSXform(const Eigen::MatrixBase<T> &X) {
@@ -163,7 +158,7 @@ SXform<typename T::Scalar> invertSXform(const Eigen::MatrixBase<T> &X) {
 }
 
 /*!
- * Compute joint motion subspace vector
+ * 计算关节运动子空间向量
  */
 template <typename T>
 SVec<T> jointMotionSubspace(JointType joint, CoordinateAxis axis) {
@@ -187,7 +182,7 @@ SVec<T> jointMotionSubspace(JointType joint, CoordinateAxis axis) {
 }
 
 /*!
- * Compute joint transformation
+ * 计算关节变换
  */
 template <typename T>
 Mat6<T> jointXform(JointType joint, CoordinateAxis axis, T q) {
@@ -211,9 +206,9 @@ Mat6<T> jointXform(JointType joint, CoordinateAxis axis, T q) {
 }
 
 /*!
- * Construct the rotational inertia of a uniform density box with a given mass.
- * @param mass Mass of the box
- * @param dims Dimensions of the box
+ * 构建均匀密度盒子的旋转惯量矩阵
+ * @param mass 盒子的质量
+ * @param dims 盒子的尺寸
  */
 template <typename T>
 Mat3<typename T::Scalar> rotInertiaOfBox(typename T::Scalar mass, const Eigen::MatrixBase<T> &dims) {
@@ -225,8 +220,8 @@ Mat3<typename T::Scalar> rotInertiaOfBox(typename T::Scalar mass, const Eigen::M
 }
 
 /*!
- * Convert from spatial velocity to linear velocity.
- * Uses spatial velocity at the given point.
+ * 从空间速度转换到线速度
+ * 使用给定点的空间速度
  */
 template <typename T, typename T2>
 Vec3<typename T::Scalar> spatialToLinearVelocity(const Eigen::MatrixBase<T> &v, const Eigen::MatrixBase<T2> &x) {
@@ -239,7 +234,7 @@ Vec3<typename T::Scalar> spatialToLinearVelocity(const Eigen::MatrixBase<T> &v, 
 }
 
 /*!
- * Convert from spatial velocity to angular velocity.
+ * 从空间速度转换到角速度
  */
 template <typename T>
 Vec3<typename T::Scalar> spatialToAngularVelocity(const Eigen::MatrixBase<T> &v) {
@@ -249,8 +244,8 @@ Vec3<typename T::Scalar> spatialToAngularVelocity(const Eigen::MatrixBase<T> &v)
 }
 
 /*!
- * Compute the classical lienear accleeration of a frame given its spatial
- * acceleration and velocity
+ * 计算给定帧的经典加速度
+ * 给定空间加速度和速度
  */
 template <typename T, typename T2>
 Vec3<typename T::Scalar> spatialToLinearAcceleration(const Eigen::MatrixBase<T> &a, const Eigen::MatrixBase<T2> &v) {
@@ -264,8 +259,8 @@ Vec3<typename T::Scalar> spatialToLinearAcceleration(const Eigen::MatrixBase<T> 
 }
 
 /*!
- * Compute the classical lienear acceleration of a frame given its spatial
- * acceleration and velocity
+ * 计算帧的经典线加速度
+ * 给定空间加速度和速度
  */
 template <typename T, typename T2, typename T3>
 Vec3<typename T::Scalar> spatialToLinearAcceleration(
@@ -277,13 +272,13 @@ Vec3<typename T::Scalar> spatialToLinearAcceleration(
   Vec3<typename T::Scalar> alin_x = spatialToLinearVelocity(a, x);
   Vec3<typename T::Scalar> vlin_x = spatialToLinearVelocity(v, x);
 
-  // classical accleration = spatial linear acc + omega x v
+  // 经典加速度 = 空间线加速度 + omega x v
   Vec3<typename T::Scalar> acc = alin_x + v.template head<3>().cross(vlin_x);
   return acc;
 }
 
 /*!
- * Apply spatial transformation to a point.
+ * 应用空间变换到一个点
  */
 template <typename T, typename T2>
 Vec3<typename T::Scalar> sXFormPoint(const Eigen::MatrixBase<T> &X, const Eigen::MatrixBase<T2> &p) {
@@ -297,9 +292,9 @@ Vec3<typename T::Scalar> sXFormPoint(const Eigen::MatrixBase<T> &X, const Eigen:
 }
 
 /*!
- * Convert a force at a point to a spatial force
- * @param f : force
- * @param p : point
+ * 将力从一个点转换到空间力
+ * @param f : 力
+ * @param p : 点
  */
 template <typename T, typename T2>
 SVec<typename T::Scalar> forceToSpatialForce(const Eigen::MatrixBase<T> &f, const Eigen::MatrixBase<T2> &p) {
@@ -312,15 +307,14 @@ SVec<typename T::Scalar> forceToSpatialForce(const Eigen::MatrixBase<T> &f, cons
 }
 
 /*!
- * Representation of Rigid Body Inertia as a 6x6 Spatial Inertia Tensor
+ *刚体惯性张量的6x6空间惯性张量表示
  */
 template <typename T>
 class SpatialInertia {
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   /*!
-   * Construct spatial inertia from mass, center of mass, and 3x3 rotational
-   * inertia
+   *从质量、质心和3x3旋转惯性矩阵构造空间惯性
    */
   SpatialInertia(T mass, const Vec3<T> &com, const Mat3<T> &inertia) {
     Mat3<T> cSkew = vectorToSkewMat(com);
@@ -331,17 +325,17 @@ public:
   }
 
   /*!
-   * Construct spatial inertia from 6x6 matrix
+   *从6x6矩阵构造空间惯性
    */
   explicit SpatialInertia(const Mat6<T> &inertia) { _inertia = inertia; }
 
   /*!
-   * If no argument is given, zero.
+   *如果没有参数，则为零
    */
   SpatialInertia() { _inertia = Mat6<T>::Zero(); }
 
   /*!
-   * Construct spatial inertia from mass property vector
+   *从质量属性向量构造空间惯性
    */
   explicit SpatialInertia(const MassProperties<T> &a) {
     _inertia(0, 0) = a(4);
@@ -360,11 +354,9 @@ public:
   }
 
   /*!
-   * Construct spatial inertia from pseudo-inertia. This is described in
-   * Linear Matrix Inequalities for Physically Consistent Inertial Parameter
-   *   Identification: A Statistical Perspective on the Mass Distribution, by
-   *   Wensing, Kim, Slotine
-   * @param P
+   *从伪惯性构造空间惯性。这在Linear Matrix Inequalities for Physically Consistent Inertial Parameter
+   *   Identification: A Statistical Perspective on the Mass Distribution中被描述了，作者是Wensing, Kim, Slotine
+   *@param P
    */
   explicit SpatialInertia(const Mat4<T> &P) {
     Mat6<T> I;
@@ -380,7 +372,7 @@ public:
   }
 
   /*!
-   * Convert spatial inertia to mass property vector
+   *将空间惯性转换为质量属性向量
    */
   MassProperties<T> asMassPropertyVector() {
     MassProperties<T> a;
@@ -391,7 +383,7 @@ public:
   }
 
   /*!
-   * Get 6x6 spatial inertia
+   * 获取6x6空间惯性矩阵
    */
   const Mat6<T> &getMatrix() const { return _inertia; }
 
@@ -400,12 +392,12 @@ public:
   void addMatrix(const Mat6<T> &mat) { _inertia += mat; }
 
   /*!
-   * Get mass
+   * 获取质量
    */
   T getMass() { return _inertia(5, 5); }
 
   /*!
-   * Get center of mass location
+   * 获取质心位置
    */
   Vec3<T> getCOM() {
     T m = getMass();
@@ -415,7 +407,7 @@ public:
   }
 
   /*!
-   * Get 3x3 rotational inertia
+   * 获取3x3 旋转惯性矩阵
    */
   Mat3<T> getInertiaTensor() {
     T m = getMass();
@@ -425,9 +417,9 @@ public:
   }
 
   /*!
-   * Convert to 4x4 pseudo-inertia matrix.  This is described in
-   * Linear Matrix Inequalities for Physically Consistent Inertial Parameter
-   *   Identification: A Statistical Perspective on the Mass Distribution, by
+   * 将其转换为4x4伪惯性矩阵。 这在
+   * 线性矩阵不等式中用于物理一致惯性参数
+   *   identification：一种统计视角下的质量分布， by
    *   Wensing, Kim, Slotine
    */
   Mat4<T> getPseudoInertia() {
@@ -443,7 +435,7 @@ public:
   }
 
   /*!
-   * Flip inertia matrix around an axis.  This isn't efficient, but it works!
+   * 沿着轴翻转惯性矩阵。 这不是很高效，但它工作！
    */
   SpatialInertia flipAlongAxis(CoordinateAxis axis) {
     Mat4<T> P = getPseudoInertia();

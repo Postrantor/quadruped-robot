@@ -14,37 +14,37 @@
 #include "robots/qr_robot.h"
 
 /**
- * @brief ControlFSMData
+ * @brief 控制FSM数据
  */
 template <typename T>
 struct qrControlFSMData {
   /**
-   * @brief Pointer to Robot.
+   * @brief 机器人指针。
    */
   Quadruped::qrRobot* quadruped;
 
   /**
-   * @brief Pointer to StateEstimatorContainer.
+   * @brief 状态估算器容器指针。
    */
   Quadruped::qrStateEstimatorContainer* stateEstimators;
 
   /**
-   * @brief Pointer to GaitGenerator.
+   * @brief 步态计划生成器指针。
    */
   Quadruped::qrGaitGenerator* gaitGenerator;
 
   /**
-   * @brief Pointer to DesiredStateCommand
+   * @brief 期望状态命令指针。
    */
   Quadruped::qrDesiredStateCommand* desiredStateCommand;
 
   /**
-   * @brief Pointer to User Parameters
+   * @brief 用户参数指针。
    */
   qrUserParameters* userParameters;
 
   /**
-   * @brief The motor commands calculated in this control loop.
+   * @brief 本控制循环中计算的电机命令。
    */
   std::vector<Quadruped::qrMotorCommand> legCmd;
 };

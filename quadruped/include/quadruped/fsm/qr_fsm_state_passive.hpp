@@ -14,8 +14,8 @@ template <typename T>
 class qrFSMStatePassive : public qrFSMState<T> {
 public:
   /**
-   * @brief Constructor of FSM_State_StandUp.
-   * @param controlFSMData: pointer to the data this FSM needed.
+   * @brief FSM_State_Passive的构造函数。
+   * @param _controlFSMData: 指向该FSM所需数据的指针。
    */
   qrFSMStatePassive(qrControlFSMData<T> *_controlFSMData);
 

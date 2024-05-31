@@ -14,27 +14,27 @@ template <typename T>
 class qrTaskBodyOrientation : public qrTask<T> {
 public:
   /**
-   * @brief Constructor of class qrTaskBodyOrientation.
-   * @param fbModel: pointer to MIT floating base model.
+   * @brief qrTaskBodyOrientation 类的构造函数。
+   * @param fb_model: 指向 MIT 浮动基体模型的指针。
    */
   qrTaskBodyOrientation(const FloatingBaseModel<T> *fb_model);
 
   virtual ~qrTaskBodyOrientation() = default;
 
   /**
-   * @brief A scale factor that will mutiply posErr.
+   * @brief 一个比例因子，用于乘以 posErr。
    */
   DVec<T> errScale;
 
   /**
-   * @brief KP for position gains.
-   * Used in PD control to get acceleration command.
+   * @brief 位置增益的 KP。
+   * 在 PD 控制中用于获取加速度命令。
    */
   DVec<T> Kp;
 
   /**
-   * @brief KP for velocity gains
-   * Used in PD control to get acceleration command.
+   * @brief 速度增益的 KP。
+   * 在 PD 控制中用于获取加速度命令。
    */
   DVec<T> Kd;
 
@@ -51,13 +51,13 @@ protected:
 
   /**
    * @see qrTask::UpdateTaskJDotQdot
-   * @attention In bod orientation task, just set JDotQdot to zero matrix.
+   * @attention 在体姿态任务中，只将 JDotQdot 设置为零矩阵。
    */
   virtual bool UpdateTaskJDotQdot();
 
   /**
-   * @brief Pointer to MIT floating base model.
-   * Used to get Jc and JDotQDot.
+   * @brief 指向 MIT 浮动基体模型的指针。
+   * 用于获取 Jc 和 JDotQDot。
    */
   const FloatingBaseModel<T> *fbModel;
 };

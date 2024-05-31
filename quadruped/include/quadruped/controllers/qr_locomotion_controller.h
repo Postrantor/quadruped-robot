@@ -27,17 +27,16 @@ namespace Quadruped {
 class qrLocomotionController {
 public:
   /**
-   * @brief Constructor of class qrLocomotionController.
-   * @param robot: pointer to the Robot.
-   * @param gaitGenerator: pointer to the Gait Generator.
-   * Openloop Gait Generator or Walk Gait Generator.
-   * @param desiredStateCommand: pointer to DesiredStateCommand.
-   * @param stateEstimator: pointer to StateEstimatorContainer.
-   * @param comAdjuster: pointer to ComAdjuster.
-   * @param posePlanner: pointer to PosePlanner.
-   * @param swingLegController: pointer to RaibertSwingLegController.
-   * @param stanceLegController: pointer to StanceLegControllerInterface.
-   * @param userParameters: pointer to UserParameters.
+   * @brief 构造函数，初始化 qrLocomotionController 类。
+   * @param robot: 机器人指针。
+   * @param gaitGenerator: 步态生成器指针，Openloop Gait Generator 或 Walk Gait Generator。
+   * @param desiredStateCommand: DesiredStateCommand 指针。
+   * @param stateEstimator: 状态估计容器指针。
+   * @param comAdjuster: COM 调整器指针。
+   * @param posePlanner: 姿态规划器指针。
+   * @param swingLegController: swing腿控制器指针。
+   * @param stanceLegController: 站立腿控制器接口指针。
+   * @param userParameters: 用户参数指针。
    */
   qrLocomotionController(
       qrRobot *robot,
@@ -53,12 +52,12 @@ public:
   ~qrLocomotionController() = default;
 
   /**
-   * @brief Reset all components in the locomotion controller.
+   * @brief 重置所有控制器组件。
    */
   void Reset();
 
   /**
-   * @brief Bind desiredStateCommand to swingLegController.
+   * @brief 将 desiredStateCommand 绑定到 swingLegController。
    */
   void BindCommand() {
     swingLegController->BindCommand(desiredStateCommand);
@@ -66,59 +65,60 @@ public:
   }
 
   /**
-   * @brief Update components in the locomotion controller every control loop.
+   * @brief 每个控制循环更新控制器组件。
    */
   void Update();
 
-  /** @brief Compute all motors' commands via subcontrollers.
-   *  @return control ouputs (e.g. positions/torques) for all (12) motors.
+  /**
+   * @brief 通过子控制器计算所有电机命令。
+   *  @return 控制输出（例如位置/扭矩）所有（12）电机。
    */
   std::tuple<std::vector<qrMotorCommand>, Eigen::Matrix<float, 3, 4>> GetAction();
 
   /**
-   * @brief A function as GetAction(). Only for Debug.
-   * @return control ouputs (e.g. positions/torques) for all (12) motors.
+   * @brief 一个函数，同 GetAction()，仅用于 Debug。
+   *  @return 控制输出（例如位置/扭矩）所有（12）电机。
    */
   std::tuple<std::vector<qrMotorCommand>, Eigen::Matrix<float, 3, 4>> GetFakeAction();
 
   /**
-   * @brief Getter method of member gaitGenerator.
+   * @brief 获取成员 gaitGenerator。
    */
   inline qrGaitGenerator *GetGaitGenerator() const { return gaitGenerator; }
 
   /**
-   * @brief Getter method of member swingLegController.
+   * @brief 获取成员 swingLegController。
    */
   inline qrRaibertSwingLegController *GetSwingLegController() const { return swingLegController; }
 
   /**
-   * @brief Getter method of member stanceLegController.
+   * @brief 获取成员 stanceLegController。
    */
   inline TorqueStanceLegController *GetStanceLegController() const { return stanceLegController->c; }
 
   /**
-   * @brief Getter method of member posePlanner.
+   * @brief 获取成员 posePlanner。
    */
   inline qrPosePlanner *GetPosePlanner() { return posePlanner; }
 
   /**
-   * @brief get current time since reset of the robot
-   * @return time since reset of the robot
+   * @brief 获取机器人自重置以来的当前时间
+   * @return 机器人自重置以来的当前时间
    */
   double GetTime() { return robot->GetTimeSinceReset(); }
 
   /**
-   * @brief pointer to RaibertSwingLegController
+   * @brief RaibertSwingLegController 指针
    */
   qrRaibertSwingLegController *swingLegController;
 
   /**
-   * @brief pointer to StanceLegControllerInterface
+   * @brief StanceLegControllerInterface 指针
    */
   qrStanceLegControllerInterface *stanceLegController;
 
   /**
-   * @brief a member indicates whether the locomotion has been stopped
+   * @brief 表示是否已停止机器人
    */
   bool stop = false;
 
@@ -128,47 +128,47 @@ public:
 
 private:
   /**
-   * @brief Pointer to Robot.
+   * @brief 指向机器人指针。
    */
   qrRobot *robot;
 
   /**
-   * @brief Pointer to GaitGenerator.
+   * @brief 指向步态生成器指针。
    */
   qrGaitGenerator *gaitGenerator;
 
   /**
-   * @brief Pointer to StateEstimatorContainer.
+   * @brief 指向状态估计容器指针。
    */
   qrStateEstimatorContainer *stateEstimator;
 
   /**
-   * @brief Pointer to ComAdjuster.
+   * @brief 指向 COM 调整器指针。
    */
   qrComAdjuster *comAdjuster;
 
   /**
-   * @brief Pointer to PosePlanner.
+   * @brief 指向姿态规划器指针。
    */
   qrPosePlanner *posePlanner;
 
   /**
-   * @brief Pointer to DesiredStateCommand.
+   * @brief 指向 DesiredStateCommand 指针。
    */
   qrDesiredStateCommand *desiredStateCommand;
 
   /**
-   * @brief A list of commands that will send to gazebo/real quadrupeds every control loop.
+   * @brief 每个控制循环将发送到 Gazebo/实际四足机器人的命令列表。
    */
   std::vector<qrMotorCommand> action;
 
   /**
-   * @brief Records the time quadruped resets.
+   * @brief 记录四足机器人重置的时间。
    */
   double resetTime;
 
   /**
-   * @brief Records the time since the quadruped resets.
+   * @brief 记录四足机器人自重置以来的时间。
    */
   double timeSinceReset;
 };

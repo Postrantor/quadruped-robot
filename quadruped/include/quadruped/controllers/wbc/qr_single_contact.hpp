@@ -14,157 +14,154 @@ template <typename T>
 class qrSingleContact {
 public:
   /**
-   * @brief Constructor of the class qrSingleContact.
-   * @param robot: Class to represent a floating base rigid body model with rotors and ground contacts. No concept of
-   * state.
-   * @param contact_pt: the number of contact points.
+   * @brief qrSingleContact 类的构造函数。
+   * @param robot: 浮动基体模型类，具有旋翼和接触点。无状态概念。
+   * @param contact_pt: 接触点的数量。
    */
   qrSingleContact(FloatingBaseModel<T>* robot, int contact_pt);
 
   virtual ~qrSingleContact() = default;
 
   /**
-   * @brief Update contact jacobian and inequivalent constraint vector.
-   * @return true if update has finished.
+   * @brief 更新接触雅可比矩阵和不等价约束向量。
+   * @return 如果更新成功则返回 true。
    */
   bool UpdateContactSpec();
 
   /**
-   * @brief Get the row count/dimension of member Uf.
+   * @brief 获取成员 Uf 的行数/维度。
    */
   size_t GetDimUf() const { return Uf.rows(); }
 
   /**
-   * @brief Getter method of member dimContact.
+   * @brief 获取成员 dimContact 的 getter 方法。
    */
   size_t GetDimContact() const { return dimContact; }
 
   /**
-   * @brief Getter method of member Jc.
+   * @brief 获取成员 Jc 的 getter 方法。
    */
   void GetJc(DMat<T>& Jc) const { Jc = this->Jc; }
 
   /**
-   * @brief Getter method of member JcDotQDot.
+   * @brief 获取成员 JcDotQDot 的 getter 方法。
    */
   void GetJcDotQdot(DVec<T>& JcDotQdot) const { JcDotQdot = this->JcDotQdot; }
 
   /**
-   * @brief Getter method of member Uf.
+   * @brief 获取成员 Uf 的 getter 方法。
    */
   void GetUf(DMat<T>& Uf) const { Uf = this->Uf; }
 
   /**
-   * @brief Getter method of member ineqVec.
+   * @brief 获取成员 ineqVec 的 getter 方法。
    */
   void GetIneqVec(DVec<T>& ineqVec) const { ineqVec = this->ineqVec; }
 
   /**
-   * @brief Getter method of member desiredFr
+   * @brief 获取成员 desiredFr 的 getter 方法。
    */
   const DVec<T>& GetDesiredFr() const { return desiredFr; }
 
   /**
-   * @brief Setter method of member desiredFr.
+   * @brief 设置成员 desiredFr 的 setter 方法。
    */
   void SetDesiredFr(const DVec<T>& desiredFr) { this->desiredFr = desiredFr; }
 
 protected:
   /**
-   * @brief Update Jc by reading the contact jacobian from MIT floating base model.
-   * @return true if the update has finished.
+   * @brief 通过读取 MIT 浮动基体模型来更新 Jc。
+   * @return 如果更新成功则返回 true。
    */
   bool UpdateJc();
 
   /**
-   * @brief Update JcDotQdot by reading the contact jacobian from MIT floating base model.
-   * @return true if the update has finished.
+   * @brief 通过读取 MIT 浮动基体模型来更新 JcDotQdot。
+   * @return 如果更新成功则返回 true。
    */
   bool UpdateJcDotQdot();
 
   /**
-   * @brief Update Uf matrix.
-   * Currently the matrix is constant, so the method just return true.
-   * @todo Consider add dynamic terrain information to UpdateUf().
-   * @return true if the update has finished.
+   * @brief 更新 Uf 矩阵。
+   * 目前该矩阵是常量，所以该方法只是返回 true。
+   * @todo 考虑添加动态地形信息到 UpdateUf() 中。
+   * @return 如果更新成功则返回 true。
    */
   bool UpdateUf();
 
   /**
-   * @brief Update ineqVec.
-   * Currently only limiting the force on Z axis not to be greater than the weight of quadruped,
-   * or it will start bumping.
-   * @return true if the update has finished.
+   * @brief 更新 ineqVec。
+   * 目前只限制 Z 轴方向的力不超过四足机器人的重量，否则将开始 bumping。
+   * @return 如果更新成功则返回 true。
    */
   bool UpdateIneqVec();
 
   /**
-   * @brief Pointer to MIT floating base model.
-   * Used to get Jc and JDotQDot.
+   * @brief 指向 MIT 浮动基体模型的指针。
+   * 用于获取 Jc 和 JDotQDot。
    */
   FloatingBaseModel<T>* fbModel;
 
   /**
-   * @brief Maximum force of the contact point along z-axis.
+   * @brief 接触点的最大 z 轴方向的力。
    */
   T maxFz;
 
   /**
-   * @brief Current index of contact point.
-   * 0, 1, 2, 3 for FR, FL, RR, RL.
+   * @brief 当前的接触点索引。
+   * 0, 1, 2, 3 分别对应 FR, FL, RR, RL。
    */
   int indexContact;
 
   /**
-   * @brief Dimension of constraint matrix.
-   * Usually set to 6, including 4 conic constraints and 2 boundary constraints.
+   * @brief 约束矩阵的维度。
+   * 通常设置为 6，包括 4 个圆锥约束和 2 个边界约束。
    */
   int dimU;
 
   /**
-   * @brief Friction factor of the terrain.
-   * @todo Consider add dynamic terrain information to mu.
+   * @brief 地形的摩擦系数。
+   * @todo 考虑添加动态地形信息到 mu 中。
    */
   T mu;
 
   /**
-   * @brief z-force index in force vector.
-   * Usually set to 2.
+   * @brief 力向量中的 z-力索引。
+   * 通常设置为 2。
    */
   int indexFz;
 
   /**
-   * @brief 6x3 inequivalent constraint martix, including conic and boundary constraints.
-   *
+   * @brief 6x3 不等价约束矩阵，包括圆锥和边界约束。
    */
   DMat<T> Uf;
 
   /**
-   * @brief Desired reaction force.
-   * This is set to the result force from MPC solver.
+   * @brief 所需的反应力。
+   * 这是从 MPC 解算器中获得的结果。
    */
   DVec<T> desiredFr;
 
   /**
-   * @brief 6x1 inequivalent vector.
-   * The sixth entry is set to -maxFz to satisfy fz < maxFz.
+   * @brief 6x1 不等价向量。
+   * 第六个条目设置为 -maxFz，以满足 fz < maxFz。
    */
   DVec<T> ineqVec;
 
   /**
-   * @brief Single contact jacobian of corresponding contact point.
+   * @brief 单个接触点的雅可比矩阵。
    */
   DMat<T> Jc;
 
   /**
-   * @brief Derivative of Jc dot derivative of q.
-   * Used in null-space projection.
+   * @brief Jc 的导数乘以 q 的导数。
+   * 用于 null 空间投影。
    */
   DVec<T> JcDotQdot;
 
   /**
-   * @brief Dimension of contact point.
-   * Usually set to 3. (x, y, z)
+   * @brief 接触点的维度。
+   * 通常设置为 3（x, y, z）。
    */
   size_t dimContact;
 };

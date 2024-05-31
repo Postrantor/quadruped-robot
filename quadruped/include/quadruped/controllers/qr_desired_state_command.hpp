@@ -33,99 +33,95 @@ public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   /**
-   * @brief Contructor of class qrDesiredStateCommand.
-   * @param nhIn: ROS node handle. This is used to subscribe the joy node.
-   * @param robotIn: robot pointer. This is mainly used to get the robot height and then set the desired height.
+   * @brief 构造函数，创建 qrDesiredStateCommand 类的实例
+   * @param nhIn: ROS 节点句柄，用于订阅 joy 节点
+   * @param robotIn: 机器人指针，主要用于获取机器人高度并设置期望高度
    */
   qrDesiredStateCommand(ros::NodeHandle &nhIn, qrRobot *robotIn);
 
   ~qrDesiredStateCommand() = default;
 
   /**
-   * @brief Update the desired state according to the joy input
+   * @brief 根据 joy 输入更新期望状态
    */
   void Update();
 
   /**
-   * @brief print command from joy
+   * @brief 打印来自 joy 的命令
    */
   void PrintRawInfo();
 
   /**
-   * @brief print desired state generated from joy command
+   * @brief 打印由 joy 命令生成的期望状态
    */
   void PrintStateCommandInfo();
 
   /**
-   * @brief the callback function called when the joy command received
-   * @param joy_msg: joy command message from ROS joy_node
+   * @brief joy 命令接收到时调用的回调函数
+   * @param joy_msg: 来自 ROS joy_node 的 joy 命令消息
    */
   void JoyCallback(const sensor_msgs::Joy::ConstPtr &joy_msg);
 
   int RecvSocket();
 
   /**
-   * @brief Getter method of member joyCtrlState.
+   * @brief joyCtrlState 成员的获取方法
    */
   inline RC_MODE getJoyCtrlState() const { return joyCtrlState; }
 
   /**
-   * @brief Getter method of member joyCtrlStateChangeRequest.
+   * @brief joyCtrlStateChangeRequest 成员的获取方法
    */
   inline bool getJoyCtrlStateChangeRequest() const { return joyCtrlStateChangeRequest; }
 
   /**
-   * @brief Setter method of member joyCtrlStateChangeRequest.
-   * @param request: new value for joyCtrlStateChangeRequest.
+   * @brief joyCtrlStateChangeRequest 成员的设置方法
+   * @param request: joyCtrlStateChangeRequest 的新值
    */
   inline void setJoyCtrlStateChangeRequest(bool request) { joyCtrlStateChangeRequest = request; }
 
   /**
-   * @brief Desired linear velocity expressed in body frame.
+   * @brief 表示在机体坐标系中表示的期望线性速度
    */
   Vec3<float> vDesInBodyFrame;
 
   /**
-   * @brief Desired angular velocity expressed in body frame.
+   * @brief 表示在机体坐标系中表示的期望角速度
    */
   Vec3<float> wDesInBodyFrame;
 
   /**
-   * @brief Stores desired position, roll pitch yaw, linear velocity and roll pitch yaw rate.
+   * @brief 存储期望位置、滚转角、线性速度和滚转角速度
    */
   Vec12<float> stateDes;
 
   /**
-   * @brief Stores current position, roll pitch yaw, linear velocity and roll pitch yaw rate.
+   * @brief 存储当前位置、滚转角、线性速度和滚转角速度
    */
   Vec12<float> stateCur;
 
   /**
-   * @brief Stores last desired position, roll pitch yaw, linear velocity and roll pitch yaw rate.
+   * @brief 存储上一个期望位置、滚转角、线性速度和滚转角速度
    */
   Vec12<float> preStateDes;
 
   /**
-   * @brief Stores the linear and angular acceleration, and 12 joint accelerations.
+   * @brief 存储线性和角加速度，以及 12 个关节加速度
    */
   Vec18<float> ddqDes;
 
   /**
-   * @brief Desired joint angles.
-   * This memeber is now only used in walk locomotion.
-   * May be abandoned in the future
+   * @brief 期望关节角度，当前只在步行运动中使用，可能在将来被废弃
    */
   Eigen::Matrix<float, 3, 4> legJointq;
 
   /**
-   * @brief Desired joint angle velocities.
-   * This member is not used now.
-   * May be abandoned in the future
+   * @brief 期望关节角速度，当前未使用，可能在将来被废弃
    */
   Eigen::Matrix<float, 3, 4> legJointdq;
 
   /**
-   * @brief Desired footstep target position, expressed in world frame.
+   * @brief 表示在世界坐标系中表示的期望足端目标位置
    */
   Eigen::Matrix<float, 3, 4> footTargetPositionsInWorldFrame;
 
@@ -135,225 +131,218 @@ public:
 
 private:
   /**
-   * @brief Timestep for one control loop.
-   * @todo sync this value to the timestep in Robot class
+   * @brief 控制循环的时间步长
+   * @todo 将此值同步到机器人类中的时间步长
    * @see Quadruped::Robot
    */
   float dt = 0.002f;
 
   /**
-   * @brief ROS nodehandle to subscribe "/joy".
-   * @todo will use driver to get the state of the joy instead of ROS topic
+   * @brief 订阅 "/joy" 的 ROS 节点句柄
+   * @todo 将使用驱动程序获取 joy 的状态，而不是 ROS 话题
    */
   ros::NodeHandle &nh;
 
   /**
-   * @brief ROS subscriber for the ROS joy_node.
+   * @brief ROS joy_node 的订阅者
    */
   ros::Subscriber gamepadCommandSub;
 
   /**
-   * @brief Topic name of the ROS joy_node.
+   * @brief ROS joy_node 的话题名称
    */
   std::string topicName = "/joy";
 
   /**
-   * @brief Current joy state.
+   * @brief 当前 joy 状态
    */
   RC_MODE joyCtrlState;
 
   /**
-   * @brief Last joy state.
+   * @brief 上一个 joy 状态
    */
   RC_MODE prevJoyCtrlState;
 
   /**
-   * @brief A variable indicates whether the quadruped is moving now.
+   * @brief 一个变量，指示四足机器人是否正在移动
    */
   int movementMode;
 
   /**
-   * @brief A variavle indicating whether the quadruped need to change state.
-   * If the variable is TRUE, it will be used to update the FSM of the quadruped.
+   * @brief 一个变量，指示四足机器人是否需要改变状态。如果该变量为真，它将用于更新四足机器人的有限状态机。
    */
   bool joyCtrlStateChangeRequest;
 
   /**
-   * @brief A variable indicating whether to use ROS message control or joy control.
-   * @attention currently, we only use joy control in the quadruped library.
-   * If you want to use other control method, please implement by yourself.
+   * @brief 一个变量，指示是否使用 ROS 消息控制或 joy 控制
+   * @attention 目前，我们在四足机器人库中只使用 joy 控制。如果您想使用其他控制方法，请自行实现。
    */
   bool joyCtrlOnRequest;
 
   /**
-   * @brief Contrary to joyCtrlOnRequest.
+   * @brief 与 joyCtrlOnRequest 相反
    */
   bool rosCmdRequest;
 
   /**
-   * @brief A variable indicating whether the joy control stops.
-   * When this boolean is true, the joy commands will set to zero,quadruped will stop locomotion.
+   * @brief 一个变量，指示 joy 控制是否停止。当这个布尔值为真时，joy 命令将设置为零，四足机器人将停止运动。
    */
   bool joyCmdExit;
 
   /**
-   * @brief A variable indicating whether the body is up or down.
-   * If bodyUp equals -1, the quadruped is sitting down.
-   * If bodyUp equals 0, the quadruped stops at bodyHeight.
-   * If bodyUp equals 1, the quadruped is standing up.
+   * @brief 一个变量，指示机体是向上还是向下。如果 bodyUp 等于 -1，四足机器人正在蹲下。如果 bodyUp 等于 0，四足机器人在
+   * bodyHeight 处停止。如果 bodyUp 等于 1，四足机器人正在站起来。
    */
   int bodyUp;
 
   /**
-   * @brief a variable indicating whether quadruped needs to change the gait.
-   * Currently this variable has no actual use.
-   * @todo will remove this member in the future.
+   * @brief 一个变量，指示四足机器人是否需要改变步态。当前这个变量没有实际用途。将来可能会移除这个成员。
+   * @todo 将来会移除这个成员
    */
   bool gaitSwitch = false;
 
   bool isSim;
 
   /**
-   * @brief desired body height.
-   * Now it is a constant.
+   * @brief 期望的机体高度，现在是一个常数
    */
   float joycmdBodyHeight;
 
   /**
-   * @brief Linear velocity on Z Axis from joy control.
+   * @brief 来自 joy 控制的 Z 轴上的线性速度
    */
   float joyCmdVz;
 
   /**
-   * @brief Linear velocity on X Axis from joy control.
+   * @brief 来自 joy 控制的 X 轴上的线性速度
    */
   float joyCmdVx;
 
   /**
-   * @brief Linear velocity on Y Axis from joy control.
+   * @brief 来自 joy 控制的 Y 轴上的线性速度
    */
   float joyCmdVy;
 
   /**
-   * @brief Yaw velocity from joy control.
+   * @brief 来自 joy 控制的偏航角速度
    */
   float joyCmdYawRate;
 
   /**
-   * @brief Roll velocity from joy control.
+   * @brief 来自 joy 控制的滚转角速度
    */
   float joyCmdRollRate;
 
   /**
-   * @brief Pitch velocity from joy control
+   * @brief 来自 joy 控制的俯仰角速度
    */
   float joyCmdPitchRate;
 
   /**
-   * @brief This factor is used as a linear factor between current velocity and joy velocity.
+   * @brief 此因子用作当前速度和 joy 速度之间的线性因子
    */
   const float filterFactor = 0.02f;
 
   /**
-   * @brief The filtered linear velocity from the joy command.
+   * @brief 从 joy 命令中过滤后的线性速度。
    */
   Vec3<float> filteredVel;
 
   /**
-   * @brief The filtered angular velocity from the joy command.
-   * @attention This is actually the change rate of roll pitch yaw.
+   * @brief 从 joy 命令中过滤后的角速度。
+   * @attention 这实际上是滚转、俯仰和偏航的变化率。
    */
   Vec3<float> filteredOmega;
 
   /**
-   * @brief Choose how often to print info, every N iterations.
+   * @brief 选择每隔多少次迭代打印信息。
    */
   int printNum = 5;
 
   /**
-   * @brief Track the number of iterations since last info print.
+   * @brief 跟踪自上次打印信息以来的迭代次数。
    */
   int printIter = 0;
 
   /**
-   * @brief Max roll value for the desired state.
+   * @brief 期望状态的最大滚转值。
    */
   const float MAX_ROLL = 0.4f;
 
   /**
-   * @brief Min roll value for the desired state.
+   * @brief 期望状态的最小滚转值。
    */
   const float MIN_ROLL = -0.4f;
 
   /**
-   * @brief Max pitch value for the desired state.
+   * @brief 期望状态的最大俯仰值。
    */
   const float MAX_PITCH = 0.5f;
 
   /**
-   * @brief Min pitch value for the desired state.
+   * @brief 期望状态的最小俯仰值。
    */
   const float MIN_PITCH = -0.5f;
 
   /**
-   * @brief Max linear velocity on X Axis for the desired state.
+   * @brief 期望状态的 X 轴上的最大线性速度。
    */
   const float MAX_VELX = 0.2f;
 
   /**
-   * @brief Min linear velocity on X Axis for the desired state.
+   * @brief 期望状态的 X 轴上的最小线性速度。
    */
   const float MIN_VELX = -0.15f;
 
   /**
-   * @brief Max linear velocity on Y Axis for the desired state.
+   * @brief 期望状态的 Y 轴上的最大线性速度。
    */
   const float MAX_VELY = 0.1f;
 
   /**
-   * @brief Min linear velocity on Y Axis for the desired state.
+   * @brief 期望状态的 Y 轴上的最小线性速度。
    */
   const float MIN_VELY = -0.1f;
 
   /**
-   * @brief Max yaw velocity for the desired state.
+   * @brief 期望状态的最大偏航速度。
    */
   const float MAX_YAWRATE = 0.2f;
 
   /**
-   * @brief Min yaw velocity for the desired state.
+   * @brief 期望状态的最小偏航速度。
    */
   const float MIN_YAWRATE = -0.2f;
 
   /**
-   * @brief Max roll velocity for the desired state.
+   * @brief 期望状态的最大滚转速度。
    */
   const float MAX_ROLLRATE = 0.2f;
 
   /**
-   * @brief Min roll velocity for the desired state.
+   * @brief 期望状态的最小滚转速度。
    */
   const float MIN_ROLLRATE = -0.2f;
 
   /**
-   * @brief Max pitch velocity for the desired state.
+   * @brief 期望状态的最大俯仰速度。
    */
   const float MAX_PITCHRATE = 0.2f;
 
   /**
-   * @brief Min pitch velocity for the desired state.
+   * @brief 期望状态的最小俯仰速度。
    */
   const float MIN_PITCHRATE = -0.2f;
 
   /**
-   * @brief Max body height for the desired state.
-   * This member is currently not used.
+   * @brief 期望状态的最大机体高度。
+   * 此成员目前未使用。
    */
   const float BODY_HEIGHT_MAX = 0.5f;
 
   /**
-   * @brief Min body height for the desired state.
-   * This member is currently not used
+   * @brief 期望状态的最小机体高度。
+   * 此成员目前未使用。
    */
   const float BODY_HEIGHT_MIN = 0.15f;
 };

@@ -11,23 +11,23 @@
 #include "robots/qr_robot.h"
 
 /**
- * @brief All Estimators should inherit from this class.
- * base class of all generic estimator.
+ * @brief 所有估算器都应该继承自这个类。
+ * 所有泛型估算器的基类。
  */
 class qrBaseStateEstimator {
 public:
   /**
-   * @brief Update the estimator.
+   * @brief 更新估算器。
    */
   virtual void Update(float currentTime) = 0;
 
   /**
-   * @brief Reset the estimator.
+   * @brief 重置估算器。
    */
   virtual void Reset(float currentTime) = 0;
 
   /**
-   * @brief Destructor of the base estimator class.
+   * @brief 基础估算器类的析构函数。
    */
   virtual ~qrBaseStateEstimator() = default;
 };

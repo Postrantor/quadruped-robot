@@ -16,7 +16,7 @@
 #include "robots/qr_robot.h"
 
 /**
- * @brief namespace Quadruped is used for subdirectory of ascend-quadruped-cpp. \n
+ * @brief Quadruped命名空间用于ascend-quadruped-cpp的子目录。\n
  */
 namespace Quadruped {
 
@@ -25,36 +25,36 @@ namespace Action {
 void ShinkLeg(qrRobot *robot, float totalTime, float timeStep);
 
 /**
- * @brief stand up action function.
- * @param robot the robot to execute this action.
- * @param standUptime the time that stand up action need to cost.
- * @param totalTime the time that robot start to execute other operation.
- * @param timeStep the time that each step cost.
+ * @brief 站立动作函数。
+ * @param robot 执行该动作的机器人。
+ * @param standUptime 站立动作需要花费的时间。
+ * @param totalTime 机器人开始执行其他操作的时间。
+ * @param timeStep 每步需要花费的时间。
  */
 void StandUp(qrRobot *robot, float standUpTime, float totalTime, float timeStep);
 
 /**
- * @brief sit down action function.
- * @param robot the robot to execute this action.
- * @param sitDownTime the time that sit down action need to cost.
- * @param timeStep the time that each step cost.
+ * @brief 坐下动作函数。
+ * @param robot 执行该动作的机器人。
+ * @param sitDownTime 坐下动作需要花费的时间。
+ * @param timeStep 每步需要花费的时间。
  */
 void SitDown(qrRobot *robot, float sitDownTime, float timeStep);
 
 /**
- * @brief keep Stand action function.
- * @param robot the robot to execute this action.
- * @param KeepStandTime the time that robot keeps standing.
- * @param timeStep the time that each step cost.
+ * @brief 保持站立动作函数。
+ * @param robot 执行该动作的机器人。
+ * @param KeepStandTime 机器人保持站立的时间。
+ * @param timeStep 每步需要花费的时间。
  */
 void KeepStand(qrRobot *robot, float KeepStandTime = 1.0, float timeStep = 0.001);
 
 /**
- * @brief control foot action function. This is for walk gait.
- * @param robot the robot to execute this action.
- * @param locomotionController the time that robot keeps standing.
- * @param walkTime the time that control foot action need to cost.
- * @param timeStep the time that each step cost.
+ * @brief 控制脚动作函数。这用于步行步态。
+ * @param robot 执行该动作的机器人。
+ * @param locomotionController 机器人的运动控制器。
+ * @param walkTime 控制脚动作需要花费的时间。
+ * @param timeStep 每步需要花费的时间。
  */
 void ControlFoot(qrRobot *robot, qrLocomotionController *locomotionController, float walkTime, float timeStep);
 

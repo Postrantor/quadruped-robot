@@ -28,17 +28,17 @@ struct qrStepParameters {
       : duration(_duration), height(_height), penetration(_penetration) {}
 
   /**
-   * @brief Duration of the step.
+   * @brief 步长的持续时间。
    */
   float duration = 0.0f;
 
   /**
-   * @brief Height of the step.
+   * @brief 步长的高度。
    */
   float height = 0.0f;
 
   /**
-   * @brief Distance of penetration of the swing trajectory.
+   * @brief 摆动轨迹的穿透距离。
    */
   float penetration = 0.0f;
 };
@@ -47,9 +47,9 @@ struct qrSplineInfo {
   qrSplineInfo() = default;
 
   /**
-   * @brief Constructor of class qrSplineInfo.
-   * @param control_points: control points of the splines.
-   * @param knots: knots of the splines.
+   * @brief 构造函数。
+   * @param control_points:样条曲线的控制点。
+   * @param knots:样条曲线的节点。
    */
   qrSplineInfo(std::vector<glm::vec3> &control_points, std::vector<float> &knots) {
     this->splineType = SplineType::BSpline;
@@ -58,12 +58,12 @@ struct qrSplineInfo {
   }
 
   /**
-   * @brief The degree of spline, such as 2, 3, 5.
+   * @brief 样条曲线的度数，例如 2、3、5。
    */
   int degree = 3;
 
   /**
-   * @brief The spline type. Option value: quadratic, cubicPolygon, quinticPolygon, BSpline.
+   * @brief 样条曲线的类型。选项值：quadratic、cubicPolygon、quinticPolygon、BSpline。
    */
   SplineType splineType = SplineType::CubicPolygon;
 
@@ -79,13 +79,13 @@ public:
   virtual ~qrFootSplinePatternGenerator() = default;
 
   /**
-   * @brief Set the parameters for the generation of the foot swing trajectory.
-   * This method assumes that there is not an obstacle in the trajectory.
-   * This method is a pure virtual function. Any user-defined Spline should implement this function.
-   * @param initial_time: the start time of the spline.
-   * @param initial_pos: the initial position of the footstep.
-   * @param target_pos: the desired footstep of this gait period.
-   * @param params: other parameters of the spline, @see Quadruped::StepParameters.
+   * @brief 设置足部摆动轨迹的参数。
+   * 这个方法假设轨迹中没有障碍物。
+   * 这个方法是一个纯虚拟函数。任何用户定义的样条曲线都应该实现这个函数。
+   * @param initial_time: 轨迹的开始时间。
+   * @param initial_pos: 足部的初始位置。
+   * @param target_pos: 本周期的目标足部位置。
+   * @param params: 样条曲线的其他参数，@see Quadruped::StepParameters。
    */
   virtual void SetParameters(
       const float initial_time,
@@ -94,22 +94,22 @@ public:
       const qrStepParameters &params) = 0;
 
   /**
-   * @brief Generates the foot-swing trajectory for a given time.
-   * @param foot_pos: instantaneous foot position.
-   * @param foot_vel: instantaneous foot velocity.
-   * @param foot_acc: instantaneous foot acceleration.
-   * @param time: current time.
+   * @brief 生成足部摆动轨迹。
+   * @param foot_pos: 足部的瞬时位置。
+   * @param foot_vel: 足部的瞬时速度。
+   * @param foot_acc: 足部的瞬时加速度。
+   * @param time: 当前时间。
    */
   virtual bool GenerateTrajectory(
       Eigen::Vector3f &foot_pos, Eigen::Vector3f &foot_vel, Eigen::Vector3f &foot_acc, float time) = 0;
 
   /**
-   * @brief Update the spline every control loop.
-   * @param initial_time: initial time when update the spline.
-   * @param duration: duration of the spline.
-   * @param initial_pos: initial foothold position when update the spline.
+   * @brief 每个控制循环更新样条曲线。
+   * @param initial_time: 更新样条曲线的初始时间。
+   * @param duration: 样条曲线的持续时间。
+   * @param initial_pos: 更新样条曲线的初始 foothold 位置。
    * @param target_appex
-   * @param target_pos: target position of the end of spline.
+   * @param target_pos: 样条曲线的目标位置。
    */
   virtual void UpdateSpline(
       float initial_time,
@@ -120,32 +120,32 @@ public:
 
 protected:
   /**
-   * @brief Initial time of the swing trajectory.
+   * @brief 摆动轨迹的初始时间。
    */
   float initialTime = 0.0f;
 
   /**
-   * @brief Duration of the swing trajectory.
+   * @brief 摆动轨迹的持续时间。
    */
   float duration = 0.0f;
 
   /**
-   * @brief Start position of the spline.
+   * @brief 样条曲线的起始位置。
    */
   Vec3<float> startPos;
 
   /**
-   * @brief End position of the spline.
+   * @brief 样条曲线的终止位置。
    */
   Vec3<float> endPos;
 
   /**
-   * @brief Rotation matrix conver world frame into canonical frame.
+   * @brief 转换世界坐标系到规范坐标系的旋转矩阵。
    */
   Mat3<float> RTheta;
 
   /**
-   * @brief Initial position of the spline.
+   * @brief 样条曲线的初始位置。
    */
   Vec3<float> Tp;
 };
@@ -183,12 +183,12 @@ public:
 
 private:
   /**
-   * @brief Spliners for the different axis of the foot movement
+   * @brief 足部运动的不同轴 spliner
    */
   robotics::math::qrQuadraticSpline footSplinerZ;
 
   /**
-   * @brief Step parameters for spline update.
+   * @brief 步伐参数用于 spline 更新
    */
   qrStepParameters stepParameters;
 };
@@ -226,22 +226,22 @@ public:
 
 private:
   /**
-   * @brief Spliners for x axis of the foot movement.
+   * @brief 足部运动 x 轴的 spliner
    */
   robotics::math::qrCubicSpline footSplinerX;
 
   /**
-   * @brief Spliners for y axis of the foot movement.
+   * @brief 足部运动 y 轴的 spliner
    */
   robotics::math::qrCubicSpline footSplinerY;
 
   /**
-   * @brief Spliners for z-up axis of the foot movement.
+   * @brief 足部运动 z-up 轴的 spliner
    */
   robotics::math::qrCubicSpline footSplinerUpZ;
 
   /**
-   * @brief Spliners for z-down axis of the foot movement.
+   * @brief 足部运动 z-down 轴的 spliner
    */
   robotics::math::qrCubicSpline footSplinerDownZ;
 };
@@ -249,8 +249,8 @@ private:
 class qrFootBSplinePatternGenerator : public qrFootSplinePatternGenerator {
 public:
   /**
-   * @brief Constructor method of class qrFootBSplinePatternGenerator.
-   * @param splinInfo: BSpline information.
+   * @brief 构造函数，初始化 qrFootBSplinePatternGenerator 类。
+   * @param splinInfo: BSpline 信息。
    */
   qrFootBSplinePatternGenerator(qrSplineInfo &splineInfo);
 
@@ -292,12 +292,12 @@ public:
   SwingFootTrajectory() = default;
 
   /**
-   * @brief Constructor method of class qrSwingFootTrajectory
-   * @param splineInfoIn: BSplineInfo if needed.
-   * @param startPosIn: start position of the footstep of the swingleg.
-   * @param endPosIn: end position of the footstep of the swingleg.
-   * @param duration: duration of the trajectory, generally the swing duration.
-   * @param maxClearance: the highest point of the trajectory.
+   * @brief 构造函数，初始化 qrSwingFootTrajectory 类。
+   * @param splineInfoIn: BSplineInfo 如果需要。
+   * @param startPosIn: 足部swingleg 的起始位置。
+   * @param endPosIn: 足部swingleg 的结束位置。
+   * @param duration: 轨迹的持续时间，一般是swing 持续时间。
+   * @param maxClearance: 轨迹的最高点。
    */
   SwingFootTrajectory(
       qrSplineInfo splineInfoIn,
@@ -311,19 +311,19 @@ public:
   virtual ~SwingFootTrajectory() = default;
 
   /**
-   * @brief Call it every time you need a tarjectory point to control.
-   * @param Vec3<float>& foot position;
-   * @param Vec3<float>& foot linear velocity;
-   * @param Vec3<float>& foot acceleration;
-   * @param float time phase, default at range [0,1];
-   * @param bool whether phase needs to be moduled, default -<em> false </em>.
-   * @return bool flag that indicates whether the process/result/input is correct.
+   * @brief 每次需要控制点时调用。
+   * @param Vec3<float>& 足部位置;
+   * @param Vec3<float>& 足部线速度;
+   * @param Vec3<float>& 足部加速度;
+   * @param float 时间相位，范围 [0,1]。
+   * @param bool 是否需要模块相位， default -<em> false </em>。
+   * @return bool 标志是否正确。
    */
   bool GenerateTrajectoryPoint(
       Vec3<float> &footPos, Vec3<float> &footV, Vec3<float> &footA, float t, bool phaseModule = false);
 
   /**
-   * @brief A new cycle begining of the swing foot.
+   * @brief 新的swing 足部轨迹开始。
    */
   void ResetFootTrajectory(
       float duration, const Vec3<float> &initialPos, const Vec3<float> &targetPos, float height = 0.15f) {
@@ -333,7 +333,7 @@ public:
   };
 
   /**
-   * @brief Corrupted in the mid air, adjust the behaviar.
+   * @brief 在中空中出错，调整行为。
    */
   void ResetFootTrajectory(float duration, float currentTime, const Vec3<float> &targetPos) {
     stepParams.duration = duration;
@@ -341,15 +341,10 @@ public:
   };
 
   float mid;
-
   Vec3<float> startPos;
-
   Vec3<float> endPos;
-
   qrStepParameters stepParams;
-
   qrFootSplinePatternGenerator *footTarjGen;
-
   qrSplineInfo splineInfo;
 };
 

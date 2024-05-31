@@ -20,15 +20,15 @@ public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   /**
-   * @brief constructor of MPCStanceLegController.
-   * @param robot: pointer to robot.
-   * @param gaitGenerator: pointer to gait generator.
-   * @param stateEstimators: pointer to state estimator container.
-   * @param comAdjuster: pointer to CoM adjuster.
-   * @param posePlanner: pointer to pose planner.
-   * @param footholdPlanner: pointer to foothold planner.
-   * @param userParameters: reference to user parameters.
-   * @param configFilepath: the string of path to config file.
+   * @brief 构造函数 MPCStanceLegController。
+   * @param robot：机器人指针。
+   * @param gaitGenerator：步态生成器指针。
+   * @param stateEstimators：状态估算器容器指针。
+   * @param comAdjuster：CoM 调整器指针。
+   * @param posePlanner：姿态规划器指针。
+   * @param footholdPlanner：足端规划器指针。
+   * @param userParameters：用户参数引用。
+   * @param configFilepath：配置文件路径字符串。
    */
   MPCStanceLegController(
       qrRobot *robot,
@@ -41,168 +41,168 @@ public:
       std::string configFilepath);
 
   /**
-   * @brief Reset the stance leg controller with current time.
-   * @param currentTime: current time to reset.
+   * @brief 使用当前时间重置stance腿控制器。
+   * @param currentTime：当前时间重置。
    */
   virtual void Reset(float t);
 
   /**
-   * @brief Get the motor commands of the stance leg controller
-   * @return commands and forces calculated by MPC.
+   * @brief 获取stance腿控制器的电机命令
+   * @return 由MPC计算的命令和力。
    */
   virtual std::tuple<std::map<int, qrMotorCommand>, Eigen::Matrix<float, 3, 4>> GetAction();
 
   /**
-   * @brief Setup MPC problem and solve the MPC problem.
-   * @param legCommand: output of the MPC problem.
-   * This may be removed in the future.
-   * @param gaitType: the gait type of current state.
-   * This may be removed in the future.
-   * @param robotMode: current robot mode.
-   * This may be removed in the future.
+   * @brief 设置MPC问题并解决MPC问题。
+   * @param legCommand：MPC问题的输出。
+   * 这可能在未来被删除。
+   * @param gaitType：当前状态的步态类型。
+   * 这可能在未来被删除。
+   * @param robotMode：当前机器人模式。
+   * 这可能在未来被删除。
    */
   void Run(std::map<int, qrMotorCommand> &legCommand, int gaitType, int robotMode = 0);
 
 private:
   /**
-   * @brief Setup the desired command of the MPC problem.
+   * @brief 设置MPC问题的期望命令。
    */
   void SetupCommand();
 
   /**
-   * @brief Update MPC state of this iteration.
-   * @param robot: pointer to robot.
+   * @brief 更新当前迭代的MPC状态。
+   * @param robot：机器人指针。
    */
   void UpdateMPC(qrRobot *robot);
 
   /**
-   * @brief Solve the MPC problem
-   * @param robot: pointer to robot.
+   * @brief 解决MPC问题
+   * @param robot：机器人指针。
    */
   void SolveDenseMPC(qrRobot *robot);
 
   /**
-   * @brief Turn rate of yaw.
+   * @brief 偏航角速度。
    */
   float yawTurnRate = 0.0;
 
   /**
-   * @brief Desired yaw.
+   * @brief 期望偏航角。
    */
   float yawDesTrue = 0.0;
 
   /**
-   * @brief Desired roll.
+   * @brief 期望滚转角。
    */
   float rollDes;
 
-  /**
-   * @brief Desired pitch.
+/**
+   * @brief 期望俯仰角。
    */
   float pitchDes;
 
   /**
-   * @brief Desired velocity along x axis.
+   * @brief x轴上的期望速度。
    */
   float xVelDes = 0.0;
 
   /**
-   * @brief Desired velocity along y axis.
+   * @brief y轴上的期望速度。
    */
   float yVelDes = 0.0;
 
   /**
-   * @brief Current body height.
+   * @brief 当前身体高度。
    */
   float bodyHeight;
 
   /**
-   * @brief Roll, pitch and yaw after compensation.
+   * @brief 补偿后的滚转、俯仰和偏航角。
    */
   Vec3<float> rpyComp;
 
   /**
-   * @brief Times of iterations in one MPC iteration
+   * @brief 一次MPC迭代中的迭代次数。
    */
   int iterationsInaMPC;
 
   /**
-   * @brief Future steps in one MPC iteration
+   * @brief 一次MPC迭代中的未来步长。
    */
   const int horizonLength;
 
   /**
-   * @brief Times of MPC iterations in a gait period
+   * @brief 一步态周期中的MPC迭代次数。
    */
   int numHorizonL = 1;
 
   /**
-   * @brief The iterations in one MPC
+   * @brief 一次MPC中的迭代次数。
    */
   int defaultIterationsInMpc;
 
   /**
-   * @brief Control frequency of the controller
+   * @brief 控制器的控制频率。
    */
   float dt;
 
   /**
-   * @brief Time for one step of MPC
+   * @brief 一步MPC的时间。
    */
   float dtMPC;
 
   /**
-   * @brief An iteration count for controlling the frequency of MPC updating.
+   * @brief 用于控制MPC更新频率的迭代计数器。
    */
   unsigned long long iterationCounter = 0;
 
   /**
-   * @brief MPC table storing the contact state with %horizonLength.
+   * @brief 存储与horizonLength相关的MPC表格。
    */
   Eigen::Matrix<float, Eigen::Dynamic, 4, Eigen::RowMajor> mpcTable;
 
   /**
-   * @brief The force that leg excerts to the ground in base frame.
+   * @brief腿部对地面的力在基础坐标系中。
    */
   Eigen::Matrix<float, 3, 4> f_ff;
 
   /**
-   * @brief The reaction force frome ground in world frame.
+   * @brief 地面对腿部的反作用力在世界坐标系中。
    */
   Eigen::Matrix<float, 3, 4> f;
 
   /**
-   * @brief Desired position in world frame.
+   * @brief 世界坐标系中的期望位置。
    */
   Vec3<float> posDesiredinWorld;
 
   /**
-   * @brief Desired linear velocity in world frame.
+   * @brief 世界坐标系中的期望线速度。
    */
   Vec3<float> vDesWorld;
 
   /**
-   * @brief Current foot positions in world frame.
+   * @brief 世界坐标系中的当前脚部位置。
    */
   Eigen::Matrix<float, 3, 4> pFoot;
 
   /**
-   * @brief MPC trajectory reference.
+   * @brief MPC轨迹参考。
    */
   float trajAll[20 * 36];
 
   /**
-   * @brief Q vector which stores the pose & twist weights.
+   * @brief 存储pose和twist权重的Q向量。
    */
   float Q[12];
 
   /**
-   * @brief A bool variable indicating whether MPC has been updated.
+   * @brief 一个bool变量，指示MPC是否已经更新。
    */
   bool mpcUpdated = false;
 
   /**
-   * @brief A bool variable indicating whether Whole Body Control will be used.
+   * @brief 一个bool变量，指示是否使用 全身控制。
    */
   bool useWBC = false;
 };

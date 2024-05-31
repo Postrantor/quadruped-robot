@@ -16,22 +16,22 @@
 namespace Quadruped {
 
 /**
- * @brief Main State Estimator Class
- *   Contains all GenericEstimators, and can run them
- *   Also updates visualizations.
+ * @brief 主状态估算器类
+ *   包含所有泛型估算器，并可以运行它们
+ *   同时更新可视化效果。
  */
 class qrStateEstimatorContainer {
 public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   /**
-   * @brief constructor of state Estimator container
-   * @param quadrupedIn: the robot for state estimation
-   * @param gaitGeneratorIn: generate desired gait schedule for locomotion
-   * @param userParametersIn: parameters for kalman filter and moving window algorithm
-   * @param terrainConfigPath: terrian config file path
-   //!warning  homeDir: this is not used
-      */
+   * @brief 状态估算器容器的构造函数
+   * @param quadrupedIn：机器人用于状态估算
+   * @param gaitGeneratorIn：生成所需步态计划用于行走
+   * @param userParametersIn：卡尔曼滤波器和移动窗口算法的参数
+   * @param terrainConfigPath：地形配置文件路径
+   //!警告  homeDir：这个不再使用
+   */
   qrStateEstimatorContainer(
       qrRobot *quadrupedIn,
       qrGaitGenerator *gaitGeneratorIn,
@@ -40,7 +40,7 @@ public:
       std::string homeDir);
 
   /**
-   * @brief reset all contained GenericEstimators
+   * @brief 重置所有包含的泛型估算器
    */
   void Reset() {
     resetTime = 0;
@@ -52,7 +52,7 @@ public:
   };
 
   /**
-   * @brief update all contained GenericEstimators
+   * @brief 更新所有包含的泛型估算器
    */
   void Update() {
     timeSinceReset = quadruped->GetTimeSinceReset() - resetTime;
@@ -62,7 +62,7 @@ public:
   };
 
   /**
-   * @brief remove all contained GenericEstimators
+   * @brief 删除所有包含的泛型估算器
    */
   void RemoveAllEstimators() {
     for (auto estimator : _estimators) {
@@ -72,68 +72,68 @@ public:
   };
 
   /**
-   * @brief destructor of the state estimator container
+   * @brief 状态估算器容器的析构函数
    */
   ~qrStateEstimatorContainer() = default;
 
   /**
-   * @brief get the contactDection class for the state estimation
+   * @brief 获取contactDetection类用于状态估算
    */
   inline qrContactDetection *GetContactDetection() { return contactDetection; };
 
   /**
-   * @brief get the robotEstimator class for the state estimation
+   * @brief 获取robotEstimator类用于状态估算
    */
   inline qrRobotEstimator *GetRobotEstimator() { return robotEstimator; };
 
   /**
-   * @brief get the GroundSurfaceEstimator class for the state estimation
+   * @brief 获取GroundSurfaceEstimator类用于状态估算
    */
   inline qrGroundSurfaceEstimator *GetGroundEstimator() { return groundEstimator; };
 
 private:
   /**
-   * @brief robot for state estimation
+   * @brief 机器人用于状态估算
    */
   qrRobot *quadruped;
 
   /**
-   * @brief the gait schedular for state estimation
+   * @brief 步态计划生成器用于状态估算
    */
   qrGaitGenerator *gaitGenerator;
 
   /**
-   * @brief parameters for kalman filter and moving window algorithm
+   * @brief 卡尔曼滤波器和移动窗口算法的参数
    */
   qrUserParameters *userParameters;
 
   /**
-   * @brief stores all contained GenericEstimators
+   * @brief 存储所有包含的泛型估算器
    */
   std::vector<qrBaseStateEstimator *> _estimators;
 
   /**
-   * @brief estimate the 3D plane where the feet contact
+   * @brief 估算接触平面
    */
   qrGroundSurfaceEstimator *groundEstimator;
 
   /**
-   * @brief Contact detection class for state estimation
+   * @brief 接触检测类用于状态估算
    */
   qrContactDetection *contactDetection;
 
   /**
-   * @brief robot estimation class for state estimation
+   * @brief 机器人估算类用于状态估算
    */
   qrRobotEstimator *robotEstimator;
 
   /**
-   * @brief the time when the timer restarted
+   * @brief 计时器重启的时间
    */
   float resetTime;
 
   /**
-   * @brief the time since the timer restarted
+   * @brief 计时器重启以来的时间
    */
   float timeSinceReset;
 };

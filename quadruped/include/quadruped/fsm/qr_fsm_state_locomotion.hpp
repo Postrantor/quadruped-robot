@@ -14,9 +14,8 @@
 #include "qr_fsm_state.hpp"
 
 /**
- * @brief FSM State for robot locomotion. Manages the contact specific logic
- * and handles calling the interfaces to the controllers. This state
- * should be independent of controller, gait, and desired trajectory.
+ * @brief 机器人行走FSM状态。管理联系逻辑和处理控制器接口的调用。
+ * 这个状态应该独立于控制器、步态和期望轨迹。
  */
 template <typename T>
 class qrFSMStateLocomotion : public qrFSMState<T> {
@@ -24,14 +23,14 @@ public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   /**
-   * @brief Constructor of qrFSMStateLocomotion
-   * @param controlFSMData: pointer to the data this FSM needed
+   * @brief qrFSMStateLocomotion的构造函数
+   * @param control_fsm_data: 指向该FSM所需数据的指针
    */
   qrFSMStateLocomotion(qrControlFSMData<T> *control_fsm_data);
 
   /**
-   * @brief Getter method of locomotionController.
-   * @return pointer to locomotionController.
+   * @brief 获取行走控制器的方法。
+   * @return 指向行走控制器的指针。
    */
   Quadruped::qrLocomotionController *GetLocomotionController() const { return locomotionController; }
 
@@ -61,8 +60,8 @@ public:
   void OnExit();
 
   /**
-   * @brief Reset the locomotion controller during locomotion state.
-   * @param currentTime: time to reset the locomotion controller
+   * @brief 在行走状态下重置行走控制器。
+   * @param currentTime: 重置行走控制器的时间
    */
   void Reset(float currentTime) {
     this->resetTime = currentTime;
@@ -72,43 +71,43 @@ public:
 
 private:
   /**
-   * @brief Switch gait in locomotion state.
-   * Usually switch from trot locomotion to walk locomotion.
-   * @return success to switch gait
+   * @brief 在行走状态下切换步态。
+   * 通常从快步态切换到步态。
+   * @return 是否成功切换步态
    */
   bool SwitchMode();
 
   /**
-   * @brief Check safty before transition.
-   * Currently this function just return true.
-   * @return whether locomotion is currently safe
+   * @brief 在过渡前检查安全。
+   * 目前这个函数只是返回true。
+   * @return 是否当前行走安全
    */
   bool LocomotionSafe();
 
   /**
-   * @brief The quadruped will keep standing for %transitionDuration * 1000 iterations.
-   * This method is used for transitioning.
-   * @return currently just return true.
+   * @brief 机器人将保持站立%transitionDuration * 1000次迭代。
+   * 这个方法用于过渡。
+   * @return 目前只是返回true。
    */
   bool StandLoop();
 
   /**
-   * @brief Pointer to LocomotionController.
+   * @brief 指向行走控制器的指针。
    */
   Quadruped::qrLocomotionController *locomotionController;
 
   /**
-   * @brief Pointer to Whole Body Controller.
+   * @brief 指向整体控制器的指针。
    */
   qrWbcLocomotionController<T> *wbcController;
 
   /**
-   * @brief Pointer to data needed by Whole Body Controller.
+   * @brief 指向整体控制器所需数据的指针。
    */
   qrWbcCtrlData *wbcData;
 
   /**
-   * @brief Keep tracking of the iterations of the locomotion controller.
+   * @brief 跟踪行走控制器的迭代次数。
    */
   unsigned long iter = 0;
 };

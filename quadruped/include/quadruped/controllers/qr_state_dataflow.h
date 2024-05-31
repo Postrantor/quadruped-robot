@@ -17,155 +17,155 @@
 
 struct qrUserParameters {
   /**
-   * @brief Constructor of class qrUserParameters.
-   * @param file_path: the file path to user parameters.
+   * @brief qrUserParameters 类的构造函数。
+   * @param file_path: 用户参数文件路径。
    */
   qrUserParameters(std::string file_path);
 
   /**
-   * @brief Used to go onto stairs.
-   * Will be removed later.
+   * @brief 用于上楼梯。
+   * 将来将被删除。
    */
   float stairsTime;
 
   /**
-   * @brief Used to go onto stairs.
-   * Will be removed later.
+   * @brief 用于上楼梯。
+   * 将来将被删除。
    */
   float stairsVel;
 
   /**
-   * @brief Control frequency, generally 500Hz or 1000Hz.
+   * @brief 控制频率，一般为 500Hz 或 1000Hz。
    */
   unsigned int controlFrequency = 500;
 
   /**
-   * @brief The filter window size used in ground estimator.
+   * @brief 地面估计器中的滤波器窗口大小。
    */
   unsigned int filterWindowSize = 50;
 
   /**
-   * @brief Accelerometer variance used in velocity estimator. Used in Kalman filter.
+   * @brief 速度估计器中的加速度计方差。用于卡尔曼滤波器。
    */
   float accelerometerVariance = 0.01f;
 
   /**
-   * @brief Sensor variance used in velocity estimator. Used in Kalman filter.
+   * @brief 速度估计器中的传感器方差。用于卡尔曼滤波器。
    */
   float sensorVariance = 0.01f;
 
   /**
-   * @brief Initial variance used in velocity estimator. Used in Kalman filter.
+   * @brief 速度估计器中的初始方差。用于卡尔曼滤波器。
    */
   float initialVariance = 0.01f;
 
   /**
-   * @brief The moving window filter size used in velocity estimator.
+   * @brief 速度估计器中的移动窗口滤波器大小。
    */
   int movingWindowFilterSize = 50;
 
   /**
-   * @brief Desired body height used for swing leg controller.
+   * @brief.swing 控制器用于控制身体高度的期望值。
    */
   float desiredHeight = A1_BODY_HIGHT;
 
   /**
-   * @brief Desired linear velocity of the quadruped.
+   * @brief 四足机器人的期望线速度。
    */
   Vec3<float> desiredSpeed = {0.f, 0.f, 0.f};
 
   /**
-   * @brief Desired angular velocity at Z Axis.
+   * @brief Z 轴上的期望角速度。
    */
   float desiredTwistingSpeed = 0.f;
 
   /**
-   * @brief Maximum distance between foot and ground.
+   * @brief 足部与地面的最大距离。
    */
   float footClearance = 0.01f;
 
   /**
-   * @brief Friction coefficient. Currently they are constants.
-   * Used in stance leg controllers.
+   * @brief 摩擦系数。当前它们是常数。
+   * 用于stance leg 控制器中。
    */
   Vec4<float> frictionCoeffs = {0.45f, 0.45f, 0.45f, 0.45f};
 
   /**
-   * @brief Swing Kp for Raibert Heuristic.
+   * @brief Raibert 启发式的摆动 Kp。
    */
   std::map<std::string, std::vector<float>> swingKp;
 
   /**
-   * @brief Whether to compute force in world frame.
+   * @brief 是否在世界坐标系中计算力。
    */
   bool computeForceInWorldFrame = true;
 
   /**
-   * @brief Whether to use whole body control after MPC calculation.
+   * @brief 是否在 MPC 计算后使用整体控制。
    */
   bool useWBC = true;
 };
 
 /**
- * @brief The WbcCtrlData class.
- * This class stores desired states.
+ * @brief WbcCtrlData 类。
+ * 该类存储所需状态。
  */
 class qrWbcCtrlData {
 public:
   /**
-   * @brief Desired body position in world frame.
+   * @brief 世界坐标系中的所需身体位置。
    */
   Vec3<float> pBody_des;
 
   /**
-   * @brief Desired body velocity in world frame.
+   * @brief 世界坐标系中的所需身体速度。
    */
   Vec3<float> vBody_des;
 
   /**
-   * @brief Desired body acceleration in world frame.
+   * @brief 世界坐标系中的所需身体加速度。
    */
   Vec3<float> aBody_des;
 
   /**
-   * @brief Desired body roll pitch yaw.
+   * @brief 所需身体 roll pitch yaw。
    */
   Vec3<float> pBody_RPY_des;
 
   /**
-   * @brief Desired body angular velocity in world frame.
+   * @brief 世界坐标系中的所需身体角速度。
    */
   Vec3<float> vBody_Ori_des;
 
   /**
-   * @brief Desired foothold position in world frame.
+   * @brief 世界坐标系中的所需 foothold 位置。
    */
   Vec3<float> pFoot_des[4];
 
   /**
-   * @brief Desired foothold velocity in world frame.
+   * @brief 世界坐标系中的所需 foothold 速度。
    */
   Vec3<float> vFoot_des[4];
 
   /**
-   * @brief Desired foothold acceleration in world frame.
+   * @brief 世界坐标系中的所需 foothold 加速度。
    */
   Vec3<float> aFoot_des[4];
 
   /**
-   * @brief Desired foothold force in world frame.
+   * @brief 世界坐标系中的所需 foothold 力。
    */
   Vec3<float> Fr_des[4];
 
   /**
-   * @brief Current contact state of 4 foothold.
+   * @brief 4 个 foothold 当前的接触状态。
    */
   Vec4<bool> contact_state;
 
   /**
-   * @brief Whether to conduct WBC.
-   * If MPC and WBC are conducted in one iteration, this iteration will consume so much time,
-   * so if MPC is conducted in this iteration, WBC will be conducted and vice versa.
+   * @brief 是否进行 WBC。
+   * 如果在一个迭代中同时进行 MPC 和 WBC，将消耗太多时间，
+   * 所以如果在这个迭代中进行了 MPC，则将在下一个迭代中进行 WBC。
    */
   bool allowAfterMPC = true;
 };
@@ -174,87 +174,87 @@ namespace Quadruped {
 
 struct qrStateDataFlow {
   /**
-   * @brief Constructor of class qrStateDataFlow.
+   * @brief qrStateDataFlow 类的构造函数。
    */
   qrStateDataFlow();
 
   /**
-   * @brief Foot position in base frame
+   * @brief 基坐标系中的 foothold 位置。
    */
   Eigen::Matrix<float, 3, 4> footPositionsInBaseFrame;
 
   /**
-   * @brief Foot velocities in base frame
+   * @brief 基坐标系中的 foothold 速度。
    */
   Eigen::Matrix<float, 3, 4> footVelocitiesInBaseFrame;
 
   /**
-   * @brief Base linear velocity in world frame.
+   * @brief 世界坐标系中的基体线速度。
    */
   Vec3<float> baseVInWorldFrame;
 
   /**
-   * @brief Base angular velocity in world frame.
+   * @brief 世界坐标系中的基体角速度。
    */
   Vec3<float> baseWInWorldFrame;
 
   /**
-   * @brief Base linear acceleration in base/IMU frame.
+   * @brief 基坐标系/IMU 帧中的基体线加速度。
    */
   Vec3<float> baseLinearAcceleration;
 
   /**
-   * @brief Foot Jacobian for 4 legs.
+   * @brief 4 条腿的 foothold雅可比矩阵。
    */
   std::vector<Mat3<float>> footJvs;
 
   /**
-   * @brief Estimated foot force in base frame.
+   * @brief 基坐标系中的估计 foothold 力。
    */
   Eigen::Matrix<float, 3, 4> estimatedFootForce;
 
   /**
-   * @brief Estimated moment in base frame.
+   * @brief 基坐标系中的估计力矩。
    */
   Vec3<float> estimatedMoment;
 
   /**
-   * @brief Body height in control frame.
+   * @brief 控制帧中的体高。
    */
   float heightInControlFrame = 0.27;
 
   /**
-   * @brief Zero Moment Point of the robot.
+   * @brief 机器人的零动力点。
    */
   Vec3<float> zmp;
 
   /**
-   * @brief Rotation matrix transform vector from base frame to world frame.
+   * @brief 基坐标系到世界坐标系的旋转矩阵变换向量。
    */
   Mat3<float> baseRMat;
 
   /**
-   * @brief Rotation matrix transform vector from world frame to control frame.
+   * @brief 世界坐标系到控制帧的旋转矩阵变换向量。
    */
   Mat3<float> groundRMat;
 
   /**
-   * @brief Rotation matrix transform vector from base frame to control frame.
+   * @brief 基坐标系到控制帧的旋转矩阵变换向量。
    */
   Mat3<float> baseRInControlFrame;
 
   /**
-   * @brief The orientation of control frame.
+   * @brief 控制帧的朝向。
    */
   Vec4<float> groundOrientation;
 
   /**
-   * @brief Visualization using Matplotlib.
+   * @brief 使用 Matplotlib 进行可视化。
    */
   Visualization2D visualizer;
 
   /**
-   * @brief Saving data for Whole Body Control.
+   * @brief 保存用于整体控制的数据。
    */
   qrWbcCtrlData wbcData;
 };

@@ -11,7 +11,7 @@
 #include "robots/qr_robot.h"
 
 /**
- * @brief Struct of relevant data that can be used during transition to pass data between states.
+ * @brief 在状态转换期间传递数据的相关数据结构。
  */
 template <typename T>
 struct qrTransitionData {
@@ -20,75 +20,75 @@ struct qrTransitionData {
   qrTransitionData() { Zero(); }
 
   /**
-   * @brief Zero out all of the data.
+   * @brief 将所有数据清零。
    */
   void Zero() {
-    /* Flag to mark when transition is done. */
+    /* 标记转换是否完成的标志。 */
     done = false;
 
-    /* Timing parameters. */
-    t0 = 0.0;         /* time that transition started. */
-    tCurrent = 0.0;   /* current time since transition started. */
-    tDuration = 0.0;  // overall transition duration
+    /* 定时参数。 */
+    t0 = 0.0;         /* 转换开始的时间。 */
+    tCurrent = 0.0;   /* 自转换开始以来的当前时间。 */
+    tDuration = 0.0;  // 总的转换持续时间
 
-    // Robot state at the beginning of transition
-    comState0 = Vec12<T>::Zero();  // center of mass state
-    qJoints0 = Vec12<T>::Zero();   // joint positions
-    pFoot0 = Mat34<T>::Zero();     // foot positions
+    // 转换开始时机器人状态
+    comState0 = Vec12<T>::Zero();  // 质心状态
+    qJoints0 = Vec12<T>::Zero();   // 关节位置
+    pFoot0 = Mat34<T>::Zero();     // 脚部位置
 
-    // Current robot state
-    comState = Vec12<T>::Zero();  // center of mass state
-    qJoints = Vec12<T>::Zero();   // joint positions
-    pFoot = Mat34<T>::Zero();     // foot positions
+    // 当前机器人状态
+    comState = Vec12<T>::Zero();  // 质心状态
+    qJoints = Vec12<T>::Zero();   // 关节位置
+    pFoot = Mat34<T>::Zero();     // 脚部位置
 
     legCommand.clear();
   }
 
-  // Flag to mark when transition is done
+  // 标记转换是否完成的标志
   bool done = false;
 
   /**
-   * @brief Time that transition started.
+   * @brief 转换开始的时间。
    */
   T t0;
 
   /**
-   * @brief Current time since transition started.
+   * @brief 自转换开始以来的当前时间。
    */
   T tCurrent;
 
   /**
-   * @brief Overall transition duration.
+   * @brief 总的转换持续时间。
    */
   T tDuration;
 
   /**
-   * @brief Center of mass state.
+   * @brief 质心状态。
    */
   Vec12<T> comState0;
 
   /**
-   * @brief Joint positions.
+   * @brief 关节位置。
    */
   Vec12<T> qJoints0;
 
   /**
-   * @brief Foot positions.
+   * @brief 脚部位置。
    */
   Mat34<T> pFoot0;
 
   /**
-   * @brief Center of mass state
+   * @brief 质心状态。
    */
   Vec12<T> comState;
 
   /**
-   * @brief Joint positions.
+   * @brief 关节位置。
    */
   Vec12<T> qJoints;
 
   /**
-   * @brief Foot positions.
+   * @brief 脚部位置。
    */
   Mat34<T> pFoot;
 

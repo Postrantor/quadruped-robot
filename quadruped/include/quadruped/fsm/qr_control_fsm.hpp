@@ -24,27 +24,24 @@ enum class FSM_OperatingMode { NORMAL, TRANSITIONING, ESTOP, EDAMP };
 template <typename T>
 struct qrFSMStatesList {
   qrFSMState<T> *invalid;
-
   qrFSMStatePassive<T> *passive;
-
   qrFSMStateStandUp<T> *standUp;
-
   qrFSMStateLocomotion<T> *locomotion;
 };
 
 /**
- * @brief Control FSM handles the FSM states from a higher level.
+ * @brief 控制FSM处理来自更高级别的FSM状态。
  */
 template <typename T>
 class qrControlFSM {
 public:
   /**
-   * @brief Constructor of class qrControlFSM.
-   * @param quadruped: pointer to Robot.
-   * @param stateEstimator: pointer to state estimator container.
-   * @param gaitScheduler: pointer to gait scheduler.
-   * @param desiredStateCommand: pointer to desired state command.
-   * @param userParameters: pointer to user parameters.
+   * @brief qrControlFSM类的构造函数。
+   * @param quadruped: 机器人指针。
+   * @param stateEstimator: 状态估算器容器指针。
+   * @param gaitScheduler: 步态计划生成器指针。
+   * @param desiredStateCommand: 期望状态命令指针。
+   * @param userParameters: 用户参数指针。
    */
   qrControlFSM(
       Quadruped::qrRobot *quadruped,
@@ -56,14 +53,14 @@ public:
   ~qrControlFSM() = default;
 
   /**
-   * @brief Initializes the ControlFSM.
-   * The quadruped will enter standup state.
+   * @brief 初始化ControlFSM。
+   * 机器人将进入站立状态。
    */
   void Initialize();
 
   /**
-   * @brief Reset the times of ControlFSM.
-   * @param currentTime: current time to reset ControlFSM.
+   * @brief 重置ControlFSM的时间。
+   * @param currentTime: 重置ControlFSM的当前时间。
    */
   void Reset(float currentTime) {
     resetTime = currentTime;
@@ -72,107 +69,108 @@ public:
   }
 
   /**
-   * @brief Step the ControlFSM once. It will be in one state or on transition.
-   * @param hybridAction: A return value of the desired motor command.
+   * @brief 执行ControlFSM一次。它将在一个状态或过渡中。
+   * @param hybridAction: 期望电机命令的返回值。
    */
   void RunFSM(std::vector<Quadruped::qrMotorCommand> &hybridAction);
 
   /**
-   * @brief Check the robot state before the calculation of commands in this control loop.
-   * @todo Remove this function or move it into a SaftyCheck class.
-   * @return operating mode
+   * @brief 在计算命令之前检查机器人状态。
+   * @todo 将此函数删除或移到SafetyCheck类中。
+   * @return 操作模式
    */
   FSM_OperatingMode SafetyPreCheck();
 
   /**
-   * @brief Check the robot state after the desired command has calculated in this control loop.
-   * @return operating mode
+   * @brief 在计算期望命令后检查机器人状态。
+   * @return 操作模式
    */
   FSM_OperatingMode SafetyPostCheck();
 
   /**
-   * @brief Get next FSM state pointer by the required state name.
-   * @param stateName: the name of the state needed.
-   * @return a pointer to the FSM state in the list of created states
+   * @brief 按照所需状态名称获取下一个FSM状态指针。
+   * @param stateName: 所需状态的名称。
+   * @return FSM状态列表中的指针
    */
   qrFSMState<T> *GetNextState(FSM_StateName stateName);
 
   /**
-   * @brief Getter method of the locomotion controller in locomotion state.
-   * @return pointer to locomotionController
+   * @brief 获取行走控制器在行走状态下的指针。
+   * @return 指向行走控制器的指针
    */
   Quadruped::qrLocomotionController *GetLocomotionController() const {
     return statesList.locomotion->GetLocomotionController();
   }
 
   /**
-   * @brief Print current FSM status
-   * @param opt: the options of printing the status
+   * @brief 打印当前FSM状态
+   * @param opt: 打印状态的选项
    */
   void PrintInfo(int opt);
 
 private:
   /**
-   * @brief Operating mode of the FSM.
+   * @brief FSM的操作模式。
    */
   FSM_OperatingMode operatingMode;
 
   /**
-   * @brief Data needed for FSM.
+   * @brief FSM所需的数据。
    */
   qrControlFSMData<T> data;
 
   /**
-   * @brief Check inputs and calculated commands.
+   * @brief 检查输入和计算命令。
    */
   qrSafetyChecker<T> *safetyChecker;
 
   /**
-   * @brief Stores data when transitioning.
+   * @brief 在过渡时存储数据。
    */
   qrTransitionData<T> transitionData;
 
   /**
-   * @brief Contains all the FSM states.
+   * @brief 包含所有FSM状态。
    */
   qrFSMStatesList<T> statesList;
 
   /**
-   * @brief Current FSM state.
+   * @brief 当前的FSM状态。
    */
   qrFSMState<T> *currentState;
 
   /**
-   * @brief Next FSM state.
+   * @brief 下一个FSM状态。
    */
   qrFSMState<T> *nextState;
 
   /**
-   * @brief Name of next FSM state.
+   * @brief 下一个FSM状态的名称。
    */
   FSM_StateName nextStateName;
 
   /**
-   * @brief The time of resetting the FSM.
+   * @brief 重置FSM的时间。
    */
   float resetTime;
 
   /**
-   * @brief Time pased since resetting the FSM.
+   * @brief 自重置FSM以来经过的时间。
    */
   float timeSinceReset;
+
   /**
-   * @brief Print information every %printNUM iterations.
+   * @brief 每%printNUM次迭代打印信息。
    */
   int printNum = 10000;
 
   /**
-   * @brief Current normal printing count.
+   * @brief 当前的正常打印计数。
    */
   int printIter = 0;
 
   /**
-   * @brief Current iteration of the FSM.
+   * @brief FSM的当前迭代次数。
    */
   int iter = 0;
 };

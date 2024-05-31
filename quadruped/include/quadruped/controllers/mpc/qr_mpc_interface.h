@@ -21,119 +21,119 @@ namespace Quadruped {
 class MPCRobotState {
 public:
   /**
-   * @brief Print the robot state.
+   * @brief 打印机器人状态。
    */
   void print();
 
   /**
-   * @brief Position in world frame.
+   * @brief 世界坐标系中的位置。
    */
   Eigen::Matrix<float, 3, 1> p;
 
   /**
-   * @brief Linear velocity in world frame.
+   * @brief 世界坐标系中的线速度。
    */
   Eigen::Matrix<float, 3, 1> v;
 
   /**
-   * @brief Angular velocity in base frame.
+   * @brief 基坐标系中的角速度。
    */
   Eigen::Matrix<float, 3, 1> w;
 
   /**
-   * @brief Foothold positions in base frame.
+   * @brief 基坐标系中的足端位置。
    */
   Eigen::Matrix<float, 3, 4> footPosInBaseFrame;
 
   /**
-   * @brief Rotation matrix from base frame to world frame.
+   * @brief 基坐标系到世界坐标系的旋转矩阵。
    */
   Mat3<float> rotMat;
 
   /**
-   * @brief Rotation matrix only considering yaw.
+   * @brief 只考虑航向角的旋转矩阵。
    */
   Mat3<float> yawRotMat;
 
   /**
-   * @brief Inertia matrix in base frame.
+   * @brief 基坐标系中的惯性矩阵。
    */
   Mat3<float> bodyInertia;
 
   /**
-   * @brief Quaternion in world frame.
+   * @brief 世界坐标系中的四元数。
    */
   Eigen::Quaternionf quat;
 
   /**
-   * @brief roll pitch yaw of the robot.
+   * @brief 机器人的滚转、俯仰、偏航角。
    */
   Eigen::Matrix<float, 3, 1> rpy;
 
   /**
-   * @brief The mass of the robot.
+   * @brief 机器人的质量。
    */
   float mass = 12;
 
   /**
-   * @brief Predicted trajectory of the robot. Allow 16 future horizons at most.
+   * @brief 预测的机器人轨迹。最多允许 16 个未来时间段。
    */
   float traj[12 * K_MAX_GAIT_SEGMENTS];
 
   /**
-   * @brief Gait state for each legs. Each value is STANCE or SWING.
+   * @brief 每条腿的步态状态。每个值都是 STANCE 或 SWING。
    */
   float gait[4 * K_MAX_GAIT_SEGMENTS];
 };
 
 struct ProblemConfig {
   /**
-   * @brief Time for one step of MPC.
+   * @brief MPC 的一个步骤所需时间。
    */
   float dt;
 
   /**
-   * @brief Defines the interaction force effect between foot and env.
+   * @brief 足部和环境之间的交互力效应。
    */
   float frictionCoeff;
 
   /**
-   * @brief Max force of every leg that can exert.
+   * @brief 每条腿可以施加的最大力。
    */
   float fMax;
 
   /**
-   * @brief The length of the prediction horizon of the MPC.
+   * @brief MPC 预测horizon 的长度。
    */
   int horizon;
 
   /**
-   * @brief The total mass of the quadruped.
+   * @brief 四足机器人的总质量。
    */
   float totalMass;
 
   /**
-   * @brief Weight for the 12 quadruped states, including pose and twist.
+   * @brief 四足机器人的 12 个状态权重，包括姿态和扭矩。
    */
   float weights[12];
 
   /**
-   * @brief Weight for the force. This term is used in the quadratic problem to minimize the force.
-   * Also used to trade off between state norm and force norm.
+   * @brief 力的权重。此项用于 quadratic 问题中最小化力。
+   * 也用于在状态范数和力范数之间进行权衡。
    */
   float alpha;
 };
 
 /**
- * @brief Setup the MPC parameters. This function will fill the static variable %problemConfig in cpp.
- * @param dt: time sonsidered by one MPC step.
- * @param horizon: future steps considered by MPC.
- * @param frictionCoeff: defines the interaction force effect between foot and env.
- * @param fMax: the max force acting on one leg.
- * @param totalMass: the total mass of the quadruped.
- * @param inertia: the inertia matrix of the quadruped in base frame.
- * @param weight: a 12-element weight vector for pose and twist.
- * @param alpha: a weight for forces in QP formulation.
+ * @brief 设置 MPC 参数。该函数将填充 cpp 中的静态变量 %problemConfig。
+ * @param dt：一个 MPC 步骤所需的时间。
+ * @param horizon：MPC 考虑的未来步骤数。
+ * @param frictionCoeff：定义足部和环境之间的交互力效应。
+ * @param fMax：每条腿施加的最大力。
+ * @param totalMass：四足机器人的总质量。
+ * @param inertia：四足机器人在基坐标系中的惯性矩阵。
+ * @param weight：12 元素权重向量，用于姿态和扭矩。
+ * @param alpha：力在 QP 形式中的权重。
  */
 void SetupProblem(
     double dt,
@@ -146,28 +146,28 @@ void SetupProblem(
     float alpha);
 
 /**
- * @brief Resize the static matrices before constructing MPC problem.
- * @param horizon: steps considered by MPC.
+ * @brief 在构建 MPC 问题前重置静态矩阵。
+ * @param horizon：MPC 考虑的步骤数。
  */
 void ResizeQPMats(s16 horizon);
 
 /**
- * @brief Convert the problem to discrete time dynamics.
- * @param Ac: state matrix in continuous time.
- * @param Bc: transition matrix in continuous time.
- * @param dt: time for one MPC step.
- * @param horizon: steps considered by MPC.
+ * @brief 将问题转换为离散时间动力学。
+ * @param Ac：连续时间状态矩阵。
+ * @param Bc：连续时间转换矩阵。
+ * @param dt：一个 MPC 步骤所需的时间。
+ * @param horizon：MPC 考虑的步骤数。
  */
 void ConvertToDiscreteQP(Eigen::Matrix<float, 13, 13> Ac, Eigen::Matrix<float, 13, 12> Bc, float dt, s16 horizon);
 
 /**
- * @brief [in] Continuous time state space matrices, including A and B.
- * @param [in] I_world: inertia matrix in world frame.
- * @param [in] mass: the total mass of the quadruped.
- * @param [in] r_feet: matrice including foot positions to CoM.
- * @param [in] yawRotMat: the rotation matrix only containing yaw rotation.
- * @param [out] A: output, the matrice multiplying the state vector.
- * @param [out] B: output, the matrice multiplying the input vector.
+ * @brief [in] 连续时间状态空间矩阵，包括 A 和 B。
+ * @param [in] I_world：世界坐标系中的惯性矩阵。
+ * @param [in] mass：四足机器人的总质量。
+ * @param [in] r_feet：足端位置到重心的矩阵。
+ * @param [in] yawRotMat：只包含航向角的旋转矩阵。
+ * @param [out] A：输出，状态向量的乘法矩阵。
+ * @param [out] B：输出，输入向量的乘法矩阵。
  */
 void ComputeContinuousTimeStateSpaceMatrices(
     Mat3<float> I_world,
@@ -178,16 +178,16 @@ void ComputeContinuousTimeStateSpaceMatrices(
     Eigen::Matrix<float, 13, 12> &B);
 
 /**
- * @brief Solve the MPC problem.
- * This function actually construct the QP formulation and use qpOASES to solve it.
- * @param p: position of the quadruped in world frame.
- * @param v: velocity of the quadruped in world frame.
- * @param q: rotation expressed in quaternion in world frame.
- * @param w: angular velocity of the quadruped in world frame.
- * @param r: 4 vectors of footholds to CoM.
- * @param rpy: roll pitch and yaw of the quadruped.
- * @param state_trajectory: future state trajectory generated before.
- * @param gait: gait state in %horizon steps. Usually STANCE or SWING.
+ * @brief 解决 MPC 问题。
+ * 这个函数实际上构建了 QP 形式并使用 qpOASES 解决它。
+ * @param p：四足机器人在世界坐标系中的位置。
+ * @param v：四足机器人在世界坐标系中的速度。
+ * @param q：四元数表示的旋转。
+ * @param w：四足机器人的角速度。
+ * @param r：4 个足端位置到重心的矩阵。
+ * @param rpy：四足机器人的滚转、俯仰、偏航角。
+ * @param state_trajectory：之前生成的未来状态轨迹。
+ * @param gait： horzion 步骤中的步态状态。通常是 STANCE 或 SWING。
  */
 void SolveMPCKernel(
     Vec3<float> &p,
@@ -200,15 +200,15 @@ void SolveMPCKernel(
     float *gait);
 
 /**
- * @brief Solve the MPC problem. Prepare essential data for MPC and call %SolveMPCKernel to solve it.
- * @param setup: some parameters for the MPC problem.
+ * @brief 解决 MPC 问题。准备必要的数据以供 MPC 使用，并调用 %SolveMPCKernel 解决它。
+ * @param setup：MPC 问题的一些参数。
  */
 void SolveMPC(ProblemConfig *setup);
 
 /**
- * @brief Get value in MPC solution which is in form of qpOASES float vector.
- * @param index: the index of the result.
- * @return the result in MPC solution.
+ * @brief 获取 MPC 解的值，该值以 qpOASES 浮点向量形式出现。
+ * @param index：结果的索引。
+ * @return MPC 解的结果。
  */
 double GetMPCSolution(int index);
 

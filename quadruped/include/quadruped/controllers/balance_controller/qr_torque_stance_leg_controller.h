@@ -22,15 +22,15 @@ namespace Quadruped {
 class TorqueStanceLegController {
 public:
   /**
-   * @brief constructor of TorqueStanceLegController
-   * @param robot: pointer to robot.
-   * @param gaitGenerator: pointer to gait generator.
-   * @param stateEstimators: pointer to state estimator container.
-   * @param comAdjuster: pointer to com adjuster.
-   * @param posePlanner: pointer to pose planner.
-   * @param footholdPlanner: pointer to foothold planner.
-   * @param userParameters: reference to user parameters.
-   * @param configFilepath: the string of path to config file.
+   * @brief 构造函数 TorqueStanceLegController
+   * @param robot: 机器人指针。
+   * @param gaitGenerator: 步态生成器指针。
+   * @param stateEstimators: 状态估计器容器指针。
+   * @param comAdjuster: COM 调整器指针。
+   * @param posePlanner: 姿态规划器指针。
+   * @param footholdPlanner: 脚部规划器指针。
+   * @param userParameters: 用户参数引用。
+   * @param configFilepath: 配置文件路径字符串。
    */
   TorqueStanceLegController(
       qrRobot *robot,
@@ -43,186 +43,186 @@ public:
       std::string configFilepath);
 
   /**
-   * @brief default constructor of TorqueStanceLegController;
+   * @brief 默认构造函数 TorqueStanceLegController;
    */
   TorqueStanceLegController() = default;
 
   /**
-   * @brief default destructor of TorqueStanceLegController.
+   * @brief 默认析构函数 TorqueStanceLegController.
    */
   virtual ~TorqueStanceLegController() = default;
 
   /**
-   * @brief bind desired state command to this stance leg controller.
+   * @brief 将期望状态命令绑定到这个stance腿控制器上。
    * @param desiredStateCommandIn
    */
   void BindCommand(qrDesiredStateCommand *desiredStateCommandIn) { desiredStateCommand = desiredStateCommandIn; }
 
   /**
-   * @brief Reset the stance leg controller with current time.
-   * @param currentTime: current time to reset.
+   * @brief 使用当前时间重置stance腿控制器。
+   * @param currentTime: 当前时间重置。
    */
   virtual void Reset(float currentTimeIn);
 
   /**
-   * @brief Update the ratio of the friction force to robot gravity.
-   * @param contacts: descripte the contact status of four feet
-   * @param N: the number of contact feet
-   * @param normalizedPhase: the phase of swing leg
+   * @brief 更新摩擦力与机器人重力之间的比率。
+   * @param contacts: 描述四个脚部接触状态
+   * @param N: 接触脚部数量
+   * @param normalizedPhase:摆动腿相位
    */
   void UpdateFRatio(Vec4<bool> &contacts, int &N, float &normalizedPhase);
 
   /**
-   * @brief Update desired command, especially acceleration for force balance using KP/KD method.
-   * MPC does not use the acceleration for calculation.
+   * @brief 更新期望命令，特别是使用KP/KD方法的加速度命令。
+   * MPC 不使用加速度计算。
    */
   virtual void UpdateDesCommand();
 
   /**
-   * @brief Update the stance leg controller with current time every control loop.
-   * @param currentTime: current time to update.
+   * @brief 使用当前时间每个控制循环更新stance腿控制器。
+   * @param currentTime: 当前时间更新。
    */
   void Update(float currentTime);
 
   /**
-   * @brief Get the motor commands of the stance leg controller
-   * @return commands and forces calculated by force balance.
+   * @brief 获取stance腿控制器的电机命令
+   * @return 由力平衡计算的命令和力矩阵。
    */
   virtual std::tuple<std::map<int, qrMotorCommand>, Eigen::Matrix<float, 3, 4>> GetAction();
 
-  /**
-   * @brief Desired linear speed of quadruped. commanded by user.
+/**
+   * @brief 四足机器人的期望线速度，由用户命令。
    */
   Vec3<float> desiredSpeed;
 
   /**
-   * @brief Desired twisting speed of quadruped commanded by user.
+   * @brief 四足机器人的期望扭转速度，由用户命令。
    */
   float desiredTwistingSpeed;
 
   // private:
 
   /**
-   * @brief Stores the current time.
+   * @brief 存储当前时间。
    */
   float currentTime;
 
   /**
-   * @brief Pointer to robot.
+   * @brief 机器人指针。
    */
   qrRobot *robot;
 
   /**
-   * @brief Pointer to gait generator.
+   * @brief 步态生成器指针。
    */
   qrGaitGenerator *gaitGenerator;
 
   /**
-   * @brief Pointer to robot estimator.
+   * @brief 机器人状态估计器指针。
    */
   qrRobotEstimator *robotEstimator;
 
   /**
-   * @brief Pointer to ground estimator.
+   * @brief 地面状态估计器指针。
    */
   qrGroundSurfaceEstimator *groundEstimator;
 
   /**
-   * @brief Pointer to com adjuster.
+   * @brief COM 调整器指针。
    */
   qrComAdjuster *comAdjuster;
 
   /**
-   * @brief Pointer to pose planner.
+   * @brief 姿态规划器指针。
    */
   qrPosePlanner *posePlanner;
 
   /**
-   * @brief Pointer to foothold planner.
+   * @brief 脚部规划器指针。
    */
   qrFootholdPlanner *footholdPlanner;
 
   /**
-   * @brief Pointer to desired State command.
+   * @brief 期望状态命令指针。
    */
   qrDesiredStateCommand *desiredStateCommand;
 
   /**
-   * @brief Desired body height while trotting.
-   * This is overwritten in the class constructor by userParameters.desiredHeight.
+   * @brief 蹲踞时的期望身体高度。
+   * 在类构造函数中由 userParameters.desiredHeight 覆盖。
    */
   float desiredBodyHeight = 0.3;
 
   /**
-   * @brief Defines the interaction force effect between foot and env.
+   * @brief 定义脚部和环境之间的相互作用力。
    */
   Vec4<float> frictionCoeffs;
 
   /**
-   * @brief YAML node for stance leg comtroller.
+   * @brief YAML 节点用于STANCE 腿控制器。
    */
   YAML::Node param;
 
   /**
-   * @brief A string stores the control mode.
-   * Trot, walk or advanced trot.
+   * @brief 一个字符串存储控制模式。
+   * 蹲踞、步行或高级蹲踞。
    */
   std::string controlModeStr;
 
   /**
-   * @brief Whether to compute the force in world frame.
+   * @brief 是否在世界坐标系中计算力。
    */
   bool computeForceInWorldFrame;
 
   /**
-   * @brief Number of stance legs at current time.
+   * @brief 当前时间的stance腿数量。
    */
   int N;
 
   float moveBasePhase;
 
   /**
-   * @brief 4-element vector stores the contact state of 4 footholds.
+   * @brief 4个元素向量存储4个脚部的接触状态。
    */
   Eigen::Matrix<bool, 4, 1> contacts;
 
   /**
-   * @brief KP vector for calculating acceleration.
+   * @brief KP 向量用于计算加速度。
    */
   Eigen::Matrix<float, 6, 1> KP;
 
   /**
-   * @brief KD vector for calculating acceleration.
+   * @brief KD 向量用于计算加速度。
    */
   Eigen::Matrix<float, 6, 1> KD;  // for acceleration
 
   /**
-   * @brief Max acceleration for KP/KD calculation.
+   * @brief KP/KD 计算的最大加速度。
    */
   Eigen::Matrix<float, 6, 1> maxDdq;
 
   /**
-   * @brief Minimal acceleration for KP/KD calculation.
+   * @brief KP/KD 计算的最小加速度。
    */
   Eigen::Matrix<float, 6, 1> minDdq;
 
   /**
-   * @brief The weight for the 6 acceleration components.
+   * @brief 加速度的权重。
    */
   Eigen::Matrix<float, 6, 1> accWeight;
 
   /**
-   * @brief Min force that applys. User can adjust parameter of each leg.
+   * @brief 每个腿部的最小力应用比率。
    */
   Vec4<float> fMinRatio;
 
   /**
-   * @brief Min force that applys. User can adjust parameter of each leg.
+   * @brief 每个腿部的最大力应用比率。
    */
   Vec4<float> fMaxRatio;
 
   /**
-   * @brief An iteration counter for debug.
+   * @brief 一个迭代计数器用于 debug。
    */
   long long count = 0;
 };

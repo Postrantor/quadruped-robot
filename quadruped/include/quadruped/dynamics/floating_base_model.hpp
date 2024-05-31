@@ -1,18 +1,13 @@
 /*! @file FloatingBaseModel.h
- *  @brief Implementation of Rigid Body Floating Base model data structure
+ *  @brief 浮动基rigid体模型数据结构的实现
  *
- * This class stores the kinematic tree described in "Rigid Body Dynamics
- * Algorithms" by Featherstone (download from
- * https://www.springer.com/us/book/9780387743141 on MIT internet)
+ * 此类存储了 Featherstone 的 "Rigid Body Dynamics Algorithms" 中描述的kinematic树
+ * (可从 https://www.springer.com/us/book/9780387743141 下载，需要MIT互联网)
  *
- * The tree includes an additional "rotor" body for each body.  This rotor is
- * fixed to the parent body and has a gearing constraint.  This is efficiently
- * included using a technique similar to what is described in Chapter 12 of
- * "Robot and Multibody Dynamics" by Jain.  Note that this implementation is
- * highly specific to the case of a single rotating rotor per rigid body. Rotors
- * have the same joint type as their body, but with an additional gear ratio
- * multiplier applied to the motion subspace. The rotors associated with the
- * floating base don't do anything.
+ * 树中包括每个身体的额外“rotor”身体，该rotor固定在父身体上，具有齿轮约束
+ * 使用 Jain 的 "Robot and Multibody Dynamics" 第12章中描述的技术来高效地包含它
+ * 注意，这个实现仅适用于单个旋转rotor per rigid body的情况。
+ * Rotors具有与身体相同的关节类型，但应用了齿轮比率乘数到motion subspace中 浮动基体关联的rotors不执行任何操作
  */
 
 #ifndef LIBBIOMIMETICS_FLOATINGBASEMODEL_H
@@ -24,26 +19,25 @@
 using namespace spatial;
 
 /*!
- * The state of a floating base model (base and joints)
+ * 浮动基模型的状态（基体和关节）
  */
 template <typename T>
 struct FBModelState {
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Quat<T> bodyOrientation;
   Vec3<T> bodyPosition;
-  SVec<T> bodyVelocity;  // body coordinates
+  SVec<T> bodyVelocity;  // 基体坐标
   DVec<T> q;
   DVec<T> qd;
 
   /*!
-   * Print the position of the body
+   * 打印基体的位置
    */
   void print() const { printf("position: %.3f %.3f %.3f\n", bodyPosition[0], bodyPosition[1], bodyPosition[2]); }
 };
 
 /*!
- * The result of running the articulated body algorithm on a rigid-body floating
- * base model
+ * 在刚体浮动基模型上运行articulated body算法的结果
  */
 template <typename T>
 struct FBModelStateDerivative {
@@ -54,14 +48,13 @@ struct FBModelStateDerivative {
 };
 
 /*!
- * Class to represent a floating base rigid body model with rotors and ground
- * contacts. No concept of state.
+ * 代表浮动基刚体模型的类，包括rotors和地面接触点，无状态概念
  */
 template <typename T>
 class FloatingBaseModel {
 public:
   /*!
-   * Initialize a floating base model with default gravity
+   * 使用默认重力初始化浮动基模型
    */
   FloatingBaseModel() : _gravity(0, 0, -9.81) {}
   ~FloatingBaseModel() {}
@@ -93,36 +86,36 @@ public:
   T totalNonRotorMass();
 
   /*!
-   * Get vector of parents, where parents[i] is the parent body of body i
-   * @return Vector of parents
+   * 获取父体向量，其中parents[i]是身体i的父体
+   * @return 父体向量
    */
   const std::vector<int>& getParentVector() { return _parents; }
 
   /*!
-   * Get vector of body spatial inertias
-   * @return Vector of body spatial inertias
+   * 获取身体空间惯量向量
+   * @return 身体空间惯量向量
    */
   const std::vector<SpatialInertia<T>, Eigen::aligned_allocator<SpatialInertia<T>>>& getBodyInertiaVector() {
     return _Ibody;
   }
 
   /*!
-   * Get vector of rotor spatial inertias
-   * @return Vector of rotor spatial inertias
+   * 获取rotor空间惯量向量
+   * @return rotor空间惯量向量
    */
   const std::vector<SpatialInertia<T>, Eigen::aligned_allocator<SpatialInertia<T>>>& getRotorInertiaVector() {
     return _Irot;
   }
 
   /*!
-   * Set the gravity
+   * 设置重力
    */
   void setGravity(Vec3<T>& g) { _gravity = g; }
 
   /*!
-   * Set the flag to enable computing contact info for a given contact point
-   * @param gc_index : index of contact point
-   * @param flag : enable/disable contact calculation
+   * 设置contact点的计算标志
+   * @param gc_index : contact点的索引
+   * @param flag : 是否启用contact计算
    */
   void setContactComputeFlag(size_t gc_index, bool flag) { _compute_contact_info[gc_index] = flag; }
 
@@ -138,8 +131,8 @@ public:
   void resizeSystemMatricies();
 
   /*!
-   * Update the state of the simulator, invalidating previous results
-   * @param state : the new state
+   * 更新模拟器的状态，废弃以前的结果
+   * @param state : 新的状态
    */
   void setState(const FBModelState<T>& state) {
     _state = state;
@@ -151,7 +144,7 @@ public:
   }
 
   /*!
-   * Mark all previously calculated values as invalid
+   * 将所有以前计算的值标记为无效
    */
   void resetCalculationFlags() {
     _articulatedBodiesUpToDate = false;
@@ -162,8 +155,8 @@ public:
   }
 
   /*!
-   * Update the state derivative of the simulator, invalidating previous results.
-   * @param dState : the new state derivative
+   * 更新模拟器的状态导数，废弃以前的结果。
+   * @param dState : 新的状态导数
    */
   void setDState(const FBModelStateDerivative<T>& dState) {
     _dState = dState;
@@ -218,17 +211,17 @@ public:
   std::vector<bool> _compute_contact_info;
 
   /*!
-   * Get the mass matrix for the system
+   * 获取系统的质量矩阵
    */
   const DMat<T>& getMassMatrix() const { return _H; }
 
   /*!
-   * Get the gravity term (generalized forces)
+   * 获取重力项（广义力）
    */
   const DVec<T>& getGravityForce() const { return _G; }
 
   /*!
-   * Get the coriolis term (generalized forces)
+   * 获取科里奥利斯项（广义力）
    */
   const DVec<T>& getCoriolisForce() const { return _Cqd; }
 
@@ -265,7 +258,7 @@ public:
   void udpateQddEffects();
 
   /*!
-   * Set all external forces to zero
+   * 将所有外部力设为零
    */
   void resetExternalForces() {
     for (size_t i = 0; i < _nDof; i++) {

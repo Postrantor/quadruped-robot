@@ -14,8 +14,8 @@
 #include "qr_control_fsm_data.hpp"
 #include "qr_transition_data.hpp"
 
-/* Robot states corresponding to RC modes.
- * Some states are defined by MIT cheetah3 but not used in our project.
+/* 对应RC模式的机器人状态。
+ * MIT cheetah3 定义的一些状态在我们的项目中没有使用。
  */
 #define K_STAND_DOWN -1
 #define K_PASSIVE 0
@@ -33,14 +33,14 @@
 #define K_BACKFLIP 9
 #define K_FRONTJUMP 11
 
-/* Specific control states. */
+/* 特定的控制状态。 */
 #define K_JOINT_PD 51
 #define K_IMPEDANCE_CONTROL 52
 
 #define K_INVALID 100
 
 /**
- * @brief All FSM states in the state machine.
+ * @brief 状态机中的所有FSM状态。
  */
 enum class FSM_StateName {
   INVALID,
@@ -63,120 +63,120 @@ public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   /**
-   * @brief Constructor of FSM_State.
-   * @param controlFSMData: data needed by the state. Usually some pointers to components in control loop.
-   * The state will transfer the command calculated in this control loop to this %controlFSMData.
-   * %controlFSMData is a member of Control_FSM
-   * @param stateNameIn: an enum tyoe, the name of the state to be constructed.
-   * @param stateStringIn: a string type, the string of the name of the state.
+   * @brief FSM_State的构造函数。
+   * @param controlFSMData: 状态所需的数据。通常是一些控制循环中的组件指针。
+   * 状态将从这个控制循环中计算命令并传输到这个%controlFSMData中。
+   * %controlFSMData是Control_FSM的成员
+   * @param stateNameIn: 枚举类型，所构造状态的名称。
+   * @param stateStringIn: 字符串类型，状态名称的字符串。
    */
   qrFSMState(qrControlFSMData<T> *controlFSMData, FSM_StateName stateNameIn, std::string stateStringIn);
 
   /**
-   * @brief Do something when entering a state.
-   * @attention Pure virtual method,
+   * @brief 进入状态时执行的操作。
+   * @attention 纯虚方法，
    */
   virtual void OnEnter() = 0;
 
   /**
-   * @brief Normal behavior for the state.
+   * @brief 状态的正常行为。
    */
   virtual void Run() = 0;
 
   /**
-   * @brief Check next transition of current state.
-   * @return name of the next state
+   * @brief 检查当前状态的下一个转换。
+   * @return 下一个状态的名称
    */
   virtual FSM_StateName CheckTransition() { return FSM_StateName::INVALID; }
 
   /**
-   * @brief Runs the transition behaviors and returns true when done transitioning.
-   * @return whether transition is done
+   * @brief 运行转换行为并返回转换完成时的true。
+   * @return 是否转换完成
    */
   virtual qrTransitionData<T> Transition() { return transitionData; }
 
   /**
-   * @brief Do something when existing the state.
+   * @brief 离开状态时执行的操作。
    */
   virtual void OnExit() = 0;
 
   /**
-   * @brief Turn on all safety checks.
+   * @brief 打开所有安全检查。
    */
   void TurnOnAllSafetyChecks();
 
   /**
-   * @brief Turn off all safety checks.
+   * @brief 关闭所有安全检查。
    */
   void TurnOffAllSafetyChecks();
 
   /**
-   * @brief Enum type of the current state.
+   * @brief 当前状态的枚举类型。
    */
   FSM_StateName stateName;
 
   /**
-   * @brief Enum type of the next state.
+   * @brief 下一个状态的枚举类型。
    */
   FSM_StateName nextStateName;
 
   /**
-   * @brief String of the current state.
+   * @brief 当前状态的字符串。
    */
   std::string stateString;
 
   /**
-   * @brief Time consumed by transition.
+   * @brief 转换所需的时间。
    */
   T transitionDuration;
 
   /**
-   * @brief Time of the start of the transition.
+   * @brief 转换开始的时间。
    */
   T tStartTransition;
 
   /**
-   * @brief Check roll and pitch.
-   * This is a pre-control safety check.
+   * @brief 检查滚转和俯仰角。
+   * 这是一个预控制安全检查。
    */
   bool checkSafeOrientation = false;
 
   /**
-   * @brief Check for footstep distance
-   * This is a post-control safety check.
+   * @brief 检查脚步距离
+   * 这是一个后控制安全检查。
    */
   bool checkPDesFoot = false;
 
   /**
-   * @brief Check for executed force. The force shouldn't be so large.
-   * This is a post-control safety check.
+   * @brief 检查执行的力是否太大。
+   * 这是一个后控制安全检查。
    */
   bool checkForceFeedForward = false;
 
   /**
-   * @brief Check one-stance leg condition
-   * This is a post-control safety check.
+   * @brief 检查单腿条件
+   * 这是一个后控制安全检查。
    */
   bool checkLegSingularity = false;
 
 protected:
   /**
-   * @brief Holds all of the relevant control data.
+   * @brief 保存所有相关的控制数据。
    */
   qrControlFSMData<T> *_data;
 
   /**
-   * @brief Data needed for transition.
+   * @brief 转换所需的数据。
    */
   qrTransitionData<T> transitionData;
 
   /**
-   * @brief Record the time when resetting this state.
+   * @brief 记录重置状态的时间。
    */
   float resetTime;
 
   /**
-   * @brief Record the time since resetting this state.
+   * @brief 记录自重置状态以来的时间。
    */
   float timeSinceReset;
 };

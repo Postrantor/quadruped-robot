@@ -16,121 +16,121 @@
 #include "robots/qr_robot.h"
 #include "utils/qr_se3.h"
 
-/* this is a external lib, but using some variables defined in qr_filter.hpp*/
+/* 这是一个外部库，但使用了qr_filter.hpp中定义的变量*/
 #include "TinyEKF.h"
 
 namespace Quadruped {
 
-/** @brief Initiates the velocity estimator.
- *  See filterpy documentation in the link below for more details.
- *  https://filterpy.readthedocs.io/en/latest/kalman/KalmanFilter.html.
- * @param robot: the robot class for velocity estimation.
- * @param accelerometer_variance: noise estimation for accelerometer reading.
- * @param sensor_variance: noise estimation for motor velocity reading.
- * @param initial_covariance: covariance estimation of initial state.
+/** @brief 初始化速度估算器。
+ *  查看filterpy文档了解更多详情。
+ *  https://filterpy.readthedocs.io/en/latest/kalman/KalmanFilter.html。
+ * @param robot：机器人类用于速度估算。
+ * @param accelerometer_variance：加速度计读取的噪声估算。
+ * @param sensor_variance：马达速度读取的噪声估算。
+ * @param initial_covariance：初始状态的协方差估算。
  */
 class qrRobotVelocityEstimator {
 public:
   /**
-   * @brief Estimates base velocity of A1 robot.
-   * The velocity estimator consists of 2 parts:
-   * 1) A state estimator for CoM velocity.
+   * @brief 估算A1机器人的基座速度。
+   * 速度估算器由两部分组成：
+   * 1)中心质量速度状态估算器。
    *
-   * Two sources of information are used:
-   * The integrated reading of accelerometer and the velocity estimation from
-   * contact legs. The readings are fused together using a Kalman Filter.
+   * 两个信息源被用于估算：
+   * 加速度计读取和接触腿部的速度估算。
+   * 读取被使用卡尔曼滤波器融合在一起。
    *
-   * 2) A moving average filter to smooth out velocity readings
-   * @param robot: the robot class for velocity estimation.
-   * @param gaitGeneratorIn: generate desired gait schedule for locomotion.
-   * @param userParametersIn: parameters for kalman filter and moving window algorithm.
+   * 2)一个移动平均滤波器来平滑速度读取
+   * @param robot：机器人类用于速度估算。
+   * @param gaitGeneratorIn：生成所需步态计划用于行走。
+   * @param userParametersIn：卡尔曼滤波器和移动窗口算法的参数。
    */
   qrRobotVelocityEstimator(qrRobot *robot, qrGaitGenerator *gaitGeneratorIn, qrUserParameters *userParametersIn);
 
   /**
-   * @brief Reset the robot velocity estimator.
-   * @param currentTime: time since the timer started
+   * @brief 重置机器人速度估算器。
+   * @param currentTime：计时器启动以来的时间。
    */
   void Reset(float currentTime);
 
   /**
-   * @brief Compute the time period between two adjacent imu message.
+   * @brief 计算两个相邻imu消息之间的时间间隔。
    */
   float ComputeDeltaTime(uint32_t tick);
 
   /**
-   * @brief Estimate the velocity in base frame.
+   * @brief 估算基座坐标系下的速度。
    */
   void Update(float currentTime);
 
   /**
-   * @brief Getter method of member estimatedVelocity.
+   * @brief 获取成员estimatedVelocity的Getter方法。
    */
   const Vec3<float> &GetEstimatedVelocity() const { return estimatedVelocity; };
 
   /**
-   * @brief Getter method of member estimatedAngularVelocity.
+   * @brief 获取成员estimatedAngularVelocity的Getter方法。
    */
   const Vec3<float> &GetEstimatedAngularVelocity() const { return estimatedAngularVelocity; };
 
 private:
   /**
-   * @brief The robot class for the velocity estimation.
+   * @brief 机器人类用于速度估算。
    */
   qrRobot *robot;
 
   /**
-   * @brief Generate desired gait schedule for locomotion.
+   * @brief 生成所需步态计划用于行走。
    */
   qrGaitGenerator *gaitGenerator;
 
   /**
-   * @brief The window size of moving window algorithm.
+   * @brief 移动窗口算法的窗口大小。
    */
   int windowSize;
 
   /**
-   * @brief The initila variance of kalman filter.
+   * @brief 卡尔曼滤波器的初始方差。
    */
   float initialVariance;
 
   /**
-   * @brief Time stamp when last loop ended.
+   * @brief 上一个循环结束的时间戳。
    */
   uint32_t lastTimestamp;
 
   /**
-   * @brief Estimated velocity in base frame.
+   * @brief 基座坐标系下的估算速度。
    */
   Vec3<float> estimatedVelocity;
 
   /**
-   * @brief Estimated angular velocity in base frame.
+   * @brief 基座坐标系下的估算角速度。
    */
   Vec3<float> estimatedAngularVelocity;
 
   /**
-   * @brief Moving window filter in x-axis for the kalman filter.
+   * @brief 卡尔曼滤波器的移动窗口滤波器（x轴）。
    */
   qrMovingWindowFilter<double, 1> velocityFilterX;
 
   /**
-   * @brief Moving window filter in y-axis for the kalman filter.
+   * @brief 卡尔曼滤波器的移动窗口滤波器（y轴）。
    */
   qrMovingWindowFilter<double, 1> velocityFilterY;
 
   /**
-   * @brief Moving window filter in z-axis for the kalman filter.
+   * @brief 卡尔曼滤波器的移动窗口滤波器（z轴）。
    */
   qrMovingWindowFilter<double, 1> velocityFilterZ;
 
   /**
-   * @brief Moving window filter for liner acceleration.
+   * @brief 卡尔曼滤波器的移动窗口滤波器（线加速度）。
    */
   qrMovingWindowFilter<float, 3> AccFilter;
 
   /**
-   * @brief Kalman filter for the velocity estimation.
+   * @brief 卡尔曼滤波器用于速度估算。
    */
   TinyEKF<3, 3> *filter;
 };

@@ -16,16 +16,16 @@
 namespace Quadruped {
 
 /**
- * @brief estimates robot pose, currently the code implemented position in x-axis and y-axis.
+ * @brief 估算机器人姿态，当前代码实现了x轴和y轴上的位置估算。
  */
 class qrRobotPoseEstimator {
 public:
   /**
-   * @brief Constructor of robot pose estimator.
-   * @param robotIn: the robot class for pose estimation.
-   * @param gaitGeneratorIn: generate desired gait schedule for locomotion.
-   * @param groundEstimatorIn: estimate the 3D plane where the feet contact.
-   * @param velocityEstimator: the estimator class for velocity estimation.
+   * @brief 机器人姿态估算器的构造函数。
+   * @param robotIn：机器人类用于姿态估算。
+   * @param gaitGeneratorIn：生成所需步态计划用于行走。
+   * @param groundEstimatorIn：估算脚部接触的3D平面。
+   * @param velocityEstimator：速度估算类用于速度估算。
    */
   qrRobotPoseEstimator(
       qrRobot *robotIn,
@@ -34,70 +34,69 @@ public:
       qrRobotVelocityEstimator *velocityEstimator);
 
   /**
-   * @brief Reset estimater
-   * @param currentTime: time since the timer started.
+   * @brief 重置估算器
+   * @param currentTime：计时器启动以来的时间。
    */
   void Reset(float currentTime);
 
   /**
-   * @brief Compute the time intervial for each loop.
-   * @param tick: real robot state used for compution time for each loop.
-   * @return time intervial for each loop.
+   * @brief 计算每个循环的时间间隔。
+   * @param tick：真实机器人状态用于计算每个循环的时间。
+   * @return 每个循环的时间间隔。
    */
   float ComputeDeltaTime(uint32_t tick);
 
   /**
-   * @brief Update the pose of robot.
-   * @param currentTime: time since the timer started.
+   * @brief 更新机器人的姿态。
+   * @param currentTime：计时器启动以来的时间。
    */
   void Update(float currentTime);
 
   /**
-   * @brief Caculate position of foot toe in control frame, then represent this vector in world frame,
-   * is not absolute height of body in world frame.
-   * @return estimated robot height.
+   * @brief 计算机器人的高度。
+   * @return 估算的机器人高度。
    */
   float EstimateRobotHeight();
 
   /**
-   * @brief Simply compute the odometry and update the robot pose(x,y,yaw).
-   * @param deltaTime:time intervial for each loop.
+   * @brief 简单地计算里程表并更新机器人姿态(x,y,yaw)。
+   * @param deltaTime：每个循环的时间间隔。
    */
   void ComputePose(float deltaTime);
 
   /**
-   * @brief Getter method of member estimatedPose.
+   * @brief 获取估算姿态的Getter方法。
    */
   const Vec6<float> &GetEstimatedPose() const { return estimatedPose; };
 
 private:
   /**
-   * @brief The robot class for pose estimation.
+   * @brief 机器人类用于姿态估算。
    */
   qrRobot *robot;
 
   /**
-   * @brief Last time stamp when one loop finished.
+   * @brief 上一个循环完成的时间戳。
    */
   uint32_t lastTimestamp;
 
   /**
-   * @brief Esitimaed pose.
+   * @brief 估算的机器人姿态。
    */
   Vec6<float> estimatedPose;
 
   /**
-   * @brief Generate desired gait schedule for locomotion.
+   * @brief 生成所需步态计划用于行走。
    */
   qrGaitGenerator *gaitGenerator;
 
   /**
-   * @brief Estimate the 3D plane where the feet contact.
+   * @brief 估算脚部接触的3D平面。
    */
   qrGroundSurfaceEstimator *groundEstimator;
 
   /**
-   * @brief Velocity estimatior class for pose estimation.
+   * @brief 速度估算类用于姿态估算。
    */
   qrRobotVelocityEstimator *velocityEstimator;
 };

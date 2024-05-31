@@ -14,29 +14,29 @@ template <typename T>
 class qrTaskLinkPosition : public qrTask<T> {
 public:
   /**
-   * @brief Constructor of class qrTaskLinkPosition.
-   * @param fbModel: pointer to MIT floating base model.
-   * @param link_idx: the link index in robot model.
-   * @param virtual_depend: if the link virtual depend.
+   * @brief qrTaskLinkPosition 类的构造函数。
+   * @param fb_model: 指向 MIT 浮动基体模型的指针。
+   * @param link_idx: 机器人模型中的链接索引。
+   * @param virtual_depend: 如果链接 virtaully 依赖。
    */
   qrTaskLinkPosition(const FloatingBaseModel<T> *fb_model, int link_idx, bool virtual_depend = true);
 
   virtual ~qrTaskLinkPosition() = default;
 
   /**
-   * @brief A scale factor that will mutiply posErr.
+   * @brief 一个比例因子，用于乘以 posErr。
    */
   DVec<T> errScale;
 
   /**
-   * @brief KP for position gains.
-   * Used in PD control to get acceleration command.
+   * @brief 位置增益的 KP。
+   * 在 PD 控制中用于获取加速度命令。
    */
   DVec<T> Kp;
 
   /**
-   * @brief KP for velocity gains
-   * Used in PD control to get acceleration command.
+   * @brief 速度增益的 KP。
+   * 在 PD 控制中用于获取加速度命令。
    */
   DVec<T> Kd;
 
@@ -57,18 +57,18 @@ protected:
   virtual bool UpdateTaskJDotQdot();
 
   /**
-   * @brief Pointer to MIT floating base model.
-   * Used to get Jc and JDotQDot.
+   * @brief 指向 MIT 浮动基体模型的指针。
+   * 用于获取 Jc 和 JDotQDot。
    */
   const FloatingBaseModel<T> *fbModel;
 
   /**
-   * @brief The link index of current link position task.
+   * @brief 当前链接位置任务的链接索引。
    */
   int linkIndex;
 
   /**
-   * @brief If the link virtual depend. the jacobian will relate to floating base.
+   * @brief 如果链接虚拟依赖，雅可比矩阵将与浮动基体相关。
    */
   bool virtualDepend;
 };

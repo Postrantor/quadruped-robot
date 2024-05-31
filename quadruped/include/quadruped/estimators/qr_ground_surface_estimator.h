@@ -15,246 +15,245 @@
 namespace Quadruped {
 
 /**
- * @brief One kind of terrian:   ground----| gap |----ground
+ * @brief 一种地形： ground----| gap |----ground
  */
 struct qrGap {
   /**
-   * @brief Distance between COM and center of the gap.
+   * @brief COM 到gap中心的距离。
    */
   float distance;
   /**
-   * @brief Width of the gap.
+   * @brief gap 的宽度。
    */
   float width;
 
   /**
-   * @brief The closest point on the gap margin in base frame.
+   * @brief 基坐标系中gap 边缘的最近点。
    */
   Eigen::Matrix<float, 3, 1> startPoint;
 
   /**
-   * @brief Constructor of gap struct.
-   * @param d: distance between COM and center of the gap
-   * @param w: width of the gap
-   * @param p: the closest point on the gap margin in base frame.
+   * @brief gap 结构体的构造函数。
+   * @param d: COM 到gap中心的距离
+   * @param w: gap 的宽度
+   * @param p: 基坐标系中gap 边缘的最近点。
    */
   inline qrGap(float d, float w, Eigen::Matrix<float, 3, 1> p) : distance(d), width(w), startPoint(p) {}
 };
 
 /**
- * @brief One kind of terrian.
+ * @brief 一种地形。
  */
 struct qrStair {
   /**
-   * @brief Height of a step.
+   * @brief 阶梯的高度。
    */
   float height;
 
   /**
-   * @brief Width of a step.
+   * @brief 阶梯的宽度。
    */
   float width;
 
   /**
-   * @brief Length of a step.
+   * @brief 阶梯的长度。
    */
   float length = 1.0;
 
   /**
-   * @brief The closest point on the gap margin in base frame.
+   * @brief 基坐标系中gap 边缘的最近点。
    */
-  Eigen::Matrix<float, 3, 1> startPoint;  // the closest point on the gap margin in base frame.
+  Eigen::Matrix<float, 3, 1> startPoint;  // 基坐标系中gap 边缘的最近点。
 
   /**
-   * @brief Num of the steps.
+   * @brief 阶梯的数量。
    */
   int k = 3;
 
   /**
-   * @brief Constructor of struct Stair.
+   * @brief 结构体 Stair 的默认构造函数。
    */
   inline qrStair() = default;
 
   /**
-   * @brief constructor of stair.
-   * @param h: height of a step.
-   * @param w: width of a step.
-   * @param l: length of a step.
-   * @param p: the closest point on the gap margin in base frame.
+   * @brief 阶梯结构体的构造函数。
+   * @param h: 阶梯的高度。
+   * @param w: 阶梯的宽度。
+   * @param l: 阶梯的长度。
+   * @param p: 基坐标系中gap 边缘的最近点。
    */
   inline qrStair(float h, float w, float l, Eigen::Matrix<float, 3, 1> p)
       : height(h), width(w), length(l), startPoint(p){};
 };
 
 /**
- * @brief Struct of terrian.
+ * @brief 地形结构体。
  */
 struct qrTerrain {
   /**
-   * @brief Type of terrian.
+   * @brief 地形的类型。
    */
   TerrainType terrainType;
 
   /**
-   * @brief The foothold contact offset to the foot joint.
+   * @brief 足部接触点偏移量到足部关节。
    */
   float footHoldOffset = 0.1f;
 
   /**
-   * @brief Vector of gaps.
+   * @brief gap 的 vector。
    */
   std::vector<qrGap*> gaps;
 
   /**
-   * @brief Point to stair
+   * @brief 指向阶梯的指针。
    */
   qrStair* stair;
 
   /**
-   * @brief Matrix of cost map for foothold planner.
+   * @brief 足部规划器的成本地图矩阵。
    */
   Eigen::MatrixXf costMap;
 };
 
 /**
- * @brief As descriped in MIT CHEETAH3 paper the 3D plane is z(x,y) = a0+ a1*x +a2*y
- * @param a  Vec3<float>, coefficients for ground surface plane, z= a0+a1*x+a2*y
+ * @brief 按照 MIT CHEETAH3 论文所述，3D 平面为 z(x,y) = a0+ a1*x +a2*y
+ * @param a  Vec3<float>, 地面表面平面的系数，z= a0+a1*x+a2*y
  */
 class qrGroundSurfaceEstimator : public qrBaseStateEstimator {
 public:
   /**
-   * @brief Constructor of ground surface estimator.
-   * @param Robot: the robot class for ground estimation.
-   * @param terrainConfigPath: the file path to the terrian config.
+   * @brief 地面估算器的构造函数。
+   * @param Robot: 机器人类用于地面估算。
+   * @param terrainConfigPath: 地形配置文件的路径。
    */
   qrGroundSurfaceEstimator(qrRobot* robot, std::string terrainConfigPath);
 
   /**
-   * @brief Load the terrain config file.
-   * @param terrainConfigPath: the file path to the terrian config.
+   * @brief 加载地形配置文件。
+   * @param terrainConfigPath: 地形配置文件的路径。
    */
   void Loadterrain(std::string& terrainConfigPath);
 
   /**
-   * @brief Reset the estimator.
-   * @param currentTime: time since the timer started.
+   * @brief 重置估算器。
+   * @param currentTime: 计时器启动以来的时间。
    */
   virtual void Reset(float currentTime);
 
   /**
-   * @brief Compute the plane equation when four feet are all in contact with ground.
-   * @param currentTime: time since the timer started.
+   * @brief 当四个脚都接触地面时，计算平面方程。
+   * @param currentTime: 计时器启动以来的时间。
    */
   virtual void Update(float currentTime);
 
   /**
-   * @brief Compute or return the normal of ground surface represent in (initial) base frame.
-   * @param update: if normalize the normal vector or not.
-   * @return the normal of ground surface represent in (initial) base frame.
+   * @brief 计算或返回地面表面的法向量，表示在（初始）基坐标系中。
+   * @param update: 是否 normalize 法向量。
+   * @return 地面表面的法向量，表示在（初始）基坐标系中。
    */
   Eigen::Matrix<double, 3, 1> GetNormalVector(bool update);
 
   /**
-   * @brief Control frame is the frame origin at COM, and x axis is algined with body COM frame's X-axis,
-   * as well as its z-axis is normal to estimated ground surface and y-axis is parrell
-   * with the local surface plane.
-   * @return homogenous transformation Matrix of control frame w.r.t world frame.
+   * @brief 控制帧是 COM 原点的帧，x 轴与身体 COM 帧的 X 轴对齐，同时其 z 轴垂直于估算的地面表面，y
+   * 轴平行于局部表面平面。
+   * @return 控制帧相对于世界帧的同质变换矩阵。
    */
   Eigen::Matrix<double, 4, 4> ComputeControlFrame();
 
   /**
-   * @brief Get z value at a point of ground surface with respect to base frame.
-   * @param x: the given x in base frame.
-   * @param y: the given y in base frame.
-   * @return the z value.
+   * @brief 获取基坐标系中某点的地面高度。
+   * @param x: 基坐标系中的 x 坐标。
+   * @param y: 基坐标系中的 y 坐标。
+   * @return 地面高度。
    */
   float GetZInBaseFrame(float x, float y);
 
   /**
-   * @brief Get a z value in current control frame by given x and y in last control frame.
-   * @param x: the given x in last control frame.
-   * @param y: the given y in last control frame.
-   * @return the z value in current control frame.
+   * @brief 获取当前控制帧中某点的地面高度，通过给定的 x 和 y 坐标在最后控制帧中。
+   * @param x: 上一个控制帧中的 x 坐标。
+   * @param y: 上一个控制帧中的 y 坐标。
+   * @return 当前控制帧中的地面高度。
    */
   float GetZInControlFrame(float x, float y);
 
   /**
-   * @brief Get three direction vectors present in world frame when compute the GRF.
-   * @return the rotation matrix of control frame with respect to world frame.
+   * @brief 获取当计算 GRF 时世界坐标系中的三个方向向量。
+   * @return 控制帧相对于世界帧的旋转矩阵。
    */
   Eigen::Matrix<float, 3, 3> GetAlignedDirections();
 
   /**
-   * @brief Get orientation quaterion present in world frame.
-   * @return orientation quaternion of control frame with respect to world frame.
+   * @brief 获取世界坐标系中的控制帧朝向四元数。
+   * @return 控制帧相对于世界帧的朝向四元数。
    */
   Quat<float> GetControlFrameOrientation() const { return controlFrameOrientation.cast<float>(); };
 
   /**
-   * @brief Get row-pitch-yaw of control frame present in world frame.
-   * @return row-pitch-yaw of control frame present in world frame.
+   * @brief 获取世界坐标系中的控制帧 roll-pitch-yaw。
+   * @return 控制帧相对于世界帧的 roll-pitch-yaw。
    */
   Vec3<float> GetControlFrameRPY() const { return controlFrameRPY.cast<float>(); };
 
   /**
-   * @brief Row-pitch-yaw of control frame present in world frame.
+   * @brief 控制帧相对于世界帧的 roll-pitch-yaw。
    */
   Vec3<double> controlFrameRPY;
 
   /**
-   * @brief Orientation quaternion of control frame with respect to world frame.
+   * @brief 控制帧相对于世界帧的朝向四元数。
    */
   Quat<double> controlFrameOrientation;
 
   /**
-   * @brief The robot class for ground estimation.
+   * @brief 地面估算中的机器人类。
    */
   qrRobot* robot;
 
   /**
-   * @brief Terrian for locomotion.
+   * @brief 机器人行走的地形。
    */
   qrTerrain terrain;
 
   /**
-   * @brief Coeffcient of plane equation.
+   * @brief 平面方程的系数。
    */
   Vec3<double> a;
 
   /**
-   * @brief W contains the position of four footholds,
-   * which used to caculate the coeffcient of plane equation.
-   * W = [1, p_x, p_y]_4*3, p contains data for each leg, p_x = [p_x1, p_x2, p_x3, p_x4]
+   * @brief W 包含四个脚部的位置，
+   * 用于计算平面方程的系数。
+   * W = [1, p_x, p_y]_4*3, p 包含每个腿部的数据，p_x = [p_x1, p_x2, p_x3, p_x4]
    */
   Eigen::Matrix<double, 4, 3> W;
 
   /**
-   * @brief Z position of 4 footholds in base frame.
+   * @brief 基坐标系中四个脚部的 Z 位置。
    */
   Vec4<double> pZ;
 
   /**
-   * @brief Normal vector of plane equation in base frame.
+   * @brief 基坐标系中平面方程的法向量。
    */
   Vec3<double> n;
 
   /**
-   * @brief Robot body position in world frame.
+   * @brief 机器人身体在世界坐标系中的位置。
    */
   Vec3<float> bodyPositionInWorldFrame;
 
   /**
-   * @brief Homogenous transformation Matrix of control frame w.r.t world frame.
+   * @brief 控制帧相对于世界帧的同质变换矩阵。
    */
   Mat4<double> controlFrame;
 
   /**
-   * @brief Contact state of for legs at last control loop.
+   * @brief 上一个控制循环中四个腿部的接触状态。
    */
   Eigen::Matrix<bool, 4, 1> lastContactState;
 
   /**
-   * @brief Yaml node of the foothold planner config file.
+   * @brief 足部规划器配置文件的 YAML 节点。
    */
   YAML::Node footStepperConfig;
 };

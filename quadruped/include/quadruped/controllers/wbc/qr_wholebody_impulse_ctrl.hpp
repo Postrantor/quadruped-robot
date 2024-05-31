@@ -22,23 +22,23 @@ public:
   ~qrWBICExtraData() = default;
 
   /**
-   * @brief The result of the QP problem.
+   * @brief QP 问题的结果。
    */
   DVec<T> optimizedResult;
 
   /**
-   * @brief The optimized reaction force.
-   * Force from MPC plus force from QP problem.
+   * @brief 优化的反作用力。
+   * 来自 MPC 的力加上 QP 问题的力。
    */
   DVec<T> optimalFr;
 
   /**
-   * @brief Weight of the floating base part in the QP problem.
+   * @brief 浮动基体部分在 QP 问题中的权重。
    */
   DVec<T> weightFb;
 
   /**
-   * @brief Weight of the reaction force part in the QP problem.
+   * @brief 反作用力部分在 QP 问题中的权重。
    */
   DVec<T> weightFr;
 };
@@ -47,10 +47,10 @@ template <typename T>
 class qrWholeBodyImpulseCtrl {
 public:
   /**
-   * @brief Constructor of class qrWholeBodyImpulseCtrl .
-   * @param dim_qdot: dimention of qdot.
-   * @param contact_list: contact constraint for all legs of robot.
-   * @param tast_list: task list for the robot.
+   * @brief qrWholeBodyImpulseCtrl 类的构造函数。
+   * @param dim_qdot: qdot 的维数。
+   * @param contact_list: 机器人所有腿部的接触约束。
+   * @param task_list: 机器人的任务列表。
    */
   qrWholeBodyImpulseCtrl(
       size_t dim_qdot,
@@ -60,233 +60,233 @@ public:
   virtual ~qrWholeBodyImpulseCtrl() = default;
 
   /**
-   * @brief Get result of the MIT floating base model,
-   * especially generalized mass matrix, coriolis force and generalized gravity.
-   * @param fb_model: MIT floating base model.
+   * @brief 获取 MIT 浮动基体模型的结果，
+   * 尤其是泛化质量矩阵、科里奥利斯力和泛化重力。
+   * @param fb_model: MIT 浮动基体模型。
    */
   void GetModelRes(const FloatingBaseModel<T> &fb_model);
 
   /**
-   * @brief Given the task list, caculate current robot configuration
-   * and caculate the torque command by robot dynamic formulation.
-   * @param [out] cmd: output torque command for stance leg.
-   * @param [in] extraInput: if use extra data, this pointer points to WBIC extra data structure.
+   * @brief 根据任务列表，计算当前机器人配置
+   * 并根据机器人动力学公式计算扭矩命令。
+   * @param [out] cmd: 输出扭矩命令 для stance leg。
+   * @param [in] extraInput: 如果使用额外数据，这个指针指向 WBIC 额外数据结构。
    */
   void MakeTorque(DVec<T> &cmd, void *extraInput = NULL);
 
 private:
   /**
-   * @brief Compute a dynamically consistent weighted inverse matrix.
-   * Only useful for full rank fat matrix.
-   * @param [in] J: the input jacobian matrix
-   * @param [in] Winv: inverse matrix of generalized mass matrix.
-   * @param [out] Jinv: the pseudo inverse matrix of J.
-   * @param threshold: threshold for singular values being zero.
+   * @brief 计算动态一致的加权逆矩阵。
+   * 只对 full rank fat 矩阵有效。
+   * @param [in] J: 输入雅可比矩阵
+   * @param [in] Winv: 泛化质量矩阵的逆矩阵。
+   * @param [out] Jinv: J 的伪逆矩阵。
+   * @param threshold:  threshold for singular values being zero.
    */
   void WeightedInverse(const DMat<T> &J, const DMat<T> &Winv, DMat<T> &Jinv, double threshold = 0.0001);
 
   /**
-   * @brief Setup the dynamic equality constraint.
-   * @param qddot: derivative of qdot.
+   * @brief 设置动态等式约束。
+   * @param qddot: qdot 的导数。
    */
   void SetEqualityConstraint(const DVec<T> &qddot);
 
   /**
-   * @brief Setup inequality constraint, including conic and boundary constraints.
+   * @brief 设置不等式约束，包括 مخروط和边界约束。
    */
   void SetInequalityConstraint();
 
   /**
-   * @brief Build the contact-related matrices, including JC, JCDotQdot and UF.
+   * @brief 构建与接触相关的矩阵，包括 JC、JCDotQdot 和 UF。
    */
   void ContactBuilding();
 
   /**
-   * @brief Given the acceleration command of generalized coordinate,
-   * compute the total torque command of stance leg by dynamic formulation.
+   * @brief 根据泛化坐标的加速度命令，
+   * 计算 stance leg 的总扭矩命令通过动力学公式。
    */
   void GetSolution(const DVec<T> &qddot, DVec<T> &cmd);
 
   /**
-   * @brief Set the weight of target used in QP problem.
+   * @brief 设置 QP 问题中目标的权重。
    */
   void SetCost();
 
   /**
-   * @brief Setup the size of  matrices used in the QP problem.
+   * @brief 设置 QP 问题中矩阵的大小。
    */
   void SetOptimizationSize();
 
   /**
-   * @brief Dimension of floating base. Usually set to 6.
+   * @brief 浮动基体的维数。通常设置为 6。
    */
   const size_t dimFb;
 
   /**
-   * @brief Dimension of qdot. Usually set to 18.
+   * @brief qdot 的维数。通常设置为 18。
    */
   const size_t dimQdot;
 
   /**
-   * @brief Numeber of actuated joints. For quadruped, this is set to 12.
+   * @brief 动作关节的数量。对于四足机器人，这设置为 12。
    */
   const size_t numActJoint;
 
   /**
-   * @brief Selection matrix of floating base in dynamics equation.
+   * @brief 浮动基体在动力学方程中的选择矩阵。
    */
   DMat<T> Sf;
 
   /**
-   * @brief Generalized mass inertia matrix of floating base model.
+   * @brief 浮动基体模型的泛化质量惯性矩阵。
    */
   DMat<T> A;
 
   /**
-   * @brief Inverse of generalized mass inertia matrix.
+   * @brief 泛化质量惯性矩阵的逆矩阵。
    */
   DMat<T> Ainv;
 
   /**
-   * @brief Coriolis and centrifugal matrix of floating base model.
+   * @brief 浮动基体模型的科里奥利斯和离心力矩阵。
    */
   DVec<T> Coriolis;
 
   /**
-   * @brief Generalized gravitational matrix of floating base model .
+   * @brief 浮动基体模型的泛化重力矩阵。
    */
   DVec<T> Gravity;
 
   /**
-   * @brief Set to true if WBIC has get the results of MIT floating base model.
+   * @brief 如果 WBIC 获得了 MIT 浮动基体模型的结果，则设置为 true。
    */
   bool settingUpdated;
 
   /**
-   * @brief List that stores all contact constraints.
-   * Will be used for null-space projection.
+   * @brief 存储所有接触约束的列表。
+   * 将用于零空间投影。
    */
   const std::vector<qrSingleContact<T> *> *contactList;
 
   /**
-   * @brief List that stores all kinematic tasks,
-   * including body orientation, body position and link positions.
+   * @brief 存储所有kinematic 任务的列表，
+   * 包括身体方向、身体位置和链路位置。
    */
   const std::vector<qrTask<T> *> *taskLisk;
 
   /**
-   * @brief Dimension of the optimal variable, including dimension of floating base and reaction forces.
+   * @brief 最优变量的维数，包括浮动基体和反作用力的维数。
    */
   size_t dimOptimal;
 
   /**
-   * @brief Dimension of equality constraints. Usually set to 6.
+   * @brief 等式约束的维数。通常设置为 6。
    */
   size_t dimEqConstraint;
 
   /**
-   * @brief Dimension of reaction force.
-   * Equal to 3 times num of contact points.
+   * @brief 反作用力的维数。
+   * 等于接触点数量的 3 倍。
    */
   size_t dimFr;
 
   /**
-   * @brief Dimension of inequality constraints.
-   * Equal to 6 times num of contact points.
+   * @brief 不等式约束的维数。
+   * 等于接触点数量的 6 倍。
    */
   size_t dimIneqConstraint;
 
   /**
-   * @brief Pointer to ExtraData, which stores weights and results of the QP problem.
+   * @brief 指向 ExtraData 的指针，存储 QP 问题的权重和结果。
    */
   qrWBICExtraData<T> *extraData;
 
   /**
-   * @brief Equality constraint matrix of the QP problem in Eigen form.
+   * @brief QP 问题的等式约束矩阵，以 Eigen 形式表示。
    */
   DMat<T> CE;
 
   /**
-   * @brief Linear vector of the equality constraint of the QP problem in Eigen form.
+   * @brief QP 问题的等式约束线性向量，以 Eigen 形式表示。
    */
   DVec<T> ce0;
 
   /**
-   * @brief Inequality constraint matrix of the QP problem in Eigen form.
+   * @brief QP 问题的不等式约束矩阵，以 Eigen 形式表示。
    */
   DMat<T> CI;
 
   /**
-   * @brief Linear vector of the inequality constraint of the QP problem in Eigen form.
+   * @brief QP 问题的不等式约束线性向量，以 Eigen 形式表示。
    */
   DVec<T> ci0;
 
   /**
-   * @brief Identity matrix used for initial calculation of acceleration command.
+   * @brief 用于初始加速度命令计算的单位矩阵。
    */
   DMat<T> identityMat;
 
   /**
-   * @brief Force constraint segment of inequality constraint matrix.
+   * @brief 不等式约束矩阵的力约束段。
    * @see qrSingleContact::Uf
    */
   DMat<T> UF;
 
   /**
-   * @brief Linear vector of inequality constraint matrix
+   * @brief 不等式约束矩阵的线性向量。
    * @see qrSingleContact::ineqVec
    */
   DVec<T> ineqVec;
 
   /**
-   * @brief Stacked contact jacobian including all single contact jacobians.
+   * @brief 包括所有单个接触 Jacobian 的栈式接触 Jacobian。
    * @see qrSingleContact::Jc
    */
   DMat<T> JC;
 
   /**
-   * @brief Stacked JcDotQdot including all single JcDotQdot.
+   * @brief 包括所有单个 JcDotQdot 的栈式 JcDotQdot。
    * @see qrSingleContact::JcDotQdot
    */
   DVec<T> JCDotQdot;
 
   /**
-   * @brief Desired reaction force computed from MPC solver.
+   * @brief 由 MPC 解算器计算的期望反作用力。
    */
   DVec<T> desiredFr;
 
   /**
-   * @brief Result vector of the QP problem in quadprogpp form.
+   * @brief QP 问题的结果向量，以 quadprogpp 形式表示。
    */
   quadprogpp::Vector<double> qpz;
 
   /**
-   * @brief Hessian matrix of the QP problem in quadprogpp form.
+   * @brief QP 问题的 Hessian 矩阵，以 quadprogpp 形式表示。
    */
   quadprogpp::Matrix<double> qpG;
 
   /**
-   * @brief Gradient vector of the QP problem in quadprogpp form.
+   * @brief QP 问题的梯度向量，以 quadprogpp 形式表示。
    */
   quadprogpp::Vector<double> qpg0;
 
   /**
-   * @brief Equality constraint matrix of the QP problem in quadprogpp form.
+   * @brief QP 问题的等式约束矩阵，以 quadprogpp 形式表示。
    */
   quadprogpp::Matrix<double> qpCE;
 
   /**
-   * @brief Linear vector of the equality constraint of the QP problem in quadprogpp form.
+   * @brief QP 问题的等式约束线性向量，以 quadprogpp 形式表示。
    */
   quadprogpp::Vector<double> qpce0;
 
   /**
-   * @brief Inequality constraint matrix of the QP problem in quadprogpp form.
+   * @brief QP 问题的不等式约束矩阵，以 quadprogpp 形式表示。
    */
   quadprogpp::Matrix<double> qpCI;
 
   /**
-   * @brief Linear vector of the inequality constraint of the QP problem in quadprogpp form.
+   * @brief QP 问题的不等式约束线性向量，以 quadprogpp 形式表示。
    */
   quadprogpp::Vector<double> qpci0;
 };

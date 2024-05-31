@@ -19,13 +19,13 @@ namespace Quadruped {
 class qrRaibertSwingLegController {
 public:
   /**
-   * @brief Constructor of member qrRaibertSwingLegController.
-   * @param robot: pointer to Robot and its derived class.
-   * @param gaitGenerator: pointer to GaitGenerator.
-   * @param stateEstimators: pointer to StateEstimatorContainer.
-   * @param FootholdPlanner: pointer to FootholdPlanner.
-   * @param userParameters: pointer to UserParameters.
-   * @param configPath: path of config files.
+   * @brief 成员 qrRaibertSwingLegController 的构造函数。
+   * @param robot: 指向 Robot 及其派生类的指针。
+   * @param gaitGenerator: 指向 GaitGenerator 的指针。
+   * @param stateEstimators: 指向 StateEstimatorContainer 的指针。
+   * @param FootholdPlanner: 指向 FootholdPlanner 的指针。
+   * @param userParameters: 指向 UserParameters 的指针。
+   * @param configPath: 配置文件的路径。
    */
   qrRaibertSwingLegController(
       qrRobot *robot,
@@ -38,178 +38,177 @@ public:
   ~qrRaibertSwingLegController() = default;
 
   /**
-   * @brief Bind desired command to this swing leg controller.
-   * @param desiredStateCommandIn: pointer to DesiredStateCommand.
+   * @brief 将所需命令绑定到这个摆动腿控制器。
+   * @param desiredStateCommandIn: 指向 DesiredStateCommand 的指针。
    */
   void BindCommand(qrDesiredStateCommand *desired_state_command) { desiredStateCommand = desired_state_command; }
 
   /**
-   * @brief Quadratic interpolation function, used to generate polygon curve.
-   * @param phase: specifies the given phase in [0, 1] to compute the trajectory.
-   * @param start: specifies the foot's position at the beginning of swing cycle.
-   * @param mid: mid point of the parabola.
-   * @param end specifies the foot's desired position at the end of swing cycle.
-   * @return a float value with phase.
+   * @brief 二次插值函数，用于生成多边形曲线。
+   * @param phase: 指定给定的相位在 [0, 1] 中计算轨迹。
+   * @param start: 指定摆动腿开始时的足部位置。
+   * @param mid:抛物线的中点。
+   * @param end 指定摆动腿结束时的足部所需位置。
+   * @return 一个浮点数值，带有相位。
    */
   float GenParabola(float phase, float start, float mid, float end);
 
   /**
-   * @brief Generating the trajectory of the swing leg.
-   * @param inputPhase: current phase of swing leg.
-   * @param startPos: start position of the footstep of the swing leg.
-   * @param endPos: final position of the footstep of the swing leg.
-   * @return foot position like (x,y,z).
+   * @brief 生成摆动腿的轨迹。
+   * @param inputPhase: 当前的摆动腿相位。
+   * @param startPos:摆动腿的起始位置。
+   * @param endPos:摆动腿的最终位置。
+   * @return 足部位置，如 (x, y, z)。
    */
   Eigen::Matrix<float, 3, 1> GenSwingFootTrajectory(
       float inputPhase, Eigen::Matrix<float, 3, 1> startPos, Eigen::Matrix<float, 3, 1> endPos);
 
   /**
-   * @brief Reset the swing leg controller with current time.
-   * @param currentTime: current time to reset.
+   * @brief 使用当前时间重置摆动腿控制器。
+   * @param currentTime: 当前的时间，以重置。
    */
   void Reset(float currentTime);
 
   /**
-   * @brief Update the swing leg controller with current time.
-   * @param CurrentTime: current time to reset.
+   * @brief 使用当前时间更新摆动腿控制器。
+   * @param currentTime: 当前的时间，以更新。
    */
   void Update(float currentTime);
 
   /**
-   * @brief Get position-mode commands for swing leg motors.
+   * @brief 获取摆动腿电机的位置模式命令。
    */
   std::map<int, Eigen::Matrix<float, 5, 1>> GetAction();
 
   /**
-   * @brief pointer to DesiredStateCommand.
+   * @brief 指向 DesiredStateCommand 的指针。
    */
   qrDesiredStateCommand *desiredStateCommand;
 
   /**
-   * @brief The desired speed of the quadruped.
-   * Appear in velocity mode usually.
+   * @brief 四足机器人的所需速度。
+   * 通常出现在速度模式中。
    */
   Eigen::Matrix<float, 3, 1> desiredSpeed;
 
   /**
-   * @brief The desired angular velocity of the quadruped.
-   * Appear in velocity mode usually.
+   * @brief 四足机器人的所需角速度。
+   * 通常出现在速度模式中。
    */
   float desiredTwistingSpeed;
 
   /**
-   * @brief The position correction coefficients in Raibert's formula.
-   * In the formula, Kp = sqrt(z0/||g||).
-   * Currently, we set it to: const Matrix<float, 3, 1> swingKp(0.03, 0.03, 0.03).
+   * @brief Raibert公式中的位置校正系数。
+   * 在公式中，Kp = sqrt(z0/||g||)。
+   * 目前，我们将其设置为：const Matrix<float, 3, 1> swingKp(0.03, 0.03, 0.03)。
    */
   Eigen::Matrix<float, 3, 1> swingKp;
 
   /**
-   * @brief pointer to Robot.
+   * @brief 指向 Robot 的指针。
    */
   qrRobot *robot;
 
   /**
-   * @brief pointer to GaitGenerator.
+   * @brief 指向 GaitGenerator 的指针。
    */
   qrGaitGenerator *gaitGenerator;
 
   /**
-   * @brief pointer to RobotEstimator.
+   * @brief 指向 RobotEstimator 的指针。
    */
   qrRobotEstimator *stateEstimator;
 
   /**
-   * @brief pointer to GroundSurfaceEstimator.
+   * @brief 指向 GroundSurfaceEstimator 的指针。
    */
   qrGroundSurfaceEstimator *groundEstimator;
 
   /**
-   * @brief pointer to FootholdPlanner.
+   * @brief 指向 FootholdPlanner 的指针。
    */
   qrFootholdPlanner *footholdPlanner;
 
   /**
-   * @brief pointer to UserParameters.
+   * @brief 指向 UserParameters 的指针。
    */
   qrUserParameters *userParameters;
 
   /**
-   * @brief stores the leg id of the swing leg.
+   * @brief 存储摆动腿的腿id。
    */
   std::vector<u8> swingFootIds;
 
   /**
-   * @brief leg state of last control loop.
+   * @brief 上一个控制循环的腿状态。
    */
   Eigen::Matrix<int, 4, 1> lastLegState;
 
   /**
-   * @brief desired height of the quadruped.
+   * @brief 四足机器人的所需高度。
    */
   Eigen::Matrix<float, 3, 1> desiredHeight;
 
   /**
-   * @brief Stores the desired joint angle and velocity.
-   * Map from joint ID to joint angle, velocity and leg ID.
+   * @brief 存储所需的关节角度和速度。
+   * 从关节ID到关节角度、速度和腿ID的映射。
    */
   std::map<int, std::tuple<float, float, int>> swingJointAnglesVelocities;
 
   /**
-   * @brief Foot positions in base frame when switch leg state.
+   * @brief 在换腿状态时的足部位置（在基坐标系中）。
    */
   Eigen::Matrix<float, 3, 4> phaseSwitchFootLocalPos;
 
   /**
-   * @brief Foot positions in world frame when switch leg state.
+   * @brief 在换腿状态时的足部位置（在世界坐标系中）。
    */
   Eigen::Matrix<float, 3, 4> phaseSwitchFootGlobalPos;
 
   /**
-   * @brief Footholds in world frame.
-
+   * @brief 足部支撑点（在世界坐标系中）。
    */
   Eigen::Matrix<float, 3, 4> footHoldInWorldFrame;
 
   /**
-   * @brief Desired foot positions in world frame.
-   * This member is only used for gazebo. Maybe removed in the future.
+   * @brief 所需的足部位置（在世界坐标系中）。
+   * 这个成员只用于 Gazebo，可能在将来被删除。
    */
   Eigen::Matrix<float, 3, 4> footTargetPositionsInWorldFrame;
 
   /**
-   * @brief Desired foot positions in base frame.
+   * @brief 所需的足部位置（在基坐标系中）。
    */
   Eigen::Matrix<float, 3, 4> desiredFootPositionsInBaseFrame;
 
   /**
-   * @brief Stores the trajectory object for all 4 legs.
-   * Will be used when any of the legs is swinging.
+   * @brief 存储所有 4 条腿的轨迹对象。
+   * 将在任何一腿摆动时使用。
    */
   SwingFootTrajectory swingFootTrajectories[4];
 
   /**
-   * @brief The spline information for the swing trajectory.
+   * @brief摆动轨迹的样条信息。
    */
   qrSplineInfo splineInfo;
 
   /**
-   * @brief The config file path of swing_leg_controller.yaml.
+   * @brief swing_leg_controller.yaml 的配置文件路径。
    */
   YAML::Node swingLegConfig;
 
   /**
-   * @brief Foot offset. This member will be removed in the future.
+   * @brief 足部偏移量。这将在将来被删除。
    */
   float footOffset;
 
   /**
-   * @brief Foot position in base frame at last control loop.
+   * @brief 上一个控制循环的足部位置（在基坐标系中）。
    */
   Eigen::Matrix<float, 3, 4> foot_pos_target_last_time;
 
   /**
-   * @brief Same as foot_pos_target_last_time. Will be removed in the future.
+   * @brief 与 foot_pos_target_last_time 相同。将在将来被删除。
    */
   Eigen::Matrix<float, 3, 4> foot_pos_rel_last_time;
 

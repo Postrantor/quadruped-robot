@@ -13,43 +13,43 @@
 #include "fsm/qr_control_fsm_data.hpp"
 
 /**
- * @brief The SafetyChecker handles the checks requested by the ControlFSM.
+ * @brief 安全检查器处理ControlFSM请求的检查。
  */
 template <typename T>
 
 class qrSafetyChecker {
 public:
   /**
-   * @brief constructor of member qrSafetyChecker
-   * @param dataIn: data needed for check, usually robot states and hybrid commands.
+   * @brief qrSafetyChecker成员的构造函数
+   * @param dataIn: 需要检查的数据，一般是机器人状态和混合命令。
    */
   qrSafetyChecker(qrControlFSMData<T>* dataIn) : data(dataIn){};
 
   /**
-   * @brief Check robobts' orientation is safe to control.
-   * This is a pre-control check.
-   * @return Whether it is safe.
+   * @brief 检查机器人的方向是否安全以便控制。
+   * 这是一个预控制检查。
+   * @return 是否安全。
    */
   bool CheckSafeOrientation();
 
   /**
-   * @brief Check foot position not to be stepped too far.
-   * This is a post-control check.
-   * Currently this method is not used. Just return true.
-   * @return Whether it is safe.
+   * @brief 检查脚部位置不超过太远。
+   * 这是一个后控制检查。
+   * 目前该方法未使用。只是返回true。
+   * @return 是否安全。
    */
   bool CheckPDesFoot();
 
   /**
-   * @brief Check force not to be too large.
-   * This is a post-control check.
-   * @return Whether it is safe.
+   * @brief 检查力是否太大。
+   * 这是一个后控制检查。
+   * @return 是否安全。
    */
   bool CheckForceFeedForward();
 
 private:
   /**
-   * @brief A pointer to FSM data. The data is a member of FSM.
+   * @brief 指向FSM数据的指针。该数据是FSM的成员。
    */
   qrControlFSMData<T>* data;
 };

@@ -18,34 +18,30 @@
 namespace Quadruped {
 
 /**
- * @brief A cyclic stratage for gait locomotion.
+ * @brief 循环策略的步态生成器。
  */
 class qrOpenLoopGaitGenerator : public qrGaitGenerator {
 public:
   /**
-   * @brief Constructor of OpenloopGaitGenerator class.
+   * @brief OpenloopGaitGenerator 类的构造函数。
    */
   qrOpenLoopGaitGenerator();
 
   /**
-   * @brief Constructor of OpenloopGaitGenerator class.
-   * @param robot: robot for generate desired gait.
-   * @param configFilePath: configFilePath the given config file.
+   * @brief OpenloopGaitGenerator 类的构造函数。
+   * @param robot: 生成所需步态的机器人。
+   * @param configFilePath: 给定的配置文件路径。
    */
   qrOpenLoopGaitGenerator(qrRobot *robot, std::string configFilePath);
 
   /**
-   * @brief Constructor of OpenloopGaitGenerator class by directly parameters.
-   * @param robot: robot for generate desired gait.
-   * @param stanceDuration: stanceDuration specifies the amount of stance time for each leg in a gait cycle.
-   * @param dutyFactor: dutyFactor specifies the duty factor for each leg. dutyFactor represents the fraction of stance
-   * phase in the gait cycle.
-   * @param initialLegState: initialLegState specifies the state (SWING or STANCE) of each leg at the initialization of
-   * generating a gait.
-   * @param initialLegPhase: initialLegPhase specifies the relative phase for each leg at the initialization of
-   * generating a gait.
-   * @param contactDetectionPhaseThreshold: contactDetectionPhaseThreshold specifies the contact threshold when the leg
-   * state switches from SWING to STANCE.
+   * @brief 通过直接参数构造 OpenloopGaitGenerator 类。
+   * @param robot: 生成所需步态的机器人。
+   * @param stanceDuration: stanceDuration 指定每个腿在步态周期中的支撑时间。
+   * @param dutyFactor: dutyFactor 指定每个腿的占空比。dutyFactor 代表步态周期中的支撑相位部分。
+   * @param initialLegState: initialLegState 指定每个腿在生成步态时的初始状态（SWING 或 STANCE）。
+   * @param initialLegPhase: initialLegPhase 指定每个腿在生成步态时的相位。
+   * @param contactDetectionPhaseThreshold: contactDetectionPhaseThreshold 指定腿状态从 SWING 到 STANCE 的检测阈值。
    */
   qrOpenLoopGaitGenerator(
       qrRobot *robot,
@@ -56,36 +52,36 @@ public:
       float contactDetectionPhaseThreshold = 0.1f);
 
   /**
-   * @brief Destructor of the OpenloopGaitGenerator class.
+   * @brief OpenloopGaitGenerator 类的析构函数。
    */
   virtual ~qrOpenLoopGaitGenerator() = default;
 
   /**
-   * @brief Reset the gait parameters using the given time.
-   * @param currentTime the given time.
+   * @brief 使用给定的时间重置步态参数。
+   * @param currentTime: 给定的时间。
    */
   virtual void Reset(float currentTime);
 
   /**
-   * @brief Update of the gait parameters using the given time.
-   * @param currentTime: the given time.
+   * @brief 使用给定的时间更新步态参数。
+   * @param currentTime: 给定的时间。
    */
   virtual void Update(float currentTime);
 
   /**
-   * @brief If feet lost contact, wait a second or it is in contact to allow switch leg state.
-   * @param currentTime: the given time.
+   * @brief 如果脚部失去接触，等待一秒或在接触时允许切换腿状态。
+   * @param currentTime: 给定的时间。
    */
   virtual void Schedule(float currentTime);
 
 private:
   /**
-   * @brief Sum of delta time,used for schedule.
+   * @brief 累积的 delta 时间，用于调度。
    */
   float cumDt = 0;
 
   /**
-   * @brief How long waitting for gait switch.
+   * @brief 等待步态切换的时间。
    */
   float waitTime = 1.0;
 };

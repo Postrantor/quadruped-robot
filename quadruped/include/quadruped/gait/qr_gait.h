@@ -11,36 +11,32 @@
 #include "robots/qr_robot.h"
 
 /**
- * @brief The qrGaitGenerator class generates the corresponding gait
- * uisng the defined gait parameters. This class also resets and updates these parameters regularly.
+ * @brief qrGaitGenerator 类生成相应的步态，使用定义的步态参数。该类还定期重置和更新这些参数。
  */
 namespace Quadruped {
 
 class qrGaitGenerator {
 public:
   /**
-   * @brief Default constructor that constructs a qrGaitGenerator object.
+   * @brief 默认构造函数，构造 qrGaitGenerator 对象。
    */
   qrGaitGenerator() {}
 
   /**
-   * @brief Construct a qrGaitGenerator object using a given config file.
-   * @param robot: robot the class of robot state.
-   * @param configFilePath: configFilePath the given config file.
+   * @brief 使用给定的配置文件构造 qrGaitGenerator 对象。
+   * @param robot: 机器人状态类。
+   * @param configFilePath: 给定的配置文件。
    */
   qrGaitGenerator(qrRobot *robot, std::string configFilePath);
 
   /**
-   * @brief Construct a qrGaitGenerator object using the given parameters.
-   * @param robot: the class of robot state.
-   * @param stanceDuration: specifies the amount of stance time for each leg in a gait cycle.
-   * @param dutyFactor: specifies the duty factor for each leg. dutyFactor represents the fraction of stance phase in
-   * the gait cycle.
-   * @param initialLegState: specifies the state (SWING or STANCE) of each leg at the initialization of generating a
-   * gait.
-   * @param initialLegPhase: specifies the relative phase for each leg at the initialization of generating a gait.
-   * @param contactDetectionPhaseThreshold: specifies the contact threshold when the leg state switches from SWING to
-   * STANCE.
+   * @brief 使用给定的参数构造 qrGaitGenerator 对象。
+   * @param robot: 机器人状态类。
+   * @param stanceDuration: 指定每条腿在步态周期中的stance时间。
+   * @param dutyFactor: 指定每条腿的-dutyFactor，表示步态周期中的stance相对时间。
+   * @param initialLegState: 指定每条腿在生成步态时的初始状态（SWING 或 STANCE）。
+   * @param initialLegPhase: 指定每条腿在生成步态时的相对相位。
+   * @param contactDetectionPhaseThreshold: 指定腿状态从 SWING 到 STANCE 的触摸检测阈值。
    */
   qrGaitGenerator(
       qrRobot *robot,
@@ -51,13 +47,13 @@ public:
       float contactDetectionPhaseThreshold = 0.1f);
 
   /**
-   * @brief Deconstruct a qrGaitGenerator object.
+   * @brief 析构 qrGaitGenerator 对象。
    */
   virtual ~qrGaitGenerator() = default;
 
   /**
-   * @brief Reset the gait parameters using the given time.
-   * @param currentTime the given time.
+   * @brief 使用给定的时间重置步态参数。
+   * @param currentTime 给定的时间。
    */
   virtual void Reset(float currentTime) {
     resetTime = currentTime;
@@ -72,220 +68,211 @@ public:
   };
 
   /**
-   * @brief Update of the gait parameters using the given time.
-   * @param currentTime: the given time.
+   * @brief 使用给定的时间更新步态参数。
+   * @param currentTime 给定的时间。
    */
   virtual void Update(float currentTime) = 0;
 
   /**
-   * @brief If foot does not get into desired state, how to plan the next desired state.
-   * @param currentTime: the given time.
+   * @brief 如果脚部不在期望状态中，该如何计划下一个期望状态。
+   * @param currentTime 给定的时间。
    */
   virtual void Schedule(float currentTime) {}
 
   /**
-   * @brief The yaml object for loading a yaml config file.
+   * @brief yaml 对象，用于加载 yaml 配置文件。
    */
   YAML::Node config;
 
   /**
-   * @brief Robot object.
+   * @brief 机器人对象。
    */
   qrRobot *robot;
 
   /**
-   * @brief Gait name.
+   * @brief 步态名称。
    */
   std::string gait;
 
   /**
-   * @brief The time when exec reset.
+   * @brief 执行 reset 的时间。
    */
   float resetTime;
 
   /**
-   * @brief The time since exec reset.
+   * @brief 自 exec RESET 以来的时间。
    */
   float timeSinceReset;
 
   /**
-   * @brief The time when exec reset.
+   * @brief 执行 RESET 的时间。
    */
   float lastTime;
 
   /**
-   * @brief The amount of stance time for each leg in a gait cycle.
+   * @brief 每条腿在步态周期中的stance时间。
    */
   Eigen::Matrix<float, 4, 1> stanceDuration;
 
   /**
-   * @brief The amount of swing time for each leg in a gait cycle.
+   * @brief 每条腿在步态周期中的swing时间。
    */
   Eigen::Matrix<float, 4, 1> swingDuration;
 
   /**
-   * @brief The fraction of the cycle for stance phase.
-   * dutyFactor = stanceDuration / (stanceDuration + swingDuration).
-   * @note In a periodic gait, dutyFactor is the same for all the legs.
+   * @brief 步态周期中的stance相对时间。
+   * dutyFactor = stanceDuration / (stanceDuration + swingDuration)。
+   * @note 在周期性步态中，dutyFactor 对于所有腿都是相同的。
    */
   Eigen::Matrix<float, 4, 1> dutyFactor;
 
   /**
-   * @brief Current phase for each leg in full gait cycle.
+   * @brief 每条腿在完整步态周期中的当前相位。
    */
   Eigen::Matrix<float, 4, 1> phaseInFullCycle;
 
   /**
-   * @brief The relative phase for each leg at the initialization of generating a gait.
-   * @note The one leg is assigned relative phase 0 and the others have the relative phases in the range [0,1).
+   * @brief 生成步态时每条腿的相对相位。
+   * @note 一条腿被分配了相对相位 0，其他腿的相对相位在 [0,1) 范围内。
    */
   Eigen::Matrix<float, 4, 1> initialLegPhase;
 
   /**
-   * @brief True global initial leg phase, [0, stance duty] for stance, [stance duty, 1.0] for swing.
+   * @brief 全局初始腿相位，[0, stance duty] 为 stance，[stance duty, 1.0] 为 swing。
    */
   Eigen::Matrix<float, 4, 1> offset;
 
   /**
-   * @brief The new state of each leg when the current leg state switches, either from STAND to SWING, or from SWING to
-   * STAND.
-   * @note If the current state is SWING, the next state will be STAND. If the current state is STANCE, the next state
-   * will be SWING.
+   * @brief 当前腿状态切换时每条腿的新状态，或者从 STAND 切换到 SWING，或者从 SWING 切换到 STAND。
+   * @note 如果当前状态是 SWING，则下一个状态将是 STAND。如果当前状态是 STANCE，则下一个状态将是 SWING。
    */
   Eigen::Matrix<int, 4, 1> initialLegState;
 
   /**
-   * @brief The new state of each leg when the current leg state switches, either from STAND to SWING, or from SWING to
-   * STAND.
-   * @note If the current state is SWING, the next state will be STAND. If the current state is STANCE, the next state
-   * will be SWING.
+   * @brief 当前腿状态切换时每条腿的新状态，或者从 STAND 切换到 SWING，或者从 SWING 切换到 STAND。
+   * @note 如果当前状态是 SWING，则下一个状态将是 STAND。如果当前状态是 STANCE，则下一个状态将是 SWING。
    */
   Eigen::Matrix<int, 4, 1> nextLegState;
 
   /**
-   * @brief The current state of each leg (either STANCE or SWING).
+   * @brief 每条腿的当前状态（either STANCE or SWING）。
    */
   Eigen::Matrix<int, 4, 1> legState;
 
   /**
-   * @brief the relative phase for the desired state.
-   * @note If current state is SWING, then the normalized leg phase means (time in swing)/(total swing time), same as
-   * STANCE.
+   * @brief 期望状态的相对相位。
+   * @note 如果当前状态是 SWING，则归一化腿相位表示（time in swing）/（总 swing 时间），类似于 STANCE。
    */
   Eigen::Matrix<float, 4, 1> normalizedPhase;
 
   /**
-   * @brief the desired state (either STANCE or SWING) of each leg at a given moment.
-   * e.g. if legState = STANCE and normalizedLegPhase < 1.0,  desiredLegState = legState.
-   * e.g. if legState = STANCE and normalizedLegPhase >= 1.0, desiredLegState = nextLegState.
+   * @brief 在给定时刻每条腿的期望状态（either STANCE or SWING）。
+   * 例如，如果 legState = STANCE 且 normalizedLegPhase < 1.0，则 desiredLegState = legState。
+   * 例如，如果 legState = STANCE 且 normalizedLegPhase >= 1.0，则 desiredLegState = nextLegState。
    */
   Eigen::Matrix<int, 4, 1> desiredLegState;
 
   /**
-   * @brief the previous state of each leg,
-   * @note This is used to determine if the state changed in Velocity Mode.
+   * @brief 每条腿的前一个状态，
+   * @note 这用于确定 Velocity Mode 中的状态是否改变。
    */
   Eigen::Matrix<int, 4, 1> lastLegState;
 
   /**
-   * @brief The previous  (current) states of each leg,
-   * @note this is used to determine if the state changed in Position Mode or Walk Mode.
+   * @brief 每条腿的前一个状态，
+   * @note 这用于确定在 Position Mode 或 Walk Mode 中状态是否改变。
    */
-  Eigen::Matrix<int, 4, 1> curLegState;  // curLegState is the planned current state, while legState is the state
-                                         // actually detected via senros.
+  Eigen::Matrix<int, 4, 1> curLegState;  // curLegState 是计划的当前状态，而 legState 是通过传感器检测到的状态。
 
   /**
-   * @brief the fraction of the cycle for stance phase or for swing phase at a moment.
-   * @note If legState = STANCE, the value is dutyfactor; if legState = SWING, the value is (1 - dutyfactor).
+   * @brief 步态周期中 stance 相位或 swing 相位的分数。
+   * @note 如果 legState = STANCE，则值为 dutyfactor；如果 legState = SWING，则值为 (1 - dutyfactor)。
    */
   Eigen::Matrix<float, 4, 1> initStateRadioInCycle;
 
   /**
-   * @brief the duration of a gait cycle. fullCyclePeriod = stanceDuration + swingDuration.
+   * @brief 步态周期的持续时间。fullCyclePeriod = stanceDuration + swingDuration。
    */
   Vec4<float> fullCyclePeriod;
 
   /**
-   * @brief if allow switch leg state.
+   * @brief 是否允许切换腿状态。
    */
   Vec4<bool> allowSwitchLegState;
 
   /**
-   * @brief the contact threshold when the leg state switches from SWING to STANCE.
+   * @brief_legState 从 SWING 切换到 STANCE 时的接触阈值。
    */
   float contactDetectionPhaseThreshold;
 
   /**
-   * @brief the ratio means percentage of cycle, so the variable means during.
-   * which part of the cycle to move the base.
+   * @brief 百分之几的周期内移动基础。
    */
   std::vector<float> moveBaseRatioPoint;
 
   /**
-   * @brief the amount of time it takes to move the torso(base) in stance period.
+   * @brief 在 stance 期间移动躯干（基础）的时间。
    */
   float moveBaseTime;
 
   /**
-   * @brief the relative time during moving the base.
+   * @brief 移动基础的相对时间。
    */
   float moveBasePhase;
 
   /**
-   * @brief the initial phase when 'trueSwing' gait start in a swing cycle.
-   * @note a total cycle include swing and stance, what's more, the stance.
-   * period consists of 'load_force' 'full_stance' 'unload_stance'.
+   * @brief 在 swing 周期中 'trueSwing' 步态开始的初始相位。
+   * @note 一个完整的周期包括 swing 和 stance，另外，stance 期间包括 'load_force' 'full_stance' 'unload_stance'。
    */
   float trueSwingStartPhaseInSwingCycle;
 
   /**
-   * @brief the initial time when 'trueSwing' gait start in a full cycle.
+   * @brief 在完整周期中 'trueSwing' 步态开始的初始时间。
    */
   float trueSwingStartPhaseInFullCycle;
 
   /**
-   * @brief the end time when 'trueSwing' gait start in a full cycle.
+   * @brief 在完整周期中 'trueSwing' 步态结束的时间。
    */
   float trueSwingEndPhaseInFullCycle;
 
   /**
-   * @brief how many gait cycle generated.
+   * @brief 生成了多少个步态周期。
    */
   unsigned long gaitCycle = 0;
 
   /**
-   * @brief leg state the robot detected, e.g.if the leg contact when the gait is swing,
-   * then the leg may in a 'early contact' state.
+   * @brief 机器人检测到的腿状态，例如，如果腿在 swing 步态时与地面接触，则腿可能处于 '早期接触' 状态。
    */
   Eigen::Matrix<int, 4, 1> detectedLegState;
 
   /**
-   * @brief the time when event(early contact or lost contact) happend in a full cycle.
+   * @brief 在完整周期中事件（早期接触或失去接触）发生的时间。
    */
   Vec4<float> detectedEventTickPhase;
 
   /**
-   * @brief if the leg state should change to swing.
+   * @brief 是否应该将腿状态更改为 swing。
    */
   Vec4<bool> firstSwing = {false, false, false, false};
 
   /**
-   * @brief leg contact time in full cycle.
+   * @brief 腿在完整周期中的接触时间。
    */
   Vec4<float> contactStartPhase;
 
   /**
-   * @brief remain time when the ture swing finished.
+   * @brief 当真实 swing 结束时剩余的时间。
    */
   Vec4<float> swingTimeRemaining = {0.f, 0.f, 0.f, 0.f};
 
   /**
-   * @brief if the leg finished its first stance gait.
+   * @brief 腿是否完成了第一个 stance 步态。
    */
   Vec4<bool> firstStance = {false, false, false, false};
 
   /**
-   * @brief target joint angles of robot for stance.
+   * @brief 机器人 stance 步态的目标关节角度。
    */
   Eigen::Matrix<float, 12, 1> firstStanceAngles;
 };

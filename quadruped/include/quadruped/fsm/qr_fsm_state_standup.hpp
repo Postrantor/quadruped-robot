@@ -14,8 +14,8 @@ template <typename T>
 class qrFSMStateStandUp : public qrFSMState<T> {
 public:
   /**
-   * @brief Constructor of FSM_State_StandUp
-   * @param controlFSMData: pointer to the data this FSM needed
+   * @brief FSM_State_StandUp的构造函数。
+   * @param controlFSMData: 指向该FSM所需数据的指针。
    */
   qrFSMStateStandUp(qrControlFSMData<T>* controlFSMData);
 
@@ -46,21 +46,22 @@ public:
 
 private:
   /**
-   * @brief A variable that indicates whether to stand up.
-   * If %standup == 1, then the quadruped should stand up.
-   * If %standup == 0, then the quadruped should keep current position.
-   * If %standup == -1, then the quadruped should sit down.
+   * @brief 是否站立的标志变量。
+   * 如果%standup == 1，则四足机器人应该站立。
+   * 如果%standup == 0，则四足机器人应该保持当前位置。
+   * 如果%standup == -1，则四足机器人应该坐下。
    */
   int standUp;
 
   /**
-   * @brief Whether the quadruped stands.
+   * @brief 四足机器人是否站立的标志。
    */
   bool isUp;
 
   /**
-   * @brief When quadruped is standing up, it stores the angle after standing up.
-   * When quadruped is sitting down, it stores the angle after sitting down.
+   * @brief 四足机器人站立或坐下时的电机角度。
+   * 当四足机器人站立时，存储站立后的电机角度。
+   * 当四足机器人坐下时，存储坐下的电机角度。
    */
   Eigen::Matrix<float, 12, 1> motorAngles;
 };

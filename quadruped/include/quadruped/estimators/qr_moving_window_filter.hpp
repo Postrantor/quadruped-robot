@@ -14,73 +14,72 @@
 #include "Eigen/Dense"
 #include "qr_config.h"
 
-#define Nsta 3  // dimension of state
-#define Mobs 3  // dimension of observation
+#define Nsta 3  // 状态维度
+#define Mobs 3  // 观测维度
 
 namespace Quadruped {
 
 /**
- * @brief filtering a sequence of noisy measurment data.
+ * @brief 对一序列噪音测量数据进行滤波。
  */
 template <class T = double, int N = 1>
 class qrMovingWindowFilter {
 public:
   /**
-   * @brief Constructor of the class MovingWindowFilter.
+   * @brief 类 MovingWindowFilter 的构造函数。
    */
   qrMovingWindowFilter();
 
   /**
-   * @brief Constructor of the class MovingWindowFilter.
-   * @param windowSize: window size for moving window algorithm.
+   * @brief 类 MovingWindowFilter 的构造函数。
+   * @param windowSize: 移动窗口算法的窗口大小。
    */
   qrMovingWindowFilter(unsigned int windowSize);
 
   /**
-   * @brief Reset some intermediate variable of the method, include sum, correction, deque.
+   * @brief 重置方法中的某些中间变量，包括 sum、correction、deque。
    */
   void Reset();
 
   /**
-   * @brief Update the moving window sum using Neumaier's algorithm.
-   *        For more details please refer to:
+   * @brief 使用 Neumaier 算法更新移动窗口 sum。
+   *        详情请参阅：
    *           https://en.wikipedia.org/wiki/Kahan_summation_algorithm#Further_enhancements
    * @param Args:
-   *          value: The new value to be added to the window.
+   *          value: 要添加到窗口的新值。
    */
   void NeumaierSum(const Eigen::Matrix<T, N, 1> &value);
 
   /**
-   * @brief Push a new value into the window queue,
-   * and calculate the average value in the window queue.
-   * @param newValue: push a new value into the window queue.
+   * @brief 将新值推送到窗口队列中，
+   * 并计算窗口队列中的平均值。
+   * @param newValue: 将新值推送到窗口队列中。
    */
   Eigen::Matrix<T, N, 1> CalculateAverage(const Eigen::Matrix<T, N, 1> &newValue);
 
   /**
-   * @brief Getter method of member sum.
+   * @brief 获取成员 sum 的 getter 方法。
    */
   Eigen::Matrix<T, N, 1> GetSum() { return sum; };
 
 private:
   /**
-   * @brief Window size for moving window algorithm.
+   * @brief 移动窗口算法的窗口大小。
    */
   unsigned int moveWindowSize;
 
   /**
-   * @brief The sum of values in the moving window queue.
+   * @brief 移动窗口队列中的值之和。
    */
-  Eigen::Matrix<T, N, 1> sum;  // The moving window sum.
+  Eigen::Matrix<T, N, 1> sum;  // 移动窗口 sum。
 
   /**
-   * @brief The correction term to compensate numerical
-   * precision loss during calculation.
+   * @brief 用于补偿数值精度损失的校正项。
    */
   Eigen::Matrix<T, N, 1> correction;
 
   /**
-   * @brief Stores the moving window values.
+   * @brief 存储移动窗口值。
    */
   std::deque<Eigen::Matrix<T, N, 1>> valueDeque;
 };
@@ -129,17 +128,17 @@ void qrMovingWindowFilter<T, N>::NeumaierSum(const Eigen::Matrix<T, N, 1> &value
 }
 
 /**
- * @brief Computes the moving window average in O(1) time.
+ * @brief 在 O(1) 时间内计算移动窗口平均值。
  * @param Args:
- *   new_value: The new value to enter the moving window.
- * @return Returns:
- *   The average of the values in the window.
+ *   new_value: 进入移动窗口的新值。
+ * @return 返回：
+ *   窗口内值的平均值。
  */
 template <class T, int N>
 Eigen::Matrix<T, N, 1> qrMovingWindowFilter<T, N>::CalculateAverage(const Eigen::Matrix<T, N, 1> &newValue) {
   int dequeLen = valueDeque.size();
   if (dequeLen >= moveWindowSize) {
-    // The left most value to be subtracted from the moving sum.
+    // 从移动窗口 sum 中减去左侧最值。
     NeumaierSum(-valueDeque[0]);
     valueDeque.pop_front();
     dequeLen--;
@@ -158,7 +157,7 @@ template <>
 class qrMovingWindowFilter<double, 1> {
 public:
   /**
-   * @brief Constructor of the class MovingWindowFilter.
+   * @brief 类 MovingWindowFilter 的构造函数。
    */
   qrMovingWindowFilter() {
     moveWindowSize = DEFAULT_WINDOW_SIZE;
@@ -167,8 +166,8 @@ public:
   };
 
   /**
-   * @brief Constructor of the class MovingWindowFilter.
-   * @windowSizeIn: window size for the moving window algorithm.
+   * @brief 类 MovingWindowFilter 的构造函数。
+   * @windowSizeIn: 移动窗口算法的窗口大小。
    */
   qrMovingWindowFilter(unsigned int windowSizeIn) {
     moveWindowSize = windowSizeIn;
@@ -177,8 +176,8 @@ public:
   };
 
   /**
-   * @brief Reset some intermediate variable of the method,
-   * include sum, correction, deque.
+   * @brief 重置方法中的某些中间变量，
+   * 包括 sum、correction、deque。
    */
   void Reset() {
     sum = 0.;
@@ -187,32 +186,32 @@ public:
   };
 
   /**
-   * @brief Update the moving window sum using Neumaier's algorithm.
-   *        For more details please refer to:
+   * @brief 使用 Neumaier 算法更新移动窗口 sum。
+   *        详情请参阅：
    *           https://en.wikipedia.org/wiki/Kahan_summation_algorithm#Further_enhancements
-   * @param value: The new value to be added to the window.
+   * @param value: 要添加到窗口的新值。
    */
   void NeumaierSum(const double &value) {
     double newSum = sum + value;
     if (std::abs(sum) >= std::abs(value)) {
-      // If self._sum is bigger, low-order digits of value are lost.
+      // 如果 sum 比 value 大，则 value 的低位数字丢失。
       correction += (sum - newSum) + value;
     } else {
-      // low-order digits of sum are lost
+      // 如果 value 比 sum 大，则 sum 的低位数字丢失。
       correction += (value - newSum) + sum;
     }
     sum = newSum;
   };
 
-  /**
-   * @brief Push a new value into the window queue,
-   * and calculate the average value in the window queue.
-   * @param newValue: push a new value into the window queue.
+/**
+   * @brief 将新值推送到窗口队列中，
+   * 并计算窗口队列中的平均值。
+   * @param newValue: 将新值推送到窗口队列中。
    */
   double CalculateAverage(const double &newValue) {
     int dequeLen = valueDeque.size();
     if (dequeLen >= moveWindowSize) {
-      // The left most value to be subtracted from the moving sum.
+      // 从移动窗口 sum 中减去左侧最值。
       NeumaierSum(-valueDeque[0]);
       valueDeque.pop_front();
       dequeLen--;
@@ -224,29 +223,28 @@ public:
   };
 
   /**
-   * @brief Getter method of member sum
+   * @brief 成员 sum 的 getter 方法。
    */
   double GetSum() { return sum; };
 
 private:
   /**
-   * @brief Window size for moving window algorithm.
+   * @brief 移动窗口算法的窗口大小。
    */
   unsigned int moveWindowSize;
 
   /**
-   * @brief The sum of values in the moving window queue.
+   * @brief 移动窗口队列中的值之和。
    */
   double sum;
 
   /**
-   * @brief The correction term to compensate numerical
-   * precision loss during calculation.
+   * @brief 用于补偿数值精度损失的校正项。
    */
   double correction;
 
   /**
-   * @brief Stores the moving window values.
+   * @brief 存储移动窗口值。
    */
   std::deque<double> valueDeque;
 };
