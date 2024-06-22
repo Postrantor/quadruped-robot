@@ -1,88 +1,115 @@
 /**
- * @brief
- * @date 2024-05-27
+ * @brief DrawLinesPlugin 插件用于在 Gazebo 中绘制动态线条。
+ * @author GPT4-o
+ * @date 2024-06-23 02:31:58
  * @copyright Copyright(c) 2018 - 2019,
- * Unitree Robotics.Co.Ltd.All rights reserved.Use of this source code is governed by the MPL - 2.0 license,
- * see LICENSE.
+ *   Unitree Robotics.Co.Ltd.All rights reserved.Use of this source code is governed by the MPL - 2.0 license,
  */
 
-#include <boost/bind.hpp>
-#include <geometry_msgs/Pose.h>
-#include <ros/ros.h>
+#include <geometry_msgs/msg/pose.hpp>
+#include <rclcpp/rclcpp.hpp>
 
 #include <gazebo/common/Events.hh>
 #include <gazebo/common/Plugin.hh>
 #include <gazebo/msgs/msgs.hh>
+#include <gazebo/rendering/DynamicLines.hh>
+#include <gazebo/rendering/RenderTypes.hh>
+#include <gazebo/rendering/Scene.hh>
+#include <gazebo/rendering/Visual.hh>
 #include <gazebo/transport/Node.hh>
 #include <ignition/math/Color.hh>
-#include <ostream>
-#include <sstream>
-
-#include "gazebo/rendering/DynamicLines.hh"
-#include "gazebo/rendering/RenderTypes.hh"
-#include "gazebo/rendering/Scene.hh"
-#include "gazebo/rendering/Visual.hh"
-
-using std::stringstream;
+#include <memory>
+#include <string>
 
 namespace gazebo {
+
 class DrawLinesPlugin : public VisualPlugin {
 public:
-  DrawLinesPlugin() : line(NULL) {}
-  ~DrawLinesPlugin() { this->visual->DeleteDynamicLine(this->line); }
+  // 构造函数
+  DrawLinesPlugin() = default;
 
-  void Load(rendering::VisualPtr _parent, sdf::ElementPtr _sdf) {
-    this->visual = _parent;
-    this->visual_namespace = "visual/";
-    if (!_sdf->HasElement("topicName")) {
-      ROS_INFO("pose draw plugin missing <topicName>, defaults to /default_force_draw");
-      this->topic_name = "/default_force_draw";
+  // 析构函数
+  ~DrawLinesPlugin() override {
+    if (visual_ && line_) {
+      visual_->DeleteDynamicLine(line_);
+    }
+  }
+
+  /**
+   * @brief 插件加载函数
+   * @param parent 父视觉对象指针
+   * @param sdf SDF 元素指针
+   */
+  void Load(rendering::VisualPtr parent, sdf::ElementPtr sdf) override {
+    visual_ = parent;
+    visual_namespace_ = "visual/";
+
+    if (!sdf->HasElement("topicName")) {
+      RCLCPP_INFO(rclcpp::get_logger("DrawLinesPlugin"), "缺少 <topicName> 元素，默认使用 /default_force_draw");
+      topic_name_ = "/default_force_draw";
     } else {
-      this->topic_name = _sdf->Get<std::string>("topicName");
-    }
-    if (!ros::isInitialized()) {
-      int argc = 0;
-      char** argv = NULL;
-      ros::init(argc, argv, "gazebo_visual", ros::init_options::NoSigintHandler | ros::init_options::AnonymousName);
+      topic_name_ = sdf->Get<std::string>("topicName");
     }
 
-    this->line = this->visual->CreateDynamicLine(rendering::RENDERING_LINE_STRIP);
-    this->line->AddPoint(ignition::math::Vector3d(0, 0, 0));
-    this->line->AddPoint(ignition::math::Vector3d(100, 100, 100));
-    this->line->setMaterial("Gazebo/Red");
-    this->line->setVisibilityFlags(GZ_VISIBILITY_GUI);
-    this->visual->SetVisible(true);
-    this->rosnode = new ros::NodeHandle(this->visual_namespace);
-    this->pose_sub =
-        this->rosnode->subscribe(this->topic_name + "/" + "xyz_line", 30, &DrawLinesPlugin::GetLineCallback, this);
-    this->update_connection = event::Events::ConnectPreRender(boost::bind(&DrawLinesPlugin::OnUpdate, this));
-    ROS_INFO("Load %s Draw Lines plugin.", this->topic_name.c_str());
-  }
+    if (!rclcpp::ok()) {
+      rclcpp::init(0, nullptr);
+    }
 
-  void OnUpdate() {
-    // this->line->SetPoint(0, ignition::math::Vector3d(x, y, 0));
-    this->line->SetPoint(1, ignition::math::Vector3d(x, y, z));
-  }
+    line_ = visual_->CreateDynamicLine(rendering::RENDERING_LINE_STRIP);
+    line_->AddPoint(ignition::math::Vector3d(0, 0, 0));
+    line_->AddPoint(ignition::math::Vector3d(100, 100, 100));
+    line_->setMaterial("Gazebo/Red");
+    line_->setVisibilityFlags(GZ_VISIBILITY_GUI);
+    visual_->SetVisible(true);
 
-  void GetLineCallback(const geometry_msgs::Pose::ConstPtr& msg) {
-    x = msg->position.x;
-    y = msg->position.y;
-    z = msg->position.z;
-    ROS_INFO("x = %f, y = %f z = %f ", x, y, z);
-    // msg->orientation.w, msg->orientation.x, msg->orientation.y, msg->orientation.z;
+    ros_node_ = std::make_shared<rclcpp::Node>(visual_namespace_);
+    pose_sub_ = ros_node_->create_subscription<geometry_msgs::msg::Pose>(
+        topic_name_ + "/" + "xyz_line", 30, std::bind(&DrawLinesPlugin::GetLineCallback, this, std::placeholders::_1));
+
+    update_connection_ = event::Events::ConnectPreRender(std::bind(&DrawLinesPlugin::OnUpdate, this));
+
+    RCLCPP_INFO(ros_node_->get_logger(), "加载 %s 画线插件。", topic_name_.c_str());
   }
 
 private:
-  ros::NodeHandle* rosnode;
-  std::string topic_name;
-  rendering::VisualPtr visual;
-  rendering::DynamicLines* line;
-  std::string visual_namespace;
-  ros::Subscriber pose_sub;
-  stringstream fmt;
-  double x = 1, y = 1, z = 1;
-  double roll = 0, pitch = 0, yaw = 0;
-  event::ConnectionPtr update_connection;
+  /**
+   * @brief 更新函数，在每次渲染之前调用
+   */
+  void OnUpdate() {
+    // 更新线条的终点
+    line_->SetPoint(1, ignition::math::Vector3d(x_, y_, z_));
+  }
+
+  /**
+   * @brief 回调函数，用于接收并处理 Pose 消息
+   * @param msg 接收到的 Pose 消息指针
+   */
+  void GetLineCallback(const geometry_msgs::msg::Pose::SharedPtr msg) {
+    x_ = msg->position.x;
+    y_ = msg->position.y;
+    z_ = msg->position.z;
+    RCLCPP_INFO(ros_node_->get_logger(), "x = %f, y = %f, z = %f", x_, y_, z_);
+  }
+
+  // ROS 节点
+  rclcpp::Node::SharedPtr ros_node_;
+  // 话题名称
+  std::string topic_name_;
+  // 父视觉对象
+  rendering::VisualPtr visual_;
+  // 动态线条
+  rendering::DynamicLines* line_ = nullptr;
+  // 视觉命名空间
+  std::string visual_namespace_;
+  // 订阅器
+  rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr pose_sub_;
+  // 连接事件
+  event::ConnectionPtr update_connection_;
+  // 线条终点坐标
+  double x_ = 1, y_ = 1, z_ = 1;
 };
+
+// 注册插件
 GZ_REGISTER_VISUAL_PLUGIN(DrawLinesPlugin)
+
 }  // namespace gazebo

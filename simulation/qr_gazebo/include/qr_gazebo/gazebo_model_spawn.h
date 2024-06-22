@@ -1,16 +1,28 @@
+/**
+ * @author GPT4-o
+ * @brief
+ * @date 2024-06-23 02:59:08
+ * @copyright Copyright (c) 2024
+ */
+
 #ifndef GAZEBO_MODEL_SPAWN_H
 #define GAZEBO_MODEL_SPAWN_H
 
-#include <controller_manager_msgs/LoadController.h>
-#include <controller_manager_msgs/SwitchController.h>
-#include <controller_manager_msgs/UnloadController.h>
-#include <gazebo_msgs/DeleteModel.h>
-#include <gazebo_msgs/SpawnModel.h>
-#include <ros/ros.h>
+#include <geometry_msgs/msg/pose.hpp>
+#include <rclcpp/rclcpp.hpp>
+
+#include "controller_manager_msgs/srv/load_controller.hpp"
+#include "controller_manager_msgs/srv/switch_controller.hpp"
+#include "controller_manager_msgs/srv/unload_controller.hpp"
+#include "gazebo_msgs/srv/delete_entity.hpp"
+#include "gazebo_msgs/srv/spawn_entity.hpp"
 
 class GazeboSpawner {
 public:
-  GazeboSpawner(const std::string robot_type, ros::NodeHandle& nh) : d_robot_type(robot_type), d_nh(nh) { ; }
+  GazeboSpawner(const std::string robot_type, std::shared_ptr<rclcpp::Node> node)
+      : d_robot_type(robot_type), d_node(node) {
+    ;
+  }
 
   bool spawn_model(std::string urdf_param);
   bool delete_model();
@@ -23,14 +35,14 @@ public:
 
 protected:
   static const std::vector<std::string> controller_list;
-  static geometry_msgs::Pose model_pose;
+  static geometry_msgs::msg::Pose model_pose;
 
 private:
   std::string d_robot_type;
-  ros::NodeHandle d_nh;
+  std::shared_ptr<rclcpp::Node> d_node;
 
-  void load_controller_once(std::string controller_name);
-  void unload_controller_once(std::string controller_name);
+  void load_controller_once(const std::string& controller_name);
+  void unload_controller_once(const std::string& controller_name);
 };
 
 #endif  // GAZEBO_MODEL_SPAWN_H

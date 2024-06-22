@@ -1,77 +1,113 @@
 /**
- * @brief
- * @date 2024-05-27
+ * @brief UnitreeDrawForcePlugin 插件用于在 Gazebo 中绘制受力方向和大小的动态线条。
+ * @author GPT4-o
+ * @date 2024-06-23 02:31:54
  * @copyright Copyright(c) 2018 - 2019,
  * Unitree Robotics.Co.Ltd.All rights reserved.Use of this source code is governed by the MPL - 2.0 license,
  * see LICENSE.
  */
 
-#include <boost/bind.hpp>
-#include <geometry_msgs/WrenchStamped.h>
-#include <ros/ros.h>
+#include <geometry_msgs/msg/wrench_stamped.hpp>
+#include <rclcpp/rclcpp.hpp>
 
 #include <gazebo/common/Events.hh>
 #include <gazebo/common/Plugin.hh>
 #include <gazebo/msgs/msgs.hh>
+#include <gazebo/rendering/DynamicLines.hh>
+#include <gazebo/rendering/RenderTypes.hh>
+#include <gazebo/rendering/Scene.hh>
+#include <gazebo/rendering/Visual.hh>
 #include <gazebo/transport/Node.hh>
 #include <ignition/math/Color.hh>
-
-#include "gazebo/rendering/DynamicLines.hh"
-#include "gazebo/rendering/RenderTypes.hh"
-#include "gazebo/rendering/Scene.hh"
-#include "gazebo/rendering/Visual.hh"
+#include <memory>
+#include <string>
 
 namespace gazebo {
+
 class UnitreeDrawForcePlugin : public VisualPlugin {
 public:
-  UnitreeDrawForcePlugin() : line(NULL) {}
-  ~UnitreeDrawForcePlugin() { this->visual->DeleteDynamicLine(this->line); }
+  // 构造函数
+  UnitreeDrawForcePlugin() = default;
 
-  void Load(rendering::VisualPtr _parent, sdf::ElementPtr _sdf) {
-    this->visual = _parent;
-    this->visual_namespace = "visual/";
-    if (!_sdf->HasElement("topicName")) {
-      ROS_INFO("Force draw plugin missing <topicName>, defaults to /default_force_draw");
-      this->topic_name = "/default_force_draw";
-    } else {
-      this->topic_name = _sdf->Get<std::string>("topicName");
+  // 析构函数
+  ~UnitreeDrawForcePlugin() override {
+    if (visual_ && line_) {
+      visual_->DeleteDynamicLine(line_);
     }
-    if (!ros::isInitialized()) {
-      int argc = 0;
-      char** argv = NULL;
-      ros::init(argc, argv, "gazebo_visual", ros::init_options::NoSigintHandler | ros::init_options::AnonymousName);
-    }
-
-    this->line = this->visual->CreateDynamicLine(rendering::RENDERING_LINE_STRIP);
-    this->line->AddPoint(ignition::math::Vector3d(0, 0, 0));
-    this->line->AddPoint(ignition::math::Vector3d(1, 1, 1));
-    this->line->setMaterial("Gazebo/Purple");
-    this->line->setVisibilityFlags(GZ_VISIBILITY_GUI);
-    this->visual->SetVisible(true);
-    this->rosnode = new ros::NodeHandle(this->visual_namespace);
-    this->force_sub = this->rosnode->subscribe(
-        this->topic_name + "/" + "the_force", 30, &UnitreeDrawForcePlugin::GetForceCallback, this);
-    this->update_connection = event::Events::ConnectPreRender(boost::bind(&UnitreeDrawForcePlugin::OnUpdate, this));
-    ROS_INFO("Load %s Draw Force plugin.", this->topic_name.c_str());
   }
 
-  void OnUpdate() { this->line->SetPoint(1, ignition::math::Vector3d(Fx, Fy, Fz)); }
+  /**
+   * @brief 插件加载函数
+   * @param parent 父视觉对象指针
+   * @param sdf SDF 元素指针
+   */
+  void Load(rendering::VisualPtr parent, sdf::ElementPtr sdf) override {
+    visual_ = parent;
+    visual_namespace_ = "visual/";
 
-  void GetForceCallback(const geometry_msgs::WrenchStamped& msg) {
-    Fx = msg.wrench.force.x;
-    Fy = msg.wrench.force.y;
-    Fz = msg.wrench.force.z;
+    if (!sdf->HasElement("topicName")) {
+      RCLCPP_INFO(rclcpp::get_logger("UnitreeDrawForcePlugin"), "缺少 <topicName> 元素，默认使用 /default_force_draw");
+      topic_name_ = "/default_force_draw";
+    } else {
+      topic_name_ = sdf->Get<std::string>("topicName");
+    }
+
+    if (!rclcpp::ok()) {
+      rclcpp::init(0, nullptr);
+    }
+
+    line_ = visual_->CreateDynamicLine(rendering::RENDERING_LINE_STRIP);
+    line_->AddPoint(ignition::math::Vector3d(0, 0, 0));
+    line_->AddPoint(ignition::math::Vector3d(1, 1, 1));
+    line_->setMaterial("Gazebo/Purple");
+    line_->setVisibilityFlags(GZ_VISIBILITY_GUI);
+    visual_->SetVisible(true);
+
+    ros_node_ = std::make_shared<rclcpp::Node>(visual_namespace_);
+    force_sub_ = ros_node_->create_subscription<geometry_msgs::msg::WrenchStamped>(
+        topic_name_ + "/" + "the_force", 30,
+        std::bind(&UnitreeDrawForcePlugin::GetForceCallback, this, std::placeholders::_1));
+
+    update_connection_ = event::Events::ConnectPreRender(std::bind(&UnitreeDrawForcePlugin::OnUpdate, this));
+
+    RCLCPP_INFO(ros_node_->get_logger(), "加载 %s 受力绘制插件。", topic_name_.c_str());
   }
 
 private:
-  ros::NodeHandle* rosnode;
-  std::string topic_name;
-  rendering::VisualPtr visual;
-  rendering::DynamicLines* line;
-  std::string visual_namespace;
-  ros::Subscriber force_sub;
-  double Fx = 0, Fy = 0, Fz = 0;
-  event::ConnectionPtr update_connection;
+  /**
+   * @brief 更新函数，在每次渲染之前调用
+   */
+  void OnUpdate() { line_->SetPoint(1, ignition::math::Vector3d(Fx_, Fy_, Fz_)); }
+
+  /**
+   * @brief 回调函数，用于接收并处理 WrenchStamped 消息
+   * @param msg 接收到的 WrenchStamped 消息指针
+   */
+  void GetForceCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr msg) {
+    Fx_ = msg->wrench.force.x;
+    Fy_ = msg->wrench.force.y;
+    Fz_ = msg->wrench.force.z;
+  }
+
+  // ROS 节点
+  rclcpp::Node::SharedPtr ros_node_;
+  // 话题名称
+  std::string topic_name_;
+  // 父视觉对象
+  rendering::VisualPtr visual_;
+  // 动态线条
+  rendering::DynamicLines* line_ = nullptr;
+  // 视觉命名空间
+  std::string visual_namespace_;
+  // 订阅器
+  rclcpp::Subscription<geometry_msgs::msg::WrenchStamped>::SharedPtr force_sub_;
+  // 力的分量
+  double Fx_ = 0, Fy_ = 0, Fz_ = 0;
+  // 连接事件
+  event::ConnectionPtr update_connection_;
 };
+
+// 注册插件
 GZ_REGISTER_VISUAL_PLUGIN(UnitreeDrawForcePlugin)
+
 }  // namespace gazebo

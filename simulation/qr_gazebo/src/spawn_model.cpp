@@ -1,25 +1,35 @@
-#include <ros/ros.h>
+/**
+ * @author GPT4-o
+ * @brief
+ * @date 2024-06-23 02:58:58
+ * @copyright Copyright (c) 2024
+ */
+
+#include <rclcpp/rclcpp.hpp>
 
 #include <iostream>
 
 #include "qr_gazebo/gazebo_model_spawn.h"
 
 int main(int argc, char** argv) {
-  ros::init(argc, argv, "spawn_model");
-  ros::NodeHandle nh;
+  rclcpp::init(argc, argv);
+  auto node = rclcpp::Node::make_shared("spawn_model");
+
+  if (argc < 2) {
+    RCLCPP_ERROR(rclcpp::get_logger("spawn_model"), "Please specify the robot type.");
+    return 1;
+  }
 
   const char* type_cstr = argv[1];
   std::string robot_type(type_cstr);
 
-  GazeboSpawner manager(robot_type, nh);
+  GazeboSpawner manager(robot_type, node);
 
   manager.set_model_position(0, 0, 0.4);
   manager.set_model_orientation(0, 0, 0, 0);
 
-  /// "robot_description" was loaded in .launch file
-  /// make sure the robot hasn't been created
   if (!manager.spawn_model("robot_description")) {
-    ROS_ERROR("Fail to spawn model in gazebo: %s", type_cstr);
+    RCLCPP_ERROR(rclcpp::get_logger("spawn_model"), "Fail to spawn model in gazebo: %s", type_cstr);
     return 1;
   }
 
@@ -31,11 +41,12 @@ int main(int argc, char** argv) {
   std::cout << "Press Enter key to delete controllers and model." << std::endl;
   getchar();
   if (!manager.stop_controllers()) {
-    ROS_ERROR("Fail to stop controllers in gazebo: %s", type_cstr);
+    RCLCPP_ERROR(rclcpp::get_logger("spawn_model"), "Fail to stop controllers in gazebo: %s", type_cstr);
     return 1;
   }
   manager.unload_controllers();
   manager.delete_model();
 
+  rclcpp::shutdown();
   return 0;
 }

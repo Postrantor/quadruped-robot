@@ -1,34 +1,40 @@
 <?xml version="1.0"?>
-<package format="2">
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
     <name>qr_gazebo</name>
     <version>0.0.0</version>
-    <description>The qr_gazebo package. It can start a gazebo simulation</description>
-
-    <maintainer email="laikago@unitree.cc">unitree</maintainer>
+    <description>
+        Utilities to interface with <a href="http://gazebosim.org">Gazebo</a> through ROS.
+    </description>
+    <maintainer email="postrantor.gamil.com">Louise Poubel</maintainer>
     <license>TODO</license>
 
-    <buildtool_depend>catkin</buildtool_depend>
-    <buildtool_depend>genmsg</buildtool_depend>
-    <build_depend>controller_manager</build_depend>
-    <build_depend>joint_state_controller</build_depend>
-    <build_depend>robot_state_publisher</build_depend>
-    <build_depend>roscpp</build_depend>
-    <build_depend>std_msgs</build_depend>
-    <build_export_depend>controller_manager</build_export_depend>
-    <build_export_depend>joint_state_controller</build_export_depend>
-    <build_export_depend>robot_state_publisher</build_export_depend>
-    <build_export_depend>roscpp</build_export_depend>
-    <build_export_depend>std_msgs</build_export_depend>
-    <exec_depend>controller_manager</exec_depend>
-    <exec_depend>joint_state_controller</exec_depend>
-    <exec_depend>robot_state_publisher</exec_depend>
-    <exec_depend>roscpp</exec_depend>
-    <exec_depend>std_msgs</exec_depend>
-    <depend>unitree_legged_msgs</depend>
+    <buildtool_depend>ament_cmake</buildtool_depend>
 
-    <!-- The export tag contains other, unspecified, tags -->
+    <depend>builtin_interfaces</depend>
+    <depend>gazebo_dev</depend>
+    <depend>gazebo_msgs</depend>
+    <depend>rcl</depend>
+    <depend>rclcpp</depend>
+    <depend>rclpy</depend>
+    <depend>rmw</depend>
+    <depend>std_srvs</depend>
+
+    <exec_depend>launch_ros</exec_depend>
+
+    <build_export_depend>geometry_msgs</build_export_depend>
+    <build_export_depend>sensor_msgs</build_export_depend>
+
+    <test_depend>ament_cmake_gtest</test_depend>
+    <test_depend>ament_lint_auto</test_depend>
+    <test_depend>ament_lint_common</test_depend>
+    <test_depend>geometry_msgs</test_depend>
+    <test_depend>launch_testing_ament_cmake</test_depend>
+    <test_depend>ros2run</test_depend>
+    <test_depend>sensor_msgs</test_depend>
+    <test_depend>std_msgs</test_depend>
+
     <export>
-        <!-- Other tools can request additional information be placed here -->
-        <gazebo_ros plugin_path="${prefix}/lib" gazebo_media_path="${prefix}"/>
+        <build_type>ament_cmake</build_type>
     </export>
 </package>
