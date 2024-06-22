@@ -1,4 +1,4 @@
-**You:**
+## **You:**
 
 这是基于 ROS1 编写的用于与 Gazebo 交互的插件，请帮我改写为使用 ROS2 的方式，并对代码进行整体的优化，可以使用更多的 C++ 编程技巧和特性，并使用 google style 的方式添加详细的中文注释。
 
@@ -108,7 +108,7 @@ GZ_REGISTER_SENSOR_PLUGIN(UnitreeFootContactPlugin)
 
 ---
 
-**ChatGPT:**
+## **ChatGPT:**
 
 下面是使用 ROS2 重写后的代码，优化了 C++ 编程技巧，并按照 Google 编码风格添加了详细的中文注释。
 
@@ -240,7 +240,7 @@ GZ_REGISTER_SENSOR_PLUGIN(UnitreeFootContactPlugin)
 
 ---
 
-**You:**
+## **You:**
 
 按照上述同样的需求，改些如下的代码：
 
@@ -337,7 +337,7 @@ GZ_REGISTER_VISUAL_PLUGIN(DrawLinesPlugin)
 
 ---
 
-**ChatGPT:**
+## **ChatGPT:**
 
 下面是使用 ROS2 重写和优化后的代码，并按照 Google 编码风格添加了详细的中文注释。
 
@@ -471,7 +471,7 @@ GZ_REGISTER_VISUAL_PLUGIN(DrawLinesPlugin)
 
 ---
 
-**You:**
+## **You:**
 
 按照上述同样的需求，改写如下的代码：
 
@@ -557,7 +557,7 @@ GZ_REGISTER_VISUAL_PLUGIN(UnitreeDrawForcePlugin)
 
 ---
 
-**ChatGPT:**
+## **ChatGPT:**
 
 下面是使用 ROS2 重写和优化后的代码，并按照 Google 编码风格添加了详细的中文注释。
 
@@ -689,7 +689,7 @@ GZ_REGISTER_VISUAL_PLUGIN(UnitreeDrawForcePlugin)
 
 ---
 
-**You:**
+## **You:**
 
 同样的，请将这里的 CMAKELISTS.txt 文件也改写为 ROS2 的版本：
 
@@ -757,7 +757,7 @@ target_link_libraries(drawLinesPlugin ${catkin_LIBRARIES} ${GAZEBO_LIBRARIES})
 
 ---
 
-**ChatGPT:**
+## **ChatGPT:**
 
 下面是针对 ROS2 改写后的 `CMakeLists.txt` 文件：
 
@@ -893,13 +893,13 @@ ament_package()
 
 ---
 
-**You:**
+## **You:**
 
 我希望可以精简一些 cmakelists 的写法，其中有较多重复的部分
 
 ---
 
-**ChatGPT:**
+## **ChatGPT:**
 
 当然可以，下面是精简后的 `CMakeLists.txt` 文件，其中对重复部分进行了合并处理：
 
@@ -1016,7 +1016,7 @@ ament_package()
 
 ---
 
-**You:**
+## **You:**
 
 我希望可以将 ：
 rclcpp
@@ -1031,7 +1031,7 @@ gazebo
 
 ---
 
-**ChatGPT:**
+## **ChatGPT:**
 
 好的，下面是进一步精简后的 `CMakeLists.txt` 文件，将依赖项放入一个变量中，以便在使用 `ament_target_dependencies` 时直接引用这个变量：
 
@@ -1133,7 +1133,7 @@ ament_package()
 
 ---
 
-**You:**
+## **You:**
 
 同样，一下三个文件也是基于 ROS1 实现的 ROS_Control+Gazebo，我希望可以改写为基于 ROS2_Control + Gazebo 的实现，请按照同样的需求，重构一下代码
 
@@ -1397,7 +1397,7 @@ int main(int argc, char** argv) {
 
 ---
 
-**ChatGPT:**
+## **ChatGPT:**
 
 为了将这些 ROS1 的代码迁移到 ROS2 控制器和 Gazebo 的实现，我们需要对代码进行如下修改：
 
@@ -1710,13 +1710,13 @@ ament_package()
 
 ---
 
-**You:**
+## **You:**
 
 我希望对于上述三个文件的改写可以使用更多的 C++ 11、14、17 中的新特性，并以函数编程的思维重构上述代码，同时按照 google style 的风格添加代码注释
 
 ---
 
-**ChatGPT:**
+## **ChatGPT:**
 
 为了利用 C++ 11、14 和 17 的新特性重构上述代码，并遵循函数式编程的思维，同时添加符合 Google 风格的代码注释，我进行了以下修改：
 
@@ -2007,13 +2007,13 @@ ament_package()
 
 ---
 
-**You:**
+## **You:**
 
 我期望可以再进一步按照 @brief @param @detail @ return 的方式给每个函数添加详细的中文注释
 
 ---
 
-**ChatGPT:**
+## **ChatGPT:**
 
 明白了，根据您的要求，我进一步添加了详细的中文注释，包括 `@brief`、`@param`、`@detail` 和 `@return` 等注释标签，以便更好地说明每个函数的作用、参数、详细说明和返回值。以下是修改后的代码：
 
@@ -2236,13 +2236,13 @@ void GazeboSpawner::ForEachController(Fn fn) {
 
 ---
 
-**You:**
+## **You:**
 
 continue generate
 
 ---
 
-**ChatGPT:**
+## **ChatGPT:**
 
 ```cpp
 #define GAZEBO_MODEL_SPAWN_H

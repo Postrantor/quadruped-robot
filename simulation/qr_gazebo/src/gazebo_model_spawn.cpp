@@ -8,6 +8,7 @@
 #include "qr_gazebo/gazebo_model_spawn.h"
 
 #include <vector>
+#include <string>
 
 const std::vector<std::string> GazeboSpawner::controller_list = {
     "joint_state_controller",  //
@@ -59,8 +60,8 @@ void GazeboSpawner::start_controllers() {
   request->start_controllers = controller_list;
   request->strictness = controller_manager_msgs::srv::SwitchController::Request::STRICT;
 
+  auto result = client->async_send_request(request);
   if (client->wait_for_service(std::chrono::seconds(1))) {
-    auto result = client->async_send_request(request);
     if (rclcpp::spin_until_future_complete(d_node, result) == rclcpp::FutureReturnCode::SUCCESS) {
       RCLCPP_INFO(rclcpp::get_logger("gazebo_model_spawn"), "success to call start controllers service");
     } else {
@@ -83,8 +84,8 @@ bool GazeboSpawner::stop_controllers() {
   request->stop_controllers = controller_list;
   request->strictness = controller_manager_msgs::srv::SwitchController::Request::STRICT;
 
+  auto result = client->async_send_request(request);
   if (client->wait_for_service(std::chrono::seconds(1))) {
-    auto result = client->async_send_request(request);
     if (rclcpp::spin_until_future_complete(d_node, result) == rclcpp::FutureReturnCode::SUCCESS) {
       RCLCPP_INFO(rclcpp::get_logger("gazebo_model_spawn"), "success to call stop controllers service");
     } else {
@@ -118,8 +119,8 @@ void GazeboSpawner::load_controller_once(const std::string& controller_name) {
   auto request = std::make_shared<controller_manager_msgs::srv::LoadController::Request>();
   request->name = controller_name;
 
+  auto result = client->async_send_request(request);
   if (client->wait_for_service(std::chrono::seconds(1))) {
-    auto result = client->async_send_request(request);
     if (rclcpp::spin_until_future_complete(d_node, result) == rclcpp::FutureReturnCode::SUCCESS) {
       RCLCPP_INFO(rclcpp::get_logger("gazebo_model_spawn"), "success to call load_controller service");
     } else {
@@ -140,8 +141,8 @@ void GazeboSpawner::unload_controller_once(const std::string& controller_name) {
   auto request = std::make_shared<controller_manager_msgs::srv::UnloadController::Request>();
   request->name = controller_name;
 
+  auto result = client->async_send_request(request);
   if (client->wait_for_service(std::chrono::seconds(1))) {
-    auto result = client->async_send_request(request);
     if (rclcpp::spin_until_future_complete(d_node, result) == rclcpp::FutureReturnCode::SUCCESS) {
       RCLCPP_INFO(rclcpp::get_logger("gazebo_model_spawn"), "success to call unload_controller service");
     } else {

@@ -33,15 +33,15 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  std::cout << "Press Enter key to start controllers." << std::endl;
+  std::cout << "press enter key to start controllers." << std::endl;
   getchar();
   manager.load_controllers();
   manager.start_controllers();
 
-  std::cout << "Press Enter key to delete controllers and model." << std::endl;
+  std::cout << "press enter key to delete controllers and model." << std::endl;
   getchar();
   if (!manager.stop_controllers()) {
-    RCLCPP_ERROR(rclcpp::get_logger("spawn_model"), "Fail to stop controllers in gazebo: %s", type_cstr);
+    RCLCPP_ERROR(rclcpp::get_logger("spawn_model"), "fail to stop controllers in gazebo: %s", type_cstr);
     return 1;
   }
   manager.unload_controllers();
