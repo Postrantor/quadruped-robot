@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <robot>
 
-    <!-- <ros2_control name="GazeboSystem" type="system">
+    <ros2_control name="GazeboSystem" type="system">
         <hardware>
             <plugin>gazebo_ros2_control/GazeboSystem</plugin>
         </hardware>
-        <joint name="left_wheel_joint">
+        <joint name="FL_hip_joint">
             <command_interface name="velocity">
                 <param name="min">-1</param>
                 <param name="max">1</param>
@@ -13,15 +13,7 @@
             <state_interface name="position"/>
             <state_interface name="velocity"/>
         </joint>
-        <joint name="right_wheel_joint">
-            <command_interface name="velocity">
-                <param name="min">-1</param>
-                <param name="max">1</param>
-            </command_interface>
-            <state_interface name="position"/>
-            <state_interface name="velocity"/>
-        </joint>
-    </ros2_control> -->
+    </ros2_control>
 
     <gazebo>
         <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">

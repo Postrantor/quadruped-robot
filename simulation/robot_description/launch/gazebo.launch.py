@@ -42,7 +42,7 @@ def generate_launch_description():
     # 文件路径定义
     gazebo_launch_file = PathJoinSubstitution([pkg_gazebo_ros, 'launch', 'gazebo.launch.py'])
     rviz2_config_file = PathJoinSubstitution([pkg_description, 'config', 'robot.rviz'])
-    xacro_file = PathJoinSubstitution([pkg_description, 'xacro', 'robot.xacro.urdf'])
+    xacro_file = PathJoinSubstitution([pkg_description, 'xacro', 'robot.xacro'])
 
     # 启动 Gazebo
     gazebo = IncludeLaunchDescription(PythonLaunchDescriptionSource(gazebo_launch_file))
