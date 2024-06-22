@@ -13,12 +13,15 @@
 #include <controller_manager_msgs/ReloadControllerLibraries.h>
 #include <controller_manager_msgs/SwitchController.h>
 #include <controller_manager_msgs/UnloadController.h>
+
 #include <gazebo_msgs/ModelState.h>
 #include <gazebo_msgs/SetModelConfiguration.h>
 #include <gazebo_msgs/SetModelState.h>
 #include <gazebo_msgs/SetPhysicsProperties.h>
-#include <ros/package.h>
+
 #include <std_srvs/Empty.h>
+
+#include <ros/package.h>
 
 #include "quadruped/exec/qr_robot_runner.h"
 #include "quadruped/robots/qr_robot_a1_sim.h"

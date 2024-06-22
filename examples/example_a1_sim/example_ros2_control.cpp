@@ -135,7 +135,8 @@ bool ResetRobot(
  * @param base_state_client Gazebo获取链接状态服务客户端
  */
 void GetComPositionInWorldFrame(
-    qrRobot* quadruped, rclcpp::Client<gazebo_msgs::srv::GetEntityState>::SharedPtr base_state_client) {
+    qrRobot* quadruped,  //
+    rclcpp::Client<gazebo_msgs::srv::GetEntityState>::SharedPtr base_state_client) {
   auto request = std::make_shared<gazebo_msgs::srv::GetEntityState::Request>();
   request->name = kBaseLinkName;
   request->reference_frame = "world";
