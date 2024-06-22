@@ -40,7 +40,7 @@ struct qrMotorCommand {
    * @param tuaIn: 扭矩输入
    */
   qrMotorCommand(double pIn, double KpIn, double dIn, double KdIn, double tuaIn)
-      : p(pIn), Kp(KpIn), d(dIn), Kd(KdIn), tua(tuaIn){};
+      : p(pIn), Kp(KpIn), d(dIn), Kd(KdIn), tua(tuaIn) {};
 
   /**
    * @brief qrMotorCommand 的构造函数

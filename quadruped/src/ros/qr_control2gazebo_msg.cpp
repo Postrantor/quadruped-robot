@@ -12,13 +12,19 @@
 namespace Quadruped {
 
 qrController2GazeboMsg::qrController2GazeboMsg(
-    qrRobot* robotIn, qrLocomotionController* locomotionControllerIn, ros::NodeHandle& nhIn)
-    : robot(robotIn), locomotionController(locomotionControllerIn), nh(nhIn) {
+    qrRobot* robotIn,                                //
+    qrLocomotionController* locomotionControllerIn,  //
+    ros::NodeHandle& nhIn)
+    : robot(robotIn),  //
+      locomotionController(locomotionControllerIn),
+      nh(nhIn) {
   posePlanner = locomotionController->GetPosePlanner();
   gazeboStatePublish = nh.advertise<xpp_msgs::RobotStateCartesian>(xpp_msgs::robot_state_current, 10);
   gazeboParamPublish = nh.advertise<xpp_msgs::RobotParameters>(xpp_msgs::robot_parameters, 10);
   posePlannerPublish = nh.advertise<geometry_msgs::Pose>(xpp_msgs::robot_state_desired, 10);
-  if (robot->isSim) baseStateClient = nh.serviceClient<gazebo_msgs::GetLinkState>("/gazebo/get_link_state");
+  if (robot->isSim) {
+    baseStateClient = nh.serviceClient<gazebo_msgs::GetLinkState>("/gazebo/get_link_state");
+  }
 
   lastTime = ros::Time::now();
   ROS_INFO("Controller2GazeboMsg init success...");
