@@ -1,32 +1,31 @@
-cmake_minimum_required(VERSION 3.0.2)
-project(examples)
+cmake_minimum_required(VERSION 3.5)
+project(robot_description)
 
-option(USE_SIM "USE Simulation" ON)
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_CXX_STANDARD 17)
 
-if(NOT ${USE_SIM})
-  message("not use sim >>>>>>>>>>>>>>>>>>>>>>>")
-  add_definitions(-DNOT_USE_SIM)
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-find_package(catkin REQUIRED quadruped)
+# find_package
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(quadruped REQUIRED)
+find_package(backward_ros REQUIRED)
+find_package(unitree_msgs REQUIRED)
 
-catkin_package(CATKIN_DEPENDS roscpp quadruped)
+# dependency
+set(DEPENDENCIES
+  rclcpp
+  quadruped
+  unitree_msgs
+)
 
-include_directories(${catkin_INCLUDE_DIRS})
+include_directories(
+  include
+)
 
-add_executable(example_a1_real example_a1_real/example_a1_real.cpp)
-target_link_libraries(example_a1_real ${catkin_LIBRARIES})
-
-add_executable(example_lite3_real example_lite3_real/example_lite3_real.cpp)
-target_link_libraries(example_lite3_real ${catkin_LIBRARIES})
-
-add_executable(example_keyboard example_keyboard/example_keyboard.cpp)
-target_link_libraries(example_keyboard ${catkin_LIBRARIES})
-
-if(${USE_SIM})
-  add_executable(example_a1_sim example_a1_sim/example_a1_sim.cpp)
-  target_link_libraries(example_a1_sim ${catkin_LIBRARIES})
-
-  add_executable(example_lite3_sim example_lite3_sim/example_lite3_sim.cpp)
-  target_link_libraries(example_lite3_sim ${catkin_LIBRARIES})
-endif()
+add_executable(robot_sim simulation/example_ros2_control.cpp)
+# target_link_libraries(robot_sim quadruped)
+ament_target_dependencies(qr_gazebo ${DEPENDENCIES})

@@ -1,18 +1,21 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>examples</name>
+  <name>example</name>
   <version>0.1.0</version>
-  <description>The examples package</description>
-  <maintainer email="1973671061@qq.com">Zhenyu Xu</maintainer>
-  <license>MIT</license>
-  <author >Zhenyu Xu</author>
+  <description>The example package for ros2</description>
+  <maintainer email="postrantor@gmail.com">postrantor</maintainer>
+  <license>TODO</license>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
   <depend>quadruped</depend>
-  <depend>roscpp</depend>
+  <depend>unitree_msgs</depend>
 
-  <!-- The export tag contains other, unspecified, tags -->
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
   <export>
-    <!-- Other tools can request additional information be placed here -->
+    <build_type>ament_cmake</build_type>
   </export>
 </package>

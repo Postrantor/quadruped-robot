@@ -27,7 +27,9 @@
 #include "quadruped/robots/qr_robot_a1_sim.h"
 #include "quadruped/ros/qr_control2gazebo_msg.h"
 
-using namespace std;
+#include <vector>
+#include <string>
+
 using namespace Quadruped;
 
 namespace {
@@ -36,9 +38,9 @@ const double kHipAngle = 0.3;
 const double kThighAngle = 1.1;
 const double kCalfAngle = -2.2;
 const double kMaxTimeSeconds = 300.0;
-const string kRobotName = "a1_gazebo";
-const string kUrdfParamName = "robot_description";
-const string kBaseLinkName = "a1_gazebo::base";
+const std::string kRobotName = "a1_gazebo";
+const std::string kUrdfParamName = "robot_description";
+const std::string kBaseLinkName = "a1_gazebo::base";
 const int kLoopRate1Hz = 1000;
 const int kLoopRate2Hz = 500;
 
@@ -71,9 +73,9 @@ bool SetModelState(ros::ServiceClient& modelStateClient, const gazebo_msgs::Mode
  */
 bool SetJointState(
     ros::ServiceClient& jointStateClient,
-    const string& modelName,
-    const vector<string>& jointNames,
-    const vector<double>& jointPositions) {
+    const std::string& modelName,
+    const std::vector<std::string>& jointNames,
+    const std::vector<double>& jointPositions) {
   gazebo_msgs::SetModelConfiguration set_joint_state;
   set_joint_state.request.model_name = modelName;
   set_joint_state.request.urdf_param_name = kUrdfParamName;
@@ -109,12 +111,33 @@ bool ResetRobot(ros::ServiceClient& modelStateClient, ros::ServiceClient& jointS
   model_state.twist.angular.y = 0;
   model_state.twist.angular.z = 0;
 
-  vector<string> joint_names = {"FR_hip_joint",   "FR_thigh_joint", "FR_calf_joint",  "FL_hip_joint",
-                                "FL_thigh_joint", "FL_calf_joint",  "RR_hip_joint",   "RR_thigh_joint",
-                                "RR_calf_joint",  "RL_hip_joint",   "RL_thigh_joint", "RL_calf_joint"};
+  std::vector<std::string> joint_names = {
+      "FR_hip_joint",    //
+      "FR_thigh_joint",  //
+      "FR_calf_joint",   //
+      "FL_hip_joint",    //
+      "FL_thigh_joint",  //
+      "FL_calf_joint",   //
+      "RR_hip_joint",    //
+      "RR_thigh_joint",  //
+      "RR_calf_joint",   //
+      "RL_hip_joint",    //
+      "RL_thigh_joint",  //
+      "RL_calf_joint"};
 
-  vector<double> joint_positions = {-kHipAngle, kThighAngle, kCalfAngle, kHipAngle, kThighAngle, kCalfAngle,
-                                    -kHipAngle, kThighAngle, kCalfAngle, kHipAngle, kThighAngle, kCalfAngle};
+  std::vector<double> joint_positions = {
+      -kHipAngle,   //
+      kThighAngle,  //
+      kCalfAngle,   //
+      kHipAngle,    //
+      kThighAngle,  //
+      kCalfAngle,
+      -kHipAngle,   //
+      kThighAngle,  //
+      kCalfAngle,   //
+      kHipAngle,    //
+      kThighAngle,  //
+      kCalfAngle};
 
   return SetModelState(modelStateClient, model_state) &&
          SetJointState(jointStateClient, kRobotName, joint_names, joint_positions);
