@@ -7,9 +7,9 @@
     <arg name="use_sim_time" default="true"/>
     <arg name="gui" default="true"/>
     <arg name="headless" default="false"/>
+    <!-- debug mode will hung up the robot, use "true" or "false" to switch it. -->
     <arg name="debug" default="false"/>
     <arg name="verbose" default="false"/>
-    <!-- Debug mode will hung up the robot, use "true" or "false" to switch it. -->
 
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="world_name" value="$(find qr_gazebo)/worlds/$(arg wname).world"/>
@@ -21,5 +21,4 @@
     </include>
 
     <node pkg="controller_manager" type="controller_manager" name="controllers_manager" output="screen"/>
-
 </launch>

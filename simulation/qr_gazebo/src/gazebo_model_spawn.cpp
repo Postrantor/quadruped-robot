@@ -35,7 +35,7 @@ bool GazeboSpawner::spawn_model(const std::string& urdf_param) {
   RCLCPP_INFO(rclcpp::get_logger("gazebo_model_spawn"), "spawn model state: %d", state);
 
   std::this_thread::sleep_for(std::chrono::seconds(2));
-  RCLCPP_INFO(rclcpp::get_logger("gazebo_model_spawn"), "Gazebo model spawn correctly");
+  RCLCPP_INFO(rclcpp::get_logger("gazebo_model_spawn"), "gazebo model spawn correctly");
 
   return state == 0;
 }
@@ -45,8 +45,7 @@ bool GazeboSpawner::delete_model() {
       "ros2 service call /gazebo/delete_entity gazebo_msgs/srv/DeleteEntity \"{name: '" + d_robot_type + "_gazebo'}\"";
   int state = system(command.c_str());
   RCLCPP_INFO(rclcpp::get_logger("gazebo_model_spawn"), "delete model state: %d", state);
-
-  RCLCPP_INFO(rclcpp::get_logger("gazebo_model_spawn"), "Gazebo model delete correctly");
+  RCLCPP_INFO(rclcpp::get_logger("gazebo_model_spawn"), "gazebo model delete correctly");
 
   return state == 0;
 }

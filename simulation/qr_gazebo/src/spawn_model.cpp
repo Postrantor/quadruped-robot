@@ -6,6 +6,11 @@
  * @date 2024-06-23
  */
 
+/**
+ * `roslaunch qr_gazebo gazebo_startup.launch wname:=earth`
+ * `roslaunch qr_gazebo model_spawn.launch rname:=a1 use_xacro:=true use_camera:=false`
+ */
+
 #include <functional>
 #include <iostream>
 #include <memory>

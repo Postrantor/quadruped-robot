@@ -15,5 +15,4 @@
     </group>
 
     <node pkg="qr_gazebo" type="spawn_model" name="$(anon spawn_model)" args="$(arg rname)" output="screen"/>
-
 </launch>
