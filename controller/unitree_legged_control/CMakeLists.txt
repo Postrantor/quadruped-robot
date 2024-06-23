@@ -1,38 +1,56 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(unitree_legged_control)
 
-find_package(
-  catkin REQUIRED COMPONENTS controller_interface hardware_interface pluginlib
-                             roscpp realtime_tools unitree_legged_msgs)
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_CXX_STANDARD 17)
 
-catkin_package(
-  CATKIN_DEPENDS
-  unitree_legged_msgs
-  controller_interface
-  hardware_interface
-  pluginlib
-  roscpp
-  INCLUDE_DIRS
-  include
-  LIBRARIES
-  ${PROJECT_NAME})
-
-include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
-
-link_directories($(catkin_LIB_DIRS) lib)
-execute_process(
-  COMMAND uname -m
-  COMMAND tr -d '\n'
-  OUTPUT_VARIABLE ARCHITECTURE)
-message(STATUS "Architecture: ${ARCHITECTURE}") # x86_64, amd64, arm64
-
-if((${ARCHITECTURE} STREQUAL "arm64") OR (${ARCHITECTURE} STREQUAL "aarch64"))
-  set(unitree_joint_control_tool_lib "unitree_joint_control_tool_arm64")
-else()
-  set(unitree_joint_control_tool_lib "unitree_joint_control_tool")
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-add_library(unitree_legged_control src/joint_controller.cpp)
-add_dependencies(${PROJECT_NAME} unitree_legged_msgs_gencpp)
-target_link_libraries(unitree_legged_control ${catkin_LIBRARIES}
-                      ${unitree_joint_control_tool_lib})
+# find_package
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(backward_ros REQUIRED)
+find_package(controller_interface REQUIRED)
+find_package(hardware_interface REQUIRED)
+find_package(unitree_legged_msgs REQUIRED)
+find_package(controller_manager_msgs REQUIRED)
+find_package(unitree_msgs REQUIRED)
+
+# dependency
+set(DEPENDENCIES
+  rclcpp
+  unitree_msgs
+  controller_manager_msgs
+  controller_interface
+  hardware_interface
+)
+
+# include
+include_directories(
+  include
+)
+
+# set(unitree_joint_control_tool_lib "unitree_joint_control_tool_arm64")
+set(unitree_joint_control_tool_lib "unitree_joint_control_tool")
+
+# library
+add_library(unitree_legged_control SHARED src/joint_controller.cpp)
+target_link_libraries(unitree_legged_control ${unitree_joint_control_tool_lib})
+ament_target_dependencies(unitree_legged_control ${DEPENDENCIES})
+
+# install
+install(
+  TARGETS
+    unitree_legged_control
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
+install(DIRECTORY include/
+  DESTINATION include
+)
+
+ament_package()

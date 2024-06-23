@@ -1,5 +1,5 @@
 /**
- * @author your name (you@domain.com)
+ * @author unitree
  * @brief
  * @date 2024-06-23 16:06:13
  * @copyright Copyright (c) 2018-2019, Unitree Robotics.Co.Ltd. All rights reserved.

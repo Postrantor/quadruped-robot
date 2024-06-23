@@ -1,102 +1,113 @@
 /**
- * @author your name (you@domain.com)
- * @brief
- * @date 2024-06-23 16:06:13
- * @copyright Copyright (c) 2018-2019, Unitree Robotics.Co.Ltd. All rights reserved.
-    Use of this source code is governed by the MPL-2.0 license, see LICENSE.
+ * @author GPT4-o
+ * @brief Implementation of the Joint Controller for Unitree Legged Robots
+ * @date 2024-06-23 16:55:22
  */
 
-#include "unitree_legged_control/joint_controller.h"
-
-#include <pluginlib/class_list_macros.h>
-
-// #define rqtTune // use rqt or not
+#include "unitree_legged_control/joint_controller.hpp"
 
 namespace unitree_legged_control {
 
 UnitreeJointController::UnitreeJointController() {
-  memset(&lastCmd, 0, sizeof(unitree_legged_msgs::MotorCmd));
-  memset(&lastState, 0, sizeof(unitree_legged_msgs::MotorState));
-  memset(&servoCmd, 0, sizeof(ServoCmd));
+  memset(&last_cmd_, 0, sizeof(unitree_msgs::msg::MotorCmd));
+  memset(&last_state_, 0, sizeof(unitree_msgs::msg::MotorState));
+  memset(&servo_cmd_, 0, sizeof(ServoCmd));
 }
 
-UnitreeJointController::~UnitreeJointController() {
-  sub_ft.shutdown();
-  sub_cmd.shutdown();
+UnitreeJointController::~UnitreeJointController() {}
+
+controller_interface::return_type UnitreeJointController::init(const std::string &controller_name) {
+  auto node = get_node();
+  node->declare_parameter("joint", rclcpp::ParameterValue(""));
+  std::string joint_name = node->get_parameter("joint").as_string();
+
+  if (joint_name.empty()) {
+    RCLCPP_ERROR(node->get_logger(), "No joint given in parameter file");
+    return controller_interface::return_type::ERROR;
+  }
+
+  joint_ = robot_hardware_->get_joint_handle(joint_name, "position");
+
+  sub_ft_ = node->create_subscription<geometry_msgs::msg::WrenchStamped>(
+      "joint_wrench", 1, std::bind(&UnitreeJointController::setTorqueCB, this, std::placeholders::_1));
+  sub_cmd_ = node->create_subscription<unitree_msgs::msg::MotorCmd>(
+      "command", 20, std::bind(&UnitreeJointController::setCommandCB, this, std::placeholders::_1));
+  pub_state_ = node->create_publisher<unitree_msgs::msg::MotorState>("state", 1);
+
+  return controller_interface::return_type::OK;
 }
 
-void UnitreeJointController::setTorqueCB(const geometry_msgs::WrenchStampedConstPtr &msg) {
-  if (isHip)
-    sensor_torque = msg->wrench.torque.x;
-  else
-    sensor_torque = msg->wrench.torque.y;
-  // printf("sensor torque%f\n", sensor_torque);
+controller_interface::return_type UnitreeJointController::on_activate(const rclcpp_lifecycle::State &) {
+  command_buffer_.writeFromNonRT(unitree_msgs::msg::MotorCmd{});
+  return controller_interface::return_type::OK;
 }
 
-void UnitreeJointController::setCommandCB(const unitree_legged_msgs::MotorCmdConstPtr &msg) {
-  lastCmd.mode = msg->mode;
-  lastCmd.q = msg->q;
-  lastCmd.Kp = msg->Kp;
-  lastCmd.dq = msg->dq;
-  lastCmd.Kd = msg->Kd;
-  lastCmd.tau = msg->tau;
-  // the writeFromNonRT can be used in RT, if you have the guarantee that
-  //  * no non-rt thread is calling the same function (we're not subscribing to ros callbacks)
-  //  * there is only one single rt thread
-  command.writeFromNonRT(lastCmd);
+controller_interface::return_type UnitreeJointController::on_deactivate(const rclcpp_lifecycle::State &) {
+  return controller_interface::return_type::OK;
 }
 
-// Controller initialization in non-realtime
-bool UnitreeJointController::init(hardware_interface::EffortJointInterface *robot, ros::NodeHandle &n) {
-  isHip = false;
-  isThigh = false;
-  isCalf = false;
-  // rqtTune = false;
-  sensor_torque = 0;
-  name_space = n.getNamespace();
-  if (!n.getParam("joint", joint_name)) {
-    ROS_ERROR("No joint given in namespace: '%s')", n.getNamespace().c_str());
-    return false;
+controller_interface::return_type UnitreeJointController::update() {
+  auto cmd = *(command_buffer_.readFromRT());
+  double current_pos = joint_.get_position();
+  double current_vel = computeVel(current_pos, last_state_.q, last_state_.dq, 0.01);  // duration placeholder
+
+  if (cmd.mode == PMSM) {
+    servo_cmd_.pos = cmd.q;
+    positionLimits(servo_cmd_.pos);
+    servo_cmd_.posStiffness = cmd.Kp;
+    servo_cmd_.vel = cmd.dq;
+    velocityLimits(servo_cmd_.vel);
+    servo_cmd_.velStiffness = cmd.Kd;
+    servo_cmd_.torque = cmd.tau;
+    effortLimits(servo_cmd_.torque);
+  } else if (cmd.mode == BRAKE) {
+    servo_cmd_.posStiffness = 0;
+    servo_cmd_.vel = 0;
+    servo_cmd_.velStiffness = 0;
+    servo_cmd_.torque = 0;
   }
 
-  // load pid param from ymal only if rqt need
-  // if(rqtTune) {
-#ifdef rqtTune
-  // Load PID Controller using gains set on parameter server
-  if (!pid_controller_.init(ros::NodeHandle(n, "pid"))) return false;
-#endif
-  // }
+  double calc_torque = computeTorque(current_pos, current_vel, servo_cmd_);
+  effortLimits(calc_torque);
 
-  urdf::Model urdf;  // Get URDF info about joint
-  if (!urdf.initParamWithNodeHandle("robot_description", n)) {
-    ROS_ERROR("Failed to parse urdf file");
-    return false;
-  }
-  joint_urdf = urdf.getJoint(joint_name);
-  if (!joint_urdf) {
-    ROS_ERROR("Could not find joint '%s' in urdf", joint_name.c_str());
-    return false;
-  }
-  if (joint_name == "FR_hip_joint" || joint_name == "FL_hip_joint" || joint_name == "RR_hip_joint" ||
-      joint_name == "RL_hip_joint") {
-    isHip = true;
-  }
-  if (joint_name == "FR_calf_joint" || joint_name == "FL_calf_joint" || joint_name == "RR_calf_joint" ||
-      joint_name == "RL_calf_joint") {
-    isCalf = true;
-  }
-  joint = robot->getHandle(joint_name);
+  joint_.set_command(calc_torque);
 
-  // Start command subscriber
-  sub_ft = n.subscribe(name_space + "/" + "joint_wrench", 1, &UnitreeJointController::setTorqueCB, this);
-  sub_cmd = n.subscribe("command", 20, &UnitreeJointController::setCommandCB, this);
+  last_state_.q = current_pos;
+  last_state_.dq = current_vel;
+  last_state_.tauEst = joint_.get_effort();
 
-  // pub_state = n.advertise<unitree_legged_msgs::MotorState>(name_space + "/state", 20);
-  // Start realtime state publisher
-  controller_state_publisher_.reset(
-      new realtime_tools::RealtimePublisher<unitree_legged_msgs::MotorState>(n, name_space + "/state", 1));
+  pub_state_->publish(last_state_);
 
-  return true;
+  return controller_interface::return_type::OK;
+}
+
+void UnitreeJointController::setTorqueCB(const geometry_msgs::msg::WrenchStamped::SharedPtr msg) {
+  servo_cmd_.torque = msg->wrench.torque.x;
+}
+
+void UnitreeJointController::setCommandCB(const unitree_msgs::msg::MotorCmd::SharedPtr msg) {
+  last_cmd_.mode = msg->mode;
+  last_cmd_.q = msg->q;
+  last_cmd_.Kp = msg->Kp;
+  last_cmd_.dq = msg->dq;
+  last_cmd_.Kd = msg->Kd;
+  last_cmd_.tau = msg->tau;
+  command_buffer_.writeFromNonRT(last_cmd_);
+}
+
+void UnitreeJointController::positionLimits(double &position) {
+  // Example: Clamping logic
+  position = clamp(position, -1.0, 1.0);  // Use appropriate joint limits
+}
+
+void UnitreeJointController::velocityLimits(double &velocity) {
+  // Example: Clamping logic
+  velocity = clamp(velocity, -10.0, 10.0);  // Use appropriate joint limits
+}
+
+void UnitreeJointController::effortLimits(double &effort) {
+  // Example: Clamping logic
+  effort = clamp(effort, -100.0, 100.0);  // Use appropriate joint limits
 }
 
 void UnitreeJointController::setGains(
@@ -118,112 +129,8 @@ void UnitreeJointController::getGains(double &p, double &i, double &d, double &i
   pid_controller_.getGains(p, i, d, i_max, i_min, dummy);
 }
 
-// Controller startup in realtime
-void UnitreeJointController::starting(const ros::Time &time) {
-  // lastCmd.Kp = 0;
-  // lastCmd.Kd = 0;
-  double init_pos = joint.getPosition();
-  lastCmd.q = init_pos;
-  lastState.q = init_pos;
-  lastCmd.dq = 0;
-  lastState.dq = 0;
-  lastCmd.tau = 0;
-  lastState.tauEst = 0;
-  command.initRT(lastCmd);
-
-  pid_controller_.reset();
-}
-
-// Controller update loop in realtime
-void UnitreeJointController::update(const ros::Time &time, const ros::Duration &period) {
-  double currentPos, currentVel, calcTorque;
-  lastCmd = *(command.readFromRT());
-
-  // set command data
-  if (lastCmd.mode == PMSM) {
-    servoCmd.pos = lastCmd.q;
-    positionLimits(servoCmd.pos);
-    servoCmd.posStiffness = lastCmd.Kp;
-    if (fabs(lastCmd.q - PosStopF) < 0.00001) {
-      servoCmd.posStiffness = 0;
-    }
-    servoCmd.vel = lastCmd.dq;
-    velocityLimits(servoCmd.vel);
-    servoCmd.velStiffness = lastCmd.Kd;
-    if (fabs(lastCmd.dq - VelStopF) < 0.00001) {
-      servoCmd.velStiffness = 0;
-    }
-    servoCmd.torque = lastCmd.tau;
-    effortLimits(servoCmd.torque);
-  }
-  if (lastCmd.mode == BRAKE) {
-    servoCmd.posStiffness = 0;
-    servoCmd.vel = 0;
-    servoCmd.velStiffness = 0;
-    servoCmd.torque = 0;
-    effortLimits(servoCmd.torque);
-  }
-
-  // } else {
-  //     servoCmd.posStiffness = 0;
-  //     servoCmd.velStiffness = 5;
-  //     servoCmd.torque = 0;
-  // }
-
-  // rqt set P D gains
-  // if(rqtTune) {
-#ifdef rqtTune
-  double i, i_max, i_min;
-  getGains(servoCmd.posStiffness, i, servoCmd.velStiffness, i_max, i_min);
-#endif
-  // }
-
-  currentPos = joint.getPosition();
-  currentVel = computeVel(currentPos, (double)lastState.q, (double)lastState.dq, period.toSec());
-  calcTorque = computeTorque(currentPos, currentVel, servoCmd);
-  effortLimits(calcTorque);
-
-  joint.setCommand(calcTorque);
-
-  lastState.q = currentPos;
-  lastState.dq = currentVel;
-  // lastState.tauEst = calcTorque;
-  // lastState.tauEst = sensor_torque;
-  lastState.tauEst = joint.getEffort();
-
-  // pub_state.publish(lastState);
-  // publish state
-  if (controller_state_publisher_ && controller_state_publisher_->trylock()) {
-    controller_state_publisher_->msg_.q = lastState.q;
-    controller_state_publisher_->msg_.dq = lastState.dq;
-    controller_state_publisher_->msg_.tauEst = lastState.tauEst;
-    controller_state_publisher_->unlockAndPublish();
-  }
-
-  // printf("sensor torque%f\n", sensor_torque);
-
-  // if(joint_name == "wrist1_joint") printf("wrist1 setp:%f  getp:%f t:%f\n", servoCmd.pos, currentPos, calcTorque);
-}
-
-// Controller stopping in realtime
-void UnitreeJointController::stopping() {}
-
-void UnitreeJointController::positionLimits(double &position) {
-  if (joint_urdf->type == urdf::Joint::REVOLUTE || joint_urdf->type == urdf::Joint::PRISMATIC)
-    clamp(position, joint_urdf->limits->lower, joint_urdf->limits->upper);
-}
-
-void UnitreeJointController::velocityLimits(double &velocity) {
-  if (joint_urdf->type == urdf::Joint::REVOLUTE || joint_urdf->type == urdf::Joint::PRISMATIC)
-    clamp(velocity, -joint_urdf->limits->velocity, joint_urdf->limits->velocity);
-}
-
-void UnitreeJointController::effortLimits(double &effort) {
-  if (joint_urdf->type == urdf::Joint::REVOLUTE || joint_urdf->type == urdf::Joint::PRISMATIC)
-    clamp(effort, -joint_urdf->limits->effort, joint_urdf->limits->effort);
-}
-
 }  // namespace unitree_legged_control
 
-// Register controller to pluginlib
-PLUGINLIB_EXPORT_CLASS(unitree_legged_control::UnitreeJointController, controller_interface::ControllerBase);
+#include "pluginlib/class_list_macros.hpp"
+
+PLUGINLIB_EXPORT_CLASS(unitree_legged_control::UnitreeJointController, controller_interface::ControllerInterface)
