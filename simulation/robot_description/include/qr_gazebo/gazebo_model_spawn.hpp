@@ -26,9 +26,9 @@ public:
       : d_robot_type(robot_type),  //
         d_node(node) {}
 
-  std::string getRobotType() const { return d_robot_type; }
+  std::string get_robot_type() const { return d_robot_type; }
 
-  rclcpp::Node::SharedPtr getNode() const { return d_node; }
+  rclcpp::Node::SharedPtr get_node() const { return d_node; }
 
   /**
    * @brief 生成模型

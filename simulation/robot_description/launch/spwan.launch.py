@@ -1,6 +1,6 @@
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, RegisterEventHandler, DeclareLaunchArgument, GroupAction, TimerAction
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, RegisterEventHandler, GroupAction, TimerAction
 from launch.substitutions import Command, PathJoinSubstitution
 from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -83,38 +83,13 @@ def generate_launch_description():
     #     executable="ros2_control_node",
     #     parameters=[robot_description, robot_controllers],
     #     output="both",)
-
-    # 加载 joint_state_broadcaster 控制器
-    load_joint_state_broadcaster = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['joint_state_broadcaster', '--controller-manager', '/controller_manager'],
+    controller = Node(
+        package='qr_gazebo',
+        executable='spawn_model',
+        name='spawn_model',
+        arguments=[LaunchConfiguration('robot_name')],
         output='screen',
     )
-
-    # 加载 diff_drive_base_controller 控制器
-    load_diff_drive_base_controller = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['diff_drive_base_controller', '--controller-manager', '/controller_manager'],
-        output='screen',
-    )
-
-    # 事件处理器，用于在特定节点退出后启动其他节点
-    event_handlers = [
-        RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=spawn_entity,
-                on_exit=[load_joint_state_broadcaster],
-            )
-        ),
-        RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=load_joint_state_broadcaster,
-                on_exit=[load_diff_drive_base_controller],
-            )
-        ),
-    ]
 
     # 启动描述符
     ld = LaunchDescription([
@@ -122,6 +97,7 @@ def generate_launch_description():
         gazebo,
         node_robot_state_publisher,
         spawn_entity,
+        controller,
         # *event_handlers
     ])
 

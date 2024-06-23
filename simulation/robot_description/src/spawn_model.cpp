@@ -7,8 +7,7 @@
  */
 
 /**
- * `roslaunch qr_gazebo gazebo_startup.launch wname:=earth`
- * `roslaunch qr_gazebo model_spawn.launch rname:=a1 use_xacro:=true use_camera:=false`
+ * `ros2 launch qr_gazebo spwan.launch.py rname:=a1 use_xacro:=true use_camera:=false`
  */
 
 #include <functional>
@@ -17,8 +16,8 @@
 #include <string>
 
 #include "qr_gazebo/gazebo_model_spawn.hpp"
-#include "rclcpp/rclcpp.hpp"
 #include "rclcpp/logger.hpp"
+#include "rclcpp/rclcpp.hpp"
 
 /**
  * @brief 等待用户输入
@@ -35,12 +34,12 @@ void wait_for_user_input(const std::string& message) {
  * @param robot_type 机器人类型
  * @return 是否成功生成模型
  */
-bool setup_and_spawn_model(GazeboSpawner& manager, const std::string& robot_type) {
-  manager.set_model_position(0, 0, 0.4);
-  manager.set_model_orientation(0, 0, 0, 0);
+bool setup_and_spawn_model(GazeboSpawner& cm, const std::string& robot_type) {
+  cm.set_model_position(0, 0, 0.4);
+  cm.set_model_orientation(0, 0, 0, 0);
 
-  if (!manager.spawn_model("robot_description")) {
-    RCLCPP_ERROR(manager.getNode()->get_logger(), "fail to spawn model in gazebo: %s", robot_type.c_str());
+  if (!cm.spawn_model("robot_description")) {
+    RCLCPP_ERROR(cm.getNode()->get_logger(), "fail to spawn model in gazebo: %s", robot_type.c_str());
     return false;
   }
   return true;
@@ -62,26 +61,26 @@ int main(int argc, char** argv) {
   }
   const std::string robot_type = argv[1];
 
-  GazeboSpawner manager(robot_type, node);
-  RCLCPP_INFO(node->get_logger(), "Robot Type: %s", manager.getRobotType().c_str());
-  RCLCPP_INFO(node->get_logger(), "Node Name: %s", manager.getNode()->get_name());
+  GazeboSpawner cm(robot_type, node);
+  RCLCPP_INFO(node->get_logger(), "Robot Type: %s", cm.get_robot_type().c_str());
+  RCLCPP_INFO(node->get_logger(), "Node Name: %s", cm.get_node()->get_name());
 
-  if (!setup_and_spawn_model(manager, robot_type)) {
+  if (!setup_and_spawn_model(cm, robot_type)) {
     RCLCPP_ERROR(node->get_logger(), "fail to spawn model in gazebo: %s", robot_type.c_str());
     return 1;
   }
 
   wait_for_user_input("press enter key to start controllers.");
-  manager.load_controllers();
-  manager.start_controllers();
+  cm.load_controllers();
+  cm.start_controllers();
 
   wait_for_user_input("press enter key to delete controllers and model.");
-  if (!manager.stop_controllers()) {
+  if (!cm.stop_controllers()) {
     RCLCPP_ERROR(node->get_logger(), "failed to stop controllers in gazebo: %s", robot_type.c_str());
     return 1;
   }
-  manager.unload_controllers();
-  manager.delete_model();
+  cm.unload_controllers();
+  cm.delete_model();
 
   rclcpp::shutdown();
   return 0;
