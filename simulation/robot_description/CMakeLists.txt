@@ -41,7 +41,7 @@ set(DEPENDENCIES
 
 # include
 include_directories(
-  "include"
+  include
   ${GAZEBO_INCLUDE_DIRS})
 
 # plugin_source

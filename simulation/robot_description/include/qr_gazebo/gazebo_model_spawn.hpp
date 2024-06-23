@@ -20,8 +20,15 @@
 
 class GazeboSpawner {
 public:
-  static const std::vector<std::string> controller_list;
-  static geometry_msgs::msg::Pose model_pose;
+  GazeboSpawner(
+      const std::string& robot_type,  //
+      const rclcpp::Node::SharedPtr& node)
+      : d_robot_type(robot_type),  //
+        d_node(node) {}
+
+  std::string getRobotType() const { return d_robot_type; }
+
+  rclcpp::Node::SharedPtr getNode() const { return d_node; }
 
   /**
    * @brief 生成模型
@@ -81,6 +88,9 @@ public:
    * @param z 四元数z分量
    */
   void set_model_orientation(double w, double x, double y, double z);
+
+  static const std::vector<std::string> controller_list;
+  static geometry_msgs::msg::Pose model_pose;
 
 private:
   std::string d_robot_type;

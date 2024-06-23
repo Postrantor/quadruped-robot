@@ -16,33 +16,9 @@
 #include <memory>
 #include <string>
 
-#include "qr_gazebo/gazebo_model_spawn.h"
+#include "qr_gazebo/gazebo_model_spawn.hpp"
 #include "rclcpp/rclcpp.hpp"
-
-/**
- * @brief 初始化 ROS2 节点
- * @param argc 命令行参数的数量
- * @param argv 命令行参数的数组
- * @return 共享指针，指向创建的 ROS2 节点
- */
-std::shared_ptr<rclcpp::Node> initialize_ros2(int argc, char** argv) {
-  rclcpp::init(argc, argv);
-  return rclcpp::Node::make_shared("spawn_model");
-}
-
-/**
- * @brief 验证并获取机器人类型
- * @param argc 命令行参数的数量
- * @param argv 命令行参数的数组
- * @return 验证后的机器人类型字符串
- */
-std::string get_robot_type(int argc, char** argv) {
-  if (argc < 2) {
-    RCLCPP_ERROR(rclcpp::get_logger("spawn_model"), "please specify the robot type.");
-    std::exit(1);
-  }
-  return std::string(argv[1]);
-}
+#include "rclcpp/logger.hpp"
 
 /**
  * @brief 等待用户输入
@@ -64,7 +40,7 @@ bool setup_and_spawn_model(GazeboSpawner& manager, const std::string& robot_type
   manager.set_model_orientation(0, 0, 0, 0);
 
   if (!manager.spawn_model("robot_description")) {
-    RCLCPP_ERROR(rclcpp::get_logger("spawn_model"), "fail to spawn model in gazebo: %s", robot_type.c_str());
+    RCLCPP_ERROR(manager.getNode()->get_logger(), "fail to spawn model in gazebo: %s", robot_type.c_str());
     return false;
   }
   return true;
@@ -77,13 +53,21 @@ bool setup_and_spawn_model(GazeboSpawner& manager, const std::string& robot_type
  * @return 退出状态
  */
 int main(int argc, char** argv) {
-  auto node = initialize_ros2(argc, argv);
-  auto robot_type = get_robot_type(argc, argv);
+  rclcpp::init(argc, argv);
+  auto node = rclcpp::Node::make_shared("spawn_model");
+
+  if (argc < 2) {
+    RCLCPP_ERROR(node->get_logger(), "please specify the robot type.");
+    std::exit(1);
+  }
+  const std::string robot_type = argv[1];
 
   GazeboSpawner manager(robot_type, node);
+  RCLCPP_INFO(node->get_logger(), "Robot Type: %s", manager.getRobotType().c_str());
+  RCLCPP_INFO(node->get_logger(), "Node Name: %s", manager.getNode()->get_name());
 
   if (!setup_and_spawn_model(manager, robot_type)) {
-    RCLCPP_ERROR(rclcpp::get_logger("spawn_model"), "fail to spawn model in gazebo: %s", robot_type.c_str());
+    RCLCPP_ERROR(node->get_logger(), "fail to spawn model in gazebo: %s", robot_type.c_str());
     return 1;
   }
 
@@ -93,7 +77,7 @@ int main(int argc, char** argv) {
 
   wait_for_user_input("press enter key to delete controllers and model.");
   if (!manager.stop_controllers()) {
-    RCLCPP_ERROR(rclcpp::get_logger("spawn_model"), "failed to stop controllers in gazebo: %s", robot_type.c_str());
+    RCLCPP_ERROR(node->get_logger(), "failed to stop controllers in gazebo: %s", robot_type.c_str());
     return 1;
   }
   manager.unload_controllers();
