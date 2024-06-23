@@ -13,8 +13,6 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(backward_ros REQUIRED)
 find_package(controller_interface REQUIRED)
-find_package(hardware_interface REQUIRED)
-find_package(unitree_legged_msgs REQUIRED)
 find_package(controller_manager_msgs REQUIRED)
 find_package(unitree_msgs REQUIRED)
 
@@ -24,7 +22,6 @@ set(DEPENDENCIES
   unitree_msgs
   controller_manager_msgs
   controller_interface
-  hardware_interface
 )
 
 # include

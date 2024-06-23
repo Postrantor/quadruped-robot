@@ -5,6 +5,11 @@
  */
 
 #include "unitree_legged_control/joint_controller.hpp"
+#include "unitree_legged_control/unitree_joint_control_tool.hpp"
+
+#include "geometry_msgs/msg/wrench_stamped.hpp"
+#include "unitree_msgs/msg/motor_cmd.hpp"
+#include "unitree_msgs/msg/motor_state.hpp"
 
 namespace unitree_legged_control {
 
@@ -16,7 +21,7 @@ UnitreeJointController::UnitreeJointController() {
 
 UnitreeJointController::~UnitreeJointController() {}
 
-controller_interface::return_type UnitreeJointController::init(const std::string &controller_name) {
+controller_interface::return_type UnitreeJointController::on_init(const std::string &controller_name) {
   auto node = get_node();
   node->declare_parameter("joint", rclcpp::ParameterValue(""));
   std::string joint_name = node->get_parameter("joint").as_string();
@@ -46,7 +51,15 @@ controller_interface::return_type UnitreeJointController::on_deactivate(const rc
   return controller_interface::return_type::OK;
 }
 
-controller_interface::return_type UnitreeJointController::update() {
+/**
+ * @brief
+ * @param time no use
+ * @param period
+ * @return controller_interface::return_type
+ */
+controller_interface::return_type UnitreeJointController::update(
+    const rclcpp::Time &time,  //
+    const rclcpp::Duration &period) {
   auto cmd = *(command_buffer_.readFromRT());
   double current_pos = joint_.get_position();
   double current_vel = computeVel(current_pos, last_state_.q, last_state_.dq, 0.01);  // duration placeholder
@@ -82,7 +95,8 @@ controller_interface::return_type UnitreeJointController::update() {
 }
 
 void UnitreeJointController::setTorqueCB(const geometry_msgs::msg::WrenchStamped::SharedPtr msg) {
-  servo_cmd_.torque = msg->wrench.torque.x;
+  // FIXME(@zhiqi.jia) :: 原实现赋值的变量`sensor_torque`没有使用，而是从joint.get*获取相应的值
+  //? servo_cmd_.torque = msg->wrench.torque.x;
 }
 
 void UnitreeJointController::setCommandCB(const unitree_msgs::msg::MotorCmd::SharedPtr msg) {
