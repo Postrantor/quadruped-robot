@@ -1,47 +1,94 @@
 /**
  * @author GPT4-o
- * @brief
- * @date 2024-06-23 02:58:58
- * @copyright Copyright (c) 2024
+ * @date 2024-06-23 11:17:42
+ * @brief 主函数，使用 ROS2 在 Gazebo 中生成和管理机器人模型
+ * @details 本程序初始化 ROS2，创建 GazeboSpawner 对象，并管理机器人模型的生命周期，包括生成、控制和删除。
+ * @date 2024-06-23
  */
 
-#include <rclcpp/rclcpp.hpp>
-
+#include <functional>
 #include <iostream>
+#include <memory>
+#include <string>
 
 #include "qr_gazebo/gazebo_model_spawn.h"
+#include "rclcpp/rclcpp.hpp"
 
-int main(int argc, char** argv) {
+/**
+ * @brief 初始化 ROS2 节点
+ * @param argc 命令行参数的数量
+ * @param argv 命令行参数的数组
+ * @return 共享指针，指向创建的 ROS2 节点
+ */
+std::shared_ptr<rclcpp::Node> initialize_ros2(int argc, char** argv) {
   rclcpp::init(argc, argv);
-  auto node = rclcpp::Node::make_shared("spawn_model");
+  return rclcpp::Node::make_shared("spawn_model");
+}
 
+/**
+ * @brief 验证并获取机器人类型
+ * @param argc 命令行参数的数量
+ * @param argv 命令行参数的数组
+ * @return 验证后的机器人类型字符串
+ */
+std::string get_robot_type(int argc, char** argv) {
   if (argc < 2) {
-    RCLCPP_ERROR(rclcpp::get_logger("spawn_model"), "Please specify the robot type.");
-    return 1;
+    RCLCPP_ERROR(rclcpp::get_logger("spawn_model"), "please specify the robot type.");
+    std::exit(1);
   }
+  return std::string(argv[1]);
+}
 
-  const char* type_cstr = argv[1];
-  std::string robot_type(type_cstr);
+/**
+ * @brief 等待用户输入
+ * @param message 等待输入前显示的消息
+ */
+void wait_for_user_input(const std::string& message) {
+  std::cout << message << std::endl;
+  std::cin.get();
+}
 
-  GazeboSpawner manager(robot_type, node);
-
+/**
+ * @brief 设置并生成机器人模型
+ * @param manager GazeboSpawner 管理器
+ * @param robot_type 机器人类型
+ * @return 是否成功生成模型
+ */
+bool setup_and_spawn_model(GazeboSpawner& manager, const std::string& robot_type) {
   manager.set_model_position(0, 0, 0.4);
   manager.set_model_orientation(0, 0, 0, 0);
 
   if (!manager.spawn_model("robot_description")) {
-    RCLCPP_ERROR(rclcpp::get_logger("spawn_model"), "Fail to spawn model in gazebo: %s", type_cstr);
+    RCLCPP_ERROR(rclcpp::get_logger("spawn_model"), "fail to spawn model in gazebo: %s", robot_type.c_str());
+    return false;
+  }
+  return true;
+}
+
+/**
+ * @brief 主函数，运行 ROS2 节点并管理 Gazebo 模型
+ * @param argc 命令行参数的数量
+ * @param argv 命令行参数的数组
+ * @return 退出状态
+ */
+int main(int argc, char** argv) {
+  auto node = initialize_ros2(argc, argv);
+  auto robot_type = get_robot_type(argc, argv);
+
+  GazeboSpawner manager(robot_type, node);
+
+  if (!setup_and_spawn_model(manager, robot_type)) {
+    RCLCPP_ERROR(rclcpp::get_logger("spawn_model"), "fail to spawn model in gazebo: %s", robot_type.c_str());
     return 1;
   }
 
-  std::cout << "press enter key to start controllers." << std::endl;
-  getchar();
+  wait_for_user_input("press enter key to start controllers.");
   manager.load_controllers();
   manager.start_controllers();
 
-  std::cout << "press enter key to delete controllers and model." << std::endl;
-  getchar();
+  wait_for_user_input("press enter key to delete controllers and model.");
   if (!manager.stop_controllers()) {
-    RCLCPP_ERROR(rclcpp::get_logger("spawn_model"), "fail to stop controllers in gazebo: %s", type_cstr);
+    RCLCPP_ERROR(rclcpp::get_logger("spawn_model"), "failed to stop controllers in gazebo: %s", robot_type.c_str());
     return 1;
   }
   manager.unload_controllers();
