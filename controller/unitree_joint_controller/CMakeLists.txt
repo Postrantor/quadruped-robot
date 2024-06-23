@@ -50,7 +50,7 @@ pluginlib_export_plugin_description_file(controller_interface unitree_joint_plug
 
 install(
   DIRECTORY include/
-  DESTINATION include/unitree_joint_controller
+  DESTINATION include
 )
 install(TARGETS unitree_joint_controller unitree_joint_controller_parameters
   EXPORT export_unitree_joint_controller

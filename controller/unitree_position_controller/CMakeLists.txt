@@ -50,7 +50,7 @@ pluginlib_export_plugin_description_file(controller_interface unitree_position_p
 
 install(
   DIRECTORY include/
-  DESTINATION include/unitree_position_controller
+  DESTINATION include
 )
 install(TARGETS unitree_position_controller unitree_position_controller_parameters
   EXPORT export_unitree_position_controller

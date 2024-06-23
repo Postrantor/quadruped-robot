@@ -85,7 +85,8 @@ install(
   RUNTIME DESTINATION bin
 )
 
-install(DIRECTORY include/
+install(
+  DIRECTORY include/
   DESTINATION include
 )
 
