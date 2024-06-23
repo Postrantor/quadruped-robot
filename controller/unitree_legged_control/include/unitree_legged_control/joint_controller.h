@@ -1,27 +1,29 @@
-/************************************************************************
-Copyright (c) 2018-2019, Unitree Robotics.Co.Ltd. All rights reserved.
-Use of this source code is governed by the MPL-2.0 license, see LICENSE.
-************************************************************************/
+/**
+ * @author your name (you@domain.com)
+ * @brief
+ * @date 2024-06-23 16:06:13
+ * @copyright Copyright (c) 2018-2019, Unitree Robotics.Co.Ltd. All rights reserved.
+    Use of this source code is governed by the MPL-2.0 license, see LICENSE.
+ */
 
 #ifndef _UNITREE_ROS_JOINT_CONTROLLER_H_
 #define _UNITREE_ROS_JOINT_CONTROLLER_H_
 
-#include <ros/node_handle.h>
-#include <urdf/model.h>
-#include <control_toolbox/pid.h>
 #include <boost/scoped_ptr.hpp>
 #include <boost/thread/condition.hpp>
-#include <realtime_tools/realtime_publisher.h>
-#include <hardware_interface/joint_command_interface.h>
+#include <control_toolbox/pid.h>
 #include <controller_interface/controller.h>
-#include <std_msgs/Float64.h>
+#include <geometry_msgs/WrenchStamped.h>
+#include <hardware_interface/joint_command_interface.h>
 #include <realtime_tools/realtime_buffer.h>
-#include <controller_interface/controller.h>
-#include <hardware_interface/joint_command_interface.h>
+#include <realtime_tools/realtime_publisher.h>
+#include <ros/node_handle.h>
+#include <std_msgs/Float64.h>
+#include <urdf/model.h>
+
+#include "unitree_joint_control_tool.h"
 #include "unitree_legged_msgs/MotorCmd.h"
 #include "unitree_legged_msgs/MotorState.h"
-#include <geometry_msgs/WrenchStamped.h>
-#include "unitree_joint_control_tool.h"
 
 #define PMSM (0x0A)
 #define BRAKE (0x00)
