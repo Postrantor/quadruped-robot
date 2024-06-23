@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "rclcpp/logging.hpp"
-#include "unitree_position_controller/unitree_position_controller.hpp"
+#include "unitree_joint_controller/unitree_joint_controller.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "lifecycle_msgs/msg/state.hpp"
 
@@ -29,10 +29,10 @@ constexpr auto DEFAULT_TARGET_STATE_TOPIC = "~/target_state";    // pub
 constexpr auto DEFAULT_REAL_COMMAND_TOPIC = "~/control_cmd";     // pub
 }  // namespace
 
-namespace unitree_position_controller {
+namespace unitree_joint_controller {
 using namespace std::chrono_literals;
 
-controller_interface::InterfaceConfiguration UnitreePositionController::command_interface_configuration() const {
+controller_interface::InterfaceConfiguration UnitreeJointController::command_interface_configuration() const {
   std::vector<std::string> conf_names;
   for (const auto &joint_name : params_.joint_ll_0_name) {
     // `<joint_name>/<interface_type>`
@@ -42,7 +42,7 @@ controller_interface::InterfaceConfiguration UnitreePositionController::command_
   return {controller_interface::interface_configuration_type::INDIVIDUAL, conf_names};
 }
 
-controller_interface::InterfaceConfiguration UnitreePositionController::state_interface_configuration() const {
+controller_interface::InterfaceConfiguration UnitreeJointController::state_interface_configuration() const {
   std::vector<std::string> conf_names;
   for (const auto &joint_name : params_.joint_ll_0_name) {
     conf_names.push_back(joint_name + "/" + hardware_interface::HW_IF_POSITION);
@@ -52,7 +52,7 @@ controller_interface::InterfaceConfiguration UnitreePositionController::state_in
   return {controller_interface::interface_configuration_type::INDIVIDUAL, conf_names};
 }
 
-CallbackReturn UnitreePositionController::on_init() {
+CallbackReturn UnitreeJointController::on_init() {
   try {
     // create the parameter listener and get the parameters
     param_listener_ = std::make_shared<ParamListener>(get_node());
@@ -65,7 +65,7 @@ CallbackReturn UnitreePositionController::on_init() {
   return CallbackReturn::SUCCESS;
 }
 
-CallbackReturn UnitreePositionController::on_configure(const rclcpp_lifecycle::State &) {
+CallbackReturn UnitreeJointController::on_configure(const rclcpp_lifecycle::State &) {
   // update parameters if its have changed
   if (param_listener_->is_old(params_)) {
     params_ = param_listener_->get_params();
@@ -130,7 +130,7 @@ CallbackReturn UnitreePositionController::on_configure(const rclcpp_lifecycle::S
   return CallbackReturn::SUCCESS;
 }
 
-CallbackReturn UnitreePositionController::on_activate(const rclcpp_lifecycle::State &) {
+CallbackReturn UnitreeJointController::on_activate(const rclcpp_lifecycle::State &) {
   // get hardware_interface
   const auto result = get_joint_handle(params_.joint_ll_0_name, registered_joint_handles_);
   if (result == CallbackReturn::ERROR) {
@@ -150,7 +150,7 @@ CallbackReturn UnitreePositionController::on_activate(const rclcpp_lifecycle::St
   return CallbackReturn::SUCCESS;
 }
 
-CallbackReturn UnitreePositionController::on_deactivate(const rclcpp_lifecycle::State &) {
+CallbackReturn UnitreeJointController::on_deactivate(const rclcpp_lifecycle::State &) {
   subscriber_is_active_ = false;
   if (!is_halted) {
     halt();
@@ -160,7 +160,7 @@ CallbackReturn UnitreePositionController::on_deactivate(const rclcpp_lifecycle::
   return CallbackReturn::SUCCESS;
 }
 
-CallbackReturn UnitreePositionController::on_cleanup(const rclcpp_lifecycle::State &) {
+CallbackReturn UnitreeJointController::on_cleanup(const rclcpp_lifecycle::State &) {
   if (!reset()) {
     return CallbackReturn::ERROR;
   }
@@ -168,14 +168,14 @@ CallbackReturn UnitreePositionController::on_cleanup(const rclcpp_lifecycle::Sta
   return CallbackReturn::SUCCESS;
 }
 
-CallbackReturn UnitreePositionController::on_error(const rclcpp_lifecycle::State &) {
+CallbackReturn UnitreeJointController::on_error(const rclcpp_lifecycle::State &) {
   if (!reset()) {
     return CallbackReturn::ERROR;
   }
   return CallbackReturn::SUCCESS;
 }
 
-CallbackReturn UnitreePositionController::on_shutdown(const rclcpp_lifecycle::State &) {
+CallbackReturn UnitreeJointController::on_shutdown(const rclcpp_lifecycle::State &) {
   // do something
   return CallbackReturn::SUCCESS;
 }
@@ -191,7 +191,7 @@ CallbackReturn UnitreePositionController::on_shutdown(const rclcpp_lifecycle::St
  * @param period
  * @return controller_interface::return_type
  */
-controller_interface::return_type UnitreePositionController::update(
+controller_interface::return_type UnitreeJointController::update(
     const rclcpp::Time &time,  //
     const rclcpp::Duration & /*period*/) {
   // 0. check lifecycle state
@@ -273,7 +273,7 @@ controller_interface::return_type UnitreePositionController::update(
   return controller_interface::return_type::OK;
 }
 
-CallbackReturn UnitreePositionController::get_joint_handle(
+CallbackReturn UnitreeJointController::get_joint_handle(
     const std::vector<std::string> &joints_name,  //
     std::vector<JointHandle> &registered_handles) {
   if (joints_name.empty()) {
@@ -329,7 +329,7 @@ CallbackReturn UnitreePositionController::get_joint_handle(
   return CallbackReturn::SUCCESS;
 }
 
-bool UnitreePositionController::reset() {
+bool UnitreeJointController::reset() {
   // reset pid controller parameter
   // empty queue
   std::queue<geometry_msgs::msg::TwistStamped> empty;
@@ -345,7 +345,7 @@ bool UnitreePositionController::reset() {
   return true;
 }
 
-void UnitreePositionController::halt() {
+void UnitreeJointController::halt() {
   const auto halt_joints = [](auto &handles) {
     for (const auto &handle : handles) {
       handle.command_velocity.get().set_value(0.0);
@@ -355,10 +355,10 @@ void UnitreePositionController::halt() {
   halt_joints(registered_joint_handles_);
 }
 
-}  // namespace unitree_position_controller
+}  // namespace unitree_joint_controller
 
 #include "class_loader/register_macro.hpp"
 
 CLASS_LOADER_REGISTER_CLASS(
-    unitree_position_controller::UnitreePositionController,  //
+    unitree_joint_controller::UnitreeJointController,  //
     controller_interface::ControllerInterface)

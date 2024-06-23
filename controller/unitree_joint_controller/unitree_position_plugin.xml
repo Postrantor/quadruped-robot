@@ -1,7 +1,0 @@
-<library path="unitree_position_controller">
-  <class name="unitree_position_controller/UnitreePositionController" type="unitree_position_controller::UnitreePositionController" base_class_type="controller_interface::ControllerInterface">
-    <description>
-      for unitree motor m8010-6 position control.
-    </description>
-  </class>
-</library>

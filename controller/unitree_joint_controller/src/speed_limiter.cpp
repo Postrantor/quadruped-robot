@@ -8,9 +8,9 @@
 #include <stdexcept>
 
 #include "rcppmath/clamp.hpp"
-#include "unitree_position_controller/speed_limiter.hpp"
+#include "unitree_joint_controller/speed_limiter.hpp"
 
-namespace unitree_position_controller {
+namespace unitree_joint_controller {
 SpeedLimiter::SpeedLimiter(
     bool has_velocity_limits,
     bool has_acceleration_limits,
@@ -124,4 +124,4 @@ double SpeedLimiter::limit_jerk(double& v, double v0, double v1, double dt) {
   return tmp != 0.0 ? v / tmp : 1.0;
 }
 
-}  // namespace unitree_position_controller
+}  // namespace unitree_joint_controller

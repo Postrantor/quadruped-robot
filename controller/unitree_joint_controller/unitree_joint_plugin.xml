@@ -1,0 +1,7 @@
+<library path="unitree_joint_controller">
+  <class name="unitree_joint_controller/UnitreeJointController" type="unitree_joint_controller::UnitreeJointController" base_class_type="controller_interface::ControllerInterface">
+    <description>
+      for unitree motor m8010-6 joint control.
+    </description>
+  </class>
+</library>

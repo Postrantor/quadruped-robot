@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>unitree_position_controller</name>
+  <name>unitree_joint_controller</name>
   <version>0.1.0</version>
-  <description>Controller for unitree m8010-6 motor</description>
+  <description>controller for unitree m8010-6 motor</description>
   <maintainer email="postrantor@gmail.com">trantor</maintainer>
 
   <license>Apache License 2.0</license>

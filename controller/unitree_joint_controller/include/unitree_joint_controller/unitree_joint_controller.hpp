@@ -4,11 +4,10 @@
  * @copyright Copyright (c) 2024
  */
 
-#ifndef UNITREE_POSITION_CONTROLLER__UNITREE_POSITION_CONTROLLER_HPP_
-#define UNITREE_POSITION_CONTROLLER__UNITREE_POSITION_CONTROLLER_HPP_
+#ifndef UNITREE_JOINT_CONTROLLER__UNITREE_JOINT_CONTROLLER_HPP_
+#define UNITREE_JOINT_CONTROLLER__UNITREE_JOINT_CONTROLLER_HPP_
 
 #include <chrono>
-#include <geometry_msgs/msg/detail/twist_stamped__struct.hpp>
 #include <memory>
 #include <string>
 #include <cmath>
@@ -21,33 +20,33 @@
 #include "realtime_tools/realtime_box.h"
 #include "realtime_tools/realtime_publisher.h"
 // interfaces
+#include "geometry_msgs/msg/twist_stamped.hpp"
 #include "controller_interface/controller_interface.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "geometry_msgs/msg/twist_stamped.hpp"
 #include "hardware_interface/handle.hpp"
 // unitree_controller
-// #include "unitree_position_controller/pid.hpp"
-// #include "unitree_position_controller/speed_limiter.hpp"
-#include "unitree_position_controller_parameters.hpp"  // generate to build folder
-#include "unitree_position_controller/visibility_control.h"
+// #include "unitree_joint_controller/pid.hpp"
+// #include "unitree_joint_controller/speed_limiter.hpp"
+#include "unitree_joint_controller_parameters.hpp"  // generate to build folder
+#include "unitree_joint_controller/visibility_control.h"
 
-namespace unitree_position_controller {
+namespace unitree_joint_controller {
 
 using CallbackReturn = controller_interface::CallbackReturn;
 using InterfaceConfiguration = controller_interface::InterfaceConfiguration;
 // FIXME(@zhiqi.jia), shoud be in class
 static const rclcpp::Logger LOGGER = rclcpp::get_logger("unitree_motor_controller");
 
-class UnitreePositionController : public controller_interface::ControllerInterface {
+class UnitreeJointController : public controller_interface::ControllerInterface {
 public:
-  UNITREE_POSITION_CONTROLLER_PUBLIC
-
   /**
-   * @brief Construct a new Unitree Position Controller object
+   * @brief Construct a new Unitree Joint Controller object
    * @details 这里采用的是 lifecycle node 的方式，所以创建、销毁pub/sub的操作需要在对应的api中实现
    * 构造函数中不再有任何实现
    */
-  UnitreePositionController() = default;
+  UNITREE_JOINT_CONTROLLER_PUBLIC
+  UnitreeJointController() = default;
 
   /**
    * @brief 2. command_interface, type `ALL`，`INDIVIDUAL` 和 `NONE`
@@ -56,11 +55,11 @@ public:
    * @return InterfaceConfiguration
    * return `<joint_name>/<interface_type>`
    */
-  UNITREE_POSITION_CONTROLLER_PUBLIC
+  UNITREE_JOINT_CONTROLLER_PUBLIC
   InterfaceConfiguration command_interface_configuration() const override;
 
   // 2. state_interface 同上
-  UNITREE_POSITION_CONTROLLER_PUBLIC
+  UNITREE_JOINT_CONTROLLER_PUBLIC
   InterfaceConfiguration state_interface_configuration() const override;
 
   /**
@@ -69,7 +68,7 @@ public:
    * @param period 周期
    * @return controller_interface::return_type
    */
-  UNITREE_POSITION_CONTROLLER_PUBLIC
+  UNITREE_JOINT_CONTROLLER_PUBLIC
   controller_interface::return_type update(const rclcpp::Time &time, const rclcpp::Duration &period) override;
 
   /**
@@ -81,14 +80,14 @@ public:
    *  对于 pub/sub 这类对象，作为类的成员函数中定义，在`on_configure()`中构造
    * @return CallbackReturn
    */
-  UNITREE_POSITION_CONTROLLER_PUBLIC
+  UNITREE_JOINT_CONTROLLER_PUBLIC
   CallbackReturn on_init() override;
 
   /**
    * @brief 1. 创建 publisher_, subscriber_
    * @return CallbackReturn
    */
-  UNITREE_POSITION_CONTROLLER_PUBLIC
+  UNITREE_JOINT_CONTROLLER_PUBLIC
   CallbackReturn on_configure(const rclcpp_lifecycle::State &previous_state) override;
 
   /**
@@ -96,19 +95,19 @@ public:
    * @details controller_interface <-> hardware_interface
    * @return CallbackReturn, ==> `registered_handles_`
    */
-  UNITREE_POSITION_CONTROLLER_PUBLIC
+  UNITREE_JOINT_CONTROLLER_PUBLIC
   CallbackReturn on_activate(const rclcpp_lifecycle::State &previous_state) override;
 
-  UNITREE_POSITION_CONTROLLER_PUBLIC
+  UNITREE_JOINT_CONTROLLER_PUBLIC
   CallbackReturn on_deactivate(const rclcpp_lifecycle::State &previous_state) override;
 
-  UNITREE_POSITION_CONTROLLER_PUBLIC
+  UNITREE_JOINT_CONTROLLER_PUBLIC
   CallbackReturn on_cleanup(const rclcpp_lifecycle::State &previous_state) override;
 
-  UNITREE_POSITION_CONTROLLER_PUBLIC
+  UNITREE_JOINT_CONTROLLER_PUBLIC
   CallbackReturn on_error(const rclcpp_lifecycle::State &previous_state) override;
 
-  UNITREE_POSITION_CONTROLLER_PUBLIC
+  UNITREE_JOINT_CONTROLLER_PUBLIC
   CallbackReturn on_shutdown(const rclcpp_lifecycle::State &previous_state) override;
 
 protected:
@@ -165,7 +164,7 @@ protected:
   realtime_tools::RealtimeBox<std::shared_ptr<geometry_msgs::msg::TwistStamped>> received_desired_state_ptr_{nullptr};
   // std::shared_ptr<geometry_msgs::msg::TwistStamped> received_desired_state_ptr_{nullptr};
 
-  // parameters from ros for unitree_position_controller
+  // parameters from ros for unitree_joint_controller
   std::shared_ptr<ParamListener> param_listener_;
   Params params_;
 
@@ -182,6 +181,6 @@ protected:
   bool reset();
   void halt();
 };
-}  // namespace unitree_position_controller
+}  // namespace unitree_joint_controller
 
-#endif  // UNITREE_POSITION_CONTROLLER__UNITREE_POSITION_CONTROLLER_HPP_
+#endif  // UNITREE_JOINT_CONTROLLER__UNITREE_JOINT_CONTROLLER_HPP_

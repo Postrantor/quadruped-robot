@@ -1,15 +1,13 @@
-#ifndef UNITREE_POSITION_COTROLLER__PID_HPP_
-#define UNITREE_POSITION_COTROLLER__PID_HPP_
+#ifndef UNITREE_JOINT_COTROLLER__PID_HPP_
+#define UNITREE_JOINT_COTROLLER__PID_HPP_
 
 #include <cmath>
 
 #include "rclcpp/time.hpp"
 #include "rcppmath/rolling_mean_accumulator.hpp"
 
-namespace unitree_position_controller
-{
-class PID
-{
+namespace unitree_joint_controller {
+class PID {
 public:
   explicit PID(size_t velocity_rolling_window_size = 10);
 
@@ -19,26 +17,11 @@ public:
   void updateOpenLoop(double linear, double angular, const rclcpp::Time& time);
   void resetPID();
 
-  double getX() const
-  {
-    return x_;
-  }
-  double getY() const
-  {
-    return y_;
-  }
-  double getHeading() const
-  {
-    return heading_;
-  }
-  double getLinear() const
-  {
-    return linear_;
-  }
-  double getAngular() const
-  {
-    return angular_;
-  }
+  double getX() const { return x_; }
+  double getY() const { return y_; }
+  double getHeading() const { return heading_; }
+  double getLinear() const { return linear_; }
+  double getAngular() const { return angular_; }
 
   void setWheelParams(double wheel_separation, double left_wheel_radius, double right_wheel_radius);
   void setVelocityRollingWindowSize(size_t velocity_rolling_window_size);
@@ -77,6 +60,6 @@ private:
   RollingMeanAccumulator angular_accumulator_;
 };
 
-}  // namespace unitree_position_controller
+}  // namespace unitree_joint_controller
 
-#endif  // UNITREE_POSITION_COTROLLER__PID_HPP_
+#endif  // UNITREE_JOINT_COTROLLER__PID_HPP_

@@ -4,41 +4,35 @@
  * @copyright Copyright (c) 2024
  */
 
-#include "unitree_position_controller/pid.hpp"
+#include "unitree_joint_controller/pid.hpp"
 
-namespace unitree_position_controller
-{
+namespace unitree_joint_controller {
 PID::PID(size_t velocity_rolling_window_size)
-  : timestamp_(0.0)
-  , x_(0.0)
-  , y_(0.0)
-  , heading_(0.0)
-  , linear_(0.0)
-  , angular_(0.0)
-  , wheel_separation_(0.0)
-  , left_wheel_radius_(0.0)
-  , right_wheel_radius_(0.0)
-  , left_wheel_old_pos_(0.0)
-  , right_wheel_old_pos_(0.0)
-  , velocity_rolling_window_size_(velocity_rolling_window_size)
-  , linear_accumulator_(velocity_rolling_window_size)
-  , angular_accumulator_(velocity_rolling_window_size)
-{
-}
+    : timestamp_(0.0),
+      x_(0.0),
+      y_(0.0),
+      heading_(0.0),
+      linear_(0.0),
+      angular_(0.0),
+      wheel_separation_(0.0),
+      left_wheel_radius_(0.0),
+      right_wheel_radius_(0.0),
+      left_wheel_old_pos_(0.0),
+      right_wheel_old_pos_(0.0),
+      velocity_rolling_window_size_(velocity_rolling_window_size),
+      linear_accumulator_(velocity_rolling_window_size),
+      angular_accumulator_(velocity_rolling_window_size) {}
 
-void PID::init(const rclcpp::Time& time)
-{
+void PID::init(const rclcpp::Time& time) {
   // Reset accumulators and timestamp:
   resetAccumulators();
   timestamp_ = time;
 }
 
-bool PID::update(double left_pos, double right_pos, const rclcpp::Time& time)
-{
+bool PID::update(double left_pos, double right_pos, const rclcpp::Time& time) {
   // We cannot estimate the speed with very small time intervals:
   const double dt = time.seconds() - timestamp_.seconds();
-  if (dt < 0.0001)
-  {
+  if (dt < 0.0001) {
     return false;  // Interval too small to integrate with
   }
 
@@ -59,8 +53,7 @@ bool PID::update(double left_pos, double right_pos, const rclcpp::Time& time)
   return true;
 }
 
-bool PID::updateFromVelocity(double left_vel, double right_vel, const rclcpp::Time& time)
-{
+bool PID::updateFromVelocity(double left_vel, double right_vel, const rclcpp::Time& time) {
   const double dt = time.seconds() - timestamp_.seconds();
 
   // Compute linear and angular diff:
@@ -83,8 +76,7 @@ bool PID::updateFromVelocity(double left_vel, double right_vel, const rclcpp::Ti
   return true;
 }
 
-void PID::updateOpenLoop(double linear, double angular, const rclcpp::Time& time)
-{
+void PID::updateOpenLoop(double linear, double angular, const rclcpp::Time& time) {
   /// Save last linear and angular velocity:
   linear_ = linear;
   angular_ = angular;
@@ -95,29 +87,25 @@ void PID::updateOpenLoop(double linear, double angular, const rclcpp::Time& time
   integrateExact(linear * dt, angular * dt);
 }
 
-void PID::resetPID()
-{
+void PID::resetPID() {
   x_ = 0.0;
   y_ = 0.0;
   heading_ = 0.0;
 }
 
-void PID::setWheelParams(double wheel_separation, double left_wheel_radius, double right_wheel_radius)
-{
+void PID::setWheelParams(double wheel_separation, double left_wheel_radius, double right_wheel_radius) {
   wheel_separation_ = wheel_separation;
   left_wheel_radius_ = left_wheel_radius;
   right_wheel_radius_ = right_wheel_radius;
 }
 
-void PID::setVelocityRollingWindowSize(size_t velocity_rolling_window_size)
-{
+void PID::setVelocityRollingWindowSize(size_t velocity_rolling_window_size) {
   velocity_rolling_window_size_ = velocity_rolling_window_size;
 
   resetAccumulators();
 }
 
-void PID::integrateRungeKutta2(double linear, double angular)
-{
+void PID::integrateRungeKutta2(double linear, double angular) {
   const double direction = heading_ + angular * 0.5;
 
   /// Runge-Kutta 2nd order integration:
@@ -126,14 +114,10 @@ void PID::integrateRungeKutta2(double linear, double angular)
   heading_ += angular;
 }
 
-void PID::integrateExact(double linear, double angular)
-{
-  if (fabs(angular) < 1e-6)
-  {
+void PID::integrateExact(double linear, double angular) {
+  if (fabs(angular) < 1e-6) {
     integrateRungeKutta2(linear, angular);
-  }
-  else
-  {
+  } else {
     /// Exact integration (should solve problems when angular is zero):
     const double heading_old = heading_;
     const double r = linear / angular;
@@ -143,10 +127,9 @@ void PID::integrateExact(double linear, double angular)
   }
 }
 
-void PID::resetAccumulators()
-{
+void PID::resetAccumulators() {
   linear_accumulator_ = RollingMeanAccumulator(velocity_rolling_window_size_);
   angular_accumulator_ = RollingMeanAccumulator(velocity_rolling_window_size_);
 }
 
-}  // namespace unitree_position_controller
+}  // namespace unitree_joint_controller

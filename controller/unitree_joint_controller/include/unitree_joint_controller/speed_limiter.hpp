@@ -4,12 +4,12 @@
  * @copyright Copyright (c) 2024
  */
 
-#ifndef UNITREE_POSITION_CONTROLLER__SPEED_LIMITER_HPP_
-#define UNITREE_POSITION_CONTROLLER__SPEED_LIMITER_HPP_
+#ifndef UNITREE_JOINT_CONTROLLER__SPEED_LIMITER_HPP_
+#define UNITREE_JOINT_CONTROLLER__SPEED_LIMITER_HPP_
 
 #include <cmath>
 
-namespace unitree_position_controller {
+namespace unitree_joint_controller {
 class SpeedLimiter {
 public:
   /**
@@ -38,9 +38,9 @@ public:
   /**
    * \brief Limit the velocity and acceleration
    * \param [in, out] v  Velocity [m/s]
-   * \param [in]      v0 Previous velocity to v  [m/s]
-   * \param [in]      v1 Previous velocity to v0 [m/s]
-   * \param [in]      dt Time step [s]
+   * \param [in] v0 Previous velocity to v  [m/s]
+   * \param [in] v1 Previous velocity to v0 [m/s]
+   * \param [in] dt Time step [s]
    * \return Limiting factor (1.0 if none)
    */
   double limit(double& v, double v0, double v1, double dt);
@@ -55,8 +55,8 @@ public:
   /**
    * \brief Limit the acceleration
    * \param [in, out] v  Velocity [m/s]
-   * \param [in]      v0 Previous velocity [m/s]
-   * \param [in]      dt Time step [s]
+   * \param [in] v0 Previous velocity [m/s]
+   * \param [in] dt Time step [s]
    * \return Limiting factor (1.0 if none)
    */
   double limit_acceleration(double& v, double v0, double dt);
@@ -64,9 +64,9 @@ public:
   /**
    * \brief Limit the jerk
    * \param [in, out] v  Velocity [m/s]
-   * \param [in]      v0 Previous velocity to v  [m/s]
-   * \param [in]      v1 Previous velocity to v0 [m/s]
-   * \param [in]      dt Time step [s]
+   * \param [in] v0 Previous velocity to v  [m/s]
+   * \param [in] v1 Previous velocity to v0 [m/s]
+   * \param [in] dt Time step [s]
    * \return Limiting factor (1.0 if none)
    * \see http://en.wikipedia.org/wiki/Jerk_%28physics%29#Motion_control
    */
@@ -91,6 +91,6 @@ private:
   double max_jerk_;
 };
 
-}  // namespace unitree_position_controller
+}  // namespace unitree_joint_controller
 
-#endif  // UNITREE_POSITION_CONTROLLER__SPEED_LIMITER_HPP_
+#endif  // UNITREE_joint_CONTROLLER__SPEED_LIMITER_HPP_
