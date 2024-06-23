@@ -8,8 +8,9 @@
 #ifndef QR_TIMER_H
 #define QR_TIMER_H
 
+#include "rclcpp/rclcpp.hpp"
+
 #include <assert.h>
-#include <ros/ros.h>
 #include <stdint.h>
 #include <time.h>
 
@@ -66,7 +67,7 @@ public:
   /**
    * @brief qrRosTimer 类的构造函数
    */
-  qrRosTimer() { startRos = ros::Time::now().toSec(); };
+  qrRosTimer() { startRos = rclcpp::Clock().now().seconds(); };
 
   virtual ~qrRosTimer() = default;
 
@@ -74,7 +75,7 @@ public:
    * @see qrTimer::GetTimeSinceReset
    */
   virtual double GetTimeSinceReset() {
-    double timeSinceReset = ros::Time::now().toSec() - startRos;
+    double timeSinceReset = rclcpp::Clock().now().seconds() - startRos;
     return timeSinceReset;
   };
 
@@ -82,7 +83,7 @@ public:
    * @see qrTimer::ResetStartTime
    */
   virtual double ResetStartTime() {
-    startRos = ros::Time::now().toSec();
+    startRos = rclcpp::Clock().now().seconds();
     return startRos;
   };
 

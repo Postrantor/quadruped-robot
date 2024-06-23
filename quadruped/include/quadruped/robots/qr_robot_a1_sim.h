@@ -1,22 +1,24 @@
 /**
  * @author Robot Motion and Vision Laboratory at East China Normal University, tophill.robotics@gmail.com
+ * @author GPT4-o
  * @brief
- * @date 2022
+ * @date 2024-06-23 17:54:01
  * @copyright MIT License
  */
 
 #ifndef QR_ROBOT_A1_SIM_H
 #define QR_ROBOT_A1_SIM_H
 
-#include <ros/ros.h>
-#include <sensor_msgs/Imu.h>
-
-#include "geometry_msgs/WrenchStamped.h"
 #include "robots/qr_robot.h"
-#include "unitree_legged_msgs/LowCmd.h"
-#include "unitree_legged_msgs/LowState.h"
-#include "unitree_legged_msgs/MotorCmd.h"
-#include "unitree_legged_msgs/MotorState.h"
+
+#include "rclcpp/rclcpp.hpp"
+
+#include "sensor_msgs/msg/Imu.hpp"
+#include "geometry_msgs/msg/WrenchStamped.hpp"
+#include "unitree_msgs/msg/LowCmd.hpp"
+#include "unitree_msgs/msg/LowState.hpp"
+#include "unitree_msgs/msg/MotorCmd.hpp"
+#include "unitree_msgs/msg/MotorState.hpp"
 
 namespace Quadruped {
 
@@ -25,10 +27,9 @@ public:
   /**
    * @brief qrRobotA1Sim 类的构造函数
    * @param nhIn: ROS 节点句柄。
-   * @param privateNhIn: 私有 ROS 节点句柄。
    * @param configFilePath: 配置文件路径。
    */
-  qrRobotA1Sim(ros::NodeHandle &nhIn, ros::NodeHandle &privateNhIn, std::string configFilePath);
+  qrRobotA1Sim(const rclcpp::Node::SharedPtr &nhIn, std::string configFilePath);
 
   ~qrRobotA1Sim() = default;
 
@@ -63,63 +64,59 @@ public:
    */
   virtual bool BuildDynamicModel() override;
 
-  void ImuCallback(const sensor_msgs::Imu &msg);
-  void FRhipCallback(const unitree_legged_msgs::MotorState &msg);
-  void FRthighCallback(const unitree_legged_msgs::MotorState &msg);
-  void FRcalfCallback(const unitree_legged_msgs::MotorState &msg);
-  void FLhipCallback(const unitree_legged_msgs::MotorState &msg);
-  void FLthighCallback(const unitree_legged_msgs::MotorState &msg);
-  void FLcalfCallback(const unitree_legged_msgs::MotorState &msg);
-  void RRhipCallback(const unitree_legged_msgs::MotorState &msg);
-  void RRthighCallback(const unitree_legged_msgs::MotorState &msg);
-  void RRcalfCallback(const unitree_legged_msgs::MotorState &msg);
-  void RLhipCallback(const unitree_legged_msgs::MotorState &msg);
-  void RLthighCallback(const unitree_legged_msgs::MotorState &msg);
-  void RLcalfCallback(const unitree_legged_msgs::MotorState &msg);
-  void FRfootCallback(const geometry_msgs::WrenchStamped &msg);
-  void FLfootCallback(const geometry_msgs::WrenchStamped &msg);
-  void RRfootCallback(const geometry_msgs::WrenchStamped &msg);
-  void RLfootCallback(const geometry_msgs::WrenchStamped &msg);
+  void ImuCallback(const sensor_msgs::msg::Imu::SharedPtr &msg);
+  void FRhipCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
+  void FRthighCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
+  void FRcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
+  void FLhipCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
+  void FLthighCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
+  void FLcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
+  void RRhipCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
+  void RRthighCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
+  void RRcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
+  void RLhipCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
+  void RLthighCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
+  void RLcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
+  void FRfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg);
+  void FLfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg);
+  void RRfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg);
+  void RLfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg);
 
   /**
    * @brief ROS 节点句柄。
    */
-  ros::NodeHandle &nh;
-
-  /**
-   * @brief 私有 ROS 节点句柄。
-   */
-  ros::NodeHandle &privateNh;
+  rclcpp::Node::SharedPtr &nh;
 
   /**
    * @brief Unitree 低级命令，存储电机命令。
    */
-  unitree_legged_msgs::LowCmd lowCmd;
+  unitree_msgs::LowCmd lowCmd;
 
   /**
    * @brief Unitree 低级状态，存储 IMU 和关节状态。
    */
-  unitree_legged_msgs::LowState lowState;
+  unitree_msgs::LowState lowState;
 
   /**
    * @brief 12个关节命令发布者。
    */
-  ros::Publisher jointCmdPub[12];
+  rclcpp::Publisher<unitree_msgs::MotorCmd>::SharedPtr jointCmdPub[12];
 
   /**
    * @brief 12个关节状态订阅者。
    */
-  ros::Subscriber jointStateSub[12];
+
+  rclcpp::Subscription<unitree_msgs::MotorState>::SharedPtr jointStateSub[12];
 
   /**
    * @brief 4个力传感器订阅者。
    */
-  ros::Subscriber footForceSub[4];
+  rclcpp::Subscription<unitree_msgs::MotorState>::SharedPtr footForceSub[4];
 
   /**
    * @brief Gazebo IMU 订阅者。
    */
-  ros::Subscriber imuSub;
+  rclcpp::Subscription<unitree_msgs::MotorState>::SharedPtr imuSub;
 };
 
 }  // namespace Quadruped

@@ -1,15 +1,8 @@
-/**
- * @author Robot Motion and Vision Laboratory at East China Normal University, tophill.robotics@gmail.com
- * @brief
- * @date 2022
- * @copyright MIT License
- */
-
 #ifndef QR_SWITCH_MODE_RECEIVER_H
 #define QR_SWITCH_MODE_RECEIVER_H
 
-#include <ros/ros.h>
-#include <std_msgs/Int8.h>
+#include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/int8.hpp>
 
 #include <iostream>
 #include <string>
@@ -19,17 +12,15 @@ namespace Quadruped {
 /**
  * @brief Receive locomotion switch command from state machine.
  */
-class qrSwitchModeReceiver {
+class qrSwitchModeReceiver : public rclcpp::Node {
 public:
-  qrSwitchModeReceiver(ros::NodeHandle &nhIn, ros::NodeHandle &privateNhIn);
+  qrSwitchModeReceiver();
   ~qrSwitchModeReceiver() = default;
 
-  void SwitchModeCallback(const std_msgs::Int8::ConstPtr &input);
+  void SwitchModeCallback(const std_msgs::msg::Int8::SharedPtr input);
   inline int GetSwitchMode() { return switchMode; };
 
-  ros::NodeHandle &nh;
-  ros::NodeHandle &privateNh;
-  ros::Subscriber switchModeSub;
+  rclcpp::Subscription<std_msgs::msg::Int8>::SharedPtr switchModeSub;
   std::string switchModeTopic = "/switch_mode";
 
 private:

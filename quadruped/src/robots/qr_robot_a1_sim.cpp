@@ -7,10 +7,13 @@
 
 #include "robots/qr_robot_a1_sim.h"
 
+#include <vector>
+#include <string>
+
 namespace Quadruped {
 
-qrRobotA1Sim::qrRobotA1Sim(ros::NodeHandle &nhIn, ros::NodeHandle &privateNhIn, std::string configFilePath)
-    : nh(nhIn), privateNh(privateNhIn) {
+qrRobotA1Sim::qrRobotA1Sim(const rclcpp::Node::SharedPtr &nhIn, std::string configFilePath)
+    : nh(nhIn)) {
   baseOrientation << 1.f, 0.f, 0.f, 0.f;
   baseRollPitchYaw << 0.f, 0.f, 0.f;
   baseRollPitchYawRate << 0.f, 0.f, 0.f;
@@ -108,36 +111,38 @@ qrRobotA1Sim::qrRobotA1Sim(ros::NodeHandle &nhIn, ros::NodeHandle &privateNhIn, 
   controlParams["mode"] = robotConfig["controller_params"]["mode"].as<int>();
   Reset();  // reset com_offset
 
-  imuSub = nh.subscribe("/trunk_imu", 1, &qrRobotA1Sim::ImuCallback, this);
-  jointStateSub[0] = nh.subscribe("a1_gazebo/FR_hip_controller/state", 1, &qrRobotA1Sim::FRhipCallback, this);
-  jointStateSub[1] = nh.subscribe("a1_gazebo/FR_thigh_controller/state", 1, &qrRobotA1Sim::FRthighCallback, this);
-  jointStateSub[2] = nh.subscribe("a1_gazebo/FR_calf_controller/state", 1, &qrRobotA1Sim::FRcalfCallback, this);
-  jointStateSub[3] = nh.subscribe("a1_gazebo/FL_hip_controller/state", 1, &qrRobotA1Sim::FLhipCallback, this);
-  jointStateSub[4] = nh.subscribe("a1_gazebo/FL_thigh_controller/state", 1, &qrRobotA1Sim::FLthighCallback, this);
-  jointStateSub[5] = nh.subscribe("a1_gazebo/FL_calf_controller/state", 1, &qrRobotA1Sim::FLcalfCallback, this);
-  jointStateSub[6] = nh.subscribe("a1_gazebo/RR_hip_controller/state", 1, &qrRobotA1Sim::RRhipCallback, this);
-  jointStateSub[7] = nh.subscribe("a1_gazebo/RR_thigh_controller/state", 1, &qrRobotA1Sim::RRthighCallback, this);
-  jointStateSub[8] = nh.subscribe("a1_gazebo/RR_calf_controller/state", 1, &qrRobotA1Sim::RRcalfCallback, this);
-  jointStateSub[9] = nh.subscribe("a1_gazebo/RL_hip_controller/state", 1, &qrRobotA1Sim::RLhipCallback, this);
-  jointStateSub[10] = nh.subscribe("a1_gazebo/RL_thigh_controller/state", 1, &qrRobotA1Sim::RLthighCallback, this);
-  jointStateSub[11] = nh.subscribe("a1_gazebo/RL_calf_controller/state", 1, &qrRobotA1Sim::RLcalfCallback, this);
-  footForceSub[0] = nh.subscribe("/visual/FR_foot_contact/the_force", 1, &qrRobotA1Sim::FRfootCallback, this);
-  footForceSub[1] = nh.subscribe("/visual/FL_foot_contact/the_force", 1, &qrRobotA1Sim::FLfootCallback, this);
-  footForceSub[2] = nh.subscribe("/visual/RR_foot_contact/the_force", 1, &qrRobotA1Sim::RRfootCallback, this);
-  footForceSub[3] = nh.subscribe("/visual/RL_foot_contact/the_force", 1, &qrRobotA1Sim::RLfootCallback, this);
+  imuSub = node->create_subscription<sensor_msgs::msg::Imu>("/trunk_imu", 1, std::bind(&qrRobotSim::ImuCallback, this, std::placeholders::_1));
 
-  jointCmdPub[0] = nh.advertise<unitree_legged_msgs::MotorCmd>("a1_gazebo/FR_hip_controller/command", 1);
-  jointCmdPub[1] = nh.advertise<unitree_legged_msgs::MotorCmd>("a1_gazebo/FR_thigh_controller/command", 1);
-  jointCmdPub[2] = nh.advertise<unitree_legged_msgs::MotorCmd>("a1_gazebo/FR_calf_controller/command", 1);
-  jointCmdPub[3] = nh.advertise<unitree_legged_msgs::MotorCmd>("a1_gazebo/FL_hip_controller/command", 1);
-  jointCmdPub[4] = nh.advertise<unitree_legged_msgs::MotorCmd>("a1_gazebo/FL_thigh_controller/command", 1);
-  jointCmdPub[5] = nh.advertise<unitree_legged_msgs::MotorCmd>("a1_gazebo/FL_calf_controller/command", 1);
-  jointCmdPub[6] = nh.advertise<unitree_legged_msgs::MotorCmd>("a1_gazebo/RR_hip_controller/command", 1);
-  jointCmdPub[7] = nh.advertise<unitree_legged_msgs::MotorCmd>("a1_gazebo/RR_thigh_controller/command", 1);
-  jointCmdPub[8] = nh.advertise<unitree_legged_msgs::MotorCmd>("a1_gazebo/RR_calf_controller/command", 1);
-  jointCmdPub[9] = nh.advertise<unitree_legged_msgs::MotorCmd>("a1_gazebo/RL_hip_controller/command", 1);
-  jointCmdPub[10] = nh.advertise<unitree_legged_msgs::MotorCmd>("a1_gazebo/RL_thigh_controller/command", 1);
-  jointCmdPub[11] = nh.advertise<unitree_legged_msgs::MotorCmd>("a1_gazebo/RL_calf_controller/command", 1);
+  jointStateSub[0] = node->create_subscription<sensor_msgs::msg::JointState>("a1_gazebo/FR_hip_controller/state", 1, std::bind(&qrRobotSim::FRhipCallback, this, std::placeholders::_1));
+  jointStateSub[1] = node->create_subscription<sensor_msgs::msg::JointState>("a1_gazebo/FR_thigh_controller/state", 1, std::bind(&qrRobotSim::FRthighCallback, this, std::placeholders::_1));
+  jointStateSub[2] = node->create_subscription<sensor_msgs::msg::JointState>("a1_gazebo/FR_calf_controller/state", 1, std::bind(&qrRobotSim::FRcalfCallback, this, std::placeholders::_1));
+  jointStateSub[3] = node->create_subscription<sensor_msgs::msg::JointState>("a1_gazebo/FL_hip_controller/state", 1, std::bind(&qrRobotSim::FLhipCallback, this, std::placeholders::_1));
+  jointStateSub[4] = node->create_subscription<sensor_msgs::msg::JointState>("a1_gazebo/FL_thigh_controller/state", 1, std::bind(&qrRobotSim::FLthighCallback, this, std::placeholders::_1));
+  jointStateSub[5] = node->create_subscription<sensor_msgs::msg::JointState>("a1_gazebo/FL_calf_controller/state", 1, std::bind(&qrRobotSim::FLcalfCallback, this, std::placeholders::_1));
+  jointStateSub[6] = node->create_subscription<sensor_msgs::msg::JointState>("a1_gazebo/RR_hip_controller/state", 1, std::bind(&qrRobotSim::RRhipCallback, this, std::placeholders::_1));
+  jointStateSub[7] = node->create_subscription<sensor_msgs::msg::JointState>("a1_gazebo/RR_thigh_controller/state", 1, std::bind(&qrRobotSim::RRthighCallback, this, std::placeholders::_1));
+  jointStateSub[8] = node->create_subscription<sensor_msgs::msg::JointState>("a1_gazebo/RR_calf_controller/state", 1, std::bind(&qrRobotSim::RRcalfCallback, this, std::placeholders::_1));
+  jointStateSub[9] = node->create_subscription<sensor_msgs::msg::JointState>("a1_gazebo/RL_hip_controller/state", 1, std::bind(&qrRobotSim::RLhipCallback, this, std::placeholders::_1));
+  jointStateSub[10] = node->create_subscription<sensor_msgs::msg::JointState>("a1_gazebo/RL_thigh_controller/state", 1, std::bind(&qrRobotSim::RLthighCallback, this, std::placeholders::_1));
+  jointStateSub[11] = node->create_subscription<sensor_msgs::msg::JointState>("a1_gazebo/RL_calf_controller/state", 1, std::bind(&qrRobotSim::RLcalfCallback, this, std::placeholders::_1));
+
+  jointCmdPub[0] = node->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/FR_hip_controller/command", 1);
+  jointCmdPub[1] = node->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/FR_thigh_controller/command", 1);
+  jointCmdPub[2] = node->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/FR_calf_controller/command", 1);
+  jointCmdPub[3] = node->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/FL_hip_controller/command", 1);
+  jointCmdPub[4] = node->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/FL_thigh_controller/command", 1);
+  jointCmdPub[5] = node->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/FL_calf_controller/command", 1);
+  jointCmdPub[6] = node->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/RR_hip_controller/command", 1);
+  jointCmdPub[7] = node->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/RR_thigh_controller/command", 1);
+  jointCmdPub[8] = node->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/RR_calf_controller/command", 1);
+  jointCmdPub[9] = node->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/RL_hip_controller/command", 1);
+  jointCmdPub[10] = node->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/RL_thigh_controller/command", 1);
+  jointCmdPub[11] = node->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/RL_calf_controller/command", 1);
+
+  footForceSub[0] = node->create_subscription<geometry_msgs::msg::WrenchStamped>("/visual/FR_foot_contact/the_force", 1, std::bind(&qrRobotSim::FRfootCallback, this, std::placeholders::_1));
+  footForceSub[1] = node->create_subscription<geometry_msgs::msg::WrenchStamped>("/visual/FL_foot_contact/the_force", 1, std::bind(&qrRobotSim::FLfootCallback, this, std::placeholders::_1));
+  footForceSub[2] = node->create_subscription<geometry_msgs::msg::WrenchStamped>("/visual/RR_foot_contact/the_force", 1, std::bind(&qrRobotSim::RRfootCallback, this, std::placeholders::_1));
+  footForceSub[3] = node->create_subscription<geometry_msgs::msg::WrenchStamped>("/visual/RL_foot_contact/the_force", 1, std::bind(&qrRobotSim::RLfootCallback, this, std::placeholders::_1));
 
   // ros::spinOnce();
   usleep(300000);  // must wait 300ms, to get first state
@@ -364,7 +369,7 @@ bool qrRobotA1Sim::BuildDynamicModel() {
   return true;
 }
 
-void qrRobotA1Sim::ImuCallback(const sensor_msgs::Imu &msg) {
+void qrRobotA1Sim::ImuCallback(const sensor_msgs::msg::Imu::SharedPtr &msg) {
   lowState.imu.quaternion[0] = msg.orientation.w;
   lowState.imu.quaternion[1] = msg.orientation.x;
   lowState.imu.quaternion[2] = msg.orientation.y;
@@ -387,7 +392,7 @@ void qrRobotA1Sim::ImuCallback(const sensor_msgs::Imu &msg) {
   lowState.imu.accelerometer[2] = msg.linear_acceleration.z;
 }
 
-void qrRobotA1Sim::FRhipCallback(const unitree_legged_msgs::MotorState &msg) {
+void qrRobotA1Sim::FRhipCallback(const unitree_legged_msgs::msg::MotorState::SharedPtr &msg) {
   lowState.motorState[0].mode = msg.mode;
   lowState.motorState[0].q = msg.q;
   lowState.motorState[0].dq = msg.dq;
@@ -395,7 +400,7 @@ void qrRobotA1Sim::FRhipCallback(const unitree_legged_msgs::MotorState &msg) {
   lowState.motorState[0].tauEst = msg.tauEst;
 }
 
-void qrRobotA1Sim::FRthighCallback(const unitree_legged_msgs::MotorState &msg) {
+void qrRobotA1Sim::FRthighCallback(const unitree_legged_msgs::msg::MotorState::SharedPtr &msg) {
   lowState.motorState[1].mode = msg.mode;
   lowState.motorState[1].q = msg.q;
   lowState.motorState[1].dq = msg.dq;
@@ -403,7 +408,7 @@ void qrRobotA1Sim::FRthighCallback(const unitree_legged_msgs::MotorState &msg) {
   lowState.motorState[1].tauEst = msg.tauEst;
 }
 
-void qrRobotA1Sim::FRcalfCallback(const unitree_legged_msgs::MotorState &msg) {
+void qrRobotA1Sim::FRcalfCallback(const unitree_legged_msgs::msg::MotorState::SharedPtr &msg) {
   lowState.motorState[2].mode = msg.mode;
   lowState.motorState[2].q = msg.q;
   lowState.motorState[2].dq = msg.dq;
@@ -411,7 +416,7 @@ void qrRobotA1Sim::FRcalfCallback(const unitree_legged_msgs::MotorState &msg) {
   lowState.motorState[2].tauEst = msg.tauEst;
 }
 
-void qrRobotA1Sim::FLhipCallback(const unitree_legged_msgs::MotorState &msg) {
+void qrRobotA1Sim::FLhipCallback(const unitree_legged_msgs::msg::MotorState::SharedPtr &msg) {
   lowState.motorState[3].mode = msg.mode;
   lowState.motorState[3].q = msg.q;
   lowState.motorState[3].dq = msg.dq;
@@ -419,7 +424,7 @@ void qrRobotA1Sim::FLhipCallback(const unitree_legged_msgs::MotorState &msg) {
   lowState.motorState[3].tauEst = msg.tauEst;
 }
 
-void qrRobotA1Sim::FLthighCallback(const unitree_legged_msgs::MotorState &msg) {
+void qrRobotA1Sim::FLthighCallback(const unitree_legged_msgs::msg::MotorState::SharedPtr &msg) {
   lowState.motorState[4].mode = msg.mode;
   lowState.motorState[4].q = msg.q;
   lowState.motorState[4].dq = msg.dq;
@@ -427,7 +432,7 @@ void qrRobotA1Sim::FLthighCallback(const unitree_legged_msgs::MotorState &msg) {
   lowState.motorState[4].tauEst = msg.tauEst;
 }
 
-void qrRobotA1Sim::FLcalfCallback(const unitree_legged_msgs::MotorState &msg) {
+void qrRobotA1Sim::FLcalfCallback(const unitree_legged_msgs::msg::MotorState::SharedPtr &msg) {
   lowState.motorState[5].mode = msg.mode;
   lowState.motorState[5].q = msg.q;
   lowState.motorState[5].dq = msg.dq;
@@ -435,7 +440,7 @@ void qrRobotA1Sim::FLcalfCallback(const unitree_legged_msgs::MotorState &msg) {
   lowState.motorState[5].tauEst = msg.tauEst;
 }
 
-void qrRobotA1Sim::RRhipCallback(const unitree_legged_msgs::MotorState &msg) {
+void qrRobotA1Sim::RRhipCallback(const unitree_legged_msgs::msg::MotorState::SharedPtr &msg) {
   lowState.motorState[6].mode = msg.mode;
   lowState.motorState[6].q = msg.q;
   lowState.motorState[6].dq = msg.dq;
@@ -443,7 +448,7 @@ void qrRobotA1Sim::RRhipCallback(const unitree_legged_msgs::MotorState &msg) {
   lowState.motorState[6].tauEst = msg.tauEst;
 }
 
-void qrRobotA1Sim::RRthighCallback(const unitree_legged_msgs::MotorState &msg) {
+void qrRobotA1Sim::RRthighCallback(const unitree_legged_msgs::msg::MotorState::SharedPtr &msg) {
   lowState.motorState[7].mode = msg.mode;
   lowState.motorState[7].q = msg.q;
   lowState.motorState[7].dq = msg.dq;
@@ -451,7 +456,7 @@ void qrRobotA1Sim::RRthighCallback(const unitree_legged_msgs::MotorState &msg) {
   lowState.motorState[7].tauEst = msg.tauEst;
 }
 
-void qrRobotA1Sim::RRcalfCallback(const unitree_legged_msgs::MotorState &msg) {
+void qrRobotA1Sim::RRcalfCallback(const unitree_legged_msgs::msg::MotorState::SharedPtr &msg) {
   lowState.motorState[8].mode = msg.mode;
   lowState.motorState[8].q = msg.q;
   lowState.motorState[8].dq = msg.dq;
@@ -459,7 +464,7 @@ void qrRobotA1Sim::RRcalfCallback(const unitree_legged_msgs::MotorState &msg) {
   lowState.motorState[8].tauEst = msg.tauEst;
 }
 
-void qrRobotA1Sim::RLhipCallback(const unitree_legged_msgs::MotorState &msg) {
+void qrRobotA1Sim::RLhipCallback(const unitree_legged_msgs::msg::MotorState::SharedPtr &msg) {
   lowState.motorState[9].mode = msg.mode;
   lowState.motorState[9].q = msg.q;
   lowState.motorState[9].dq = msg.dq;
@@ -467,7 +472,7 @@ void qrRobotA1Sim::RLhipCallback(const unitree_legged_msgs::MotorState &msg) {
   lowState.motorState[9].tauEst = msg.tauEst;
 }
 
-void qrRobotA1Sim::RLthighCallback(const unitree_legged_msgs::MotorState &msg) {
+void qrRobotA1Sim::RLthighCallback(const unitree_legged_msgs::msg::MotorState::SharedPtr &msg) {
   lowState.motorState[10].mode = msg.mode;
   lowState.motorState[10].q = msg.q;
   lowState.motorState[10].dq = msg.dq;
@@ -475,7 +480,7 @@ void qrRobotA1Sim::RLthighCallback(const unitree_legged_msgs::MotorState &msg) {
   lowState.motorState[10].tauEst = msg.tauEst;
 }
 
-void qrRobotA1Sim::RLcalfCallback(const unitree_legged_msgs::MotorState &msg) {
+void qrRobotA1Sim::RLcalfCallback(const unitree_legged_msgs::msg::MotorState::SharedPtr &msg) {
   lowState.motorState[11].mode = msg.mode;
   lowState.motorState[11].q = msg.q;
   lowState.motorState[11].dq = msg.dq;
@@ -483,28 +488,28 @@ void qrRobotA1Sim::RLcalfCallback(const unitree_legged_msgs::MotorState &msg) {
   lowState.motorState[11].tauEst = msg.tauEst;
 }
 
-void qrRobotA1Sim::FRfootCallback(const geometry_msgs::WrenchStamped &msg) {
+void qrRobotA1Sim::FRfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg) {
   lowState.eeForce[0].x = msg.wrench.force.x;
   lowState.eeForce[0].y = msg.wrench.force.y;
   lowState.eeForce[0].z = msg.wrench.force.z;
   lowState.footForce[0] = msg.wrench.force.z;
 }
 
-void qrRobotA1Sim::FLfootCallback(const geometry_msgs::WrenchStamped &msg) {
+void qrRobotA1Sim::FLfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg) {
   lowState.eeForce[1].x = msg.wrench.force.x;
   lowState.eeForce[1].y = msg.wrench.force.y;
   lowState.eeForce[1].z = msg.wrench.force.z;
   lowState.footForce[1] = msg.wrench.force.z;
 }
 
-void qrRobotA1Sim::RRfootCallback(const geometry_msgs::WrenchStamped &msg) {
+void qrRobotA1Sim::RRfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg) {
   lowState.eeForce[2].x = msg.wrench.force.x;
   lowState.eeForce[2].y = msg.wrench.force.y;
   lowState.eeForce[2].z = msg.wrench.force.z;
   lowState.footForce[2] = msg.wrench.force.z;
 }
 
-void qrRobotA1Sim::RLfootCallback(const geometry_msgs::WrenchStamped &msg) {
+void qrRobotA1Sim::RLfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg) {
   lowState.eeForce[3].x = msg.wrench.force.x;
   lowState.eeForce[3].y = msg.wrench.force.y;
   lowState.eeForce[3].z = msg.wrench.force.z;

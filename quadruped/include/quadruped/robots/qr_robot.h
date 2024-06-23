@@ -23,10 +23,11 @@
 #include "estimators/qr_moving_window_filter.hpp"
 #include "robots/qr_motor.h"
 #include "robots/qr_timer.h"
-#include "unitree_legged_sdk/unitree_interface.h"
 #include "utils/qr_print.hpp"
 #include "utils/qr_se3.h"
 #include "utils/qr_tools.h"
+
+#include "unitree_legged_sdk/unitree_interface.h"
 
 namespace Quadruped {
 

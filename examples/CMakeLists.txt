@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(robot_description)
+project(robot_sim)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 17)

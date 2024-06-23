@@ -8,12 +8,12 @@
 #ifndef QR_TELEKEYBOARD_H
 #define QR_TELEKEYBOARD_H
 
-#include <ros/ros.h>
-#include <sensor_msgs/Joy.h>
+#include "rclcpp/rclcpp.hpp"
+#include "sensor_msgs/msg/Joy.hpp"
+
 #include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
-
 #include <map>
 #include <vector>
 
@@ -26,7 +26,7 @@ public:
    * @brief qrTeleKeyboard 的构造函数。
    * @param nh 该类创建的 ROS 节点。
    */
-  qrTeleKeyboard(ros::NodeHandle &nhIn);
+  qrTeleKeyboard(const rclcpp::Node::SharedPtr &nhIn);
 
   /**
    * @brief qrTeleKeyboard 的默认析构函数。
@@ -69,7 +69,7 @@ private:
   /**
    * @brief 该类创建的 ROS 节点。
    */
-  ros::NodeHandle &nh;
+  rclcpp::Node::SharedPtr &nh;
 };
 
 #endif  // QR_TELEKEYBOARD_H

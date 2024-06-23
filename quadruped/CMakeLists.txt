@@ -119,21 +119,11 @@ if(${USE_SIM})
 endif()
 
 # ROS
-find_package(catkin REQUIRED COMPONENTS roscpp geometry_msgs std_msgs
-                                        sensor_msgs unitree_legged_msgs roslib)
-
-catkin_package(
-  INCLUDE_DIRS
-  include
-  LIBRARIES
-  ${PROJECT_NAME}
-  CATKIN_DEPENDS
-  roscpp
-  geometry_msgs
-  std_msgs
-  sensor_msgs
-  unitree_legged_msgs
-  roslib)
+find_package(roscpp REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(unitree_msgs REQUIRED)
 
 list(APPEND includePath include/quadruped src)
 
@@ -144,16 +134,10 @@ if(NOT ${USE_SIM})
     REMOVE_ITEM
     includePath
     "include/quadruped/robots/qr_robot_sim.h"
-    "include/quadruped/robots/qr_a1_sim.h"
-    "include/quadruped/robots/qr_aliengo_sim.h"
-    "include/quadruped/robots/qr_lite2_sim.h"
-    "include/quadruped/robots/qr_lite3_sim.h")
+    "include/quadruped/robots/qr_a1_sim.h")
   set(filtered_sources
       ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_sim.cpp
-      ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_a1_sim.cpp
-      ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_aliengo_sim.cpp
-      ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_lite2_sim.cpp
-      ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_lite3_sim.cpp)
+      ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_a1_sim.cpp)
   list(REMOVE_ITEM sources ${filtered_sources})
   message("${filtered_sources}")
   message("${PROJECT_SOURCE_DIR}/src/robots/qr_robot_sim.cpp")
