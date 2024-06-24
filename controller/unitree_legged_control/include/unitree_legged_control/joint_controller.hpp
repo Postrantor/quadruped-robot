@@ -24,6 +24,11 @@
 #include "unitree_msgs/msg/motor_cmd.hpp"
 #include "unitree_msgs/msg/motor_state.hpp"
 
+#define PMSM (0x0A)
+#define BRAKE (0x00)
+#define PosStopF (2.146E+9f)
+#define VelStopF (16000.0f)
+
 namespace unitree_legged_control {
 
 class UnitreeJointController : public controller_interface::ControllerInterface {

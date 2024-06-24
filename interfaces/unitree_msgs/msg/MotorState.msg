@@ -1,6 +1,6 @@
 # // https://design.ros2.org/articles/generated_interfaces_cpp.html
 
-# uint8 mode           # motor current mode 
+# uint8 mode           # motor current mode
 # float32 q            # motor current position（rad）
 # float32 dq           # motor current speed（rad/s）
 # float32 ddq          # motor current speed（rad/s）
@@ -10,6 +10,9 @@
 # float32 ddq_raw      # motor current speed（rad/s）
 # int8 temperature     # motor temperature（slow conduction of temperature leads to lag）
 # uint32[2] reserve
+
+# 针对go-m8010-6型号的sdk重构了msg
+std_msgs/Header header # 包含时间戳和帧ID
 
 int32 hex_len # 接收的命令长度: 16Byte
 bool correct # 接收数据是否完整(true完整，false不完整或断联)

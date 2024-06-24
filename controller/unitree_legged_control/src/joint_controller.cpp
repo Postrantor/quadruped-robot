@@ -60,6 +60,7 @@ controller_interface::return_type UnitreeJointController::on_deactivate(const rc
 controller_interface::return_type UnitreeJointController::update(
     const rclcpp::Time &time,  //
     const rclcpp::Duration &period) {
+
   auto cmd = *(command_buffer_.readFromRT());
   double current_pos = joint_.get_position();
   double current_vel = computeVel(current_pos, last_state_.q, last_state_.dq, 0.01);  // duration placeholder

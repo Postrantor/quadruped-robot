@@ -1,135 +1,155 @@
 controller_manager:
   ros__parameters:
-    update_rate: 100.0 # 控制器更新频率
+    update_rate: 100.0
+    desired_cmd_timeout: 0.5
 
-    # 定义 joint_state_broadcaster 用于发布所有关节状态
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
-    # FL 控制器
+    # FL Controller
     FL_hip_controller:
-      type: unitree_legged_control/UnitreeJointController
-      joints:
-        - FL_hip_joint
-      pid:
-        p: 100.0
-        i: 0.0
-        d: 5.0
-
+      type: unitree_joint_control/UnitreeJointController
     FL_thigh_controller:
-      type: unitree_legged_control/UnitreeJointController
-      joints:
-        - FL_thigh_joint
-      pid:
-        p: 300.0
-        i: 0.0
-        d: 8.0
-
+      type: unitree_joint_control/UnitreeJointController
     FL_calf_controller:
-      type: unitree_legged_control/UnitreeJointController
-      joints:
-        - FL_calf_joint
-      pid:
-        p: 300.0
-        i: 0.0
-        d: 8.0
+      type: unitree_joint_control/UnitreeJointController
 
-    # FR 控制器
+    # FR Controller
     FR_hip_controller:
-      type: unitree_legged_control/UnitreeJointController
-      joints:
-        - FR_hip_joint
-      pid:
-        p: 100.0
-        i: 0.0
-        d: 5.0
-
+      type: unitree_joint_control/UnitreeJointController
     FR_thigh_controller:
-      type: unitree_legged_control/UnitreeJointController
-      joints:
-        - FR_thigh_joint
-      pid:
-        p: 300.0
-        i: 0.0
-        d: 8.0
-
+      type: unitree_joint_control/UnitreeJointController
     FR_calf_controller:
-      type: unitree_legged_control/UnitreeJointController
-      joints:
-        - FR_calf_joint
-      pid:
-        p: 300.0
-        i: 0.0
-        d: 8.0
+      type: unitree_joint_control/UnitreeJointController
 
-    # RL 控制器
+    # RL Controller
     RL_hip_controller:
-      type: unitree_legged_control/UnitreeJointController
-      joints:
-        - RL_hip_joint
-      pid:
-        p: 100.0
-        i: 0.0
-        d: 5.0
-
+      type: unitree_joint_control/UnitreeJointController
     RL_thigh_controller:
-      type: unitree_legged_control/UnitreeJointController
-      joints:
-        - RL_thigh_joint
-      pid:
-        p: 300.0
-        i: 0.0
-        d: 8.0
-
+      type: unitree_joint_control/UnitreeJointController
     RL_calf_controller:
-      type: unitree_legged_control/UnitreeJointController
-      joints:
-        - RL_calf_joint
-      pid:
-        p: 300.0
-        i: 0.0
-        d: 8.0
+      type: unitree_joint_control/UnitreeJointController
 
-    # RR 控制器
+    # RR Controller
     RR_hip_controller:
-      type: unitree_legged_control/UnitreeJointController
-      joints:
-        - RR_hip_joint
-      pid:
-        p: 100.0
-        i: 0.0
-        d: 5.0
-
+      type: unitree_joint_control/UnitreeJointController
     RR_thigh_controller:
-      type: unitree_legged_control/UnitreeJointController
-      joints:
-        - RR_thigh_joint
-      pid:
-        p: 300.0
-        i: 0.0
-        d: 8.0
-
+      type: unitree_joint_control/UnitreeJointController
     RR_calf_controller:
-      type: unitree_legged_control/UnitreeJointController
-      joints:
-        - RR_calf_joint
-      pid:
-        p: 300.0
-        i: 0.0
-        d: 8.0
+      type: unitree_joint_control/UnitreeJointController
 
-    # 列出所有需要加载的控制器名称
-    controller_names:
-      - joint_state_broadcaster
-      - FL_hip_controller
-      - FL_thigh_controller
-      - FL_calf_controller
-      - FR_hip_controller
-      - FR_thigh_controller
-      - FR_calf_controller
-      - RL_hip_controller
-      - RL_thigh_controller
-      - RL_calf_controller
-      - RR_hip_controller
-      - RR_thigh_controller
-      - RR_calf_controller
+# FL Controller
+FL_hip_controller:
+  ros__parameters:
+    update_rate: 10
+    desired_cmd_timeout: 0.5
+    joint_name: FL_hip_joint
+    pid:
+      p: 100.0
+      i: 0.0
+      d: 5.0
+FL_thigh_controller:
+  ros__parameters:
+    update_rate: 10
+    desired_cmd_timeout: 0.5
+    joint_name: FL_thigh_joint
+    pid:
+      p: 300.0
+      i: 0.0
+      d: 8.0
+FL_calf_controller:
+  ros__parameters:
+    update_rate: 10
+    desired_cmd_timeout: 0.5
+    joint_name: FL_calf_joint
+    pid:
+      p: 300.0
+      i: 0.0
+      d: 8.0
+
+# FR Controller
+FR_hip_controller:
+  ros__parameters:
+    update_rate: 10
+    desired_cmd_timeout: 0.5
+    joint_name: FR_hip_joint
+    pid:
+      p: 100.0
+      i: 0.0
+      d: 5.0
+FR_thigh_controller:
+  ros__parameters:
+    update_rate: 10
+    desired_cmd_timeout: 0.5
+    joint_name: FR_thigh_joint
+    pid:
+      p: 300.0
+      i: 0.0
+      d: 8.0
+FR_calf_controller:
+  ros__parameters:
+    update_rate: 10
+    desired_cmd_timeout: 0.5
+    joint_name: FR_calf_joint
+    pid:
+      p: 300.0
+      i: 0.0
+      d: 8.0
+
+# RL Controller
+RL_hip_controller:
+  ros__parameters:
+    update_rate: 10
+    desired_cmd_timeout: 0.5
+    joint_name: RL_hip_joint
+    pid:
+      p: 100.0
+      i: 0.0
+      d: 5.0
+RL_thigh_controller:
+  ros__parameters:
+    update_rate: 10
+    desired_cmd_timeout: 0.5
+    joint_name: RL_thigh_joint
+    pid:
+      p: 300.0
+      i: 0.0
+      d: 8.0
+RL_calf_controller:
+  ros__parameters:
+    update_rate: 10
+    desired_cmd_timeout: 0.5
+    joint_name: RL_calf_joint
+    pid:
+      p: 300.0
+      i: 0.0
+      d: 8.0
+
+# RR Controller
+RR_hip_controller:
+  ros__parameters:
+    update_rate: 10
+    desired_cmd_timeout: 0.5
+    joint_name: RR_hip_joint
+    pid:
+      p: 100.0
+      i: 0.0
+      d: 5.0
+RR_thigh_controller:
+  ros__parameters:
+    update_rate: 10
+    desired_cmd_timeout: 0.5
+    joint_name: RR_thigh_joint
+    pid:
+      p: 300.0
+      i: 0.0
+      d: 8.0
+RR_calf_controller:
+  ros__parameters:
+    update_rate: 10
+    desired_cmd_timeout: 0.5
+    joint_name: RR_calf_joint
+    pid:
+      p: 300.0
+      i: 0.0
+      d: 8.0

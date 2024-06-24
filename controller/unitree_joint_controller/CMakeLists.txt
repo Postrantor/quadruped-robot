@@ -12,12 +12,10 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   controller_interface
   hardware_interface
   geometry_msgs
-  # nav_msgs
+  unitree_msgs
   rclcpp
   rclcpp_lifecycle
   rcpputils
-  # tf2
-  # tf2_msgs
 )
 
 find_package(ament_cmake REQUIRED)
@@ -31,17 +29,22 @@ generate_parameter_library(unitree_joint_controller_parameters
   src/unitree_joint_controller_parameter.yaml
 )
 
+# add unitree_joint_control_tool so
+link_directories(lib)
+# set(unitree_joint_control_tool_lib "unitree_joint_control_tool_arm64")
+set(unitree_joint_control_tool_lib "unitree_joint_control_tool")
+
 add_library(unitree_joint_controller SHARED
   src/unitree_joint_controller.cpp
-  # src/odometry.cpp
-  # src/speed_limiter.cpp
 )
 target_compile_features(unitree_joint_controller PUBLIC cxx_std_17)
 target_include_directories(unitree_joint_controller PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include/unitree_joint_controller>
 )
-target_link_libraries(unitree_joint_controller PUBLIC unitree_joint_controller_parameters)
+target_link_libraries(unitree_joint_controller PUBLIC
+  unitree_joint_controller_parameters
+  ${unitree_joint_control_tool_lib})
 ament_target_dependencies(unitree_joint_controller PUBLIC ${THIS_PACKAGE_INCLUDE_DEPENDS})
 # causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.

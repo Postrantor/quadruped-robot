@@ -1,8 +1,8 @@
 # // https://design.ros2.org/articles/generated_interfaces_cpp.html
 
 # motor target mode
-# - servo : 0x0A
-# - damping : 0x00.
+#   - servo(PMSM): 0x0A
+#   - damping(BRAKE): 0x00.
 # uint8 mode
 # float32 q # target position
 # float32 dq # target velocity
@@ -10,6 +10,9 @@
 # float32 kp # spring stiffness coefficient
 # float32 kd # damper coefficient
 # uint32[3] reserve # target torque
+
+# 针对go-m8010-6型号的sdk重构了msg
+std_msgs/Header header # 包含时间戳和帧ID
 
 int32 hex_len # 17;
 uint16 id # motor id: 0~14, 15: broadcast id, no return

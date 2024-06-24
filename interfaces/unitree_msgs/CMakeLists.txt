@@ -11,20 +11,25 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/MotorCmd.msg"
-  "msg/MotorState.msg"
-  "msg/BmsCmd.msg"
-  "msg/BmsState.msg"
-  "msg/Cartesian.msg"
-  "msg/IMU.msg"
-  "msg/LED.msg"
-  "msg/LowCmd.msg"
-  "msg/LowState.msg"
-  "msg/HighCmd.msg"
-  "msg/HighState.msg"
+rosidl_generate_interfaces(
+  ${PROJECT_NAME}
+    msg/MotorCmd.msg
+    msg/MotorState.msg
+    msg/BmsCmd.msg
+    msg/BmsState.msg
+    msg/Cartesian.msg
+    msg/IMU.msg
+    msg/LED.msg
+    msg/LowCmd.msg
+    msg/LowState.msg
+    msg/HighCmd.msg
+    msg/HighState.msg
+  DEPENDENCIES
+    std_msgs
+  ADD_LINTER_TESTS
 )
 
 ament_package()
