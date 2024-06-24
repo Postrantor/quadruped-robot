@@ -5,18 +5,17 @@
  * @copyright Copyright (c) 2024
  */
 
-#include <gazebo_msgs/srv/get_entity_state.hpp>
-#include <gazebo_msgs/srv/set_entity_state.hpp>
-#include <gazebo_msgs/srv/set_model_configuration.hpp>
-#include <rclcpp/rclcpp.hpp>
-#include <std_srvs/srv/empty.hpp>
+#include "rclcpp/rclcpp.hpp"
+
+#include "gazebo_msgs/srv/get_entity_state.hpp"
+#include "gazebo_msgs/srv/set_entity_state.hpp"
+#include "gazebo_msgs/srv/set_model_configuration.hpp"
+#include "std_srvs/srv/empty.hpp"
 
 #include "quadruped/exec/qr_robot_runner.h"
 #include "quadruped/robots/qr_robot_a1_sim.h"
 #include "quadruped/ros/qr_control2gazebo_msg.h"
-
-using namespace std;
-using namespace Quadruped;
+#include "utils/qr_cpptypes.h"
 
 namespace {
 
@@ -24,9 +23,9 @@ const double kHipAngle = 0.3;
 const double kThighAngle = 1.1;
 const double kCalfAngle = -2.2;
 const double kMaxTimeSeconds = 300.0;
-const string kRobotName = "a1_gazebo";
-const string kUrdfParamName = "robot_description";
-const string kBaseLinkName = "a1_gazebo::base";
+const std::string kRobotName = "a1_gazebo";
+const std::string kUrdfParamName = "robot_description";
+const std::string kBaseLinkName = "a1_gazebo::base";
 const int kLoopRate1Hz = 1000;
 const int kLoopRate2Hz = 500;
 
@@ -44,8 +43,8 @@ bool SetModelState(
   request->state = model_state;
 
   auto result = client->async_send_request(request);
-  if (rclcpp::spin_until_future_complete(rclcpp::Node::make_shared("set_model_state_node"), result) ==
-      rclcpp::FutureReturnCode::SUCCESS) {
+  if (rclcpp::spin_until_future_complete(rclcpp::Node::make_shared("set_model_state_node"), result)  //
+      == rclcpp::FutureReturnCode::SUCCESS) {
     return result.get()->success;
   } else {
     RCLCPP_ERROR(rclcpp::get_logger("set_model_state_node"), "Failed to set model state");
@@ -72,8 +71,8 @@ bool SetJointState(
   request->joint_positions = joint_positions;
 
   auto result = client->async_send_request(request);
-  if (rclcpp::spin_until_future_complete(rclcpp::Node::make_shared("set_joint_state_node"), result) ==
-      rclcpp::FutureReturnCode::SUCCESS) {
+  if (rclcpp::spin_until_future_complete(rclcpp::Node::make_shared("set_joint_state_node"), result)  //
+      == rclcpp::FutureReturnCode::SUCCESS) {
     return result.get()->success;
   } else {
     RCLCPP_ERROR(rclcpp::get_logger("set_joint_state_node"), "Failed to set joint state");
@@ -119,12 +118,33 @@ bool ResetRobot(
     return false;
   }
 
-  std::vector<std::string> joint_names = {"FR_hip_joint",   "FR_thigh_joint", "FR_calf_joint",  "FL_hip_joint",
-                                          "FL_thigh_joint", "FL_calf_joint",  "RR_hip_joint",   "RR_thigh_joint",
-                                          "RR_calf_joint",  "RL_hip_joint",   "RL_thigh_joint", "RL_calf_joint"};
+  std::vector<std::string> joint_names = {
+      "FR_hip_joint",    //
+      "FR_thigh_joint",  //
+      "FR_calf_joint",   //
+      "FL_hip_joint",    //
+      "FL_thigh_joint",  //
+      "FL_calf_joint",   //
+      "RR_hip_joint",    //
+      "RR_thigh_joint",  //
+      "RR_calf_joint",   //
+      "RL_hip_joint",    //
+      "RL_thigh_joint",  //
+      "RL_calf_joint"};
 
-  std::vector<double> joint_positions = {-kHipAngle, kThighAngle, kCalfAngle, kHipAngle, kThighAngle, kCalfAngle,
-                                         -kHipAngle, kThighAngle, kCalfAngle, kHipAngle, kThighAngle, kCalfAngle};
+  std::vector<double> joint_positions = {
+      -kHipAngle,   //
+      kThighAngle,  //
+      kCalfAngle,   //
+      kHipAngle,    //
+      kThighAngle,  //
+      kCalfAngle,
+      -kHipAngle,   //
+      kThighAngle,  //
+      kCalfAngle,   //
+      kHipAngle,    //
+      kThighAngle,  //
+      kCalfAngle};
 
   return SetJointState(joint_state_client, joint_names, joint_positions);
 }
@@ -142,8 +162,8 @@ void GetComPositionInWorldFrame(
   request->reference_frame = "world";
 
   auto result = base_state_client->async_send_request(request);
-  if (rclcpp::spin_until_future_complete(rclcpp::Node::make_shared("get_com_position_node"), result) ==
-      rclcpp::FutureReturnCode::SUCCESS) {
+  if (rclcpp::spin_until_future_complete(rclcpp::Node::make_shared("get_com_position_node"), result)  //
+      == rclcpp::FutureReturnCode::SUCCESS) {
     const auto& pose = result.get()->state.pose;
     const auto& twist = result.get()->state.twist;
     Vec3<double> pos_in = {pose.position.x, pose.position.y, pose.position.z};
@@ -217,7 +237,6 @@ void ControlLoop(
     ++count;
   }
 }
-
 }  // namespace
 
 int main(int argc, char** argv) {

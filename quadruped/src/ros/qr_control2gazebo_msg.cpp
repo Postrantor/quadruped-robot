@@ -61,7 +61,7 @@ void qrController2GazeboMsg::PublishGazeboStateCallback() {
     robotstate.base_.ang.w = wInBodyFrame.cast<double>();
 
   } else {
-    auto request = std::make_shared<gazebo_msgs::srv::GetLinkState::Request>();
+    auto request = std::make_shared<gazebo_msgs::srv::GetEntityState::Request>();
     request->link_name = "a1_gazebo::base";
     request->reference_frame = "world";
     if (baseStateClient->wait_for_service(std::chrono::seconds(1))) {

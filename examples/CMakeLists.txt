@@ -14,18 +14,21 @@ find_package(rclcpp REQUIRED)
 find_package(quadruped REQUIRED)
 find_package(backward_ros REQUIRED)
 find_package(unitree_msgs REQUIRED)
+find_package(gazebo_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
 
 # dependency
 set(DEPENDENCIES
   rclcpp
   quadruped
   unitree_msgs
+  gazebo_msgs
+  std_srvs
 )
 
 include_directories(
   include
 )
 
-add_executable(robot_sim simulation/example_ros2_control.cpp)
-# target_link_libraries(robot_sim quadruped)
+add_executable(robot_sim simulation/example_simulation_2.cpp)
 ament_target_dependencies(qr_gazebo ${DEPENDENCIES})

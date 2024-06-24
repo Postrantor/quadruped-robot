@@ -10,12 +10,12 @@
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <ros/ros.h>
-#include <sensor_msgs/Joy.h>
 #include <sys/socket.h>
 #include <unistd.h>
-
 #include <iostream>
+
+#include "rclcpp/rclcpp.hpp"
+#include "sensor_msgs/msg/Joy.hpp"
 
 #include "config/qr_config.h"
 #include "config/qr_enum_types.h"
