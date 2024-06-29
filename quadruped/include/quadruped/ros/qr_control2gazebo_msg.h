@@ -7,15 +7,18 @@
 #define QR_CONTROL2GAZEBO_MSG_H_
 
 #include "rclcpp/rclcpp.hpp"
+
 #include "tf2_ros/transform_broadcaster.h"
+
 #include "gazebo_msgs/srv/get_entity_state.hpp"
 #include "geometry_msgs/msg/pose.hpp"
 #include "sensor_msgs/msg/joint_state.hpp"
-#include "xpp_msgs/msg/robot_parameters.hpp"
-#include "xpp_msgs/msg/robot_state_cartesian.hpp"
-#include "xpp_msgs/msg/terrain_info.hpp"
-#include "xpp_states/convert.h"
-#include "xpp_states/robot_state_cartesian.h"
+
+// #include "xpp_msgs/msg/robot_parameters.hpp"
+// #include "xpp_msgs/msg/robot_state_cartesian.hpp"
+// #include "xpp_msgs/msg/terrain_info.hpp"
+// #include "xpp_states/convert.h"
+// #include "xpp_states/robot_state_cartesian.h"
 
 #include "controllers/qr_locomotion_controller.h"
 

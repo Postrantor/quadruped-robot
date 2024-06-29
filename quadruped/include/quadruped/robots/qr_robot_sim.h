@@ -13,12 +13,12 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-#include "sensor_msgs/msg/Imu.hpp"
-#include "geometry_msgs/msg/WrenchStamped.hpp"
-#include "unitree_msgs/msg/LowCmd.hpp"
-#include "unitree_msgs/msg/LowState.hpp"
-#include "unitree_msgs/msg/MotorCmd.hpp"
-#include "unitree_msgs/msg/MotorState.hpp"
+#include "sensor_msgs/msg/imu.hpp"
+#include "geometry_msgs/msg/wrench_stamped.hpp"
+#include "unitree_msgs/msg/low_cmd.hpp"
+#include "unitree_msgs/msg/low_state.hpp"
+#include "unitree_msgs/msg/motor_cmd.hpp"
+#include "unitree_msgs/msg/motor_state.hpp"
 
 namespace Quadruped {
 

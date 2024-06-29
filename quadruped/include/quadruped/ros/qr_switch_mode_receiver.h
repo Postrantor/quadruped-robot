@@ -1,8 +1,9 @@
 #ifndef QR_SWITCH_MODE_RECEIVER_H
 #define QR_SWITCH_MODE_RECEIVER_H
 
-#include <rclcpp/rclcpp.hpp>
-#include <std_msgs/msg/int8.hpp>
+#include "rclcpp/rclcpp.hpp"
+
+#include "std_msgs/msg/int8.hpp"
 
 #include <iostream>
 #include <string>

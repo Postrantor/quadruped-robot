@@ -8,14 +8,16 @@
 #ifndef QR_CMDVELRECEIVER_H
 #define QR_CMDVELRECEIVER_H
 
+#include <iostream>
+#include <string>
+
+#include "rclcpp/rclcpp.hpp"
+
 #include "geometry_msgs/msg/pose.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "nav_msgs/msg/odometry.hpp"
-#include "rclcpp/rclcpp.hpp"
 
 #include <Eigen/Dense>
-#include <iostream>
-#include <string>
 
 namespace Quadruped {
 

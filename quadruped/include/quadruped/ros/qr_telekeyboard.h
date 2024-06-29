@@ -9,7 +9,8 @@
 #define QR_TELEKEYBOARD_H
 
 #include "rclcpp/rclcpp.hpp"
-#include "sensor_msgs/msg/Joy.hpp"
+
+#include "sensor_msgs/msg/joy.hpp"
 
 #include <stdio.h>
 #include <termios.h>
