@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
 <package format="2">
     <name>quadruped</name>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
     <description>The quadruped package for ros2</description>
     <maintainer email="postrantor@gmail.com">postrantor</maintainer>
+    <maintainer email="tophill.robotics@gmail.com">postrantor</maintainer>
+
     <license>MIT</license>
 
     <buildtool_depend>ament_cmake</buildtool_depend>

@@ -1,5 +1,5 @@
 /**
- * @author Robot Motion and Vision Laboratory at East China Normal University, tophill.robotics@gmail.com
+ * @author Robot Motion and Vision Laboratory at East China Normal University
  * @brief
  * @date 2022
  * @copyright MIT License

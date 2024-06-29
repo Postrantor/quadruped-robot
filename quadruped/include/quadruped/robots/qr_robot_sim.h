@@ -1,5 +1,5 @@
 /**
- * @author Robot Motion and Vision Laboratory at East China Normal University, tophill.robotics@gmail.com
+ * @author Robot Motion and Vision Laboratory at East China Normal University
  * @author GPT4-o
  * @brief
  * @date 2024-06-23 17:54:01
