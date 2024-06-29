@@ -16,6 +16,7 @@ find_package(backward_ros REQUIRED)
 find_package(unitree_msgs REQUIRED)
 find_package(gazebo_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 
 # dependency
 set(DEPENDENCIES

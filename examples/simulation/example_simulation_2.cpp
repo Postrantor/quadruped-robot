@@ -29,7 +29,7 @@
  * @note 通过 `ros2 service type <service_name>` 查看对应服务类型
  *  按照相同的类型对比 example 实例程序中的 srv
  *  需要显示加载 `gazebo_ros_state` 插件
-*/
+ */
 auto reset_robot(
     const std::shared_ptr<rclcpp::Client<gazebo_msgs::srv::SetModelState>>& model_state_client,
     const std::shared_ptr<rclcpp::Client<gazebo_msgs::srv::SetModelConfiguration>>& joint_state_client) -> bool {
@@ -107,6 +107,7 @@ auto reset_robot(
 void get_com_position_in_world_frame(
     Quadruped::qrRobot* quadruped,
     const std::shared_ptr<rclcpp::Client<gazebo_msgs::srv::GetEntityState>>& base_state_client) {
+  // send request
   auto request = std::make_shared<gazebo_msgs::srv::GetEntityState::Request>();
   request->link_name = "a1_gazebo::base";
   request->reference_frame = "world";
@@ -151,7 +152,10 @@ void get_com_position_in_world_frame(
  */
 std::unique_ptr<Quadruped::qrRobotA1Sim> initialize_and_reset_robot(const std::shared_ptr<rclcpp::Node>& node) {
   // 创建服务客户端
+  // 这里指定的服务名称`/gazebo/set_entity_state`是应该通过"gazebo_ros_state"插件配置的
+  // 在empty.world文件中通过remap参数进行重映射或者添加命名空间得到
   auto model_state_client = node->create_client<gazebo_msgs::srv::SetEntityState>("/gazebo/set_entity_state");
+  // 这个服务在ros2版本上还是没有？
   auto joint_state_client =
       node->create_client<gazebo_msgs::srv::SetModelConfiguration>("/gazebo/set_model_configuration");
 
@@ -176,10 +180,20 @@ std::unique_ptr<Quadruped::qrRobotA1Sim> initialize_and_reset_robot(const std::s
 
   RCLCPP_INFO(rclcpp::get_logger("unitree_robot"), "reset the robot pose");
 
+  // 获取功能包 "quadruped" 的共享目录路径
+  std::string package_path;
+  try {
+    package_path = ament_index_cpp::get_package_share_directory("quadruped");
+  } catch (const std::exception& e) {
+    std::cerr << "Error: " << e.what() << std::endl;
+    return 1;
+  }
+  // 构建配置文件路径
+  std::string config_file_path = package_path + "/config/a1_sim/a1_sim.yaml";
+  std::cout << "Config file path: " << config_file_path << std::endl;
+
   // 创建并返回机器人实例
-  return std::make_unique<Quadruped::qrRobotA1Sim>(
-      node,  //
-      ros::package::getPath("quadruped") + "/config/a1_sim/a1_sim.yaml");
+  return std::make_unique<Quadruped::qrRobotA1Sim>(node, config_file_path);
 }
 
 /**
@@ -188,11 +202,12 @@ std::unique_ptr<Quadruped::qrRobotA1Sim> initialize_and_reset_robot(const std::s
  * @param quadruped 指向Quadruped机器人实例的指针
  * @param node 指向ROS节点的指针
  */
-void main_control_loop(Quadruped::qrRobotA1Sim* quadruped, const std::shared_ptr<rclcpp::Node>& node) {
-  // 初始化机器人并接收初始观测数据
+void control_loop(
+    Quadruped::qrRobotA1Sim* quadruped,  //
+    const std::shared_ptr<rclcpp::Node>& node) {
+  // 1. 初始化机器人并接收初始观测数据
   quadruped->Step(Eigen::Matrix<float, 5, 12>::Zero(), Quadruped::HYBRID_MODE);
   quadruped->ReceiveObservation();
-
   // 输出机器人的基础朝向信息
   RCLCPP_INFO(
       rclcpp::get_logger("unitree_robot"), "Base Orientation: %f %f %f %f",  //
@@ -200,40 +215,38 @@ void main_control_loop(Quadruped::qrRobotA1Sim* quadruped, const std::shared_ptr
       quadruped->GetBaseOrientation().y(),                                   //
       quadruped->GetBaseOrientation().z(),                                   //
       quadruped->GetBaseOrientation().w());
-
   // 设置可视化标签
   Quadruped::Visualization2D& vis = quadruped->stateDataFlow.visualizer;
   vis.SetLabelNames({"pitch", "H", "vx in world", "vy in world", "vz in world"});
 
-  // 创建机器人运行实例
+  // 2. 创建机器人运行实例
   std::string home_dir = ament_index_cpp::get_package_share_directory("quadruped");
   Quadruped::qrRobotRunner robotRunner(quadruped, home_dir, node);
 
-  // 设置循环频率
-  rclcpp::Rate loop_rate1(1000);
-  rclcpp::Rate loop_rate2(700);
+  // 3. 创建并初始化控制器消息传递实例
+  auto controller2gazeboMsg = std::make_unique<Quadruped::qrController2GazeboMsg>(
+      quadruped,                              //
+      robotRunner.GetLocomotionController(),  //
+      node);
+  RCLCPP_INFO(rclcpp::get_logger("unitree_robot"), "ros2 modules init finished");
 
-  // 创建服务客户端
+  // 3. 创建服务客户端，获取初始状态
   auto base_state_client = node->create_client<gazebo_msgs::srv::GetEntityState>("/gazebo/get_entity_state");
   if (!base_state_client->wait_for_service(std::chrono::seconds(5))) {
     RCLCPP_ERROR(rclcpp::get_logger("unitree_robot"), "base state service not available");
     rclcpp::shutdown();
     return;
   }
-
-  // 创建并初始化控制器消息传递实例
-  auto controller2gazeboMsg =
-      std::make_unique<Quadruped::qrController2GazeboMsg>(quadruped, robotRunner.GetLocomotionController(), node);
-  RCLCPP_INFO(rclcpp::get_logger("unitree_robot"), "ros modules init finished");
-
-  // 获取初始状态
   get_com_position_in_world_frame(quadruped, base_state_client);
+
+  // 4. 主循环
+  rclcpp::Rate loop_rate1(1000);  // 设置循环频率
+  rclcpp::Rate loop_rate2(700);
 
   float startTime = quadruped->GetTimeSinceReset();
   float currentTime = startTime;
   float startTimeWall = startTime;
 
-  // 主循环
   while (rclcpp::ok() && currentTime - startTime < Quadruped::MAX_TIME_SECONDS) {
     startTimeWall = quadruped->GetTimeSinceReset();
 
@@ -254,8 +267,9 @@ void main_control_loop(Quadruped::qrRobotA1Sim* quadruped, const std::shared_ptr
     }
 
     // 根据时间控制节奏
+    // FIXME(@zhiqi.jia) :: use timer
     if (quadruped->useRosTime) {
-      rclcpp::spin_some(node);
+      rclcpp::spin_some(node);  // 非阻塞回调执行
       if (quadruped->timeStep < 0.0015)
         loop_rate1.sleep();
       else
@@ -280,7 +294,7 @@ int main(int argc, char** argv) {
 
   try {
     auto quadruped = initialize_and_reset_robot(node);
-    main_control_loop(quadruped.get(), node);
+    control_loop(quadruped.get(), node);
   } catch (const std::runtime_error& e) {
     RCLCPP_ERROR(rclcpp::get_logger("unitree_robot"), "%s", e.what());
     return 1;
