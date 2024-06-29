@@ -50,6 +50,7 @@ public:
   /**
    * @brief The interface to communicate with A1 robot.
    */
+  // FIXME(@zhiqi.jia) :: from unitree_sdk
   RobotInterface robotInterface;
 };
 
