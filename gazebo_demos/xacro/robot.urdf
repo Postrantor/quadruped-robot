@@ -2,6 +2,7 @@
 <robot name="diff_drive"
   xmlns:xacro="http://www.ros.org/wiki/xacro">
 
+  <!-- ros2 control -->
   <ros2_control name="GazeboSystem" type="system">
     <hardware>
       <plugin>gazebo_ros2_control/GazeboSystem</plugin>
@@ -24,8 +25,8 @@
     </joint>
   </ros2_control>
 
+  <!-- gazebo plugin -->
   <gazebo>
-    <!-- Joint state publisher -->
     <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
       <parameters>$(find gazebo_ros2_control_demos)/config/controller.yaml</parameters>
     </plugin>
