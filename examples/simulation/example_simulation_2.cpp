@@ -26,7 +26,10 @@
  * @param model_state_client 设置模型状态的服务客户端
  * @param joint_state_client 设置关节状态的服务客户端
  * @return 是否成功重置机器人的状态
- */
+ * @note 通过 `ros2 service type <service_name>` 查看对应服务类型
+ *  按照相同的类型对比 example 实例程序中的 srv
+ *  需要显示加载 `gazebo_ros_state` 插件
+*/
 auto reset_robot(
     const std::shared_ptr<rclcpp::Client<gazebo_msgs::srv::SetModelState>>& model_state_client,
     const std::shared_ptr<rclcpp::Client<gazebo_msgs::srv::SetModelConfiguration>>& joint_state_client) -> bool {

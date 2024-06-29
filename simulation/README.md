@@ -30,6 +30,10 @@ date: 2024-06-23 01:12:04
 
 - "gazebo_plugins" 用于控制 gazebo 中对象的第三方插件，如 IMU 传感器等，包示例的括机器人主体，有 diff_drive_robot
   其中一些 IMU/Position 等组件还是可以用的；
-- "gazebo_ros": 用于 ROS2 <-> Gazebo 交互层；
+- "gazebo_ros": 用于 ROS2 <-> Gazebo 交互层，编译的产物为so，通过插件的方式集成；
 - "gazebo_ros_control": 依赖功能包，这是一个 ROS 2 软件包，用于将 ros2_control 控制器架构与 Gazebo Classic 模拟器集成；
   该功能包使用的 API 与 gazebo_ros 相同，应该是等价关系；
+
+关于该功能包的迁移，可以参考：
+
+![](simulation/gazebo_demos/README.md)
