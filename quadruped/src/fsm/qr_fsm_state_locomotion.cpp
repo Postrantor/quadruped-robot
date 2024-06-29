@@ -7,7 +7,7 @@
 
 #include "fsm/qr_fsm_state_locomotion.hpp"
 
-#include <ros/package.h>
+#include "ament_index_cpp/get_package_share_directory.hpp"
 
 using namespace Quadruped;
 
@@ -24,7 +24,7 @@ extern void UpdateControllerParams(qrLocomotionController *controller, Eigen::Ve
 template <typename T>
 qrFSMStateLocomotion<T>::qrFSMStateLocomotion(qrControlFSMData<T> *controlFSMData)
     : qrFSMState<T>(controlFSMData, FSM_StateName::LOCOMOTION, "LOCOMOTION") {
-  std::string homeDir = ros::package::getPath("quadruped") + "/";
+  std::string homeDir = ament_index_cpp::get_package_share_directory("quadruped") + "/";
   locomotionController = SetUpController(
       controlFSMData->quadruped, controlFSMData->gaitGenerator, controlFSMData->desiredStateCommand,
       controlFSMData->stateEstimators, controlFSMData->userParameters, homeDir);

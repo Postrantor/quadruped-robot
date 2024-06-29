@@ -1,5 +1,7 @@
 /**
  * @author Robot Motion and Vision Laboratory at East China Normal University
+ * @author GPT4-o
+ * @author postrantor
  * @brief
  * @date 2022
  * @copyright MIT License
@@ -10,30 +12,41 @@
 #include <vector>
 #include <string>
 
+#include "rclcpp/rclcpp.hpp"
+
 namespace Quadruped {
 
-qrRobotA1Sim::qrRobotA1Sim(const rclcpp::Node::SharedPtr &nhIn, std::string configFilePath)
-    : nh(nhIn)) {
+/**
+ * @brief Construct a new qr Robot A1 Sim::qr Robot A1 Sim object
+ * @details 读取配置文件，初始化参数，构造机器人对象
+ * @param nhIn no use
+ * @param configFilePath
+ */
+qrRobotA1Sim::qrRobotA1Sim(const rclcpp::Node::SharedPtr &nhIn, std::string configFilePath) : nh(nhIn) {
+  /// read paramsters
+  // 初始化变量
   baseOrientation << 1.f, 0.f, 0.f, 0.f;
   baseRollPitchYaw << 0.f, 0.f, 0.f;
   baseRollPitchYawRate << 0.f, 0.f, 0.f;
-  motorVelocities = Eigen::Matrix<float, 12, 1>::Zero();
   footForce << 0.f, 0.f, 0.f, 0.f;
   footContact << 1, 1, 1, 1;
+  motorVelocities = Eigen::Matrix<float, 12, 1>::Zero();
 
+  // 读取配置文件
   this->configFilePath = configFilePath;
   robotConfig = YAML::LoadFile(configFilePath);
 
   robotName = robotConfig["name"].as<std::string>();
   isSim = robotConfig["is_sim"].as<bool>();
+
+  // 重量
   totalMass = robotConfig["robot_params"]["total_mass"].as<float>();
   bodyMass = robotConfig["robot_params"]["body_mass"].as<float>();
-
+  // 惯性
   std::vector<float> totalInertiaVec = robotConfig["robot_params"]["total_inertia"].as<std::vector<float>>();
   totalInertia = Eigen::MatrixXf::Map(&totalInertiaVec[0], 3, 3);
   std::vector<float> bodyInertiaVec = robotConfig["robot_params"]["body_inertia"].as<std::vector<float>>();
   bodyInertia = Eigen::MatrixXf::Map(&bodyInertiaVec[0], 3, 3);
-
   std::vector<std::vector<float>> inertias =
       robotConfig["robot_params"]["links_inertia"].as<std::vector<std::vector<float>>>();
   std::vector<float> masses = robotConfig["robot_params"]["links_mass"].as<std::vector<float>>();
@@ -77,6 +90,14 @@ qrRobotA1Sim::qrRobotA1Sim(const rclcpp::Node::SharedPtr &nhIn, std::string conf
   Eigen::Matrix<float, 3, 1> defaultHipPositionRR = Eigen::MatrixXf::Map(&defaultHipPositionList[3][0], 3, 1);
   defaultHipPosition << defaultHipPositionFR, defaultHipPositionFL, defaultHipPositionRL, defaultHipPositionRR;
 
+  float sitDownAbAngle, sitDownHipAngle, sitDownKneeAngle;
+  sitDownAbAngle = robotConfig["robot_params"]["default_sitdown_angle"]["ab"].as<float>();
+  sitDownHipAngle = robotConfig["robot_params"]["default_sitdown_angle"]["hip"].as<float>();
+  sitDownKneeAngle = robotConfig["robot_params"]["default_sitdown_angle"]["knee"].as<float>();
+  Eigen::Matrix<float, 3, 1> defaultSitDownAngle(sitDownAbAngle, sitDownHipAngle, sitDownKneeAngle);
+  sitDownMotorAngles << defaultSitDownAngle, defaultSitDownAngle, defaultSitDownAngle, defaultSitDownAngle;
+
+  // read `motor_params`
   float abadKp, abadKd, hipKp, hipKd, kneeKp, kneeKd;
   abadKp = robotConfig["motor_params"]["abad_p"].as<float>();
   abadKd = robotConfig["motor_params"]["abad_d"].as<float>();
@@ -101,43 +122,39 @@ qrRobotA1Sim::qrRobotA1Sim(const rclcpp::Node::SharedPtr &nhIn, std::string conf
   Eigen::Matrix<float, 3, 1> defaultStandUpAngle(standUpAbAngle, standUpHipAngle, standUpKneeAngle);
   standUpMotorAngles << defaultStandUpAngle, defaultStandUpAngle, defaultStandUpAngle, defaultStandUpAngle;
 
-  float sitDownAbAngle, sitDownHipAngle, sitDownKneeAngle;
-  sitDownAbAngle = robotConfig["robot_params"]["default_sitdown_angle"]["ab"].as<float>();
-  sitDownHipAngle = robotConfig["robot_params"]["default_sitdown_angle"]["hip"].as<float>();
-  sitDownKneeAngle = robotConfig["robot_params"]["default_sitdown_angle"]["knee"].as<float>();
-  Eigen::Matrix<float, 3, 1> defaultSitDownAngle(sitDownAbAngle, sitDownHipAngle, sitDownKneeAngle);
-  sitDownMotorAngles << defaultSitDownAngle, defaultSitDownAngle, defaultSitDownAngle, defaultSitDownAngle;
-
   controlParams["mode"] = robotConfig["controller_params"]["mode"].as<int>();
-  Reset();  // reset com_offset
 
+  /// reset com_offset
+  Reset();
+
+  /// callback
   imuSub = node->create_subscription<sensor_msgs::msg::Imu>(
-      "/trunk_imu", 1, std::bind(&qrRobotSim::ImuCallback, this, std::placeholders::_1));
+      "/trunk_imu", 1, std::bind(&qrRobotA1Sim::ImuCallback, this, std::placeholders::_1));
 
   jointStateSub[0] = node->create_subscription<sensor_msgs::msg::JointState>(
-      "a1_gazebo/FR_hip_controller/state", 1, std::bind(&qrRobotSim::FRhipCallback, this, std::placeholders::_1));
+      "a1_gazebo/FR_hip_controller/state", 1, std::bind(&qrRobotA1Sim::FRhipCallback, this, std::placeholders::_1));
   jointStateSub[1] = node->create_subscription<sensor_msgs::msg::JointState>(
-      "a1_gazebo/FR_thigh_controller/state", 1, std::bind(&qrRobotSim::FRthighCallback, this, std::placeholders::_1));
+      "a1_gazebo/FR_thigh_controller/state", 1, std::bind(&qrRobotA1Sim::FRthighCallback, this, std::placeholders::_1));
   jointStateSub[2] = node->create_subscription<sensor_msgs::msg::JointState>(
-      "a1_gazebo/FR_calf_controller/state", 1, std::bind(&qrRobotSim::FRcalfCallback, this, std::placeholders::_1));
+      "a1_gazebo/FR_calf_controller/state", 1, std::bind(&qrRobotA1Sim::FRcalfCallback, this, std::placeholders::_1));
   jointStateSub[3] = node->create_subscription<sensor_msgs::msg::JointState>(
-      "a1_gazebo/FL_hip_controller/state", 1, std::bind(&qrRobotSim::FLhipCallback, this, std::placeholders::_1));
+      "a1_gazebo/FL_hip_controller/state", 1, std::bind(&qrRobotA1Sim::FLhipCallback, this, std::placeholders::_1));
   jointStateSub[4] = node->create_subscription<sensor_msgs::msg::JointState>(
-      "a1_gazebo/FL_thigh_controller/state", 1, std::bind(&qrRobotSim::FLthighCallback, this, std::placeholders::_1));
+      "a1_gazebo/FL_thigh_controller/state", 1, std::bind(&qrRobotA1Sim::FLthighCallback, this, std::placeholders::_1));
   jointStateSub[5] = node->create_subscription<sensor_msgs::msg::JointState>(
-      "a1_gazebo/FL_calf_controller/state", 1, std::bind(&qrRobotSim::FLcalfCallback, this, std::placeholders::_1));
+      "a1_gazebo/FL_calf_controller/state", 1, std::bind(&qrRobotA1Sim::FLcalfCallback, this, std::placeholders::_1));
   jointStateSub[6] = node->create_subscription<sensor_msgs::msg::JointState>(
-      "a1_gazebo/RR_hip_controller/state", 1, std::bind(&qrRobotSim::RRhipCallback, this, std::placeholders::_1));
+      "a1_gazebo/RR_hip_controller/state", 1, std::bind(&qrRobotA1Sim::RRhipCallback, this, std::placeholders::_1));
   jointStateSub[7] = node->create_subscription<sensor_msgs::msg::JointState>(
-      "a1_gazebo/RR_thigh_controller/state", 1, std::bind(&qrRobotSim::RRthighCallback, this, std::placeholders::_1));
+      "a1_gazebo/RR_thigh_controller/state", 1, std::bind(&qrRobotA1Sim::RRthighCallback, this, std::placeholders::_1));
   jointStateSub[8] = node->create_subscription<sensor_msgs::msg::JointState>(
-      "a1_gazebo/RR_calf_controller/state", 1, std::bind(&qrRobotSim::RRcalfCallback, this, std::placeholders::_1));
+      "a1_gazebo/RR_calf_controller/state", 1, std::bind(&qrRobotA1Sim::RRcalfCallback, this, std::placeholders::_1));
   jointStateSub[9] = node->create_subscription<sensor_msgs::msg::JointState>(
-      "a1_gazebo/RL_hip_controller/state", 1, std::bind(&qrRobotSim::RLhipCallback, this, std::placeholders::_1));
+      "a1_gazebo/RL_hip_controller/state", 1, std::bind(&qrRobotA1Sim::RLhipCallback, this, std::placeholders::_1));
   jointStateSub[10] = node->create_subscription<sensor_msgs::msg::JointState>(
-      "a1_gazebo/RL_thigh_controller/state", 1, std::bind(&qrRobotSim::RLthighCallback, this, std::placeholders::_1));
+      "a1_gazebo/RL_thigh_controller/state", 1, std::bind(&qrRobotA1Sim::RLthighCallback, this, std::placeholders::_1));
   jointStateSub[11] = node->create_subscription<sensor_msgs::msg::JointState>(
-      "a1_gazebo/RL_calf_controller/state", 1, std::bind(&qrRobotSim::RLcalfCallback, this, std::placeholders::_1));
+      "a1_gazebo/RL_calf_controller/state", 1, std::bind(&qrRobotA1Sim::RLcalfCallback, this, std::placeholders::_1));
 
   jointCmdPub[0] = node->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/FR_hip_controller/command", 1);
   jointCmdPub[1] = node->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/FR_thigh_controller/command", 1);
@@ -171,15 +188,15 @@ qrRobotA1Sim::qrRobotA1Sim(const rclcpp::Node::SharedPtr &nhIn, std::string conf
   this->ResetTimer();
   lastResetTime = GetTimeSinceReset();
   initComplete = true;
-  std::cout << "-------A1Sim init Complete-------" << std::endl;
+
+  std::cout << "-------A1 Sim init Complete-------" << std::endl;
 }
 
 bool qrRobotA1Sim::BuildDynamicModel() {
   // we assume the cheetah's body (not including rotors) can be modeled as a
   // uniformly distributed box.
-  std::vector<float> bodySize =
-      robotConfig["robot_params"]["body_size"].as<std::vector<float>>();  // Length, Width, Height
-  Vec3<float> bodyDims(bodySize[0], bodySize[1], bodySize[2]);
+  std::vector<float> bodySize = robotConfig["robot_params"]["body_size"].as<std::vector<float>>();
+  Vec3<float> bodyDims(bodySize[0], bodySize[1], bodySize[2]);  // Length, Width, Height
 
   // locations
   Vec3<float> _abadRotorLocation = {0.14f, 0.047f, 0.f};
@@ -204,17 +221,13 @@ bool qrRobotA1Sim::BuildDynamicModel() {
   // spatial inertias
   Mat3<float> abadRotationalInertia;
   abadRotationalInertia << 469.2, -9.4, -0.342, -9.4, 807.5, -0.466, -0.342, -0.466, 552.9;
-  // abadRotationalInertia.setIdentity();
   abadRotationalInertia = abadRotationalInertia * 1e-6;
-  // Vec3<float> abadCOM(0, 0.036, 0);  // mini-cheetah
   Vec3<float> abadCOM(-0.0033, 0, 0);
   SpatialInertia<float> abadInertia(0.696, abadCOM, abadRotationalInertia);
 
   Mat3<float> hipRotationalInertia;
   hipRotationalInertia << 5529, 4.825, 343.9, 4.825, 5139.3, 22.4, 343.9, 22.4, 1367.8;
-  // hipRotationalInertia.setIdentity();
   hipRotationalInertia = hipRotationalInertia * 1e-6;
-  // Vec3<float> hipCOM(0, 0.016, -0.02);
   Vec3<float> hipCOM(-0.003237, -0.022327, -0.027326);  // left, for right filp y-axis value.
   SpatialInertia<float> hipInertia(1.013, hipCOM, hipRotationalInertia);
   std::cout << "hipInertia -----" << std::endl;
@@ -224,10 +237,8 @@ bool qrRobotA1Sim::BuildDynamicModel() {
 
   Mat3<float> kneeRotationalInertia, kneeRotationalInertiaRotated;
   kneeRotationalInertiaRotated << 2998, 0, -141.2, 0, 3014, 0, -141.2, 0, 32.4;
-  // kneeRotationalInertiaRotated.setIdentity();
   kneeRotationalInertiaRotated = kneeRotationalInertiaRotated * 1e-6;
   kneeRotationalInertia = kneeRotationalInertiaRotated;  // RY * kneeRotationalInertiaRotated * RY.transpose();
-  // Vec3<float> kneeCOM(0, 0, -0.061);
   Vec3<float> kneeCOM(0.006435, 0, -0.107);
   SpatialInertia<float> kneeInertia(0.166, kneeCOM, kneeRotationalInertia);
 
@@ -240,7 +251,6 @@ bool qrRobotA1Sim::BuildDynamicModel() {
   bodyRotationalInertia << 15853, 0, 0, 0, 37799, 0, 0, 0, 45654;
   bodyRotationalInertia = bodyRotationalInertia * 1e-6;
   Vec3<float> bodyCOM(0, 0, 0);
-  // Vec3<float> bodyCOM(0, 0.004, -0.0005);
   SpatialInertia<float> bodyInertia(6, bodyCOM, bodyRotationalInertia);
 
   model.addBase(bodyInertia);
@@ -263,22 +273,24 @@ bool qrRobotA1Sim::BuildDynamicModel() {
 
   // loop over 4 legs
   for (int legID = 0; legID < 4; legID++) {
-    // Ab/Ad joint
-    //  int addBody(const SpatialInertia<T>& inertia, const SpatialInertia<T>&
-    //  rotorInertia, T gearRatio,
-    //              int parent, JointType jointType, CoordinateAxis jointAxis,
-    //              const Mat6<T>& Xtree, const Mat6<T>& Xrot);
     bodyID++;
     Mat6<float> xtreeAbad = createSXform(I3, WithLegSigns(_abadLocation, legID));
     Mat6<float> xtreeAbadRotor = createSXform(I3, WithLegSigns(_abadRotorLocation, legID));
     if (sideSign < 0) {
       model.addBody(
-          abadInertia.flipAlongAxis(CoordinateAxis::Y), abadRotorInertia.flipAlongAxis(CoordinateAxis::Y),
-          abadGearRatio, baseID, JointType::Revolute, CoordinateAxis::X, xtreeAbad, xtreeAbadRotor);
+          abadInertia.flipAlongAxis(CoordinateAxis::Y),       //
+          abadRotorInertia.flipAlongAxis(CoordinateAxis::Y),  //
+          abadGearRatio, baseID, JointType::Revolute,         //
+          CoordinateAxis::X, xtreeAbad, xtreeAbadRotor);
     } else {
       model.addBody(
-          abadInertia, abadRotorInertia, abadGearRatio, baseID, JointType::Revolute, CoordinateAxis::X, xtreeAbad,
-          xtreeAbadRotor);
+          abadInertia,          //
+          abadRotorInertia,     //
+          abadGearRatio,        //
+          baseID,               //
+          JointType::Revolute,  //
+          CoordinateAxis::X,    //
+          xtreeAbad, xtreeAbadRotor);
     }
 
     // Hip Joint
@@ -409,129 +421,52 @@ void qrRobotA1Sim::ImuCallback(const sensor_msgs::msg::Imu::SharedPtr &msg) {
   lowState.imu.accelerometer[2] = msg.linear_acceleration.z;
 }
 
-void qrRobotA1Sim::FRhipCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) {
-  lowState.motorState[0].mode = msg.mode;
-  lowState.motorState[0].q = msg.q;
-  lowState.motorState[0].dq = msg.dq;
-  lowState.motorState[0].ddq = msg.ddq;
-  lowState.motorState[0].tauEst = msg.tauEst;
+void qrRobotA1Sim::MotorStateCallback(const unitree_msgs::msg::MotorState &msg, int index) {
+  lowState.motorState[index].mode = msg.mode;
+  lowState.motorState[index].q = msg.q;
+  lowState.motorState[index].dq = msg.dq;
+  lowState.motorState[index].ddq = msg.ddq;
+  lowState.motorState[index].tauEst = msg.tauEst;
 }
 
-void qrRobotA1Sim::FRthighCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) {
-  lowState.motorState[1].mode = msg.mode;
-  lowState.motorState[1].q = msg.q;
-  lowState.motorState[1].dq = msg.dq;
-  lowState.motorState[1].ddq = msg.ddq;
-  lowState.motorState[1].tauEst = msg.tauEst;
+void qrRobotA1Sim::FRhipCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) { MotorStateCallback(msg, 0); }
+
+void qrRobotA1Sim::FRthighCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) { MotorStateCallback(msg, 1); }
+
+void qrRobotA1Sim::FRcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) { MotorStateCallback(msg, 2); }
+
+void qrRobotA1Sim::FLhipCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) { MotorStateCallback(msg, 3); }
+
+void qrRobotA1Sim::FLthighCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) { MotorStateCallback(msg, 4); }
+
+void qrRobotA1Sim::FLcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) { MotorStateCallback(msg, 5); }
+
+void qrRobotA1Sim::RRhipCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) { MotorStateCallback(msg, 6); }
+
+void qrRobotA1Sim::RRthighCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) { MotorStateCallback(msg, 7); }
+
+void qrRobotA1Sim::RRcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) { MotorStateCallback(msg, 8); }
+
+void qrRobotA1Sim::RLhipCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) { MotorStateCallback(msg, 9); }
+
+void qrRobotA1Sim::RLthighCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) { MotorStateCallback(msg, 10); }
+
+void qrRobotA1Sim::RLcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) { MotorStateCallback(msg, 11); }
+
+void qrRobotA1Sim::FootCallback(const geometry::msg::WrenchStamped::SharedPtr &msg, int index) {
+  lowState.eeForce[index].x = msg.wrench.force.x;
+  lowState.eeForce[index].y = msg.wrench.force.y;
+  lowState.eeForce[index].z = msg.wrench.force.z;
+  lowState.footForce[index] = msg.wrench.force.z;
 }
 
-void qrRobotA1Sim::FRcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) {
-  lowState.motorState[2].mode = msg.mode;
-  lowState.motorState[2].q = msg.q;
-  lowState.motorState[2].dq = msg.dq;
-  lowState.motorState[2].ddq = msg.ddq;
-  lowState.motorState[2].tauEst = msg.tauEst;
-}
+void qrRobotA1Sim::FRfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg) { FootCallback(msg, 0); }
 
-void qrRobotA1Sim::FLhipCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) {
-  lowState.motorState[3].mode = msg.mode;
-  lowState.motorState[3].q = msg.q;
-  lowState.motorState[3].dq = msg.dq;
-  lowState.motorState[3].ddq = msg.ddq;
-  lowState.motorState[3].tauEst = msg.tauEst;
-}
+void qrRobotA1Sim::FLfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg) { FootCallback(msg, 1); }
 
-void qrRobotA1Sim::FLthighCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) {
-  lowState.motorState[4].mode = msg.mode;
-  lowState.motorState[4].q = msg.q;
-  lowState.motorState[4].dq = msg.dq;
-  lowState.motorState[4].ddq = msg.ddq;
-  lowState.motorState[4].tauEst = msg.tauEst;
-}
+void qrRobotA1Sim::RRfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg) { FootCallback(msg, 2); }
 
-void qrRobotA1Sim::FLcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) {
-  lowState.motorState[5].mode = msg.mode;
-  lowState.motorState[5].q = msg.q;
-  lowState.motorState[5].dq = msg.dq;
-  lowState.motorState[5].ddq = msg.ddq;
-  lowState.motorState[5].tauEst = msg.tauEst;
-}
-
-void qrRobotA1Sim::RRhipCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) {
-  lowState.motorState[6].mode = msg.mode;
-  lowState.motorState[6].q = msg.q;
-  lowState.motorState[6].dq = msg.dq;
-  lowState.motorState[6].ddq = msg.ddq;
-  lowState.motorState[6].tauEst = msg.tauEst;
-}
-
-void qrRobotA1Sim::RRthighCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) {
-  lowState.motorState[7].mode = msg.mode;
-  lowState.motorState[7].q = msg.q;
-  lowState.motorState[7].dq = msg.dq;
-  lowState.motorState[7].ddq = msg.ddq;
-  lowState.motorState[7].tauEst = msg.tauEst;
-}
-
-void qrRobotA1Sim::RRcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) {
-  lowState.motorState[8].mode = msg.mode;
-  lowState.motorState[8].q = msg.q;
-  lowState.motorState[8].dq = msg.dq;
-  lowState.motorState[8].ddq = msg.ddq;
-  lowState.motorState[8].tauEst = msg.tauEst;
-}
-
-void qrRobotA1Sim::RLhipCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) {
-  lowState.motorState[9].mode = msg.mode;
-  lowState.motorState[9].q = msg.q;
-  lowState.motorState[9].dq = msg.dq;
-  lowState.motorState[9].ddq = msg.ddq;
-  lowState.motorState[9].tauEst = msg.tauEst;
-}
-
-void qrRobotA1Sim::RLthighCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) {
-  lowState.motorState[10].mode = msg.mode;
-  lowState.motorState[10].q = msg.q;
-  lowState.motorState[10].dq = msg.dq;
-  lowState.motorState[10].ddq = msg.ddq;
-  lowState.motorState[10].tauEst = msg.tauEst;
-}
-
-void qrRobotA1Sim::RLcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg) {
-  lowState.motorState[11].mode = msg.mode;
-  lowState.motorState[11].q = msg.q;
-  lowState.motorState[11].dq = msg.dq;
-  lowState.motorState[11].ddq = msg.ddq;
-  lowState.motorState[11].tauEst = msg.tauEst;
-}
-
-void qrRobotA1Sim::FRfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg) {
-  lowState.eeForce[0].x = msg.wrench.force.x;
-  lowState.eeForce[0].y = msg.wrench.force.y;
-  lowState.eeForce[0].z = msg.wrench.force.z;
-  lowState.footForce[0] = msg.wrench.force.z;
-}
-
-void qrRobotA1Sim::FLfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg) {
-  lowState.eeForce[1].x = msg.wrench.force.x;
-  lowState.eeForce[1].y = msg.wrench.force.y;
-  lowState.eeForce[1].z = msg.wrench.force.z;
-  lowState.footForce[1] = msg.wrench.force.z;
-}
-
-void qrRobotA1Sim::RRfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg) {
-  lowState.eeForce[2].x = msg.wrench.force.x;
-  lowState.eeForce[2].y = msg.wrench.force.y;
-  lowState.eeForce[2].z = msg.wrench.force.z;
-  lowState.footForce[2] = msg.wrench.force.z;
-}
-
-void qrRobotA1Sim::RLfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg) {
-  lowState.eeForce[3].x = msg.wrench.force.x;
-  lowState.eeForce[3].y = msg.wrench.force.y;
-  lowState.eeForce[3].z = msg.wrench.force.z;
-  lowState.footForce[3] = msg.wrench.force.z;
-}
+void qrRobotA1Sim::RLfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg) { FootCallback(msg, 3); }
 
 void qrRobotA1Sim::SendCommand(const std::array<float, 60> motorcmd) {
   for (int motor_id = 0; motor_id < 12; motor_id++) {
@@ -545,18 +480,11 @@ void qrRobotA1Sim::SendCommand(const std::array<float, 60> motorcmd) {
   for (int m = 0; m < 12; m++) {
     jointCmdPub[m].publish(lowCmd.motorCmd[m]);
   }
-  // ros::spinOnce();
-  // usleep(1000);
 }
 
 void qrRobotA1Sim::ReceiveObservation() {
-  // ros::spinOnce();
-  // usleep(1000);
-  unitree_msgs::LowState state = lowState;
+  unitree_msgs::msg::LowState state = lowState;
 
-  // tick = state.tick; noly for real robot!
-  // std::array<float, 3> acc;
-  // std::copy(std::begin(state.imu.accelerometer), std::end(state.imu.accelerometer), std::begin(acc));
   baseAccInBaseFrame << state.imu.accelerometer[0], state.imu.accelerometer[1], state.imu.accelerometer[2];
   stateDataFlow.baseLinearAcceleration = accFilter.CalculateAverage(baseAccInBaseFrame);
 
@@ -648,6 +576,7 @@ void qrRobotA1Sim::ApplyAction(const Eigen::MatrixXf &motorCommands, MotorMode m
       motorCommandsArray[index] = 0.f;
     }
   }
+
   SendCommand(motorCommandsArray);
 }
 
@@ -660,6 +589,7 @@ void qrRobotA1Sim::ApplyAction(const std::vector<qrMotorCommand> &motorCommands,
     motorCommandsArray[motorId * 5 + 3] = motorCommands[motorId].Kd;
     motorCommandsArray[motorId * 5 + 4] = motorCommands[motorId].tua;
   }
+
   // robotInterface.SendCommand(motorCommandsArray);
 }
 

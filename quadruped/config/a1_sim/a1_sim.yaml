@@ -1,10 +1,12 @@
 name: a1_sim
+is_sim: true
+
 urdf_path: src/simulation/robots/a1_description/urdf/a1.urdf
+
 robot_params:
   total_mass: 13
   total_inertia: [0.24, 0, 0, 0, 0.80, 0, 0, 0, 1.0]
   body_mass: 6
-  body_size: [0.267, 0.194, 0.114]
   body_inertia: [0.015853, 0, 0, 0, 0.037799, 0, 0, 0, 0.045654]
   links_inertia: [
       [
@@ -47,24 +49,24 @@ robot_params:
       [-0.003237, -0.022327, -0.027326],
       [0.006435, 0, -0.107],
     ] # for FL leg
+
+  body_size: [0.267, 0.194, 0.114] # Length, Width, Height
   body_height: 0.28
   abad_location: [0.1805, 0.047, 0]
   hip_l: 0.08505
   upper_l: 0.2
   lower_l: 0.2
 
+  # no use
   velocity:
-    # com_offset: [ -0.005, 0.0022, 0.000515 ] # zang mpc
     com_offset: [0.005, 0.00145, 0.000515] # vel mode
   position:
     com_offset: [-0.005, 0.0024, 0.000515] # pos mode
   walk:
     com_offset: [-0.005, 0.0012, 0.000515] # walk mode
-    # com_offset: [ -0.01, 0.003, 0.000515 ] # mpc/walk
   advanced_trot:
-    # com_offset: [ -0.004, 0.00145, 0.000515 ] # vel mode
-    # com_offset: [ 0.0, 0.00195, 0.000515 ] # yh-mpc
     com_offset: [-0.008, 0.005, 0.] # only for test
+
   hip_offset:
     [
       [0.1805, -0.047, 0.],
@@ -72,10 +74,7 @@ robot_params:
       [-0.1805, -0.047, 0.],
       [-0.1805, 0.047, 0.],
     ]
-  # default_hip_positions: [ [ 0.17, -0.135, 0 ],
-  #                          [ 0.17, 0.135, 0 ],
-  #                          [ -0.195, -0.135, 0 ],
-  #                          [ -0.195, 0.135, 0 ] ]
+
   default_hip_positions:
     [
       [0.185, -0.135, 0],
@@ -83,12 +82,10 @@ robot_params:
       [-0.185, -0.135, 0],
       [-0.185, 0.135, 0],
     ]
-
-  default_standup_angle:
+  default_standup_angle: # no use
     ab: 0
     hip: 0.9
     knee: -1.8
-
   default_sitdown_angle:
     ab: -0.167136
     hip: 0.934969
@@ -113,6 +110,3 @@ controller_params:
   # mode: 1 # POS_MODE
   # mode: 2 # WALK_LOCOMOTION
   mode: 3 # ADVANCED_TROT
-
-# is simulate or not
-is_sim: true

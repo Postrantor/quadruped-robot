@@ -8,21 +8,24 @@
 #ifndef QR_ROBOT_H
 #define QR_ROBOT_H
 
-#include <yaml-cpp/yaml.h>
-
-#include <Eigen/Dense>
 #include <cmath>
 #include <iostream>
 #include <string>
 #include <unordered_map>
 
+#include <yaml-cpp/yaml.h>
+#include <Eigen/Dense>
+
 #include "config/qr_config.h"
 #include "config/qr_enum_types.h"
+
 #include "controllers/qr_state_dataflow.h"
 #include "dynamics/floating_base_model.hpp"
 #include "estimators/qr_moving_window_filter.hpp"
+
 #include "robots/qr_motor.h"
 #include "robots/qr_timer.h"
+
 #include "utils/qr_print.hpp"
 #include "utils/qr_se3.h"
 #include "utils/qr_tools.h"
@@ -44,7 +47,7 @@ public:
    * @param config_file_path: 机器人配置文件路径。
    */
   qrRobot(std::string robot_name, std::string config_file_path)
-      : robotName(robot_name), configFilePath(config_file_path), timer(useRosTime){};
+      : robotName(robot_name), configFilePath(config_file_path), timer(useRosTime) {};
 
   virtual ~qrRobot() = default;
 

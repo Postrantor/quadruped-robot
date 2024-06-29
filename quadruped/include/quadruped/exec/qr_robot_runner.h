@@ -8,10 +8,12 @@
 #ifndef QR_ROBOT_RUNNER_H
 #define QR_ROBOT_RUNNER_H
 
-#include <yaml-cpp/yaml.h>
-
 #include <iostream>
 #include <typeinfo>
+
+#include <yaml-cpp/yaml.h>
+
+#include "rclcpp/rclcpp.hpp"
 
 #include "action/qr_action.h"
 #include "controllers/qr_locomotion_controller.h"
@@ -22,9 +24,6 @@
 #include "planner/qr_pose_planner.h"
 #include "robots/qr_robot_a1.h"
 #include "robots/qr_robot_a1_sim.h"
-#include "robots/qr_robot_go1.h"
-#include "robots/qr_robot_lite2_sim.h"
-#include "robots/qr_robot_lite3.h"
 #include "robots/qr_robot_sim.h"
 #include "ros/qr_cmd_vel_receiver.h"
 #include "ros/qr_switch_mode_receiver.h"
@@ -53,7 +52,7 @@ void UpdateControllerParams(qrLocomotionController* controller, Eigen::Vector3f 
 
 class qrRobotRunner {
 public:
-  qrRobotRunner(qrRobot* quadruped, std::string& homeDir, ros::NodeHandle& nh);
+  qrRobotRunner(qrRobot* quadruped, std::string& homeDir, const rclcpp::Node::SharedPtr& nh);
   ~qrRobotRunner();
 
   bool Update();

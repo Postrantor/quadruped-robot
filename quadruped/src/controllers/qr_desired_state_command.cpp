@@ -5,6 +5,8 @@
  * @copyright MIT License
  */
 
+#include "rclcpp/rclcpp.hpp"
+
 #include "controllers/qr_desired_state_command.hpp"
 
 using robotics::math::clip;
@@ -189,7 +191,8 @@ int Quadruped::qrDesiredStateCommand::RecvSocket() {
   return 0;
 }
 
-Quadruped::qrDesiredStateCommand::qrDesiredStateCommand(ros::NodeHandle &nhIn, qrRobot *robotIn) : nh(nhIn) {
+Quadruped::qrDesiredStateCommand::qrDesiredStateCommand(const rclcpp::Node::SharedPtr &nhIn, qrRobot *robotIn)
+    : nh(nhIn) {
   stateDes.setZero();
   stateCur.setZero();
   preStateDes.setZero();
@@ -219,8 +222,9 @@ Quadruped::qrDesiredStateCommand::qrDesiredStateCommand(ros::NodeHandle &nhIn, q
   bodyUp = 1;
   movementMode = 0;
 
-  gamepadCommandSub = nh.subscribe(topicName, 10, &qrDesiredStateCommand::JoyCallback, this);
-
+  // FIXME(@zhiqi.jia) :: maybe no use
+  gamepadCommandSub = nh->create_subscription<sensor_msgs::msg::Joy>(
+      topicName, 10, std::bind(&qrDesiredStateCommand::JoyCallback, this, std::placeholders::_1));
   printf("[Desired State Command] init finish...\n");
 
   memset(joyData.data_buffer, 0, sizeof(joyData.data_buffer));
@@ -231,7 +235,7 @@ Quadruped::qrDesiredStateCommand::qrDesiredStateCommand(ros::NodeHandle &nhIn, q
   // t.join();
 }
 
-void Quadruped::qrDesiredStateCommand::JoyCallback(const sensor_msgs::Joy::ConstPtr &joy_msg) {
+void Quadruped::qrDesiredStateCommand::JoyCallback(const sensor_msgs::msg::Joy::SharedPtr &joy_msg) {
   joyCmdVz = 0;
 
   /* If A key is pressed, joy control will be enabled or disabled

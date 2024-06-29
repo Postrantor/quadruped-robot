@@ -3,12 +3,17 @@
 
 #define A1_BODY_MASS 10
 #define Go1_BODY_MASS 10
-#define DEFAULT_WINDOW_SIZE 20
 #define A1_BODY_HIGHT 0.27  // for robot position init
+
+#define DEFAULT_WINDOW_SIZE 20
+
 #define NumLeg 4
 #define NumMotor 12
+
 #define BaseFreedomDim 6
+
 #define MAX_TIME_SECONDS 1000.0f
+
 #define JOY_CMD_VELX_MAX 0.3
 #define JOY_CMD_VELY_MAX 0.3
 #define JOY_CMD_YAW_MAX 0.3

@@ -66,6 +66,7 @@ public:
   virtual bool BuildDynamicModel() override;
 
   void ImuCallback(const sensor_msgs::msg::Imu::SharedPtr &msg);
+
   void FRhipCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
   void FRthighCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
   void FRcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
@@ -78,6 +79,7 @@ public:
   void RLhipCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
   void RLthighCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
   void RLcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
+
   void FRfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg);
   void FLfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg);
   void RRfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg);
@@ -91,33 +93,33 @@ public:
   /**
    * @brief Unitree 低级命令，存储电机命令。
    */
-  unitree_msgs::LowCmd lowCmd;
+  unitree_msgs::msg::LowCmd lowCmd;
 
   /**
    * @brief Unitree 低级状态，存储 IMU 和关节状态。
    */
-  unitree_msgs::LowState lowState;
+  unitree_msgs::msg::LowState lowState;
 
   /**
    * @brief 12个关节命令发布者。
    */
-  rclcpp::Publisher<unitree_msgs::MotorCmd>::SharedPtr jointCmdPub[12];
+  rclcpp::Publisher<unitree_msgs::msg::MotorCmd>::SharedPtr jointCmdPub[12];
 
   /**
    * @brief 12个关节状态订阅者。
    */
 
-  rclcpp::Subscription<unitree_msgs::MotorState>::SharedPtr jointStateSub[12];
+  rclcpp::Subscription<unitree_msgs::msg::MotorState>::SharedPtr jointStateSub[12];
 
   /**
    * @brief 4个力传感器订阅者。
    */
-  rclcpp::Subscription<unitree_msgs::MotorState>::SharedPtr footForceSub[4];
+  rclcpp::Subscription<unitree_msgs::msg::MotorState>::SharedPtr footForceSub[4];
 
   /**
    * @brief Gazebo IMU 订阅者。
    */
-  rclcpp::Subscription<unitree_msgs::MotorState>::SharedPtr imuSub;
+  rclcpp::Subscription<unitree_msgs::msg::MotorState>::SharedPtr imuSub;
 };
 
 }  // namespace Quadruped

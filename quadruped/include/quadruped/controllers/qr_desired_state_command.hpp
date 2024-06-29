@@ -15,7 +15,8 @@
 #include <iostream>
 
 #include "rclcpp/rclcpp.hpp"
-#include "sensor_msgs/msg/Joy.hpp"
+
+#include "sensor_msgs/msg/joy.hpp"
 
 #include "config/qr_config.h"
 #include "config/qr_enum_types.h"
@@ -37,7 +38,7 @@ public:
    * @param nhIn: ROS 节点句柄，用于订阅 joy 节点
    * @param robotIn: 机器人指针，主要用于获取机器人高度并设置期望高度
    */
-  qrDesiredStateCommand(ros::NodeHandle &nhIn, qrRobot *robotIn);
+  qrDesiredStateCommand(const rclcpp::Node::SharedPtr &nhIn, qrRobot *robotIn);
 
   ~qrDesiredStateCommand() = default;
 
@@ -60,7 +61,7 @@ public:
    * @brief joy 命令接收到时调用的回调函数
    * @param joy_msg: 来自 ROS joy_node 的 joy 命令消息
    */
-  void JoyCallback(const sensor_msgs::Joy::ConstPtr &joy_msg);
+  void JoyCallback(const sensor_msgs::msg::Joy::SharedPtr &joy_msg);
 
   int RecvSocket();
 
@@ -141,12 +142,12 @@ private:
    * @brief 订阅 "/joy" 的 ROS 节点句柄
    * @todo 将使用驱动程序获取 joy 的状态，而不是 ROS 话题
    */
-  ros::NodeHandle &nh;
+  rclcpp::Node::SharedPtr &nh;
 
   /**
    * @brief ROS joy_node 的订阅者
    */
-  ros::Subscriber gamepadCommandSub;
+  rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr gamepadCommandSub;
 
   /**
    * @brief ROS joy_node 的话题名称
