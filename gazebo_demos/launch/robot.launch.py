@@ -1,3 +1,13 @@
+# @brief
+# @author postrantor@gmail.com
+# @date 2024-06-29 19:01:27
+#
+# example:
+#    ```bash
+#    ros2 launch gazebo_ros2_control_demos robot.launch.py
+#    ros2 run gazebo_ros2_control_demos example_robot
+#    ```
+
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, RegisterEventHandler, GroupAction
@@ -14,6 +24,7 @@ def generate_launch_description():
 
     # 文件路径定义
     gazebo_launch_file = PathJoinSubstitution([pkg_gazebo_ros, 'launch', 'gazebo.launch.py'])
+    empty_world_file = PathJoinSubstitution([pkg_description, 'worlds', 'empty.world'])
     rviz2_config_file = PathJoinSubstitution([pkg_description, 'config', 'robot.rviz'])
     xacro_file = PathJoinSubstitution([pkg_description, 'xacro', 'robot.urdf'])
 
@@ -28,8 +39,11 @@ def generate_launch_description():
         output='screen',
     )
 
-    # 启动 Gazebo
-    gazebo = IncludeLaunchDescription(PythonLaunchDescriptionSource(gazebo_launch_file))
+    # 启动 Gazebo 并指定 empty.world 文件
+    gazebo = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(gazebo_launch_file),
+        launch_arguments={'world': empty_world_file}.items()
+    )
 
     # 生成机器人实体节点
     spawn_entity = Node(
