@@ -41,11 +41,15 @@ def generate_launch_description():
 
     # 文件路径定义
     gazebo_launch_file = PathJoinSubstitution([pkg_gazebo_ros, 'launch', 'gazebo.launch.py'])
+    empty_world_file = PathJoinSubstitution([pkg_description, 'worlds', 'empty.world'])
     rviz2_config_file = PathJoinSubstitution([pkg_description, 'config', 'robot.rviz'])
     xacro_file = PathJoinSubstitution([pkg_description, 'xacro', 'robot.xacro'])
 
-    # 启动 Gazebo
-    gazebo = IncludeLaunchDescription(PythonLaunchDescriptionSource(gazebo_launch_file))
+    # 启动 Gazebo 并指定 empty.world 文件，添加 gazebo_ros_state 插件
+    gazebo = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(gazebo_launch_file),
+        launch_arguments={'world': empty_world_file}.items()
+    )
 
     # 机器人状态发布器节点
     node_robot_state_publisher = Node(
