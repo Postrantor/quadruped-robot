@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.10)
 project(unitree_legged_sdk)
 
 execute_process(
@@ -10,8 +10,7 @@ if(${ARCHITECTURE} STREQUAL "x86_64") # 64Bit, 32Bit
   set(UNITREE_SDK_LIB "unitree_legged_sdk_amd64.so")
 elseif(${ARCHITECTURE} STREQUAL "amd64") # 64Bit, 32Bit
   set(UNITREE_SDK_LIB "unitree_legged_sdk_amd64.so")
-elseif((${ARCHITECTURE} STREQUAL "arm64") OR (${ARCHITECTURE} STREQUAL "aarch64"
-                                             ))
+elseif((${ARCHITECTURE} STREQUAL "arm64") OR (${ARCHITECTURE} STREQUAL "aarch64"))
   set(UNITREE_SDK_LIB "unitree_legged_sdk_arm64.so")
 else()
   message(FATAL_ERROR "unrecongnized arch.")
@@ -19,7 +18,7 @@ endif()
 
 include_directories(include)
 
-link_directories(lib)
+link_directories(${CMAKE_SOURCE_DIR}/lib)
 
 add_compile_options(-std=c++11)
 
