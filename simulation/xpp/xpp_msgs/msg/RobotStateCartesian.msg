@@ -1,6 +1,6 @@
 # The state of a robot expressed in the Cartesian frame
 
-duration                time_from_start   # global time along trajectory
+builtin_interfaces/Duration                time_from_start   # global time along trajectory
 
 # Position, velocity and acceleration of the base expressed in world frame
 # The orientation quaternion maps base to world frame.
@@ -11,5 +11,3 @@ geometry_msgs/Vector3[] ee_foothold         # endeffector foothold expressed in 
 geometry_msgs/Vector3[] ee_forces         # endeffector forces expressed in world
 bool[]                  ee_contact        # True if the foot is touching the environment
 float64[]               joint_angles      # joint_angles (12)
-
-

@@ -1,42 +1,35 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(xpp_msgs)
 
-find_package(catkin REQUIRED COMPONENTS message_generation std_msgs
-                                        geometry_msgs sensor_msgs)
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+endif()
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  # we dont use add_compile_options with pedantic in message packages
+  # because the Python C extensions dont comply with it
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
+endif()
 
-# Generate messages in the 'msg' folder
-add_message_files(
-  FILES
-  RobotStateCartesianTrajectory.msg
-  RobotStateCartesian.msg
-  RobotStateJoint.msg
-  RobotParameters.msg
-  TerrainInfo.msg
-  StateLin3d.msg
-  State6d.msg)
+find_package(ament_cmake REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
 
-# Generate added messages and services with any dependencies listed here
-generate_messages(DEPENDENCIES std_msgs geometry_msgs sensor_msgs)
+rosidl_generate_interfaces(
+  ${PROJECT_NAME}
+    # msg/RobotStateCartesianTrajectory.msg
+    # msg/RobotStateCartesian.msg
+    msg/RobotStateJoint.msg
+    msg/RobotParameters.msg
+    msg/TerrainInfo.msg
+    msg/StateLin3d.msg
+    msg/State6d.msg
+  DEPENDENCIES
+    std_msgs
+    geometry_msgs
+    sensor_msgs
+  ADD_LINTER_TESTS
+)
 
-# ##############################################################################
-# catkin specific configuration ##
-# ##############################################################################
-catkin_package(
-  INCLUDE_DIRS
-  include
-  CATKIN_DEPENDS
-  message_runtime
-  std_msgs
-  geometry_msgs
-  sensor_msgs)
-
-# ##############################################################################
-# Install ##
-# ##############################################################################
-
-# Mark topic names header files for installation
-install(
-  DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-  FILES_MATCHING
-  PATTERN "*.h")
+ament_package()
