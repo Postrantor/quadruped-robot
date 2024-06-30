@@ -1,41 +1,46 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(xpp_states)
 
-add_compile_options(-std=c++11)
+# Default to C++14
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+endif()
 
-find_package(catkin REQUIRED)
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+# find dependencies
+find_package(ament_cmake REQUIRED)
 find_package(Eigen3 REQUIRED)
 
-# ##############################################################################
-# catkin specific configuration ##
-# ##############################################################################
-catkin_package(INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIR} LIBRARIES
-               ${PROJECT_NAME})
+include_directories(
+  include
+  ${EIGEN3_INCLUDE_DIR}
+)
 
-# ##############################################################################
-# Build ##
-# ##############################################################################
-# Specify additional locations of header files
-include_directories(include ${EIGEN3_INCLUDE_DIR})
+add_library(${PROJECT_NAME}
+  src/state.cc
+  src/joints.cc
+  src/robot_state_cartesian.cc
+  src/robot_state_joint.cc
+)
 
-add_library(
-  ${PROJECT_NAME} src/state.cc src/joints.cc src/robot_state_cartesian.cc
-                  src/robot_state_joint.cc)
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+ament_target_dependencies(${PROJECT_NAME}
+  ${dependencies}
+)
 
-# ##############################################################################
-# Install ##
-# ##############################################################################
-# Mark library for installation
 install(
   TARGETS ${PROJECT_NAME}
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
 
-# Mark header files for installation
 install(
   DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-  FILES_MATCHING
-  PATTERN "*.h")
+  DESTINATION include/${PROJECT_NAME}
+  FILES_MATCHING PATTERN "*.h"
+)
+
+ament_package()

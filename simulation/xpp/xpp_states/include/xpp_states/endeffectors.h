@@ -30,11 +30,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _XPP_STATES_ENDEFFECTORS_H_
 #define _XPP_STATES_ENDEFFECTORS_H_
 
-#include <xpp_states/state.h>
-
 #include <deque>
 #include <iostream>
 #include <vector>
+
+#include <xpp_states/state.h>
 
 namespace xpp {
 
@@ -55,14 +55,14 @@ using EndeffectorID = uint;
  * same interface, (e.g at()). However, in case this unified interface is
  * burdensome, you can always access the underlying STL-deque container directly.
  */
-template <typename T>
+template<typename T>
 class Endeffectors {
 public:
-  using Container = std::deque<T>;  // only to avoid faulty std::vector<bool>
+  using Container     = std::deque<T>;   // only to avoid faulty std::vector<bool>
   using EndeffectorsT = Endeffectors<T>;
 
-  Endeffectors(int n_ee = 0);
-  virtual ~Endeffectors() = default;
+  Endeffectors (int n_ee = 0);
+  virtual ~Endeffectors () = default;
 
   /**
    * @brief Sets the number of endeffectors.
@@ -114,9 +114,9 @@ private:
 };
 
 // convenience typedefs, can also be extended to derived classes if desired.
-using EndeffectorsPos = Endeffectors<Eigen::Vector3d>;
-using EndeffectorsVel = Endeffectors<Eigen::Vector3d>;
-using EndeffectorsAcc = Endeffectors<Eigen::Vector3d>;
+using EndeffectorsPos  = Endeffectors<Eigen::Vector3d>;
+using EndeffectorsVel  = Endeffectors<Eigen::Vector3d>;
+using EndeffectorsAcc  = Endeffectors<Eigen::Vector3d>;
 
 /**
  * @brief Bundles the position, velocity and acceleration of all endeffectors.
@@ -128,13 +128,16 @@ public:
    * @brief  Extract only either the pos, vel or acc from all endeffectors.
    * @param  deriv  Derivative being either position, velocity or acceleration.
    */
-  Endeffectors<Vector3d> Get(MotionDerivative deriv) const {
+  Endeffectors<Vector3d> Get (MotionDerivative deriv) const
+  {
     Endeffectors<Vector3d> val(GetEECount());
-    for (auto ee : GetEEsOrdered()) val.at(ee) = at(ee).GetByIndex(deriv);
+    for (auto ee : GetEEsOrdered())
+      val.at(ee) = at(ee).GetByIndex(deriv);
 
     return val;
   }
 };
+
 
 /**
  * @brief Bundles the contact state of all endeffectors.
@@ -150,91 +153,122 @@ public:
    * @param  n_ee  Number of endeffectors.
    * @param  in_contact  True if all legs should be in contact, false otherwise.
    */
-  EndeffectorsContact(int n_ee = 0, bool in_contact = false) : Endeffectors(n_ee) { SetAll(in_contact); };
+  EndeffectorsContact (int n_ee=0, bool in_contact=false)
+      :Endeffectors(n_ee) { SetAll(in_contact);};
 
   /**
    * @brief The number of endeffectors in contact with the environment.
    */
-  int GetContactCount() const {
+  int GetContactCount() const
+  {
     int count = 0;
     for (auto ee : GetEEsOrdered())
-      if (at(ee)) count++;
+      if (at(ee))
+        count++;
 
     return count;
   }
 };
 
+
 // implementations
-template <typename T>
-Endeffectors<T>::Endeffectors(int n_ee) {
+template<typename T>
+Endeffectors<T>::Endeffectors (int n_ee)
+{
   SetCount(n_ee);
 }
 
-template <typename T>
-void Endeffectors<T>::SetCount(int n_ee) {
+template<typename T>
+void
+Endeffectors<T>::SetCount (int n_ee)
+{
   ee_.resize(n_ee);
 }
 
-template <typename T>
-void Endeffectors<T>::SetAll(const T& value) {
+template<typename T>
+void
+Endeffectors<T>::SetAll (const T& value)
+{
   std::fill(ee_.begin(), ee_.end(), value);
 }
 
-template <typename T>
-T& Endeffectors<T>::at(EndeffectorID idx) {
+template<typename T>
+T&
+Endeffectors<T>::at (EndeffectorID idx)
+{
   return ee_.at(idx);
 }
 
-template <typename T>
-const T& Endeffectors<T>::at(EndeffectorID idx) const {
+template<typename T>
+const T&
+Endeffectors<T>::at (EndeffectorID idx) const
+{
   return ee_.at(idx);
 }
 
-template <typename T>
-int Endeffectors<T>::GetEECount() const {
+template<typename T>
+int
+Endeffectors<T>::GetEECount () const
+{
   return ee_.size();
 }
 
-template <typename T>
-typename Endeffectors<T>::Container Endeffectors<T>::ToImpl() const {
+template<typename T>
+typename Endeffectors<T>::Container
+Endeffectors<T>::ToImpl () const
+{
   return ee_;
 }
 
-template <typename T>
-std::vector<EndeffectorID> Endeffectors<T>::GetEEsOrdered() const {
+template<typename T>
+std::vector<EndeffectorID>
+Endeffectors<T>::GetEEsOrdered () const
+{
   std::vector<EndeffectorID> vec;
-  for (int i = 0; i < ee_.size(); ++i) vec.push_back(i);
+  for (int i=0; i<ee_.size(); ++i)
+    vec.push_back(i);
 
   return vec;
 }
 
-template <typename T>
-const typename Endeffectors<T>::EndeffectorsT Endeffectors<T>::operator-(const EndeffectorsT& rhs) const {
+template<typename T>
+const typename Endeffectors<T>::EndeffectorsT
+Endeffectors<T>::operator - (const EndeffectorsT& rhs) const
+{
   EndeffectorsT result(ee_.size());
-  for (auto i : GetEEsOrdered()) result.at(i) = ee_.at(i) - rhs.at(i);
+  for (auto i : GetEEsOrdered())
+    result.at(i) = ee_.at(i) - rhs.at(i);
+
+  return result;
+}
+
+template<typename T>
+const typename Endeffectors<T>::EndeffectorsT
+Endeffectors<T>::operator / (double scalar) const
+{
+  EndeffectorsT result(ee_.size());
+  for (auto i : GetEEsOrdered())
+    result.at(i) = ee_.at(i)/scalar;
 
   return result;
 }
 
 template <typename T>
-const typename Endeffectors<T>::EndeffectorsT Endeffectors<T>::operator/(double scalar) const {
-  EndeffectorsT result(ee_.size());
-  for (auto i : GetEEsOrdered()) result.at(i) = ee_.at(i) / scalar;
-
-  return result;
-}
-
-template <typename T>
-std::ostream& operator<<(std::ostream& stream, Endeffectors<T> endeffectors) {
-  for (EndeffectorID ee : endeffectors.GetEEsOrdered()) stream << endeffectors.at(ee) << ", ";
+std::ostream& operator<<(std::ostream& stream, Endeffectors<T> endeffectors)
+{
+  for (EndeffectorID ee : endeffectors.GetEEsOrdered())
+    stream << endeffectors.at(ee) << ", ";
 
   return stream;
 }
 
-template <typename T>
-bool Endeffectors<T>::operator!=(const Endeffectors& other) const {
+template<typename T>
+bool
+Endeffectors<T>::operator!=(const Endeffectors& other) const
+{
   for (auto ee : GetEEsOrdered()) {
-    if (ee_.at(ee) != other.at(ee)) return true;
+    if (ee_.at(ee) != other.at(ee))
+      return true;
   }
   return false;
 }

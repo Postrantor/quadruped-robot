@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <package format="2">
   <name>xpp_states</name>
   <version>1.0.10</version>
@@ -17,6 +16,9 @@
   <url type="website">http://github.com/leggedrobotics/xpp</url>
   <url type="bugtracker">http://github.com/leggedrobotics/xpp/issues</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
-  <depend>eigen</depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>

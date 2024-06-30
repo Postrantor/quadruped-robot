@@ -30,9 +30,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef XPP_STATES_ROBOT_STATE_JOINT_H_
 #define XPP_STATES_ROBOT_STATE_JOINT_H_
 
+#include <xpp_states/state.h>
 #include <xpp_states/endeffectors.h>
 #include <xpp_states/joints.h>
-#include <xpp_states/state.h>
 
 namespace xpp {
 
@@ -51,8 +51,8 @@ public:
    * @param  n_ee  Number of endeffectors (hands, feet).
    * @param  n_joints_per_ee  Number of joints for each endeffector.
    */
-  RobotStateJoint(int n_ee, int n_joints_per_ee);
-  virtual ~RobotStateJoint() = default;
+  RobotStateJoint (int n_ee, int n_joints_per_ee);
+  virtual ~RobotStateJoint () = default;
 
   State3d base_;
   Joints q_, qd_, qdd_;

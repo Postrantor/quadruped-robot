@@ -30,10 +30,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _XPP_STATES_JOINTS_H_
 #define _XPP_STATES_JOINTS_H_
 
-#include <xpp_states/endeffectors.h>
-
-#include <Eigen/Dense>
 #include <vector>
+#include <Eigen/Dense>
+
+#include <xpp_states/endeffectors.h>
 
 namespace xpp {
 
@@ -48,8 +48,8 @@ namespace xpp {
 class Joints : public Endeffectors<VectorXd> {
 public:
   using Base = Endeffectors<VectorXd>;
-  using Base::at;
   using Base::GetEECount;
+  using Base::at;
   using EEOrder = std::vector<EndeffectorID>;
   using JointID = uint;
 
@@ -64,7 +64,7 @@ public:
    * restrictive, however it helps to avoid bugs and makes later computations
    * easier.
    */
-  explicit Joints(int n_ee, int n_joints_per_ee, double value = 0.0);
+  explicit Joints (int n_ee, int n_joints_per_ee, double value = 0.0);
 
   /**
    * @brief Converts a vector of leg joints into a Joint representation.
@@ -72,8 +72,8 @@ public:
    *
    * Attention: Each endeffector must have the same number of joints.
    */
-  explicit Joints(const std::vector<VectorXd>& joints);
-  virtual ~Joints() = default;
+  explicit Joints (const std::vector<VectorXd>& joints);
+  virtual ~Joints () = default;
 
   /**
    * @brief Converts joint values to Eigen vector.
