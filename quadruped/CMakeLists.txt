@@ -10,7 +10,7 @@ set(CMAKE_CXX_FLAGS "-O3 -DEIGEN_NO_DEBUG -fopenmp ${CMAKE_CXX_FLAGS}")
 message("CMAKE_CXX_FLAGS = ${CMAKE_CXX_FLAGS}")
 
 # Add compile options
-add_compile_options(-D_cplusplus -D_useros)
+add_compile_options(-D_cplusplus -D_useros -fPIC)
 
 option(USE_GO1 "WHICH ROBOT" OFF)
 option(USE_BLAS "USE MKL BLAS" OFF)
@@ -114,62 +114,75 @@ list(APPEND includePath "${qpOASES_DIR}/include")
 #   list(APPEND XPP_LIBS xpp_states xpp_vis)
 # endif()
 
-# # ROS
-# find_package(rclcpp REQUIRED)
-# find_package(geometry_msgs REQUIRED)
-# find_package(std_msgs REQUIRED)
-# find_package(sensor_msgs REQUIRED)
-# find_package(unitree_msgs REQUIRED)
+# ROS
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(unitree_msgs REQUIRED)
+find_package(tf2_ros REQUIRED)
 
-# list(APPEND includePath include/quadruped src)
+list(APPEND includePath include/quadruped src)
 
-# # add source files
-# file(GLOB_RECURSE sources "src/*.cpp")
-# if(NOT ${USE_SIM})
-#   list(
-#     REMOVE_ITEM
-#     includePath
-#     "include/quadruped/robots/qr_robot_sim.h"
-#     "include/quadruped/robots/qr_a1_sim.h")
-#   set(filtered_sources
-#       ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_sim.cpp
-#       ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_a1_sim.cpp)
-#   list(REMOVE_ITEM sources ${filtered_sources})
-#   message("${filtered_sources}")
-#   message("${PROJECT_SOURCE_DIR}/src/robots/qr_robot_sim.cpp")
-#   message("//////////////////////////////////////: , ${sources}")
+# add source files
+file(GLOB_RECURSE sources
+  src/*.cpp
+  src/*/*.cpp
+  src/*/*/*.cpp
+)
 
-# endif()
+if(NOT ${USE_SIM})
+  list(
+    REMOVE_ITEM
+    includePath
+    "include/quadruped/robots/qr_robot_sim.h"
+    "include/quadruped/robots/qr_a1_sim.h")
+  set(filtered_sources
+      ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_sim.cpp
+      ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_a1_sim.cpp)
+  list(REMOVE_ITEM sources ${filtered_sources})
+endif()
 
-# # add include files
-# list(APPEND includePath "config/")
-# list(APPEND includePath ".")
+# add include files
+list(APPEND includePath "config/")
+list(APPEND includePath ".")
 
-# # create library
-# add_library(quadruped SHARED ${sources} ${TinyEKF_SRC})
-# target_include_directories(quadruped PUBLIC ${includePath}
-#                                             ${catkin_INCLUDE_DIRS})
-# target_link_directories(quadruped PUBLIC ${linkPath})
+# create library
+add_library(quadruped SHARED ${sources} ${TinyEKF_SRC})
+target_include_directories(quadruped PUBLIC ${includePath})
+target_link_directories(quadruped PUBLIC ${linkPath})
+target_link_libraries(quadruped PUBLIC
+  ${PYTHON_LIBRARIES}
+  ${YAML_CPP_LIBRARIES}
+  ${BLAS_LIBRARIES}
+  # ${XPP_LIBS}
+  ${UNITREE_SDK_LIB}
+  deeprobotics_legged_sdk
+  lcm
+  tinynurbs::tinynurbs
+  MITAMD
+  quadprog
+  qpOASES
+)
 
-# target_link_libraries(
-#   quadruped
-#   PUBLIC ${PYTHON_LIBRARIES}
-#          ${YAML_CPP_LIBRARIES}
-#          ${catkin_LIBRARIES}
-#          ${BLAS_LIBRARIES}
-#          ${UNITREE_SDK_LIB}
-#          ${XPP_LIBS}
-#          deeprobotics_legged_sdk
-#          lcm
-#          tinynurbs::tinynurbs
-#          MITAMD
-#          quadprog
-#          qpOASES)
+if(${USE_GO1})
+  target_link_libraries(quadruped PUBLIC robot_interface_3.5)
+else() # A1 & AligenGo
+  target_link_libraries(quadruped PUBLIC robot_interface)
+endif()
 
-# add_dependencies(quadruped ${catkin_EXPORTED_TARGETS})
+ament_target_dependencies(quadruped PUBLIC
+  rclcpp
+  std_msgs
+  std_srvs
+  nav_msgs
+  geometry_msgs
+  sensor_msgs
+  unitree_msgs
+  tf2_ros
+)
 
-# if(${USE_GO1})
-#   target_link_libraries(quadruped PUBLIC robot_interface_3.5)
-# else() # A1 & AligenGo
-#   target_link_libraries(quadruped PUBLIC robot_interface)
-# endif()
+ament_package()

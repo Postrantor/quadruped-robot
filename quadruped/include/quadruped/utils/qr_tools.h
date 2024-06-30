@@ -9,10 +9,8 @@
 #define QR_TOOLS_H
 
 #include <limits.h>
-#include <ros/ros.h>
 #include <termios.h>
 #include <unistd.h>
-
 #include <iomanip>
 #include <iostream>
 #include <string>
@@ -35,7 +33,6 @@ std::string GetExePath();
 int getch1();
 
 }  // Namespace utils
-
 }  // Namespace robotics
 
 #ifdef _useros

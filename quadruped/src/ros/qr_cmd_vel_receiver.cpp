@@ -4,7 +4,7 @@
  * @copyright MIT License
  */
 
-#include "qr_cmd_vel_receiver.hpp"
+#include "ros/qr_cmd_vel_receiver.h"
 
 namespace Quadruped {
 

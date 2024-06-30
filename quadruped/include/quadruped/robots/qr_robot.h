@@ -47,7 +47,7 @@ public:
    * @param config_file_path: 机器人配置文件路径。
    */
   qrRobot(std::string robot_name, std::string config_file_path)
-      : robotName(robot_name), configFilePath(config_file_path), timer(useRosTime) {};
+      : robotName(robot_name), configFilePath(config_file_path), timer(useRosTime){};
 
   virtual ~qrRobot() = default;
 
@@ -481,9 +481,19 @@ public:
   Vec3<float> basePosition = {0.f, 0.f, A1_BODY_HIGHT};
 
   /**
+   * @brief Height of main body in world frame.
+   */
+  float absoluteHight = 0;
+
+  /**
    * @brief 机器人基坐标系在世界坐标系下的方向。
    */
   Eigen::Matrix<float, 4, 1> baseOrientation;
+
+  /**
+   * @brief Yaw calibrated robot rpy in world frame.
+   */
+  Vec3<float> baseRollPitchYaw;
 
   /**
    * @brief 机器人在世界坐标系下的滚转摆动角速度。

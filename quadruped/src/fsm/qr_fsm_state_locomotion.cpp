@@ -244,7 +244,7 @@ bool qrFSMStateLocomotion<T>::SwitchMode() {
     iter = 0;
     this->transitionData.done = true;
     this->transitionDuration = 0;
-    ROS_INFO("transitionData.done");
+    RCLCPP_INFO(rclcpp::get_logger("locomotion"), "transitionData.done");
     return true;
   }
 
@@ -285,7 +285,7 @@ bool qrFSMStateLocomotion<T>::StandLoop() {
     iter = 0;
     this->transitionData.done = true;
     this->transitionDuration = 0;
-    ROS_INFO("transitionData.done");
+    RCLCPP_INFO(rclcpp::get_logger("locomotion"), "transitionData.done");
     return true;
   }
 

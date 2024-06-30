@@ -26,25 +26,11 @@ namespace Quadruped {
  */
 class qrCmdVelReceiver : public rclcpp::Node {
 public:
-  qrCmdVelReceiver()
-      : Node("qr_cmd_vel_receiver"),
-        linearVel(Eigen::Matrix<float, 3, 1>::Zero()),
-        angularVel(Eigen::Matrix<float, 3, 1>::Zero()) {
-    cmdVelSub = this->create_subscription<geometry_msgs::msg::Twist>(
-        cmdVelTopic, 10, std::bind(&qrCmdVelReceiver::CmdVelCallback, this, std::placeholders::_1));
-  }
+  qrCmdVelReceiver();
 
   ~qrCmdVelReceiver() = default;
 
-  void CmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr input) {
-    cmdVel = *input;
-    linearVel[0] = input->linear.x;
-    linearVel[1] = input->linear.y;
-    linearVel[2] = input->linear.z;
-    angularVel[0] = input->angular.x;
-    angularVel[1] = input->angular.y;
-    angularVel[2] = input->angular.z;
-  }
+  void CmdVelCallback(const geometry_msgs::msg::Twist::SharedPtr input);
 
   inline Eigen::Matrix<float, 3, 1> GetLinearVelocity() { return linearVel; }
   inline float GetAngularVelocity() { return angularVel[2]; }

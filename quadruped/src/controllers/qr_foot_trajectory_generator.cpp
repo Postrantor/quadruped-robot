@@ -35,7 +35,8 @@ void qrFootBSplinePatternGenerator::SetParameters(
   float dx = step_delta[0];
   float dy = step_delta[1];
 
-  RTheta = robotics::math::coordinateRotation(robotics::math::CoordinateAxis::Z, atan2(dy, dx));
+  // RTheta = robotics::math::coordinateRotation(robotics::math::CoordinateAxis::Z, atan2(dy, dx));
+  RTheta = robotics::math::coordinateRotation(robotics::math::CoordinateAxis::Z, static_cast<float>(atan2(dy, dx)));
 
   Tp = initial_pos;
 

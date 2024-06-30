@@ -5,6 +5,7 @@
  * @copyright MIT License
  */
 
+#include <rclcpp/logger.hpp>
 #include "rclcpp/rclcpp.hpp"
 
 #include "controllers/qr_desired_state_command.hpp"
@@ -64,10 +65,10 @@ int Quadruped::qrDesiredStateCommand::RecvSocket() {
        */
       // if (joy_msg->buttons[0] == 1) {
       //     if (!joyCtrlOnRequest) {
-      //         ROS_INFO("You have open joy control!!!\n");
+      //         RCLCPP_INFO(rclcpp::get_logger("quadruped"), "You have open joy control!!!\n");
       //         joyCtrlOnRequest = true;
       //     } else {
-      //         ROS_INFO("You have turned off joy control!!!\n");
+      //         RCLCPP_INFO(rclcpp::get_logger("quadruped"), "You have turned off joy control!!!\n");
       //         joyCtrlOnRequest = false;
       //     }
       // }
@@ -79,10 +80,10 @@ int Quadruped::qrDesiredStateCommand::RecvSocket() {
         if (socket_value[0] == 0x21010300) {
           if (movementMode > 0) {
             movementMode = 2;
-            ROS_INFO("You have change the gait !!!\n");
+            RCLCPP_INFO(rclcpp::get_logger("quadruped"), "You have change the gait !!!\n");
             joyCtrlStateChangeRequest = true;
           } else {
-            ROS_INFO("dog should be in torque stance mode first !!!\n");
+            RCLCPP_INFO(rclcpp::get_logger("quadruped"), "dog should be in torque stance mode first !!!\n");
           }
         }
 
@@ -132,19 +133,19 @@ int Quadruped::qrDesiredStateCommand::RecvSocket() {
 
         /* If B key is pressed, the quadruped will stop troting and stand by MPC controller. */
         if (socket_value[0] == 0x21010201) {
-          ROS_INFO("You have pressed the stop button!!!!\n");
+          RCLCPP_INFO(rclcpp::get_logger("quadruped"), "You have pressed the stop button!!!!\n");
           if (movementMode == 0) {
             if (bodyUp > 0) {
               movementMode = 1;
               joyCtrlStateChangeRequest = true;
             } else {
-              ROS_INFO("dog should stand up first!!!!\n");
+              RCLCPP_INFO(rclcpp::get_logger("quadruped"), "dog should stand up first!!!!\n");
             }
           } else if (movementMode == 2) {
             movementMode = 1;
             joyCtrlStateChangeRequest = true;
           } else {
-            ROS_INFO("dog already in torque stance mode!!!!\n");
+            RCLCPP_INFO(rclcpp::get_logger("quadruped"), "dog already in torque stance mode!!!!\n");
           }
         }
 
@@ -153,12 +154,12 @@ int Quadruped::qrDesiredStateCommand::RecvSocket() {
          */
         if (socket_value[0] == 0x21010307) {
           if (movementMode == 0 && bodyUp <= 0) {
-            ROS_INFO("You have pressed the exit button!!!!\n");
+            RCLCPP_INFO(rclcpp::get_logger("quadruped"), "You have pressed the exit button!!!!\n");
             joyCmdExit = true;
             joyCtrlStateChangeRequest = true;
             joyCtrlOnRequest = false;
           } else {
-            ROS_INFO("Exit button should work in sit down mode!!\n");
+            RCLCPP_INFO(rclcpp::get_logger("quadruped"), "Exit button should work in sit down mode!!\n");
           }
         }
 
@@ -166,7 +167,7 @@ int Quadruped::qrDesiredStateCommand::RecvSocket() {
          * quadruped will switch to position mode and can sit down and stand up with position mode.
          */
         if (socket_value[0] == 0x21010402 || socket_value[0] == 0x21010406) {
-          ROS_INFO("You have pressed the up/down button!!!!\n");
+          RCLCPP_INFO(rclcpp::get_logger("quadruped"), "You have pressed the up/down button!!!!\n");
           if (movementMode == 0) {
             if (bodyUp == 0) {
               bodyUp = 1;
@@ -191,7 +192,9 @@ int Quadruped::qrDesiredStateCommand::RecvSocket() {
   return 0;
 }
 
-Quadruped::qrDesiredStateCommand::qrDesiredStateCommand(const rclcpp::Node::SharedPtr &nhIn, qrRobot *robotIn)
+Quadruped::qrDesiredStateCommand::qrDesiredStateCommand(
+    const rclcpp::Node::SharedPtr &nhIn,  //
+    Quadruped::qrRobot *robotIn)
     : nh(nhIn) {
   stateDes.setZero();
   stateCur.setZero();
@@ -224,7 +227,7 @@ Quadruped::qrDesiredStateCommand::qrDesiredStateCommand(const rclcpp::Node::Shar
 
   // FIXME(@zhiqi.jia) :: maybe no use
   gamepadCommandSub = nh->create_subscription<sensor_msgs::msg::Joy>(
-      topicName, 10, std::bind(&qrDesiredStateCommand::JoyCallback, this, std::placeholders::_1));
+      topicName, 10, [this](const sensor_msgs::msg::Joy::SharedPtr joy_msg) { this->JoyCallback(joy_msg); });
   printf("[Desired State Command] init finish...\n");
 
   memset(joyData.data_buffer, 0, sizeof(joyData.data_buffer));
@@ -243,10 +246,10 @@ void Quadruped::qrDesiredStateCommand::JoyCallback(const sensor_msgs::msg::Joy::
    */
   if (joy_msg->buttons[0] == 1) {
     if (!joyCtrlOnRequest) {
-      ROS_INFO("You have open joy control!!!\n");
+      RCLCPP_INFO(rclcpp::get_logger("quadruped"), "You have open joy control!!!\n");
       joyCtrlOnRequest = true;
     } else {
-      ROS_INFO("You have turned off joy control!!!\n");
+      RCLCPP_INFO(rclcpp::get_logger("quadruped"), "You have turned off joy control!!!\n");
       joyCtrlOnRequest = false;
     }
   }
@@ -258,10 +261,10 @@ void Quadruped::qrDesiredStateCommand::JoyCallback(const sensor_msgs::msg::Joy::
     if (joy_msg->buttons[2] == 1) {
       if (movementMode > 0) {
         movementMode = 2;
-        ROS_INFO("You have change the gait !!!\n");
+        RCLCPP_INFO(rclcpp::get_logger("quadruped"), "You have change the gait !!!\n");
         joyCtrlStateChangeRequest = true;
       } else {
-        ROS_INFO("dog should be in torque stance mode first !!!\n");
+        RCLCPP_INFO(rclcpp::get_logger("quadruped"), "dog should be in torque stance mode first !!!\n");
       }
     }
 
@@ -291,19 +294,19 @@ void Quadruped::qrDesiredStateCommand::JoyCallback(const sensor_msgs::msg::Joy::
 
     /* If B key is pressed, the quadruped will stop troting and stand by MPC controller. */
     if (joy_msg->buttons[1] == 1) {
-      ROS_INFO("You have pressed the stop button!!!!\n");
+      RCLCPP_INFO(rclcpp::get_logger("quadruped"), "You have pressed the stop button!!!!\n");
       if (movementMode == 0) {
         if (bodyUp > 0) {
           movementMode = 1;
           joyCtrlStateChangeRequest = true;
         } else {
-          ROS_INFO("dog should stand up first!!!!\n");
+          RCLCPP_INFO(rclcpp::get_logger("quadruped"), "dog should stand up first!!!!\n");
         }
       } else if (movementMode == 2) {
         movementMode = 1;
         joyCtrlStateChangeRequest = true;
       } else {
-        ROS_INFO("dog already in torque stance mode!!!!\n");
+        RCLCPP_INFO(rclcpp::get_logger("quadruped"), "dog already in torque stance mode!!!!\n");
       }
     }
 
@@ -312,12 +315,12 @@ void Quadruped::qrDesiredStateCommand::JoyCallback(const sensor_msgs::msg::Joy::
      */
     if (joy_msg->buttons[3] == 1) {
       if (movementMode == 0 && bodyUp <= 0) {
-        ROS_INFO("You have pressed the exit button!!!!\n");
+        RCLCPP_INFO(rclcpp::get_logger("quadruped"), "You have pressed the exit button!!!!\n");
         joyCmdExit = true;
         joyCtrlStateChangeRequest = true;
         joyCtrlOnRequest = false;
       } else {
-        ROS_INFO("Exit button should work in sit down mode!!\n");
+        RCLCPP_INFO(rclcpp::get_logger("quadruped"), "Exit button should work in sit down mode!!\n");
       }
     }
 
@@ -325,7 +328,7 @@ void Quadruped::qrDesiredStateCommand::JoyCallback(const sensor_msgs::msg::Joy::
      * quadruped will switch to position mode and can sit down and stand up with position mode.
      */
     if (joy_msg->buttons[5] == 1) {
-      ROS_INFO("You have pressed the up/down button!!!!\n");
+      RCLCPP_INFO(rclcpp::get_logger("quadruped"), "You have pressed the up/down button!!!!\n");
       if (movementMode == 0) {
         if (bodyUp == 0) {
           bodyUp = 1;

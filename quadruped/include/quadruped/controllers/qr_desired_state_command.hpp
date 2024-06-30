@@ -142,7 +142,7 @@ private:
    * @brief 订阅 "/joy" 的 ROS 节点句柄
    * @todo 将使用驱动程序获取 joy 的状态，而不是 ROS 话题
    */
-  rclcpp::Node::SharedPtr &nh;
+  const rclcpp::Node::SharedPtr &nh;
 
   /**
    * @brief ROS joy_node 的订阅者

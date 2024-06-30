@@ -65,30 +65,32 @@ public:
    */
   virtual bool BuildDynamicModel() override;
 
-  void ImuCallback(const sensor_msgs::msg::Imu::SharedPtr &msg);
+  void ImuCallback(const sensor_msgs::msg::Imu::SharedPtr msg);
 
-  void FRhipCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
-  void FRthighCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
-  void FRcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
-  void FLhipCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
-  void FLthighCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
-  void FLcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
-  void RRhipCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
-  void RRthighCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
-  void RRcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
-  void RLhipCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
-  void RLthighCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
-  void RLcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr &msg);
+  void MotorStateCallback(const unitree_msgs::msg::MotorState::SharedPtr msg, int index);
+  void FRhipCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
+  void FRthighCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
+  void FRcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
+  void FLhipCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
+  void FLthighCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
+  void FLcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
+  void RRhipCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
+  void RRthighCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
+  void RRcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
+  void RLhipCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
+  void RLthighCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
+  void RLcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
 
-  void FRfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg);
-  void FLfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg);
-  void RRfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg);
-  void RLfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg);
+  void FootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr msg, int index);
+  void FRfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr msg);
+  void FLfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr msg);
+  void RRfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr msg);
+  void RLfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr msg);
 
   /**
    * @brief ROS 节点句柄。
    */
-  rclcpp::Node::SharedPtr &nh;
+  rclcpp::Node::SharedPtr nh;
 
   /**
    * @brief Unitree 低级命令，存储电机命令。
@@ -119,7 +121,7 @@ public:
   /**
    * @brief Gazebo IMU 订阅者。
    */
-  rclcpp::Subscription<unitree_msgs::msg::MotorState>::SharedPtr imuSub;
+  rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imuSub;
 };
 
 }  // namespace Quadruped

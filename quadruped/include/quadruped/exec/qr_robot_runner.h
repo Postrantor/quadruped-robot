@@ -24,7 +24,6 @@
 #include "planner/qr_pose_planner.h"
 #include "robots/qr_robot_a1.h"
 #include "robots/qr_robot_a1_sim.h"
-#include "robots/qr_robot_sim.h"
 #include "ros/qr_cmd_vel_receiver.h"
 #include "ros/qr_switch_mode_receiver.h"
 #include "utils/physics_transform.h"
