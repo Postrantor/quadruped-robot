@@ -14,9 +14,9 @@
   <url type="website">http://github.com/leggedrobotics/xpp</url>
   <url type="bugtracker">http://github.com/leggedrobotics/xpp/issues</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>roscpp</depend>
+  <depend>rclcpp</depend>
   <depend>tf</depend>
   <depend>kdl_parser</depend>
   <depend>robot_state_publisher</depend>
@@ -24,5 +24,7 @@
   <depend>xpp_states</depend>
   <depend>xpp_msgs</depend>
 
-  <test_depend>rosunit</test_depend>
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>

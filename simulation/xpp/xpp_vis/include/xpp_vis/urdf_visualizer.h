@@ -30,23 +30,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef XPP_VIS_URDF_VISUALIZER_H_
 #define XPP_VIS_URDF_VISUALIZER_H_
 
-#include <kdl_parser/kdl_parser.hpp>
-#include <robot_state_publisher/robot_state_publisher.h>
-#include <ros/package.h>
-#include <ros/ros.h>
-#include <sensor_msgs/JointState.h>
-#include <tf/transform_broadcaster.h>
-#include <urdf/model.h>
-#include <xpp_msgs/RobotStateCartesian.h>
-#include <xpp_msgs/RobotStateJoint.h>
-#include <xpp_states/joints.h>
-
 #include <cstdlib>
 #include <iostream>
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
+
+#include <ros/ros.h>
+#include <tf/transform_broadcaster.h>
+#include <ros/package.h>
+#include <urdf/model.h>
+#include <sensor_msgs/JointState.h>
+#include <robot_state_publisher/robot_state_publisher.h>
+#include <kdl_parser/kdl_parser.hpp>
+
+#include <xpp_msgs/RobotStateJoint.h>
+#include <xpp_msgs/RobotStateCartesian.h>
+#include <xpp_states/joints.h>
+
 
 namespace xpp {
 
@@ -58,7 +60,7 @@ namespace xpp {
  */
 class UrdfVisualizer {
 public:
-  using URDFName = std::string;
+  using URDFName             = std::string;
   using UrdfnameToJointAngle = std::map<URDFName, double>;
 
   /**
@@ -74,13 +76,12 @@ public:
    * @param tf_prefix  In case multiple URDFS are loaded, each can be given a
    *        unique tf_prefix in RIVZ to visualize different states simultaneously.
    */
-  UrdfVisualizer(
-      const std::string& urdf_name,
-      const std::vector<URDFName>& joint_names_in_urdf,
-      const URDFName& base_link_in_urdf,
-      const std::string& rviz_fixed_frame,
-      const std::string& state_topic,
-      const std::string& tf_prefix = "");
+  UrdfVisualizer(const std::string& urdf_name,
+                 const std::vector<URDFName>& joint_names_in_urdf,
+                 const URDFName& base_link_in_urdf,
+                 const std::string& rviz_fixed_frame,
+                 const std::string& state_topic,
+                 const std::string& tf_prefix = "");
   virtual ~UrdfVisualizer() = default;
 
 private:
@@ -89,10 +90,11 @@ private:
   std::shared_ptr<robot_state_publisher::RobotStatePublisher> robot_publisher;
 
   void StateCallback(const xpp_msgs::RobotStateJoint& msg);
-  void GazeboStateCallback(const xpp_msgs::RobotStateCartesian& msg);
+  void GazeboStateCallback(const xpp_msgs::RobotStateCartesian & msg);
 
-  UrdfnameToJointAngle AssignAngleToURDFJointName(const sensor_msgs::JointState& msg) const;
-  geometry_msgs::TransformStamped GetBaseFromRos(const ::ros::Time& stamp, const geometry_msgs::Pose& msg) const;
+  UrdfnameToJointAngle AssignAngleToURDFJointName(const sensor_msgs::JointState &msg) const;
+  geometry_msgs::TransformStamped GetBaseFromRos(const ::ros::Time& stamp,
+                                                 const geometry_msgs::Pose &msg) const;
 
   std::vector<URDFName> joint_names_in_urdf_;
   URDFName base_joint_in_urdf_;
@@ -102,6 +104,6 @@ private:
   std::string tf_prefix_;
 };
 
-}  // namespace xpp
+} // namespace xpp
 
 #endif /* XPP_VIS_URDF_VISUALIZER_H_ */

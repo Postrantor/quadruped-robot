@@ -29,15 +29,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
+#include <array>
+#include <deque>
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/Vector3.h>
 #include <std_msgs/ColorRGBA.h>
 #include <visualization_msgs/MarkerArray.h>
-
-#include <Eigen/Core>
-#include <Eigen/Geometry>
-#include <array>
-#include <deque>
 
 namespace xpp {
 enum class Color { blue, orange, yellow, purple, green, red, black };
@@ -50,8 +50,7 @@ geometry_msgs::Quaternion getOrientationMsg(const Eigen::Quaterniond& orientatio
 
 std_msgs::Header getHeaderMsg(const std::string& frame_id, const ros::Time& timeStamp);
 
-visualization_msgs::Marker getLineMsg(
-    std::vector<geometry_msgs::Point>&& points, std::array<double, 3> color, double lineWidth);
+visualization_msgs::Marker getLineMsg(std::vector<geometry_msgs::Point>&& points, std::array<double, 3> color, double lineWidth);
 
 std_msgs::ColorRGBA getColor(std::array<double, 3> rgb, double alpha = 1.0);
 
@@ -61,6 +60,9 @@ visualization_msgs::Marker getLineMsg(std::vector<geometry_msgs::Point>&& points
 
 visualization_msgs::Marker getLineMsg(std::deque<geometry_msgs::Point>& points, Color color, double lineWidth);
 
+
 std::array<double, 3> getRGB(Color color);
 
-}  // namespace xpp
+
+
+}  // namespace zpp

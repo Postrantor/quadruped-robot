@@ -30,11 +30,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef XPP_VIS_INVERSE_KINEMATICS_H_
 #define XPP_VIS_INVERSE_KINEMATICS_H_
 
-#include <xpp_states/endeffectors.h>
-#include <xpp_states/joints.h>
-
 #include <Eigen/Dense>
 #include <memory>
+
+#include <xpp_states/endeffectors.h>
+#include <xpp_states/joints.h>
 
 namespace xpp {
 
@@ -47,17 +47,17 @@ namespace xpp {
  */
 class InverseKinematics {
 public:
-  using Ptr = std::shared_ptr<InverseKinematics>;
+  using Ptr      = std::shared_ptr<InverseKinematics>;
   using Vector3d = Eigen::Vector3d;
 
-  InverseKinematics() = default;
-  virtual ~InverseKinematics() = default;
+  InverseKinematics () = default;
+  virtual ~InverseKinematics () = default;
 
   /**
-   * @brief  Calculates the joint angles to reach a position @ pos_b.
-   * @param  pos_b  3D-position of the endeffector expressed in base frame.
-   * @return Joints angles of the robot.
-   */
+    * @brief  Calculates the joint angles to reach a position @ pos_b.
+    * @param  pos_b  3D-position of the endeffector expressed in base frame.
+    * @return Joints angles of the robot.
+    */
   virtual Joints GetAllJointAngles(const EndeffectorsPos& pos_b) const = 0;
 
   /**

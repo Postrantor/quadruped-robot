@@ -27,34 +27,35 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ******************************************************************************/
 
-#include <xpp_states/convert.h>
 #include <xpp_vis/urdf_visualizer.h>
+#include <xpp_states/convert.h>
 
 namespace xpp {
 
-UrdfVisualizer::UrdfVisualizer(
-    const std::string& urdf_name,
-    const std::vector<URDFName>& joint_names_in_urdf,
-    const URDFName& base_joint_in_urdf,
-    const std::string& fixed_frame,
-    const std::string& state_topic,
-    const std::string& tf_prefix) {
+UrdfVisualizer::UrdfVisualizer(const std::string& urdf_name,
+                               const std::vector<URDFName>& joint_names_in_urdf,
+                               const URDFName& base_joint_in_urdf,
+                               const std::string& fixed_frame,
+                               const std::string& state_topic,
+                               const std::string& tf_prefix)
+{
   joint_names_in_urdf_ = joint_names_in_urdf;
-  base_joint_in_urdf_ = base_joint_in_urdf;
-  rviz_fixed_frame_ = fixed_frame;
+  base_joint_in_urdf_  = base_joint_in_urdf;
+  rviz_fixed_frame_   = fixed_frame;
   tf_prefix_ = tf_prefix;
 
   ::ros::NodeHandle nh;
   // state_sub_des_ = nh.subscribe(state_topic, 100, &UrdfVisualizer::StateCallback, this);
   state_sub_des_ = nh.subscribe(state_topic, 100, &UrdfVisualizer::GazeboStateCallback, this);
-
+  
   ROS_DEBUG("Subscribed to: %s", state_sub_des_.getTopic().c_str());
 
   // Load model from file
   KDL::Tree my_kdl_tree;
   urdf::Model my_urdf_model;
-  bool model_ok = my_urdf_model.initParam(urdf_name);
-  if (!model_ok) {
+  bool model_ok  = my_urdf_model.initParam(urdf_name);
+  if(!model_ok)
+  {
     ROS_ERROR("Invalid URDF File");
     exit(EXIT_FAILURE);
   }
@@ -65,58 +66,69 @@ UrdfVisualizer::UrdfVisualizer(
   robot_publisher = std::make_shared<robot_state_publisher::RobotStatePublisher>(my_kdl_tree);
 }
 
-void UrdfVisualizer::StateCallback(const xpp_msgs::RobotStateJoint& msg) {
+void
+UrdfVisualizer::StateCallback(const xpp_msgs::RobotStateJoint& msg)
+{
   auto joint_positions = AssignAngleToURDFJointName(msg.joint_state);
-  auto W_X_B_message = GetBaseFromRos(::ros::Time::now(), msg.base.pose);
+  auto W_X_B_message   = GetBaseFromRos(::ros::Time::now(), msg.base.pose);
 
   tf_broadcaster_.sendTransform(W_X_B_message);
   robot_publisher->publishTransforms(joint_positions, ::ros::Time::now(), tf_prefix_);
   robot_publisher->publishFixedTransforms(tf_prefix_);
 }
 
-void UrdfVisualizer::GazeboStateCallback(const xpp_msgs::RobotStateCartesian& msg) {
+
+void
+UrdfVisualizer::GazeboStateCallback(const xpp_msgs::RobotStateCartesian& msg)
+{
   auto cart = Convert::ToXpp(msg);
 
   // transform feet from world -> base frame
   Eigen::Matrix3d B_R_W = cart.base_.ang.q.normalized().toRotationMatrix().inverse();
   EndeffectorsPos ee_B(cart.ee_motion_.GetEECount());
-  for (auto ee : ee_B.GetEEsOrdered()) ee_B.at(ee) = B_R_W * (cart.ee_motion_.at(ee).p_ - cart.base_.lin.p_);
+  for (auto ee : ee_B.GetEEsOrdered())
+    ee_B.at(ee) = B_R_W * (cart.ee_motion_.at(ee).p_ - cart.base_.lin.p_);
 
   // Eigen::VectorXd q =  inverse_kinematics_->GetAllJointAngles(ee_B).ToVec();
   UrdfnameToJointAngle joint_positions;
 
-  for (int i = 0; i < msg.joint_angles.size(); ++i) {
+  for (int i=0; i<msg.joint_angles.size(); ++i) {
     joint_positions[joint_names_in_urdf_.at(i)] = msg.joint_angles.at(i);
   }
 
   // auto joint_positions = AssignAngleToURDFJointName(msg.joint_state);
-  auto W_X_B_message = GetBaseFromRos(::ros::Time::now(), msg.base.pose);
+  auto W_X_B_message   = GetBaseFromRos(::ros::Time::now(), msg.base.pose);
 
   tf_broadcaster_.sendTransform(W_X_B_message);
   robot_publisher->publishTransforms(joint_positions, ::ros::Time::now(), tf_prefix_);
   robot_publisher->publishFixedTransforms(tf_prefix_);
 }
 
-UrdfVisualizer::UrdfnameToJointAngle UrdfVisualizer::AssignAngleToURDFJointName(
-    const sensor_msgs::JointState& msg) const {
+
+UrdfVisualizer::UrdfnameToJointAngle
+UrdfVisualizer::AssignAngleToURDFJointName(const sensor_msgs::JointState &msg) const
+{
   UrdfnameToJointAngle q;
 
-  for (int i = 0; i < msg.position.size(); ++i) q[joint_names_in_urdf_.at(i)] = msg.position.at(i);
+  for (int i=0; i<msg.position.size(); ++i)
+    q[joint_names_in_urdf_.at(i)] = msg.position.at(i);
 
   return q;
 }
 
-geometry_msgs::TransformStamped UrdfVisualizer::GetBaseFromRos(
-    const ::ros::Time& stamp, const geometry_msgs::Pose& msg) const {
+geometry_msgs::TransformStamped
+UrdfVisualizer::GetBaseFromRos(const ::ros::Time& stamp,
+                               const geometry_msgs::Pose &msg) const
+{
   // Converting from joint messages to robot state
   geometry_msgs::TransformStamped W_X_B_message;
-  W_X_B_message.header.stamp = stamp;
+  W_X_B_message.header.stamp    = stamp;
   W_X_B_message.header.frame_id = rviz_fixed_frame_;
-  W_X_B_message.child_frame_id = tf_prefix_ + "/" + base_joint_in_urdf_;
+  W_X_B_message.child_frame_id  = tf_prefix_ + "/" + base_joint_in_urdf_;
 
-  W_X_B_message.transform.translation.x = msg.position.x;
-  W_X_B_message.transform.translation.y = msg.position.y;
-  W_X_B_message.transform.translation.z = msg.position.z;
+  W_X_B_message.transform.translation.x =  msg.position.x;
+  W_X_B_message.transform.translation.y =  msg.position.y;
+  W_X_B_message.transform.translation.z =  msg.position.z;
 
   W_X_B_message.transform.rotation.w = msg.orientation.w;
   W_X_B_message.transform.rotation.x = msg.orientation.x;
@@ -126,4 +138,4 @@ geometry_msgs::TransformStamped UrdfVisualizer::GetBaseFromRos(
   return W_X_B_message;
 }
 
-}  // namespace xpp
+} // namespace xpp

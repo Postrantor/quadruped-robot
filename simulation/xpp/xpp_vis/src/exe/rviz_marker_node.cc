@@ -28,33 +28,44 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ******************************************************************************/
 
 #include <ros/ros.h>
-#include <xpp_msgs/TerrainInfo.h>
+
 #include <xpp_msgs/topic_names.h>
+#include <xpp_msgs/TerrainInfo.h>
+
 #include <xpp_states/convert.h>
 #include <xpp_vis/rviz_robot_builder.h>
+
 
 static ros::Publisher rviz_marker_pub;
 static xpp::RvizRobotBuilder robot_builder;
 
-static void StateCallback(const xpp_msgs::RobotStateCartesian& state_msg) {
+static void StateCallback (const xpp_msgs::RobotStateCartesian& state_msg)
+{
   const auto timeStamp = ros::Time::now();
   auto rviz_marker_msg = robot_builder.BuildRobotState(state_msg);
   rviz_marker_pub.publish(rviz_marker_msg);
   robot_builder.PublishTrajectory(timeStamp);
+  
 }
 
 /******************************************************************************************************/
-static void DesiredPoseCallback(const geometry_msgs::Pose& state_msg) { robot_builder.DesiredPoseCallback(state_msg); }
+static void DesiredPoseCallback(const geometry_msgs::Pose& state_msg)
+{
+  robot_builder.DesiredPoseCallback(state_msg);
+}
 
-static void terrainInfoCallback(const xpp_msgs::TerrainInfo& terrain_msg) {
+static void terrainInfoCallback (const xpp_msgs::TerrainInfo& terrain_msg)
+{
   robot_builder.SetTerrainParameters(terrain_msg);
 }
 
-static void ParamsCallback(const xpp_msgs::RobotParameters& params_msg) {
+static void ParamsCallback (const xpp_msgs::RobotParameters& params_msg)
+{
   robot_builder.SetRobotParameters(params_msg);
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[])
+{
   using namespace ros;
 
   init(argc, argv, "rviz_marker_visualizer");
@@ -67,12 +78,13 @@ int main(int argc, char* argv[]) {
 
   Subscriber state_sub_curr, state_sub_des, terrain_info_sub;
   // state_sub_des     = n.subscribe(xpp_msgs::robot_state_desired, 1, StateCallback);
-  state_sub_des = n.subscribe(xpp_msgs::robot_state_desired, 10, DesiredPoseCallback);
-  state_sub_curr = n.subscribe(xpp_msgs::robot_state_current, 10, StateCallback);
-  terrain_info_sub = n.subscribe(xpp_msgs::terrain_info, 10, terrainInfoCallback);
-
+  state_sub_des     = n.subscribe(xpp_msgs::robot_state_desired, 10, DesiredPoseCallback);
+  state_sub_curr     = n.subscribe(xpp_msgs::robot_state_current, 10, StateCallback);
+  terrain_info_sub  = n.subscribe(xpp_msgs::terrain_info, 10,  terrainInfoCallback);
+  
   rviz_marker_pub = n.advertise<visualization_msgs::MarkerArray>("xpp/rviz_markers", 20);
-
+  
+  
   spin();
 
   return 1;

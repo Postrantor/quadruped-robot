@@ -29,13 +29,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <ros/ros.h>
 #include <rosbag/bag.h>
+
 #include <xpp_msgs/RobotStateJoint.h>
 #include <xpp_states/convert.h>
 #include <xpp_states/state.h>
 
+
 using namespace xpp;
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
   // creates a bag file wherever executable is run (usually ~/.ros/)
   rosbag::Bag bag;
   bag.open("quadrotor_traj.bag", rosbag::bagmode::Write);
@@ -44,15 +47,16 @@ int main(int argc, char *argv[]) {
   State3d base;
 
   // create a sequence of states for a total duration of T spaced 0.01s apart.
-  double T = 2 * M_PI;
+  double T = 2*M_PI;
   double dt = 0.01;
   double t = 1e-6;
-  while (t < T) {
+  while (t < T)
+  {
     // base and foot follow half a sine motion up and down
-    base.lin.p_.z() = 0.7 - 0.5 * sin(t);  //[m]
-    base.lin.p_.x() = 1.0 / T * t;         //[m]
+    base.lin.p_.z() = 0.7 - 0.5*sin(t);  //[m]
+    base.lin.p_.x() = 1.0/T*t;           //[m]
 
-    double roll = 30. / 180 * M_PI * sin(t);
+    double roll = 30./180*M_PI*sin(t);
     base.ang.q = GetQuaternionFromEulerZYX(0.0, 0.0, roll);
 
     // save the state message with current time in the bag
@@ -65,7 +69,7 @@ int main(int argc, char *argv[]) {
     t += dt;
   }
 
-  std::string bag_file = bag.getFileName();  // save location before closing
+  std::string bag_file = bag.getFileName(); // save location before closing
   bag.close();
 
   // plays back the states at desired speeds.
@@ -76,3 +80,4 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
+

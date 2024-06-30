@@ -28,16 +28,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ******************************************************************************/
 
 #include <gtest/gtest.h>
+
 #include <xpp_vis/rviz_robot_builder.h>
 
 using namespace xpp;
 
-TEST(RvizRobotBuilder, BuildRobotState) {
+TEST(RvizRobotBuilder, BuildRobotState)
+{
   RvizRobotBuilder builder;
 
   // defines the robot state
   xpp_msgs::RobotParameters params_msg;
-  params_msg.base_mass = 30.0;  // [kg]
+  params_msg.base_mass = 30.0; // [kg]
   params_msg.ee_max_dev.x = params_msg.ee_max_dev.x = params_msg.ee_max_dev.z = 0.1;
   builder.SetRobotParameters(params_msg);
 
@@ -45,12 +47,12 @@ TEST(RvizRobotBuilder, BuildRobotState) {
   xpp_msgs::RobotStateCartesian state_msg;
   state_msg.ee_motion.resize(2);
   state_msg.ee_forces.resize(2);
-  state_msg.base.pose.position.z = 0.6;  // [m]
-  state_msg.ee_contact = {true, true};
-  state_msg.ee_motion.at(0).pos.y = 0.2;                           // leg leg
-  state_msg.ee_motion.at(1).pos.y = -0.2;                          // right leg
-  state_msg.ee_forces.at(0).z = params_msg.base_mass * 9.81 / 2.;  // leg leg
-  state_msg.ee_forces.at(1).z = params_msg.base_mass * 9.81 / 2.;  // right leg
+  state_msg.base.pose.position.z = 0.6; // [m]
+  state_msg.ee_contact = { true, true };
+  state_msg.ee_motion.at(0).pos.y =  0.2; // leg leg
+  state_msg.ee_motion.at(1).pos.y = -0.2; // right leg
+  state_msg.ee_forces.at(0).z = params_msg.base_mass*9.81/2.; // leg leg
+  state_msg.ee_forces.at(1).z = params_msg.base_mass*9.81/2.; // right leg
 
   auto rviz_markers = builder.BuildRobotState(state_msg);
 
