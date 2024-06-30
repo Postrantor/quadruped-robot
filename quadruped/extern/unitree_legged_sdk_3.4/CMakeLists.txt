@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.10)
 project(unitree_legged_sdk)
 message("unitree legged sdk 3.4!")
 
@@ -19,7 +19,7 @@ endif()
 
 include_directories(include)
 
-link_directories(lib)
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
 add_compile_options(-std=c++11)
 
