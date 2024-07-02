@@ -15,9 +15,9 @@
 #include <memory>
 #include <string>
 
-#include "qr_gazebo/gazebo_model_spawn.hpp"
-#include "rclcpp/logger.hpp"
 #include "rclcpp/rclcpp.hpp"
+
+#include "qr_gazebo/gazebo_model_spawn.hpp"
 
 /**
  * @brief 等待用户输入
@@ -39,7 +39,7 @@ bool setup_and_spawn_model(GazeboSpawner& cm, const std::string& robot_type) {
   cm.set_model_orientation(0, 0, 0, 0);
 
   if (!cm.spawn_model("robot_description")) {
-    RCLCPP_ERROR(cm.getNode()->get_logger(), "fail to spawn model in gazebo: %s", robot_type.c_str());
+    RCLCPP_ERROR(cm.get_node()->get_logger(), "fail to spawn model in gazebo: %s", robot_type.c_str());
     return false;
   }
   return true;
