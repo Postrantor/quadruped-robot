@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 project(unitree_sdk)
 
 # C/CXX
@@ -25,8 +25,8 @@ link_directories(lib)
 
 # install
 install(
-  DIRECTORY lib DESTINATION .
-  DIRECTORY include DESTINATION .
+  DIRECTORY lib include
+  DESTINATION .
 )
 
 # export
