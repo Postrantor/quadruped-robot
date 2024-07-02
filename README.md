@@ -26,6 +26,14 @@ rosrun examples example_keyboard
   # L --> J
 ```
 
+第三方功能包：
+
+ROS2 功能包：
+
+- git@github.com:ros-controls/ros2_control.git
+- https://github.com/ros-controls/ros2_control_demos.git
+- git@github.com:ros-controls/ros2_controllers.git
+
 # 1. Overview
 
 This project branch integrates some advanced algrithms such as MPC and WBC to control quadruped robots. This branch have been tested in **ROS Noetic** under **Ubuntu 20.04**. Some users report it can run in **ROS Melodic** under **Ubuntu 18.04**. To ensure optimal performance, we recommend testing this branch in **ROS Noetic** under **Ubuntu 20.04**. Note that this branch is different from the one in the `main` branch. The architecture and major modules are shown below The codes are tested for Unitree A1 and DeepRobotics Lite3. To fine-tune the MPC and WBC algorithms, you can adjust the corresponding parameters (e.g. KP and KD in **quadruped/src/controllers/wbc/task_set** or weights in WBC locomotion controller).
