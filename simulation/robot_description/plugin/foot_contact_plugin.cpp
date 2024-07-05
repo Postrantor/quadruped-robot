@@ -67,11 +67,11 @@ private:
     count_ = contacts.contact_size();
     Fx_ = Fy_ = Fz_ = 0;
 
-    for (unsigned int i = 0; i < count_; ++i) {
+    for (auto i = 0; i < count_; ++i) {
       if (contacts.contact(i).position_size() != 1) {
         RCLCPP_ERROR(ros_node_->get_logger(), "接触数量不正确！");
       }
-      for (unsigned int j = 0; j < contacts.contact(i).position_size(); ++j) {
+      for (auto j = 0; j < contacts.contact(i).position_size(); ++j) {
         Fx_ += contacts.contact(i).wrench(0).body_1_wrench().force().x();
         Fy_ += contacts.contact(i).wrench(0).body_1_wrench().force().y();
         Fz_ += contacts.contact(i).wrench(0).body_1_wrench().force().z();
