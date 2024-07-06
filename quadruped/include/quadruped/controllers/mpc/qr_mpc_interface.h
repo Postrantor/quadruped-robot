@@ -8,7 +8,7 @@
 #ifndef QR_MPC_INTERFACE
 #define QR_MPC_INTERFACE
 
-#include <include/qpOASES.hpp>
+#include "qpOASES.hpp"
 
 #include "robots/qr_timer.h"
 #include "utils/qr_se3.h"

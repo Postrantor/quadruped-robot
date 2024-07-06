@@ -35,10 +35,10 @@ private:
   qrLocomotionController *locomotionController;
   qrPosePlanner *posePlanner;
 
-  rclcpp::Publisher<xpp_msgs::msg::RobotStateCartesian>::SharedPtr gazeboStatePublish;
-  rclcpp::Publisher<xpp_msgs::msg::RobotParameters>::SharedPtr gazeboParamPublish;
+  // rclcpp::Publisher<xpp_msgs::msg::RobotStateCartesian>::SharedPtr gazeboStatePublish;
+  // rclcpp::Publisher<xpp_msgs::msg::RobotParameters>::SharedPtr gazeboParamPublish;
   rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr posePlannerPublish;
-  rclcpp::Client<gazebo_msgs::srv::GetLinkState>::SharedPtr baseStateClient;
+  rclcpp::Client<gazebo_msgs::srv::GetEntityState>::SharedPtr baseStateClient;
   std::shared_ptr<tf2_ros::TransformBroadcaster> desiredPoseFramebr;
 
   geometry_msgs::msg::Transform transform;

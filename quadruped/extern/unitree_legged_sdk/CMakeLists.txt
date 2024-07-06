@@ -30,3 +30,9 @@ set(CMAKE_CXX_FLAGS "-O3")
 # python_interface.cpp)
 add_library(robot_interface SHARED unitree_interface.cpp)
 target_link_libraries(robot_interface ${EXTRA_LIBS})
+
+install(
+  TARGETS robot_interface
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+)

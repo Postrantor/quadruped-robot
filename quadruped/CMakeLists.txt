@@ -185,4 +185,63 @@ ament_target_dependencies(quadruped PUBLIC
   tf2_ros
 )
 
+install(
+  TARGETS quadruped
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+)
+
+install(
+  DIRECTORY ${UNITREE_SDK_DIR}/lib/
+  DESTINATION lib
+)
+
+install(
+  DIRECTORY include/quadruped
+  DESTINATION include
+)
+
+install(
+  DIRECTORY config/
+  DESTINATION include/config/
+)
+
+install(
+  DIRECTORY ${UNITREE_SDK_DIR}/include/unitree_legged_sdk
+  DESTINATION include/
+)
+
+install(
+  DIRECTORY ${PROJECT_SOURCE_DIR}/extern/tinynurbs/include/tinynurbs
+  DESTINATION include/
+)
+
+install(
+  DIRECTORY ${DEEPROBOTICS_SDK_DIR}/include/deeprobotics_legged_sdk
+  DESTINATION include/
+)
+
+install(
+  DIRECTORY ${DEEPROBOTICS_SDK_DIR}/include/
+  DESTINATION include/
+)
+
+install(
+  FILES
+    ${TinyEKF_DIR}/src/tiny_ekf_struct.h
+    ${TinyEKF_DIR}/src/TinyEKF.h
+    ${TinyEKF_DIR}/src/tiny_ekf.h
+  DESTINATION include/
+)
+
+install(
+  FILES
+    ${QuadProgpp_DIR}/src/Array.hh
+    ${QuadProgpp_DIR}/src/QuadProg++.hh
+  DESTINATION include/
+)
+
+ament_export_include_directories(include)
+ament_export_libraries(quadruped)
+
 ament_package()

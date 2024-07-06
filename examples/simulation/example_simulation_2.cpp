@@ -13,6 +13,7 @@
 #include "std_srvs/srv/empty.hpp"
 #include "gazebo_msgs/srv/get_entity_state.hpp"
 #include "gazebo_msgs/srv/set_entity_state.hpp"
+#include "gazebo_msgs/srv/set_model_state.hpp"
 #include "gazebo_msgs/srv/set_model_configuration.hpp"
 
 #include "quadruped/robots/qr_robot_a1_sim.h"
@@ -31,20 +32,20 @@
  *  需要显示加载 `gazebo_ros_state` 插件
  */
 auto reset_robot(
-    const std::shared_ptr<rclcpp::Client<gazebo_msgs::srv::SetModelState>>& model_state_client,
+    const std::shared_ptr<rclcpp::Node>& node,
+    const std::shared_ptr<rclcpp::Client<gazebo_msgs::srv::SetEntityState>>& entity_state_client,
     const std::shared_ptr<rclcpp::Client<gazebo_msgs::srv::SetModelConfiguration>>& joint_state_client) -> bool {
-  // set requist
-  auto model_state_request = std::make_shared<gazebo_msgs::srv::SetModelState::Request>();
+  // set request
+  auto entity_state_request = std::make_shared<gazebo_msgs::srv::SetEntityState::Request>();
   auto joint_state_request = std::make_shared<gazebo_msgs::srv::SetModelConfiguration::Request>();
 
-  // 设置模型状态请求参数
-  model_state_request->model_state.model_name = "a1_gazebo";
-  model_state_request->model_state.reference_frame = "world";
-  model_state_request->model_state.twist = {};
-  model_state_request->model_state.pose.position.x = 0;
-  model_state_request->model_state.pose.position.y = 0;
-  model_state_request->model_state.pose.position.z = 0.3;
-  model_state_request->model_state.pose.orientation.w = 1;
+  // 设置实体状态请求参数
+  entity_state_request->state.name = "a1_gazebo::base";
+  entity_state_request->state.reference_frame = "world";
+  entity_state_request->state.pose.position.x = 0;
+  entity_state_request->state.pose.position.y = 0;
+  entity_state_request->state.pose.position.z = 0.3;
+  entity_state_request->state.pose.orientation.w = 1;
 
   // 设置关节状态请求参数
   joint_state_request->model_name = "a1_gazebo";
@@ -80,17 +81,13 @@ auto reset_robot(
       thigh_angle,  //
       calf_angle};
 
-  // 异步发送设置模型状态和关节状态请求
-  auto model_state_response_future = model_state_client->async_send_request(model_state_request);
+  // 异步发送设置实体状态和关节状态请求
+  auto entity_state_response_future = entity_state_client->async_send_request(entity_state_request);
   auto joint_state_response_future = joint_state_client->async_send_request(joint_state_request);
 
   // 等待并检查响应结果
-  if (rclcpp::spin_until_future_complete(
-          model_state_client->get_node_base_interface(),  //
-          model_state_response_future) == rclcpp::FutureReturnCode::SUCCESS &&
-      rclcpp::spin_until_future_complete(
-          joint_state_client->get_node_base_interface(),  //
-          joint_state_response_future) == rclcpp::FutureReturnCode::SUCCESS) {
+  if (rclcpp::spin_until_future_complete(node, entity_state_response_future) == rclcpp::FutureReturnCode::SUCCESS &&
+      rclcpp::spin_until_future_complete(node, joint_state_response_future) == rclcpp::FutureReturnCode::SUCCESS) {
     RCLCPP_INFO(rclcpp::get_logger("unitree_robot"), "robot reset successfully");
     return true;
   } else {
@@ -107,16 +104,17 @@ auto reset_robot(
  */
 void get_com_position_in_world_frame(
     Quadruped::qrRobot* quadruped,
+    const std::shared_ptr<rclcpp::Node>& node,
     const std::shared_ptr<rclcpp::Client<gazebo_msgs::srv::GetEntityState>>& base_state_client) {
   // send request
   auto request = std::make_shared<gazebo_msgs::srv::GetEntityState::Request>();
-  request->link_name = "a1_gazebo::base";
+  request->name = "a1_gazebo::base";
   request->reference_frame = "world";
 
   // 异步发送获取链接状态请求
   auto response_future = base_state_client->async_send_request(request);
 
-  if (rclcpp::spin_until_future_complete(base_state_client->get_node_base_interface(), response_future)  //
+  if (rclcpp::spin_until_future_complete(node, response_future)  //
       == rclcpp::FutureReturnCode::SUCCESS) {
     const auto& response = response_future.get();
     if (!response->success) {
@@ -125,8 +123,8 @@ void get_com_position_in_world_frame(
     }
 
     // 提取位姿和速度信息
-    const auto& pose = response->link_state.pose;
-    const auto& twist = response->link_state.twist;
+    const auto& pose = response->state.pose;
+    const auto& twist = response->state.twist;
 
     Vec3<double> pos_in{pose.position.x, pose.position.y, pose.position.z};
     Quat<double> orientation_in{pose.orientation.w, pose.orientation.x, pose.orientation.y, pose.orientation.z};
@@ -158,13 +156,13 @@ std::unique_ptr<Quadruped::qrRobotA1Sim> initialize_and_reset_robot(const std::s
   // 创建服务客户端
   // 这里指定的服务名称`/gazebo/set_entity_state`是应该通过"gazebo_ros_state"插件配置的
   // 在empty.world文件中通过remap参数进行重映射或者添加命名空间得到
-  auto model_state_client = node->create_client<gazebo_msgs::srv::SetEntityState>("/gazebo/set_entity_state");
+  auto entity_state_client = node->create_client<gazebo_msgs::srv::SetEntityState>("/gazebo/set_entity_state");
   // 这个服务在ros2版本上还是没有？
   auto joint_state_client =
       node->create_client<gazebo_msgs::srv::SetModelConfiguration>("/gazebo/set_model_configuration");
 
   // 等待服务可用
-  if (!model_state_client->wait_for_service(std::chrono::seconds(5))) {
+  if (!entity_state_client->wait_for_service(std::chrono::seconds(5))) {
     RCLCPP_ERROR(rclcpp::get_logger("unitree_robot"), "model state service not available");
     rclcpp::shutdown();
     throw std::runtime_error("model state service not available");
@@ -176,7 +174,7 @@ std::unique_ptr<Quadruped::qrRobotA1Sim> initialize_and_reset_robot(const std::s
   }
 
   // 重置机器人状态
-  if (!reset_robot(model_state_client, joint_state_client)) {
+  if (!reset_robot(node, entity_state_client, joint_state_client)) {
     rclcpp::shutdown();
     throw std::runtime_error("failed to reset the robot");
   }
@@ -188,7 +186,7 @@ std::unique_ptr<Quadruped::qrRobotA1Sim> initialize_and_reset_robot(const std::s
     package_path = ament_index_cpp::get_package_share_directory("quadruped");
   } catch (const std::exception& e) {
     std::cerr << "Error: " << e.what() << std::endl;
-    return 1;
+    return nullptr;
   }
   // 构建配置文件路径
   std::string config_file_path = package_path + "/config/a1_sim/a1_sim.yaml";
@@ -218,8 +216,8 @@ void control_loop(
       quadruped->GetBaseOrientation().z(),                                   //
       quadruped->GetBaseOrientation().w());
   // 设置可视化标签
-  Quadruped::Visualization2D& vis = quadruped->stateDataFlow.visualizer;
-  vis.SetLabelNames({"pitch", "H", "vx in world", "vy in world", "vz in world"});
+  // Quadruped::Visualization2D& vis = quadruped->stateDataFlow.visualizer;
+  // vis.SetLabelNames({"pitch", "H", "vx in world", "vy in world", "vz in world"});
 
   // 2. 创建服务客户端，获取初始状态
   auto base_state_client = node->create_client<gazebo_msgs::srv::GetEntityState>("/gazebo/get_entity_state");
@@ -228,18 +226,18 @@ void control_loop(
     rclcpp::shutdown();
     return;
   }
-  get_com_position_in_world_frame(quadruped, base_state_client);
+  get_com_position_in_world_frame(quadruped, node, base_state_client);
 
   // 3. 创建机器人运行实例
   std::string home_dir = ament_index_cpp::get_package_share_directory("quadruped");
   qrRobotRunner robotRunner(quadruped, home_dir, node);
 
   // 4. 创建并初始化控制器消息传递实例
-  auto controller2gazeboMsg = std::make_unique<Quadruped::qrController2GazeboMsg>(
-      quadruped,                              //
-      robotRunner.GetLocomotionController(),  //
-      node);
-  RCLCPP_INFO(rclcpp::get_logger("unitree_robot"), "ros2 modules init finished");
+  // auto controller2gazeboMsg = std::make_unique<Quadruped::qrController2GazeboMsg>(
+  //     quadruped,                              //
+  //     robotRunner.GetLocomotionController(),  //
+  //     node);
+  // RCLCPP_INFO(rclcpp::get_logger("unitree_robot"), "ros2 modules init finished");
 
   // 5. 主循环
   rclcpp::Rate loop_rate1(1000);  // 设置循环频率
@@ -249,7 +247,7 @@ void control_loop(
   float currentTime = startTime;
   float startTimeWall = startTime;
 
-  while (rclcpp::ok() && currentTime - startTime < Quadruped::MAX_TIME_SECONDS) {
+  while (rclcpp::ok() && currentTime - startTime < 1000.0f) {
     startTimeWall = quadruped->GetTimeSinceReset();
 
     robotRunner.Update();

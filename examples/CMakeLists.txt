@@ -15,7 +15,10 @@ find_package(quadruped REQUIRED)
 find_package(backward_ros REQUIRED)
 find_package(unitree_msgs REQUIRED)
 find_package(gazebo_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(tf2_ros REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 
 # dependency
@@ -25,11 +28,16 @@ set(DEPENDENCIES
   unitree_msgs
   gazebo_msgs
   std_srvs
+  nav_msgs
+  sensor_msgs
+  tf2_ros
 )
 
 include_directories(
   include
+  ${quadruped_INCLUDE_DIRS}/quadruped
+  /usr/include/eigen3
 )
 
 add_executable(robot_sim simulation/example_simulation_2.cpp)
-ament_target_dependencies(qr_gazebo ${DEPENDENCIES})
+ament_target_dependencies(robot_sim ${DEPENDENCIES})
