@@ -25,17 +25,9 @@
 INTRODUCTION
 ============
 
-qpOASES is an open-source C++ implementation of the recently proposed 
-online active set strategy, which was inspired by important observations 
-from the field of parametric quadratic programming (QP). It has several 
-theoretical features that make it particularly suited for model predictive 
-control (MPC) applications. Further numerical modifications have made 
-qpOASES a reliable QP solver, even when tackling semi-definite, ill-posed or 
-degenerated QP problems. Moreover, several interfaces to third-party software 
-like ​Matlab or ​Simulink are provided that make qpOASES easy-to-use even for 
-users without knowledge of C/C++.
+qpOASES is an open-source C++ implementation of the recently proposed online active set strategy, which was inspired by important observations from the field of parametric quadratic programming (QP). It has several theoretical features that make it particularly suited for model predictive control (MPC) applications. Further numerical modifications have made qpOASES a reliable QP solver, even when tackling semi-definite, ill-posed or degenerated QP problems. Moreover, several interfaces to third-party software like ​Matlab or ​Simulink are provided that make qpOASES easy-to-use even for users without knowledge of C/C++.
 
-
+> qpOASES 是最近提出的在线主动集策略的开源 C++ 实现。在线主动集策略的开源 C++ 实现。该策略的灵感来自参数二次编程 (QP) 领域的重要观察结果。它有几个理论特性，使其特别适用于模型预测控制（MPC控制 (MPC) 应用。进一步的数值修改使qpOASES 已成为一个可靠的 QP 求解器，即使在处理半有限问题、问题严重或退化的 QP 问题时也是如此。问题。此外，qpOASES 还为第三方软件（如 Matlab 或 Simulink）提供了多个接口。接口，即使不懂 C/C++ 的用户也能轻松使用 qpOASES。不懂 C/C++ 的用户也能轻松使用。
 
 GETTING STARTED
 ===============
