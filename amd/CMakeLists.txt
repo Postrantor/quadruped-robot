@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(mit_amd)
+project(MITAMD)
 
 find_package(ament_cmake REQUIRED)
 

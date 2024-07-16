@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>MITAMD</name>
+  <name>qpOASES</name>
   <version>0.0.1</version>
-  <description>The MITAMD package for ros2</description>
+  <description>The qpOASES package for ros2</description>
 
   <maintainer email="postrantor@gmail.com">sherman</maintainer>
   <license>MIT</license>
