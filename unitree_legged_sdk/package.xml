@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>unitree_legged_sdk</name>
+  <version>0.0.1</version>
+  <description>The unitree_legged_sdk package.</description>
+  <maintainer email="laikago@unitree.cc">unitree</maintainer>
+  <maintainer email="postrantor@gmail.com">postrantor</maintainer>
+  <license>TODO</license>
+
+  <depend>ament_cmake</depend>
+  <depend>ament_cmake_ros</depend>
+
+  <test_depend>ament_lint_common</test_depend>
+  <test_depend>ament_lint_auto</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
