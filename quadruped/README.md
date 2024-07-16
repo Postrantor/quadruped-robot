@@ -15,7 +15,10 @@ The program has been tested on Ubuntu18(gazebo9) and Ubuntu20(gazebo11). Make su
 - ros
 
 ```bash
-apt install libyaml-cpp-dev libeigen3-dev libglm-dev
+apt install \
+  libyaml-cpp-dev \
+  libeigen3-dev \
+  libglm-dev
 
 # git clone https://gitee.com/zhulinsen1/robots.git ./robots
 cd ${ROBOTS_DIR}/src/ascend-quadruped-cpp/third_party/lcm-1.4.0

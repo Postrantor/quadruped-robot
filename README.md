@@ -65,7 +65,12 @@ The source code includes five major directories
 Please ensure that all required dependencies have been installed before building the project
 
 ```bash
-apt install libyaml-cpp-dev libeigen3-dev liblcm-dev libglm-dev
+apt install \
+  libyaml-cpp-dev \
+  libeigen3-dev \
+  liblcm-dev \
+  libglm-dev \
+  libopenblas-dev
 ```
 
 ## Step 2: Compile the codes

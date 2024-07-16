@@ -7,6 +7,9 @@ include_directories(include)
 
 file(GLOB_RECURSE sources src/*.c)
 add_library(${PROJECT_NAME} SHARED ${sources})
+target_link_libraries(${PROJECT_NAME}
+  m
+)
 
 install(
   TARGETS ${PROJECT_NAME}

@@ -10,7 +10,7 @@
 #include <cassert>
 #include <iostream>
 
-#include "utils/amd/include/amd.h"
+#include "amd.h"
 
 /**
  * @brief Loop unroll for all inner loops, AVX2 only.
