@@ -3,10 +3,10 @@
     <name>quadruped</name>
     <version>0.2.0</version>
     <description>The quadruped package for ros2</description>
-    <maintainer email="postrantor@gmail.com">postrantor</maintainer>
-    <maintainer email="tophill.robotics@gmail.com">postrantor</maintainer>
 
-    <license>MIT</license>
+    <maintainer email="tophill.robotics@gmail.com">postrantor</maintainer>
+    <maintainer email="postrantor@gmail.com">postrantor</maintainer>
+    <license>TODO</license>
 
     <buildtool_depend>ament_cmake</buildtool_depend>
 
@@ -19,7 +19,19 @@
     <depend>unitree_msgs</depend>
     <depend>message_filters</depend>
     <depend>tf2</depend>
-    <depend>eigen</depend>
+
+    <depend>eigen3</depend>
+    <depend>unitree_legged_sdk</depend>
+    <depend>yaml_cpp_vendor</depend>
+    <depend>deeprobotics_legged_sdk</depend>
+    <depend>tiny_ekf</depend>
+    <depend>MITAMD</depend>
+    <depend>tinynurbs</depend>
+    <depend>quadprog</depend>
+    <depend>qpOASES</depend>
+    <depend>lcm</depend>
+    <depend>matplotlib_cpp</depend>
+
     <!-- <depend>pcl_ros</depend> -->
     <!-- <depend>pcl_conversions</depend> -->
     <!-- <depend>libpcl-all-dev</depend> -->
