@@ -43,7 +43,7 @@ public:
   /**
    * @brief 更新 foothold 规划器。
    */
-  void Update() {};
+  void Update(){};
 
   /**
    * @brief 只在抬腿前一刻调用。

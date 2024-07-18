@@ -1,16 +1,16 @@
 #include "pylcm_subscription.h"
 
 #ifndef Py_RETURN_NONE
-#define Py_RETURN_NONE      \
-    do {                    \
-        Py_INCREF(Py_None); \
-        return Py_None;     \
-    } while (0)
+#define Py_RETURN_NONE  \
+  do {                  \
+    Py_INCREF(Py_None); \
+    return Py_None;     \
+  } while (0)
 #endif
 
 // to support python 2.5 and earlier
 #ifndef Py_TYPE
-#define Py_TYPE(ob) (((PyObject *) (ob))->ob_type)
+#define Py_TYPE(ob) (((PyObject *)(ob))->ob_type)
 #endif
 
 // to support python 3 where all ints are long
@@ -18,8 +18,9 @@
 #define PyInt_AsLong PyLong_AsLong
 #endif
 
-PyDoc_STRVAR(_class_doc,
-             "\
+PyDoc_STRVAR(
+    _class_doc,
+    "\
 The LCMSubscription class represents a single subscription of a message\n\
 handler to an LCM channel.\n\
 \n\
@@ -30,26 +31,25 @@ This class should never be instantiated by the programmer.\n\
 
 // =============== LCMSubscription class methods ==============
 
-static PyObject *_set_queue_capacity(PyLCMSubscriptionObject *sobj, PyObject *arg)
-{
-    int num_messages = PyInt_AsLong(arg);
-    if (num_messages == -1 && PyErr_Occurred())
-        return NULL;
+static PyObject *_set_queue_capacity(PyLCMSubscriptionObject *sobj, PyObject *arg) {
+  int num_messages = PyInt_AsLong(arg);
+  if (num_messages == -1 && PyErr_Occurred()) return NULL;
 
-    int status;
-    Py_BEGIN_ALLOW_THREADS;
-    status = lcm_subscription_set_queue_capacity(sobj->subscription, num_messages);
-    Py_END_ALLOW_THREADS;
+  int status;
+  Py_BEGIN_ALLOW_THREADS;
+  status = lcm_subscription_set_queue_capacity(sobj->subscription, num_messages);
+  Py_END_ALLOW_THREADS;
 
-    if (0 != status) {
-        PyErr_SetFromErrno(PyExc_IOError);
-        return NULL;
-    }
+  if (0 != status) {
+    PyErr_SetFromErrno(PyExc_IOError);
+    return NULL;
+  }
 
-    Py_RETURN_NONE;
+  Py_RETURN_NONE;
 }
-PyDoc_STRVAR(pylcm_set_queue_capacity_doc,
-             "\
+PyDoc_STRVAR(
+    pylcm_set_queue_capacity_doc,
+    "\
 set_queue_capacity(num_messages) -> None\n\
 Sets the maximum number of received but unhandled messages to queue for this\n\
 subscription.  If messages start arriving faster than they are handled, then\n\
@@ -60,35 +60,32 @@ A number less than or equal to zero indicates no limit (very dangerous!).\n\
 ");
 
 static PyMethodDef _methods[] = {
-    {"set_queue_capacity", (PyCFunction) _set_queue_capacity, METH_O, pylcm_set_queue_capacity_doc},
+    {"set_queue_capacity", (PyCFunction)_set_queue_capacity, METH_O, pylcm_set_queue_capacity_doc},
     {NULL, NULL}, /* sentinel */
 };
 
 // ==================== class administrative methods ====================
 
-static void _dealloc(PyLCMSubscriptionObject *s)
-{
-    if (s->handler) {
-        Py_DECREF(s->handler);
-        s->handler = NULL;
-    }
-    // ignore s->subscription and s->lcm_obj
-    Py_TYPE(s)->tp_free((PyObject *) s);
-}
-
-static PyObject *_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
-{
-    PyObject *obj = type->tp_alloc(type, 0);
-    return obj;
-}
-
-static int _init(PyObject *self, PyObject *args, PyObject *kwargs)
-{
-    PyLCMSubscriptionObject *s = (PyLCMSubscriptionObject *) self;
-    s->subscription = NULL;
+static void _dealloc(PyLCMSubscriptionObject *s) {
+  if (s->handler) {
+    Py_DECREF(s->handler);
     s->handler = NULL;
-    s->lcm_obj = NULL;
-    return 0;
+  }
+  // ignore s->subscription and s->lcm_obj
+  Py_TYPE(s)->tp_free((PyObject *)s);
+}
+
+static PyObject *_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
+  PyObject *obj = type->tp_alloc(type, 0);
+  return obj;
+}
+
+static int _init(PyObject *self, PyObject *args, PyObject *kwargs) {
+  PyLCMSubscriptionObject *s = (PyLCMSubscriptionObject *)self;
+  s->subscription = NULL;
+  s->handler = NULL;
+  s->lcm_obj = NULL;
+  return 0;
 }
 
 /* Type object for socket objects. */
@@ -102,7 +99,7 @@ PyTypeObject pylcm_subscription_type = {
     "LCMSubscription",                        /* tp_name */
     sizeof(PyLCMSubscriptionObject),          /* tp_basicsize */
     0,                                        /* tp_itemsize */
-    (destructor) _dealloc,                    /* tp_dealloc */
+    (destructor)_dealloc,                     /* tp_dealloc */
     0,                                        /* tp_print */
     0,                                        /* tp_getattr */
     0,                                        /* tp_setattr */

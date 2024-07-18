@@ -22,14 +22,11 @@
 
 #define tol 10e-2
 
-using namespace std::literals::chrono_literals; // NOLINT
+using namespace std::literals::chrono_literals;  // NOLINT
 
-class GazeboRosPlanarMoveTest : public gazebo::ServerFixture
-{
-};
+class GazeboRosPlanarMoveTest : public gazebo::ServerFixture {};
 
-TEST_F(GazeboRosPlanarMoveTest, Publishing)
-{
+TEST_F(GazeboRosPlanarMoveTest, Publishing) {
   // Load test world and start paused
   this->Load("worlds/gazebo_ros_planar_move.world", true);
 
@@ -51,10 +48,8 @@ TEST_F(GazeboRosPlanarMoveTest, Publishing)
   // Create subscriber
   nav_msgs::msg::Odometry::SharedPtr latestMsg;
   auto sub = node->create_subscription<nav_msgs::msg::Odometry>(
-    "test/odom_test", rclcpp::QoS(rclcpp::KeepLast(1)),
-    [&latestMsg](const nav_msgs::msg::Odometry::SharedPtr _msg) {
-      latestMsg = _msg;
-    });
+      "test/odom_test", rclcpp::QoS(rclcpp::KeepLast(1)),
+      [&latestMsg](const nav_msgs::msg::Odometry::SharedPtr _msg) { latestMsg = _msg; });
 
   // Step a bit for model to settle
   world->Step(100);
@@ -69,8 +64,7 @@ TEST_F(GazeboRosPlanarMoveTest, Publishing)
   EXPECT_NEAR(0.0, box->WorldAngularVel().Z(), tol);
 
   // Send command
-  auto pub = node->create_publisher<geometry_msgs::msg::Twist>(
-    "test/cmd_test", rclcpp::QoS(rclcpp::KeepLast(1)));
+  auto pub = node->create_publisher<geometry_msgs::msg::Twist>("test/cmd_test", rclcpp::QoS(rclcpp::KeepLast(1)));
 
   auto msg = geometry_msgs::msg::Twist();
   msg.linear.x = 1.0;
@@ -85,9 +79,7 @@ TEST_F(GazeboRosPlanarMoveTest, Publishing)
   auto linear_vel = box->WorldLinearVel();
   double linear_vel_x = cosf(yaw) * linear_vel.X() + sinf(yaw) * linear_vel.Y();
 
-  for (; sleep < maxSleep && (linear_vel_x < 0.9 ||
-    box->WorldAngularVel().Z() < 0.09); ++sleep)
-  {
+  for (; sleep < maxSleep && (linear_vel_x < 0.9 || box->WorldAngularVel().Z() < 0.09); ++sleep) {
     yaw = static_cast<float>(box->WorldPose().Rot().Yaw());
     linear_vel = box->WorldLinearVel();
     linear_vel_x = cosf(yaw) * linear_vel.X() + sinf(yaw) * linear_vel.Y();
@@ -115,8 +107,7 @@ TEST_F(GazeboRosPlanarMoveTest, Publishing)
   EXPECT_NEAR(0.1, box->WorldAngularVel().Z(), tol);
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

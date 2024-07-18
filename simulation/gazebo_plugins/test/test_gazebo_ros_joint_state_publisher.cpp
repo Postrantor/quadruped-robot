@@ -22,14 +22,11 @@
 
 #define tol 10e-10
 
-using namespace std::literals::chrono_literals; // NOLINT
+using namespace std::literals::chrono_literals;  // NOLINT
 
-class GazeboRosJointStatePublisherTest : public gazebo::ServerFixture
-{
-};
+class GazeboRosJointStatePublisherTest : public gazebo::ServerFixture {};
 
-TEST_F(GazeboRosJointStatePublisherTest, Publishing)
-{
+TEST_F(GazeboRosJointStatePublisherTest, Publishing) {
   // Load test world and start paused
   this->Load("worlds/gazebo_ros_joint_state_publisher.world", true);
 
@@ -59,16 +56,12 @@ TEST_F(GazeboRosJointStatePublisherTest, Publishing)
   // Create subscriber
   sensor_msgs::msg::JointState::SharedPtr latestMsg;
   auto sub = node->create_subscription<sensor_msgs::msg::JointState>(
-    "test/joint_states_test", rclcpp::QoS(1),
-    [&latestMsg](const sensor_msgs::msg::JointState::SharedPtr msg) {
-      latestMsg = msg;
-    });
+      "test/joint_states_test", rclcpp::QoS(1),
+      [&latestMsg](const sensor_msgs::msg::JointState::SharedPtr msg) { latestMsg = msg; });
 
   // Spin until we get a message or timeout
   auto startTime = std::chrono::steady_clock::now();
-  while (latestMsg == nullptr &&
-    (std::chrono::steady_clock::now() - startTime) < std::chrono::seconds(2))
-  {
+  while (latestMsg == nullptr && (std::chrono::steady_clock::now() - startTime) < std::chrono::seconds(2)) {
     world->Step(100);
     executor.spin_once(100ms);
     gazebo::common::Time::MSleep(100);
@@ -86,8 +79,7 @@ TEST_F(GazeboRosJointStatePublisherTest, Publishing)
   EXPECT_NEAR(hinge->GetVelocity(0), latestMsg->velocity[0], tol);
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

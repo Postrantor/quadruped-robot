@@ -20,45 +20,39 @@
 #include <memory>
 
 /// Simple example of a gazebo system plugin which uses a ROS2 node with gazebo_ros::Node.
-class CreateBeforeInit : public gazebo::SystemPlugin
-{
+class CreateBeforeInit : public gazebo::SystemPlugin {
 public:
   /// Called by gazebo to load plugin. Creates #node, #timer_, and #pub
   /// \param[in] argc Argument count.
   /// \param[in] argv Argument values.
-  void Load(int argc, char ** argv);
+  void Load(int argc, char **argv);
 
 private:
   /// Timer called to publish a message every second
   std::shared_ptr<rclcpp::TimerBase> timer_;
 };
 
-void CreateBeforeInit::Load(int, char **)
-{
+void CreateBeforeInit::Load(int, char **) {
   // It should be ok to create a node without calling init first.
   auto node = gazebo_ros::Node::Get();
   assert(nullptr != node);
 
   // Create a publisher
-  auto pub = node->create_publisher<std_msgs::msg::String>(
-    "test",
-    rclcpp::QoS(rclcpp::KeepLast(1)).transient_local());
+  auto pub = node->create_publisher<std_msgs::msg::String>("test", rclcpp::QoS(rclcpp::KeepLast(1)).transient_local());
 
   // Run lambda every 1 second
   using namespace std::chrono_literals;
-  timer_ = node->create_wall_timer(
-    1s,
-    [node, pub]() {
-      // Create string message
-      auto msg = std_msgs::msg::String();
-      msg.data = "Hello world";
+  timer_ = node->create_wall_timer(1s, [node, pub]() {
+    // Create string message
+    auto msg = std_msgs::msg::String();
+    msg.data = "Hello world";
 
-      // Warn with this node's name (to test logging)
-      RCLCPP_WARN(node->get_logger(), "Publishing");
+    // Warn with this node's name (to test logging)
+    RCLCPP_WARN(node->get_logger(), "Publishing");
 
-      // Publish message
-      pub->publish(msg);
-    });
+    // Publish message
+    pub->publish(msg);
+  });
 }
 
 GZ_REGISTER_SYSTEM_PLUGIN(CreateBeforeInit)

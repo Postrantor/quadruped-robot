@@ -203,7 +203,7 @@ public:
     sum = newSum;
   };
 
-/**
+  /**
    * @brief 将新值推送到窗口队列中，
    * 并计算窗口队列中的平均值。
    * @param newValue: 将新值推送到窗口队列中。

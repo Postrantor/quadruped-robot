@@ -20,15 +20,11 @@
 
 #define tol 10e-2
 
-class GazeboRosLinkWrenchTest : public gazebo::ServerFixture
-{
-};
+class GazeboRosLinkWrenchTest : public gazebo::ServerFixture {};
 
-TEST_F(GazeboRosLinkWrenchTest, LinkWrenchTest)
-{
+TEST_F(GazeboRosLinkWrenchTest, LinkWrenchTest) {
   // Load test world
-  this->LoadArgs(
-    "worlds/gazebo_ros_link_wrench_test.world -u --verbose -s libgazebo_ros_force_system.so");
+  this->LoadArgs("worlds/gazebo_ros_link_wrench_test.world -u --verbose -s libgazebo_ros_force_system.so");
 
   // World
   auto world = gazebo::physics::get_world();
@@ -38,13 +34,11 @@ TEST_F(GazeboRosLinkWrenchTest, LinkWrenchTest)
   auto node = std::make_shared<rclcpp::Node>("gazebo_ros_link_wrench_test");
   ASSERT_NE(nullptr, node);
 
-  auto apply_link_wrench =
-    node->create_client<gazebo_msgs::srv::ApplyLinkWrench>("apply_link_wrench");
+  auto apply_link_wrench = node->create_client<gazebo_msgs::srv::ApplyLinkWrench>("apply_link_wrench");
   ASSERT_NE(nullptr, apply_link_wrench);
   EXPECT_TRUE(apply_link_wrench->wait_for_service(std::chrono::seconds(1)));
 
-  auto clear_link_wrenches =
-    node->create_client<gazebo_msgs::srv::LinkRequest>("clear_link_wrenches");
+  auto clear_link_wrenches = node->create_client<gazebo_msgs::srv::LinkRequest>("clear_link_wrenches");
   ASSERT_NE(nullptr, clear_link_wrenches);
   EXPECT_TRUE(clear_link_wrenches->wait_for_service(std::chrono::seconds(1)));
 
@@ -59,9 +53,7 @@ TEST_F(GazeboRosLinkWrenchTest, LinkWrenchTest)
   apply_request->duration = rclcpp::Duration(-1, 0);
 
   auto apply_response_future = apply_link_wrench->async_send_request(apply_request);
-  EXPECT_EQ(
-    rclcpp::FutureReturnCode::SUCCESS,
-    rclcpp::spin_until_future_complete(node, apply_response_future));
+  EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node, apply_response_future));
 
   auto apply_response = apply_response_future.get();
   ASSERT_NE(nullptr, apply_response);
@@ -81,9 +73,7 @@ TEST_F(GazeboRosLinkWrenchTest, LinkWrenchTest)
   clear_request->link_name = "box::base";
 
   auto clear_response_future = clear_link_wrenches->async_send_request(clear_request);
-  EXPECT_EQ(
-    rclcpp::FutureReturnCode::SUCCESS,
-    rclcpp::spin_until_future_complete(node, clear_response_future));
+  EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node, clear_response_future));
 
   auto clear_response = clear_response_future.get();
   ASSERT_NE(nullptr, clear_response);
@@ -98,8 +88,7 @@ TEST_F(GazeboRosLinkWrenchTest, LinkWrenchTest)
   EXPECT_NEAR(entity->WorldTorque().Z(), 0, tol);
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

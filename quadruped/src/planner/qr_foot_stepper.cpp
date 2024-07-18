@@ -313,7 +313,7 @@ std::tuple<Eigen::Matrix<float, 3, 4>, Eigen::Matrix<float, 3, 4>> qrFootStepper
       }
       nextFootholds.col(legId) = nextFootPos;
     }  // end for
-  }  // end if
+  }    // end if
 
   nextFootholdsOffset.row(2) = dZ;
   return {nextFootholds, nextFootholdsOffset};

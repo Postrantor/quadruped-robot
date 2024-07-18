@@ -272,7 +272,7 @@ public:
    * @brief 在控制器开始时调用。
    * @param current_time:墙面时间，以秒为单位。
    */
-  void Reset(float currentTime) {};
+  void Reset(float currentTime){};
 
   /**
    * @brief poseDest 成员的 getter 方法。

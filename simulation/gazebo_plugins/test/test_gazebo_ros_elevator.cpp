@@ -21,14 +21,11 @@
 
 #define tol 10e-2
 
-using namespace std::literals::chrono_literals; // NOLINT
+using namespace std::literals::chrono_literals;  // NOLINT
 
-class GazeboRosElevatorTest : public gazebo::ServerFixture
-{
-};
+class GazeboRosElevatorTest : public gazebo::ServerFixture {};
 
-TEST_F(GazeboRosElevatorTest, Publishing)
-{
+TEST_F(GazeboRosElevatorTest, Publishing) {
   // Load test world and start paused
   this->Load("worlds/gazebo_ros_elevator.world", true);
 
@@ -60,8 +57,7 @@ TEST_F(GazeboRosElevatorTest, Publishing)
   executor.add_node(node);
 
   // Publisher for elevator command
-  auto pub = node->create_publisher<std_msgs::msg::String>(
-    "test/elevator_test", rclcpp::QoS(rclcpp::KeepLast(1)));
+  auto pub = node->create_publisher<std_msgs::msg::String>("test/elevator_test", rclcpp::QoS(rclcpp::KeepLast(1)));
 
   auto msg = std_msgs::msg::String();
   msg.data = "1";
@@ -80,8 +76,7 @@ TEST_F(GazeboRosElevatorTest, Publishing)
   EXPECT_NEAR(3.075, link->WorldPose().Pos().Z(), tol);
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

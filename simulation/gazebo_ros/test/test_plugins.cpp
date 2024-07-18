@@ -24,14 +24,12 @@
 #include <utility>
 #include <vector>
 
-struct TestParams
-{
+struct TestParams {
   std::vector<const char *> args;
   std::vector<std::string> topics;
 };
 
-class TestPlugins : public ::testing::TestWithParam<TestParams>
-{
+class TestPlugins : public ::testing::TestWithParam<TestParams> {
 public:
   TestPlugins() {}
   void SetUp() override;
@@ -41,21 +39,18 @@ protected:
   std::unique_ptr<gazebo_ros::GazeboProcess> gazebo_process_;
 };
 
-void TestPlugins::SetUp()
-{
+void TestPlugins::SetUp() {
   std::cout << "Starting gzserver process with [" << GetParam().args[1] << "]" << std::endl;
   gazebo_process_ = std::make_unique<gazebo_ros::GazeboProcess>(GetParam().args);
   ASSERT_GT(gazebo_process_->Run(), 0);
 }
 
-void TestPlugins::TearDown()
-{
+void TestPlugins::TearDown() {
   ASSERT_GE(gazebo_process_->Terminate(), 0);
   gazebo_process_.reset();
 }
 
-TEST_P(TestPlugins, TestTopicsReceived)
-{
+TEST_P(TestPlugins, TestTopicsReceived) {
   auto topics = GetParam().topics;
   auto node = std::make_shared<rclcpp::Node>("test_topics_received");
   for (auto topic : topics) {
@@ -68,22 +63,23 @@ TEST_P(TestPlugins, TestTopicsReceived)
 }
 
 INSTANTIATE_TEST_SUITE_P(
-  Plugins, TestPlugins, ::testing::Values(
-    TestParams({{"-s", "./libargs_init.so"}, {"test"}}),
-    TestParams({{"-s", "./libcreate_node_without_init.so"}, {"test"}}),
-    TestParams({{"-s", "./libmultiple_nodes.so"}, {"testA", "testB"}}),
-    TestParams(
-      {{"-s", "libgazebo_ros_init.so", "worlds/ros_world_plugin.world",
-        "hello_ros_world:/test:=/new_test"}, {"new_test"}}),
-    TestParams(
-      {{"-s", "libgazebo_ros_init.so", "-s", "libgazebo_ros_factory.so",
-        "worlds/ros_world_plugin.world"}, {"test"}}),
-    TestParams({{"-s", "libgazebo_ros_init.so", "worlds/sdf_node_plugin.world"}, {"/foo/my_topic"}})
-    // cppcheck-suppress syntaxError
-));
+    Plugins,
+    TestPlugins,
+    ::testing::Values(
+        TestParams({{"-s", "./libargs_init.so"}, {"test"}}),
+        TestParams({{"-s", "./libcreate_node_without_init.so"}, {"test"}}),
+        TestParams({{"-s", "./libmultiple_nodes.so"}, {"testA", "testB"}}),
+        TestParams(
+            {{"-s", "libgazebo_ros_init.so", "worlds/ros_world_plugin.world", "hello_ros_world:/test:=/new_test"},
+             {"new_test"}}),
+        TestParams(
+            {{"-s", "libgazebo_ros_init.so", "-s", "libgazebo_ros_factory.so", "worlds/ros_world_plugin.world"},
+             {"test"}}),
+        TestParams({{"-s", "libgazebo_ros_init.so", "worlds/sdf_node_plugin.world"}, {"/foo/my_topic"}})
+        // cppcheck-suppress syntaxError
+        ));
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

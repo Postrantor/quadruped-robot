@@ -22,12 +22,9 @@
 #include <memory>
 
 /// Tests the gazebo_ros_imu_sensor plugin
-class GazeboRosImuSensorTest : public gazebo::ServerFixture
-{
-};
+class GazeboRosImuSensorTest : public gazebo::ServerFixture {};
 
-TEST_F(GazeboRosImuSensorTest, ImuMessageCorrect)
-{
+TEST_F(GazeboRosImuSensorTest, ImuMessageCorrect) {
   // Load test world and start paused
   this->Load("worlds/gazebo_ros_imu_sensor.world", true);
 
@@ -49,10 +46,7 @@ TEST_F(GazeboRosImuSensorTest, ImuMessageCorrect)
 
   sensor_msgs::msg::Imu::SharedPtr msg = nullptr;
   auto sub = node->create_subscription<sensor_msgs::msg::Imu>(
-    "/imu/data", rclcpp::SensorDataQoS(),
-    [&msg](sensor_msgs::msg::Imu::SharedPtr _msg) {
-      msg = _msg;
-    });
+      "/imu/data", rclcpp::SensorDataQoS(), [&msg](sensor_msgs::msg::Imu::SharedPtr _msg) { msg = _msg; });
 
   // Step until an imu message will have been published
   int sleep{0};
@@ -70,8 +64,7 @@ TEST_F(GazeboRosImuSensorTest, ImuMessageCorrect)
   // Get the initial imu output when the box is at rest
   auto pre_movement_msg = std::make_shared<sensor_msgs::msg::Imu>(*msg);
   ASSERT_NE(nullptr, pre_movement_msg);
-  auto pre_movement_yaw =
-    gazebo_ros::Convert<ignition::math::Quaterniond>(pre_movement_msg->orientation).Euler().Z();
+  auto pre_movement_yaw = gazebo_ros::Convert<ignition::math::Quaterniond>(pre_movement_msg->orientation).Euler().Z();
   EXPECT_LT(pre_movement_yaw, 0.05);
   EXPECT_LT(pre_movement_msg->linear_acceleration.x, 0.5);
   EXPECT_LT(pre_movement_msg->angular_velocity.z, 0.1);
@@ -89,16 +82,14 @@ TEST_F(GazeboRosImuSensorTest, ImuMessageCorrect)
   // Check that IMU output reflects state changes due to applied force
   auto post_movement_msg = std::make_shared<sensor_msgs::msg::Imu>(*msg);
   ASSERT_NE(nullptr, post_movement_msg);
-  auto post_movement_yaw =
-    gazebo_ros::Convert<ignition::math::Quaterniond>(post_movement_msg->orientation).Euler().Z();
+  auto post_movement_yaw = gazebo_ros::Convert<ignition::math::Quaterniond>(post_movement_msg->orientation).Euler().Z();
   EXPECT_GT(post_movement_yaw, 0.05);
   // The linear acceleration reported by Gazebo flips signs, so we take the absolute value
   EXPECT_GT(std::abs(post_movement_msg->linear_acceleration.x), 1.0);
   EXPECT_GT(post_movement_msg->angular_velocity.z, 1.0);
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

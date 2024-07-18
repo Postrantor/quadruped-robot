@@ -63,7 +63,9 @@ public:
   bool sendRecv(std::vector<MotorCmd> &sendVec, std::vector<MotorData> &recvVec);
 
   // TODO(@zhiqi.jia), wrap `sendRecv()`
-  bool send_recv(uint8_t *sendMsg, uint8_t *recvMsg, size_t sendLength) { return sendRecv(sendMsg, recvMsg, sendLength); }
+  bool send_recv(uint8_t *sendMsg, uint8_t *recvMsg, size_t sendLength) {
+    return sendRecv(sendMsg, recvMsg, sendLength);
+  }
   bool send_recv(MotorCmd *sendMsg, MotorData *recvMsg) { return sendRecv(sendMsg, recvMsg); }
   bool send_recv(std::vector<MotorCmd> &sendVec, std::vector<MotorData> &recvVec) { return sendRecv(sendVec, recvVec); }
 

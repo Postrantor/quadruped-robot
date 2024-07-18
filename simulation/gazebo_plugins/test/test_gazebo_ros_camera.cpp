@@ -19,11 +19,10 @@
 #include <memory>
 #include <string>
 
-using namespace std::literals::chrono_literals; // NOLINT
+using namespace std::literals::chrono_literals;  // NOLINT
 
 /// Test parameters
-struct TestParams
-{
+struct TestParams {
   /// Path to world file
   std::string world;
 
@@ -31,14 +30,10 @@ struct TestParams
   std::string topic;
 };
 
-class GazeboRosCameraTest
-  : public gazebo::ServerFixture, public ::testing::WithParamInterface<TestParams>
-{
-};
+class GazeboRosCameraTest : public gazebo::ServerFixture, public ::testing::WithParamInterface<TestParams> {};
 
 // Test that the camera image is published and has correct timestamp
-TEST_P(GazeboRosCameraTest, CameraSubscribeTest)
-{
+TEST_P(GazeboRosCameraTest, CameraSubscribeTest) {
   // Load test world and start paused
   this->Load(GetParam().world, true);
 
@@ -58,12 +53,12 @@ TEST_P(GazeboRosCameraTest, CameraSubscribeTest)
   builtin_interfaces::msg::Time image_stamp;
 
   auto sub = image_transport::create_subscription(
-    node.get(), GetParam().topic,
-    [&](const sensor_msgs::msg::Image::ConstSharedPtr & msg) {
-      image_stamp = msg->header.stamp;
-      ++msg_count;
-    },
-    "raw");
+      node.get(), GetParam().topic,
+      [&](const sensor_msgs::msg::Image::ConstSharedPtr& msg) {
+        image_stamp = msg->header.stamp;
+        ++msg_count;
+      },
+      "raw");
 
   // Update rate is 0.5 Hz, so we step 3s sim time to be sure we get exactly 1 image at 2s
   world->Step(3000);
@@ -82,13 +77,13 @@ TEST_P(GazeboRosCameraTest, CameraSubscribeTest)
 }
 
 INSTANTIATE_TEST_SUITE_P(
-  GazeboRosCamera, GazeboRosCameraTest, ::testing::Values(
-    TestParams({"worlds/gazebo_ros_camera.world", "test_cam/camera/image_test"}),
-    TestParams({"worlds/gazebo_ros_camera_16bit.world", "test_cam_16bit/image_test_16bit"})
-));
+    GazeboRosCamera,
+    GazeboRosCameraTest,
+    ::testing::Values(
+        TestParams({"worlds/gazebo_ros_camera.world", "test_cam/camera/image_test"}),
+        TestParams({"worlds/gazebo_ros_camera_16bit.world", "test_cam_16bit/image_test_16bit"})));
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   testing::InitGoogleTest(&argc, argv);
   int ret = RUN_ALL_TESTS();

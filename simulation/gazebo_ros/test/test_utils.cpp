@@ -20,8 +20,7 @@
 #include <memory>
 #include <string>
 
-TEST(TestUtils, NoiseVariance)
-{
+TEST(TestUtils, NoiseVariance) {
   // Test no noise has 0 variance
   {
     auto noise = std::make_shared<gazebo::sensors::Noise>(gazebo::sensors::Noise::NoiseType::NONE);
@@ -31,8 +30,7 @@ TEST(TestUtils, NoiseVariance)
 
   // Test custom noise errors with -1
   {
-    auto noise =
-      std::make_shared<gazebo::sensors::Noise>(gazebo::sensors::Noise::NoiseType::CUSTOM);
+    auto noise = std::make_shared<gazebo::sensors::Noise>(gazebo::sensors::Noise::NoiseType::CUSTOM);
     EXPECT_EQ(-1., gazebo_ros::NoiseVariance(noise));
     EXPECT_EQ(-1., gazebo_ros::NoiseVariance(*noise));
   }
@@ -62,16 +60,14 @@ TEST(TestUtils, NoiseVariance)
   }
 }
 
-TEST(TestUtils, ScopedNameBase)
-{
+TEST(TestUtils, ScopedNameBase) {
   EXPECT_EQ(gazebo_ros::ScopedNameBase("afgfgf::vnjkkfds::my"), "my");
   EXPECT_EQ(gazebo_ros::ScopedNameBase("base"), "base");
   EXPECT_EQ(gazebo_ros::ScopedNameBase(""), "");
   EXPECT_EQ(gazebo_ros::ScopedNameBase("fdfd::"), "fdfd::");
 }
 
-TEST(TestUtils, SensorFrameID)
-{
+TEST(TestUtils, SensorFrameID) {
   {
     auto stddev_description = std::make_shared<sdf::Element>();
     stddev_description->SetName("frame_name");
@@ -92,8 +88,7 @@ TEST(TestUtils, SensorFrameID)
   }
 }
 
-TEST(TestUtils, Throttler)
-{
+TEST(TestUtils, Throttler) {
   using Time = gazebo::common::Time;
   using Throttler = gazebo_ros::Throttler;
   {
@@ -116,8 +111,7 @@ TEST(TestUtils, Throttler)
   }
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }

@@ -19,11 +19,10 @@
 #include <memory>
 #include <string>
 
-using namespace std::literals::chrono_literals; // NOLINT
+using namespace std::literals::chrono_literals;  // NOLINT
 
 /// Test parameters
-struct TestParams
-{
+struct TestParams {
   /// Path to world file
   std::string world;
 
@@ -31,14 +30,10 @@ struct TestParams
   std::string left_topic, right_topic;
 };
 
-class GazeboRosMultiCameraTest
-  : public gazebo::ServerFixture, public ::testing::WithParamInterface<TestParams>
-{
-};
+class GazeboRosMultiCameraTest : public gazebo::ServerFixture, public ::testing::WithParamInterface<TestParams> {};
 
 // Test that the multi camera images are published and have correct timestamp
-TEST_P(GazeboRosMultiCameraTest, CameraSubscribeTest)
-{
+TEST_P(GazeboRosMultiCameraTest, CameraSubscribeTest) {
   // Load test world and start paused
   this->Load(GetParam().world, true);
 
@@ -58,12 +53,12 @@ TEST_P(GazeboRosMultiCameraTest, CameraSubscribeTest)
   builtin_interfaces::msg::Time image_stamp_left;
 
   auto sub_left = image_transport::create_subscription(
-    node.get(), GetParam().left_topic,
-    [&](const sensor_msgs::msg::Image::ConstSharedPtr & msg) {
-      image_stamp_left = msg->header.stamp;
-      ++msg_count_left;
-    },
-    "raw");
+      node.get(), GetParam().left_topic,
+      [&](const sensor_msgs::msg::Image::ConstSharedPtr& msg) {
+        image_stamp_left = msg->header.stamp;
+        ++msg_count_left;
+      },
+      "raw");
 
   // Update rate is 0.5 Hz, so we step 3s sim time to be sure we get exactly 1 image at 2s
   world->Step(3000);
@@ -83,12 +78,12 @@ TEST_P(GazeboRosMultiCameraTest, CameraSubscribeTest)
   unsigned int msg_count_right{0};
   builtin_interfaces::msg::Time image_stamp_right;
   auto sub_right = image_transport::create_subscription(
-    node.get(), GetParam().right_topic,
-    [&](const sensor_msgs::msg::Image::ConstSharedPtr & msg) {
-      image_stamp_right = msg->header.stamp;
-      ++msg_count_right;
-    },
-    "raw");
+      node.get(), GetParam().right_topic,
+      [&](const sensor_msgs::msg::Image::ConstSharedPtr& msg) {
+        image_stamp_right = msg->header.stamp;
+        ++msg_count_right;
+      },
+      "raw");
 
   // Update rate is 0.5 Hz, so we step 3s sim time to be sure we get exactly 1 image at 4s
   world->Step(3000);
@@ -107,15 +102,13 @@ TEST_P(GazeboRosMultiCameraTest, CameraSubscribeTest)
 }
 
 INSTANTIATE_TEST_SUITE_P(
-  GazeboRosMultiCamera, GazeboRosMultiCameraTest, ::testing::Values(
-    TestParams(
-      {"worlds/gazebo_ros_multi_camera.world",
-        "test_cam/camera/left/image_test",
-        "test_cam/camera/right/image_test"})
-));
+    GazeboRosMultiCamera,
+    GazeboRosMultiCameraTest,
+    ::testing::Values(TestParams(
+        {"worlds/gazebo_ros_multi_camera.world", "test_cam/camera/left/image_test",
+         "test_cam/camera/right/image_test"})));
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   testing::InitGoogleTest(&argc, argv);
   int ret = RUN_ALL_TESTS();

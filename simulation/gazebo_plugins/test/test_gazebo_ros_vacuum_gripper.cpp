@@ -20,12 +20,9 @@
 
 #define tol 10e-2
 
-class GazeboRosVacuumGripperTest : public gazebo::ServerFixture
-{
-};
+class GazeboRosVacuumGripperTest : public gazebo::ServerFixture {};
 
-TEST_F(GazeboRosVacuumGripperTest, VacuumGripperServiceTest)
-{
+TEST_F(GazeboRosVacuumGripperTest, VacuumGripperServiceTest) {
   // Load test world and start paused
   this->Load("worlds/gazebo_ros_vacuum_gripper.world", true);
 
@@ -68,15 +65,11 @@ TEST_F(GazeboRosVacuumGripperTest, VacuumGripperServiceTest)
   auto request = std::make_shared<std_srvs::srv::SetBool::Request>();
   request->data = true;
   auto response_future = client->async_send_request(request);
-  EXPECT_EQ(
-    rclcpp::FutureReturnCode::SUCCESS,
-    rclcpp::spin_until_future_complete(node, response_future));
+  EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node, response_future));
 
   unsigned int sleep = 0;
   unsigned int max_sleep = 200;
-  while (sleep < max_sleep &&
-    (ball1->WorldPose().Pos().X() > 0.1 || ball2->WorldPose().Pos().Y() < -0.1))
-  {
+  while (sleep < max_sleep && (ball1->WorldPose().Pos().X() > 0.1 || ball2->WorldPose().Pos().Y() < -0.1)) {
     gazebo::common::Time::MSleep(100);
     world->Step(100);
     sleep++;
@@ -90,8 +83,7 @@ TEST_F(GazeboRosVacuumGripperTest, VacuumGripperServiceTest)
   EXPECT_NE(ball2->WorldPose().Pos().Y(), 0);
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

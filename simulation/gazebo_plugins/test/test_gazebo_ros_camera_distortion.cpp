@@ -22,11 +22,10 @@
 #include <memory>
 #include <string>
 
-using namespace std::literals::chrono_literals; // NOLINT
+using namespace std::literals::chrono_literals;  // NOLINT
 
 /// Test parameters
-struct TestParams
-{
+struct TestParams {
   /// Path to world file
   std::string world;
 
@@ -40,8 +39,7 @@ struct TestParams
   std::string distorted_cam_topic;
 };
 
-void DiffBetween(cv::Mat & orig, cv::Mat & diff, int64 & total_diff)
-{
+void DiffBetween(cv::Mat& orig, cv::Mat& diff, int64& total_diff) {
   cv::MatIterator_<cv::Vec3b> it, end;
   cv::Vec3b orig_pixel, diff_pixel;
   total_diff = 0;
@@ -51,19 +49,14 @@ void DiffBetween(cv::Mat & orig, cv::Mat & diff, int64 & total_diff)
       orig_pixel = orig.at<cv::Vec3b>(i, j);
       diff_pixel = diff.at<cv::Vec3b>(i, j);
       total_diff +=
-        abs(orig_pixel[0] - diff_pixel[0]) +
-        abs(orig_pixel[1] - diff_pixel[1]) +
-        abs(orig_pixel[2] - diff_pixel[2]);
+          abs(orig_pixel[0] - diff_pixel[0]) + abs(orig_pixel[1] - diff_pixel[1]) + abs(orig_pixel[2] - diff_pixel[2]);
     }
   }
 }
 
-class GazeboRosCameraDistortionTest
-  : public gazebo::ServerFixture, public ::testing::WithParamInterface<TestParams>
-{
+class GazeboRosCameraDistortionTest : public gazebo::ServerFixture, public ::testing::WithParamInterface<TestParams> {
 public:
-  void TearDown() override
-  {
+  void TearDown() override {
     // Make sure they're destroyed even if test fails by ASSERT
     cam_sub_undistorted_.shutdown();
     cam_sub_distorted_.shutdown();
@@ -81,8 +74,7 @@ public:
   rclcpp::Subscription<sensor_msgs::msg::CameraInfo>::SharedPtr cam_info_distorted_sub_;
 };
 
-TEST_P(GazeboRosCameraDistortionTest, CameraSubscribeTest)
-{
+TEST_P(GazeboRosCameraDistortionTest, CameraSubscribeTest) {
   // Load test world and start paused
   this->Load(GetParam().world, true);
 
@@ -100,30 +92,22 @@ TEST_P(GazeboRosCameraDistortionTest, CameraSubscribeTest)
   // Subscribe to undistorted image
   sensor_msgs::msg::Image::ConstSharedPtr cam_image_undistorted;
   cam_sub_undistorted_ = image_transport::create_subscription(
-    node.get(),
-    GetParam().undistorted_topic,
-    [&cam_image_undistorted](const sensor_msgs::msg::Image::ConstSharedPtr & _msg) {
-      cam_image_undistorted = _msg;
-    },
-    "raw");
+      node.get(), GetParam().undistorted_topic,
+      [&cam_image_undistorted](const sensor_msgs::msg::Image::ConstSharedPtr& _msg) { cam_image_undistorted = _msg; },
+      "raw");
 
   // Subscribe to distorted image
   sensor_msgs::msg::Image::ConstSharedPtr cam_image_distorted;
   cam_sub_distorted_ = image_transport::create_subscription(
-    node.get(),
-    GetParam().distorted_topic,
-    [&cam_image_distorted](const sensor_msgs::msg::Image::ConstSharedPtr & _msg) {
-      cam_image_distorted = _msg;
-    },
-    "raw");
+      node.get(), GetParam().distorted_topic,
+      [&cam_image_distorted](const sensor_msgs::msg::Image::ConstSharedPtr& _msg) { cam_image_distorted = _msg; },
+      "raw");
 
   // Subscribe to distorted camera info
   sensor_msgs::msg::CameraInfo::SharedPtr cam_info_distorted;
   cam_info_distorted_sub_ = node->create_subscription<sensor_msgs::msg::CameraInfo>(
-    GetParam().distorted_cam_topic, rclcpp::SensorDataQoS(),
-    [&cam_info_distorted](const sensor_msgs::msg::CameraInfo::SharedPtr _msg) {
-      cam_info_distorted = _msg;
-    });
+      GetParam().distorted_cam_topic, rclcpp::SensorDataQoS(),
+      [&cam_info_distorted](const sensor_msgs::msg::CameraInfo::SharedPtr _msg) { cam_info_distorted = _msg; });
 
   // Update rate is 0.5 Hz, so we step 3s sim time to be sure we get exactly 1 image at 2s
   world->Step(3000);
@@ -146,15 +130,12 @@ TEST_P(GazeboRosCameraDistortionTest, CameraSubscribeTest)
   auto intrinsic_distorted_matrix = cv::Mat(3, 3, CV_64F);
   if (cam_info_distorted->k.size() == 9) {
     memcpy(
-      intrinsic_distorted_matrix.data, cam_info_distorted->k.data(),
-      cam_info_distorted->k.size() * sizeof(double));
+        intrinsic_distorted_matrix.data, cam_info_distorted->k.data(), cam_info_distorted->k.size() * sizeof(double));
   }
 
   auto distortion_coeffs = cv::Mat(5, 1, CV_64F);
   if (cam_info_distorted->d.size() == 5) {
-    memcpy(
-      distortion_coeffs.data, cam_info_distorted->d.data(),
-      cam_info_distorted->d.size() * sizeof(double));
+    memcpy(distortion_coeffs.data, cam_info_distorted->d.data(), cam_info_distorted->d.size() * sizeof(double));
   }
 
   // Information acquired, now test the quality of the undistortion
@@ -164,8 +145,7 @@ TEST_P(GazeboRosCameraDistortionTest, CameraSubscribeTest)
 
   // crop the image to remove black borders leftover from (un)distortion
   int crop_border = 50;
-  cv::Rect myROI(crop_border, crop_border,
-    fixed.rows - 2 * crop_border, fixed.cols - 2 * crop_border);
+  cv::Rect myROI(crop_border, crop_border, fixed.rows - 2 * crop_border, fixed.cols - 2 * crop_border);
   cv::Mat fixed_crop = fixed(myROI);
   auto undistorted_crop = undistorted(myROI);
 
@@ -209,21 +189,17 @@ TEST_P(GazeboRosCameraDistortionTest, CameraSubscribeTest)
 }
 
 INSTANTIATE_TEST_SUITE_P(
-  GazeboRosCameraDistortion, GazeboRosCameraDistortionTest, ::testing::Values(
-    TestParams(
-      {"worlds/gazebo_ros_camera_distortion_barrel.world",
-        "undistorted_image",
-        "distorted_image",
-        "distorted_info"}),
-    TestParams(
-      {"worlds/gazebo_ros_camera_distortion_pincushion.world",
-        "undistorted_image",
-        "distorted_image",
-        "distorted_info"})
-));
+    GazeboRosCameraDistortion,
+    GazeboRosCameraDistortionTest,
+    ::testing::Values(
+        TestParams(
+            {"worlds/gazebo_ros_camera_distortion_barrel.world", "undistorted_image", "distorted_image",
+             "distorted_info"}),
+        TestParams(
+            {"worlds/gazebo_ros_camera_distortion_pincushion.world", "undistorted_image", "distorted_image",
+             "distorted_info"})));
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   testing::InitGoogleTest(&argc, argv);
   int ret = RUN_ALL_TESTS();

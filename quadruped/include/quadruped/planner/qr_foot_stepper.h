@@ -37,7 +37,7 @@ public:
    */
   qrFootStepper(qrTerrain& terrain, float defaultFootholdOffset, std::string level);
 
-  void Reset(float timeSinceReset) {};
+  void Reset(float timeSinceReset){};
 
   /**
    * @brief 获取默认的脚端偏移量。

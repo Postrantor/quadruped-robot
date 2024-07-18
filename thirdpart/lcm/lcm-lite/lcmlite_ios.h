@@ -24,9 +24,9 @@
 #define _LCMLITE_IMPL_H
 
 struct lcmlite_impl {
-    struct sockaddr_in read_addr;
-    struct sockaddr_in send_addr;
-    int send_fd, read_fd;
+  struct sockaddr_in read_addr;
+  struct sockaddr_in send_addr;
+  int send_fd, read_fd;
 };
 
 int lcmlite_impl_init(struct lcmlite_impl *impl);

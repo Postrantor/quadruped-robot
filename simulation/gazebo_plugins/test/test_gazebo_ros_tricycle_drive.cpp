@@ -22,14 +22,11 @@
 
 #define tol 10e-2
 
-using namespace std::literals::chrono_literals; // NOLINT
+using namespace std::literals::chrono_literals;  // NOLINT
 
-class GazeboRosTricycleDriveTest : public gazebo::ServerFixture
-{
-};
+class GazeboRosTricycleDriveTest : public gazebo::ServerFixture {};
 
-TEST_F(GazeboRosTricycleDriveTest, Publishing)
-{
+TEST_F(GazeboRosTricycleDriveTest, Publishing) {
   // Load test world and start paused
   this->Load("worlds/gazebo_ros_tricycle_drive.world", true);
 
@@ -61,14 +58,11 @@ TEST_F(GazeboRosTricycleDriveTest, Publishing)
   // Create subscriber
   nav_msgs::msg::Odometry::SharedPtr latestMsg;
   auto sub = node->create_subscription<nav_msgs::msg::Odometry>(
-    "test/odom_test", rclcpp::QoS(rclcpp::KeepLast(1)),
-    [&latestMsg](const nav_msgs::msg::Odometry::SharedPtr _msg) {
-      latestMsg = _msg;
-    });
+      "test/odom_test", rclcpp::QoS(rclcpp::KeepLast(1)),
+      [&latestMsg](const nav_msgs::msg::Odometry::SharedPtr _msg) { latestMsg = _msg; });
 
   // Send command
-  auto pub = node->create_publisher<geometry_msgs::msg::Twist>(
-    "test/cmd_test", rclcpp::QoS(rclcpp::KeepLast(1)));
+  auto pub = node->create_publisher<geometry_msgs::msg::Twist>("test/cmd_test", rclcpp::QoS(rclcpp::KeepLast(1)));
 
   auto msg = geometry_msgs::msg::Twist();
   msg.linear.x = 0.5;
@@ -95,8 +89,7 @@ TEST_F(GazeboRosTricycleDriveTest, Publishing)
   EXPECT_NEAR(0.05, tricycle->WorldAngularVel().Z(), tol);
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

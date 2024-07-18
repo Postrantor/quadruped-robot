@@ -22,14 +22,11 @@
 
 #define tol 10e-2
 
-using namespace std::literals::chrono_literals; // NOLINT
+using namespace std::literals::chrono_literals;  // NOLINT
 
-class GazeboRosFTSensorTest : public gazebo::ServerFixture
-{
-};
+class GazeboRosFTSensorTest : public gazebo::ServerFixture {};
 
-TEST_F(GazeboRosFTSensorTest, Publishing)
-{
+TEST_F(GazeboRosFTSensorTest, Publishing) {
   // Load test world and start paused
   this->Load("worlds/gazebo_ros_ft_sensor.world", true);
 
@@ -59,10 +56,8 @@ TEST_F(GazeboRosFTSensorTest, Publishing)
   // Create subscriber
   geometry_msgs::msg::WrenchStamped::SharedPtr latest_msg{nullptr};
   auto sub = node->create_subscription<geometry_msgs::msg::WrenchStamped>(
-    "test/ft_sensor_test", rclcpp::QoS(rclcpp::KeepLast(1)),
-    [&latest_msg](const geometry_msgs::msg::WrenchStamped::SharedPtr _msg) {
-      latest_msg = _msg;
-    });
+      "test/ft_sensor_test", rclcpp::QoS(rclcpp::KeepLast(1)),
+      [&latest_msg](const geometry_msgs::msg::WrenchStamped::SharedPtr _msg) { latest_msg = _msg; });
 
   // Wait for a message
   world->Step(1000);
@@ -86,8 +81,7 @@ TEST_F(GazeboRosFTSensorTest, Publishing)
   EXPECT_DOUBLE_EQ(0.0, latest_msg->wrench.torque.z);
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

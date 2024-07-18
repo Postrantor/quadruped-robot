@@ -74,13 +74,15 @@ CallbackReturn UnitreePositionController::on_configure(const rclcpp_lifecycle::S
 
   // safety command
   // limiter_linear_ = SpeedLimiter(
-  //     params_.linear.x.has_velocity_limits, params_.linear.x.has_acceleration_limits, params_.linear.x.has_jerk_limits,
-  //     params_.linear.x.min_velocity, params_.linear.x.max_velocity, params_.linear.x.min_acceleration,
-  //     params_.linear.x.max_acceleration, params_.linear.x.min_jerk, params_.linear.x.max_jerk);
+  //     params_.linear.x.has_velocity_limits, params_.linear.x.has_acceleration_limits,
+  //     params_.linear.x.has_jerk_limits, params_.linear.x.min_velocity, params_.linear.x.max_velocity,
+  //     params_.linear.x.min_acceleration, params_.linear.x.max_acceleration, params_.linear.x.min_jerk,
+  //     params_.linear.x.max_jerk);
   // limiter_angular_ = SpeedLimiter(
-  //     params_.angular.z.has_velocity_limits, params_.angular.z.has_acceleration_limits, params_.angular.z.has_jerk_limits,
-  //     params_.angular.z.min_velocity, params_.angular.z.max_velocity, params_.angular.z.min_acceleration,
-  //     params_.angular.z.max_acceleration, params_.angular.z.min_jerk, params_.angular.z.max_jerk);
+  //     params_.angular.z.has_velocity_limits, params_.angular.z.has_acceleration_limits,
+  //     params_.angular.z.has_jerk_limits, params_.angular.z.min_velocity, params_.angular.z.max_velocity,
+  //     params_.angular.z.min_acceleration, params_.angular.z.max_acceleration, params_.angular.z.min_jerk,
+  //     params_.angular.z.max_jerk);
 
   // reset all config
   if (!reset()) {
@@ -112,10 +114,10 @@ CallbackReturn UnitreePositionController::on_configure(const rclcpp_lifecycle::S
       });
 
   // initialize publisher
-  publishe_target_state_ =
-      get_node()->create_publisher<geometry_msgs::msg::TwistStamped>(DEFAULT_TARGET_STATE_TOPIC, rclcpp::SystemDefaultsQoS());
-  publishe_real_command_ =
-      get_node()->create_publisher<geometry_msgs::msg::TwistStamped>(DEFAULT_REAL_COMMAND_TOPIC, rclcpp::SystemDefaultsQoS());
+  publishe_target_state_ = get_node()->create_publisher<geometry_msgs::msg::TwistStamped>(
+      DEFAULT_TARGET_STATE_TOPIC, rclcpp::SystemDefaultsQoS());
+  publishe_real_command_ = get_node()->create_publisher<geometry_msgs::msg::TwistStamped>(
+      DEFAULT_REAL_COMMAND_TOPIC, rclcpp::SystemDefaultsQoS());
 
   // limit publish on the /odom and /tf
   publish_rate_ = params_.publish_rate;
@@ -242,10 +244,10 @@ controller_interface::return_type UnitreePositionController::update(
   // by v_current, v_last, v_second limit dot_q, ddot_q, dddot_q
   // auto &last_command = previous_commands_.back().twist;
   // auto &second_to_last_command = previous_commands_.front().twist;
-  // limiter_linear_.limit(control_linear_command, last_command.linear.x, second_to_last_command.linear.x, period.seconds());
-  // limiter_angular_.limit(control_angular_command, last_command.angular.z, second_to_last_command.angular.z, period.seconds());
-  // previous_commands_.pop();
-  // previous_commands_.emplace(command);  // update queue，limit_command not last_desired_state
+  // limiter_linear_.limit(control_linear_command, last_command.linear.x, second_to_last_command.linear.x,
+  // period.seconds()); limiter_angular_.limit(control_angular_command, last_command.angular.z,
+  // second_to_last_command.angular.z, period.seconds()); previous_commands_.pop(); previous_commands_.emplace(command);
+  // // update queue，limit_command not last_desired_state
 
   // 4. publish `target_state` and safety `real_command`
   bool should_publish = false;  // TODO(@zhiqi.jia), use timer?

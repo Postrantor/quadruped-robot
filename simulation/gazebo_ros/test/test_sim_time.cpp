@@ -24,8 +24,7 @@
 using namespace std::literals::chrono_literals;
 
 /// Tests the simtime published to /clock by gazebo_ros_init
-class TestSimTime : public ::testing::Test
-{
+class TestSimTime : public ::testing::Test {
 public:
   TestSimTime() {}
   void SetUp() override;
@@ -35,21 +34,18 @@ protected:
   std::unique_ptr<gazebo_ros::GazeboProcess> gazebo_process_;
 };
 
-void TestSimTime::SetUp()
-{
-  gazebo_process_ = std::make_unique<gazebo_ros::GazeboProcess>(
-    std::vector<const char *>{"-s", "libgazebo_ros_init.so"});
+void TestSimTime::SetUp() {
+  gazebo_process_ =
+      std::make_unique<gazebo_ros::GazeboProcess>(std::vector<const char *>{"-s", "libgazebo_ros_init.so"});
   ASSERT_GT(gazebo_process_->Run(), 0);
 }
 
-void TestSimTime::TearDown()
-{
+void TestSimTime::TearDown() {
   ASSERT_GE(gazebo_process_->Terminate(), 0);
   gazebo_process_.reset();
 }
 
-TEST_F(TestSimTime, TestClock)
-{
+TEST_F(TestSimTime, TestClock) {
   using ClockMsg = rosgraph_msgs::msg::Clock;
 
   // Create a node which will use sim time
@@ -61,10 +57,7 @@ TEST_F(TestSimTime, TestClock)
 
   std::vector<ClockMsg::SharedPtr> msgs;
   auto sub = node->create_subscription<ClockMsg>(
-    "/clock", rclcpp::ClockQoS(),
-    [&](ClockMsg::SharedPtr _msg) {
-      msgs.push_back(_msg);
-    });
+      "/clock", rclcpp::ClockQoS(), [&](ClockMsg::SharedPtr _msg) { msgs.push_back(_msg); });
 
   unsigned int sleep{0};
   unsigned int max_sleep{100};
@@ -81,15 +74,13 @@ TEST_F(TestSimTime, TestClock)
 
     // Time should go forward
     if (i > 0) {
-      EXPECT_GT(rclcpp::Time(msgs[i]->clock), rclcpp::Time(msgs[i - 1]->clock)) <<
-        rclcpp::Time(msgs[i]->clock).nanoseconds() << "    " <<
-        rclcpp::Time(msgs[i - 1]->clock).nanoseconds();
+      EXPECT_GT(rclcpp::Time(msgs[i]->clock), rclcpp::Time(msgs[i - 1]->clock))
+          << rclcpp::Time(msgs[i]->clock).nanoseconds() << "    " << rclcpp::Time(msgs[i - 1]->clock).nanoseconds();
     }
   }
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

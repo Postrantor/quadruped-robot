@@ -21,14 +21,11 @@
 
 #define tol 10e-2
 
-using namespace std::literals::chrono_literals; // NOLINT
+using namespace std::literals::chrono_literals;  // NOLINT
 
-class GazeboRosP3dTest : public gazebo::ServerFixture
-{
-};
+class GazeboRosP3dTest : public gazebo::ServerFixture {};
 
-TEST_F(GazeboRosP3dTest, Publishing)
-{
+TEST_F(GazeboRosP3dTest, Publishing) {
   // Load test world and start paused
   this->Load("worlds/gazebo_ros_p3d.world", true);
 
@@ -61,10 +58,8 @@ TEST_F(GazeboRosP3dTest, Publishing)
   // Create subscriber
   nav_msgs::msg::Odometry::SharedPtr latest_msg{nullptr};
   auto sub = node->create_subscription<nav_msgs::msg::Odometry>(
-    "test/p3d_test", rclcpp::SensorDataQoS(),
-    [&latest_msg](const nav_msgs::msg::Odometry::SharedPtr _msg) {
-      latest_msg = _msg;
-    });
+      "test/p3d_test", rclcpp::SensorDataQoS(),
+      [&latest_msg](const nav_msgs::msg::Odometry::SharedPtr _msg) { latest_msg = _msg; });
 
   // Wait for a message
   world->Step(1000);
@@ -80,14 +75,11 @@ TEST_F(GazeboRosP3dTest, Publishing)
   EXPECT_EQ("box_link", latest_msg->child_frame_id);
 
   EXPECT_NEAR(
-    latest_msg->pose.pose.position.x,
-    -ref_link->WorldPose().Pos().X() + link->WorldPose().Pos().X() + 10, tol);
+      latest_msg->pose.pose.position.x, -ref_link->WorldPose().Pos().X() + link->WorldPose().Pos().X() + 10, tol);
   EXPECT_NEAR(
-    latest_msg->pose.pose.position.y,
-    -ref_link->WorldPose().Pos().Y() + link->WorldPose().Pos().Y() + 10, tol);
+      latest_msg->pose.pose.position.y, -ref_link->WorldPose().Pos().Y() + link->WorldPose().Pos().Y() + 10, tol);
   EXPECT_NEAR(
-    latest_msg->pose.pose.position.z,
-    -ref_link->WorldPose().Pos().Z() + link->WorldPose().Pos().Z() + 10, tol);
+      latest_msg->pose.pose.position.z, -ref_link->WorldPose().Pos().Z() + link->WorldPose().Pos().Z() + 10, tol);
   EXPECT_NEAR(latest_msg->pose.pose.orientation.x, link->WorldPose().Rot().X(), tol);
   EXPECT_NEAR(latest_msg->pose.pose.orientation.y, link->WorldPose().Rot().Y(), tol);
   EXPECT_NEAR(latest_msg->pose.pose.orientation.z, link->WorldPose().Rot().Z(), tol);
@@ -100,8 +92,7 @@ TEST_F(GazeboRosP3dTest, Publishing)
   EXPECT_NEAR(0.0, latest_msg->twist.twist.angular.z, tol);
 }
 
-TEST_F(GazeboRosP3dTest, DeprecatedOffsetElements)
-{
+TEST_F(GazeboRosP3dTest, DeprecatedOffsetElements) {
   // Load test world and start paused
   this->Load("worlds/gazebo_ros_p3d.world", true);
 
@@ -134,10 +125,8 @@ TEST_F(GazeboRosP3dTest, DeprecatedOffsetElements)
   // Create subscriber
   nav_msgs::msg::Odometry::SharedPtr latest_msg{nullptr};
   auto sub = node->create_subscription<nav_msgs::msg::Odometry>(
-    "test_deprecated/p3d_test_deprecated", rclcpp::SensorDataQoS(),
-    [&latest_msg](const nav_msgs::msg::Odometry::SharedPtr _msg) {
-      latest_msg = _msg;
-    });
+      "test_deprecated/p3d_test_deprecated", rclcpp::SensorDataQoS(),
+      [&latest_msg](const nav_msgs::msg::Odometry::SharedPtr _msg) { latest_msg = _msg; });
 
   // Wait for a message
   world->Step(1000);
@@ -153,14 +142,11 @@ TEST_F(GazeboRosP3dTest, DeprecatedOffsetElements)
   EXPECT_EQ("box_link", latest_msg->child_frame_id);
 
   EXPECT_NEAR(
-    latest_msg->pose.pose.position.x,
-    -ref_link->WorldPose().Pos().X() + link->WorldPose().Pos().X() + 5, tol);
+      latest_msg->pose.pose.position.x, -ref_link->WorldPose().Pos().X() + link->WorldPose().Pos().X() + 5, tol);
   EXPECT_NEAR(
-    latest_msg->pose.pose.position.y,
-    -ref_link->WorldPose().Pos().Y() + link->WorldPose().Pos().Y() + 5, tol);
+      latest_msg->pose.pose.position.y, -ref_link->WorldPose().Pos().Y() + link->WorldPose().Pos().Y() + 5, tol);
   EXPECT_NEAR(
-    latest_msg->pose.pose.position.z,
-    -ref_link->WorldPose().Pos().Z() + link->WorldPose().Pos().Z() + 5, tol);
+      latest_msg->pose.pose.position.z, -ref_link->WorldPose().Pos().Z() + link->WorldPose().Pos().Z() + 5, tol);
   EXPECT_NEAR(latest_msg->pose.pose.orientation.x, link->WorldPose().Rot().X(), tol);
   EXPECT_NEAR(latest_msg->pose.pose.orientation.y, link->WorldPose().Rot().Y(), tol);
   EXPECT_NEAR(latest_msg->pose.pose.orientation.z, link->WorldPose().Rot().Z(), tol);
@@ -173,8 +159,7 @@ TEST_F(GazeboRosP3dTest, DeprecatedOffsetElements)
   EXPECT_NEAR(0.0, latest_msg->twist.twist.angular.z, tol);
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

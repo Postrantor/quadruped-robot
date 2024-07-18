@@ -1,6 +1,6 @@
 ---
 Contact: <tophill.robotics@gmail.com>
-The ReadTheDocs for the open source quadruped robot project developed by Robot Motion and Vision Laboratory at East China Normal University (The Tophill Robotics Lab)
+  > The ReadTheDocs for the open source quadruped robot project developed by Robot Motion and Vision Laboratory at East China Normal University (The Tophill Robotics Lab)
   > 华东师范大学机器人运动与视觉实验室(Tophill Robotics Lab)开发的开源四足机器人项目的 ReadTheDocs
 https://docs.readthedocs.io/en/stable/tutorial/
 ---
@@ -437,13 +437,13 @@ To run the demo, we first launch Gazebo, a high fidelity robot simulator widely 
 
 > 为了运行演示，我们首先推出 Gazebo，这是一款在 ROS 社区广泛使用的高保真机器人模拟器。首先，在一个终端中，获取 setup.bash 以设置环境
 
-```cpp
+```bash
 source ${workspace_dir}/devel/setup.bash
 ```
 
 Second, run the Gazebo simulator and load a robot.
 
-```cpp
+```bash
 roslaunch qr_gazebo normal.launch
 ```
 
@@ -451,17 +451,17 @@ Third, in a new terminal, launch a demo and run the quadruped controller node. H
 
 > 第三，在一个新的终端中，启动一个演示并运行四足动物控制器节点。在这里，一个演示 helloworld 让四足机器人站起来。
 
-```cpp
+```bash
 rosrun demo demo_helloworld sim
 ```
 
 or omit `sim` by default
 
-```cpp
+```bash
 rosrun demo demo_helloworld
 ```
 
 ## References
 
-1. www.ros.org
-2. www.gazebosim.org
+- www.ros.org
+- www.gazebosim.org

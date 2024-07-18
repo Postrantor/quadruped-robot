@@ -16,8 +16,7 @@
 #include <gazebo_ros/node.hpp>
 #include <rclcpp/rclcpp.hpp>
 
-TEST(TestNode, StaticNode)
-{
+TEST(TestNode, StaticNode) {
   // Create the static node
   auto node_1 = gazebo_ros::Node::Get();
   ASSERT_NE(nullptr, node_1);
@@ -50,16 +49,15 @@ TEST(TestNode, StaticNode)
   EXPECT_NE(address_1.str(), address_3.str());
 }
 
-TEST(TestNode, GetSdf)
-{
+TEST(TestNode, GetSdf) {
   // Create a node
   auto sdf_str_1 =
-    "<?xml version='1.0' ?>"
-    "<sdf version='1.6'>"
-    "<world name='default'>"
-    "<plugin name='node_1' filename='libnode_name.so'/>"
-    "</world>"
-    "</sdf>";
+      "<?xml version='1.0' ?>"
+      "<sdf version='1.6'>"
+      "<world name='default'>"
+      "<plugin name='node_1' filename='libnode_name.so'/>"
+      "</world>"
+      "</sdf>";
   sdf::SDF sdf_1;
   sdf_1.SetFromString(sdf_str_1);
   auto plugin_sdf_1 = sdf_1.Root()->GetElement("world")->GetElement("plugin");
@@ -112,12 +110,12 @@ TEST(TestNode, GetSdf)
 
 TEST(TestNode, OptionalNodeName) {
   auto sdf_str_1 =
-    "<?xml version='1.0' ?>"
-    "<sdf version='1.6'>"
-    "<world name='default'>"
-    "<plugin name='node_1' filename='libnode_name.so'/>"
-    "</world>"
-    "</sdf>";
+      "<?xml version='1.0' ?>"
+      "<sdf version='1.6'>"
+      "<world name='default'>"
+      "<plugin name='node_1' filename='libnode_name.so'/>"
+      "</world>"
+      "</sdf>";
   sdf::SDF sdf_1;
   sdf_1.SetFromString(sdf_str_1);
   auto plugin_sdf_1 = sdf_1.Root()->GetElement("world")->GetElement("plugin");
@@ -128,42 +126,41 @@ TEST(TestNode, OptionalNodeName) {
   EXPECT_STREQ("node_name_optional", node_1->get_name());
 }
 
-TEST(TestNode, RemapAndQoSOverride)
-{
+TEST(TestNode, RemapAndQoSOverride) {
   // Remap topic 'foo' to 'bar', 'bar' to 'baz', and '~/zoo' to 'foo/bar'
   // and override QoS for remapped topic 'bar', 'baz', and 'foo/bar'
   // The node namespace should not interfere with remaps or QoS overrides
   auto sdf_str =
-    "<?xml version='1.0' ?>"
-    "<sdf version='1.6'>"
-    "  <world name='default'>"
-    "    <plugin name='node_1' filename='libnode_name.so'>"
-    "      <ros>"
-    "        <namespace>/my_test_namespace</namespace>"
-    "        <remapping>foo:=bar</remapping>"
-    "        <remapping>bar:=baz</remapping>"
-    "        <remapping>~/zoo:=foo/bar</remapping>"
-    "        <qos>"
-    "          <topic name='bar'>"
-    "            <subscription>"
-    "              <history depth='1234'>keep_last</history>"
-    "            </subscription>"
-    "          </topic>"
-    "          <topic name='baz'>"
-    "            <subscription>"
-    "              <history depth='5678'>keep_last</history>"
-    "            </subscription>"
-    "          </topic>"
-    "          <topic name='foo/bar'>"
-    "            <subscription>"
-    "              <history depth='91011'>keep_last</history>"
-    "            </subscription>"
-    "          </topic>"
-    "        </qos>"
-    "      </ros>"
-    "    </plugin>"
-    "  </world>"
-    "</sdf>";
+      "<?xml version='1.0' ?>"
+      "<sdf version='1.6'>"
+      "  <world name='default'>"
+      "    <plugin name='node_1' filename='libnode_name.so'>"
+      "      <ros>"
+      "        <namespace>/my_test_namespace</namespace>"
+      "        <remapping>foo:=bar</remapping>"
+      "        <remapping>bar:=baz</remapping>"
+      "        <remapping>~/zoo:=foo/bar</remapping>"
+      "        <qos>"
+      "          <topic name='bar'>"
+      "            <subscription>"
+      "              <history depth='1234'>keep_last</history>"
+      "            </subscription>"
+      "          </topic>"
+      "          <topic name='baz'>"
+      "            <subscription>"
+      "              <history depth='5678'>keep_last</history>"
+      "            </subscription>"
+      "          </topic>"
+      "          <topic name='foo/bar'>"
+      "            <subscription>"
+      "              <history depth='91011'>keep_last</history>"
+      "            </subscription>"
+      "          </topic>"
+      "        </qos>"
+      "      </ros>"
+      "    </plugin>"
+      "  </world>"
+      "</sdf>";
   sdf::SDF sdf;
   sdf.SetFromString(sdf_str);
   auto plugin_sdf = sdf.Root()->GetElement("world")->GetElement("plugin");
@@ -173,7 +170,7 @@ TEST(TestNode, RemapAndQoSOverride)
   ASSERT_NE(nullptr, node);
 
   // Get the QoS for the node
-  const gazebo_ros::QoS & qos = node->get_qos();
+  const gazebo_ros::QoS& qos = node->get_qos();
 
   rclcpp::QoS expected_foo_qos(1234);
   rclcpp::QoS expected_bar_qos(5678);
@@ -187,8 +184,7 @@ TEST(TestNode, RemapAndQoSOverride)
   rclcpp::QoS zoo_qos = qos.get_subscription_qos("~/zoo", rclcpp::QoS(10));
   EXPECT_EQ(expected_zoo_qos, zoo_qos);
   // Also try fully-expanded private name
-  rclcpp::QoS fqn_zoo_qos = qos.get_subscription_qos(
-    "/my_test_namespace/node_1/zoo", rclcpp::QoS(10));
+  rclcpp::QoS fqn_zoo_qos = qos.get_subscription_qos("/my_test_namespace/node_1/zoo", rclcpp::QoS(10));
   EXPECT_EQ(expected_zoo_qos, fqn_zoo_qos);
 
   // A topic that wasn't remapped, but happens to collide with a remap rule will
@@ -198,8 +194,7 @@ TEST(TestNode, RemapAndQoSOverride)
   EXPECT_EQ(expected_bar_qos, baz_qos);
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

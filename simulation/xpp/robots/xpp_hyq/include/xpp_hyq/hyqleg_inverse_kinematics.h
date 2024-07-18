@@ -34,7 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace xpp {
 
-enum HyqJointID {HAA=0, HFE, KFE, HyqlegJointCount};
+enum HyqJointID { HAA = 0, HFE, KFE, HyqlegJointCount };
 
 /**
  * @brief Converts a hyq foot position to joint angles.
@@ -47,15 +47,15 @@ public:
   /**
    * @brief Default c'tor initializing leg lengths with standard values.
    */
-  HyqlegInverseKinematics () = default;
-  virtual ~HyqlegInverseKinematics () = default;
+  HyqlegInverseKinematics() = default;
+  virtual ~HyqlegInverseKinematics() = default;
 
   /**
    * @brief Returns the joint angles to reach a Cartesian foot position.
    * @param ee_pos_H  Foot position xyz expressed in the frame attached
    * at the hip-aa (H).
    */
-  Vector3d GetJointAngles(const Vector3d& ee_pos_H, KneeBend bend=Forward) const;
+  Vector3d GetJointAngles(const Vector3d& ee_pos_H, KneeBend bend = Forward) const;
 
   /**
    * @brief Restricts the joint angles to lie inside the feasible range
@@ -66,9 +66,9 @@ public:
   void EnforceLimits(double& q, HyqJointID joint) const;
 
 private:
-  Vector3d hfe_to_haa_z = Vector3d(0.0, 0.0, 0.08); //distance of HFE to HAA in z direction
-  double length_thigh = 0.35; // length of upper leg
-  double length_shank = 0.33; // length of lower leg
+  Vector3d hfe_to_haa_z = Vector3d(0.0, 0.0, 0.08);  // distance of HFE to HAA in z direction
+  double length_thigh = 0.35;                        // length of upper leg
+  double length_shank = 0.33;                        // length of lower leg
 };
 
 } /* namespace xpp */

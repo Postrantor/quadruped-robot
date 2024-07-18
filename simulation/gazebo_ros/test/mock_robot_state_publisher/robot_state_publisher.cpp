@@ -21,31 +21,31 @@
 
 using namespace std::chrono_literals;
 
-int main(int argc, char * argv[])
-{
+int main(int argc, char* argv[]) {
   rclcpp::init(argc, argv);
   auto node = rclcpp::Node::make_shared("mock_robot_state_publisher");
-  auto publisher = node->create_publisher<std_msgs::msg::String>(
-    "/mock_robot_description", rclcpp::QoS(1).transient_local());
+  auto publisher =
+      node->create_publisher<std_msgs::msg::String>("/mock_robot_description", rclcpp::QoS(1).transient_local());
 
   std_msgs::msg::String message;
-  message.data = "<?xml version='1.0' ?>"
-    "<sdf version='1.5'>"
-    "<model name='ignored'>"
-    "<static>true</static>"
-    "<link name='link'>"
-    "<visual name='visual'>"
-    "<geometry>"
-    "<sphere><radius>1.0</radius></sphere>"
-    "</geometry>"
-    "</visual>"
-    "</link>"
-    "<plugin name='test_xmlns' filename='not-found'"
-    "        xmlns:test='http://example.org/schema'>"
-    "<test:parameter>content</test:parameter>"
-    "</plugin>"
-    "</model>"
-    "</sdf>";
+  message.data =
+      "<?xml version='1.0' ?>"
+      "<sdf version='1.5'>"
+      "<model name='ignored'>"
+      "<static>true</static>"
+      "<link name='link'>"
+      "<visual name='visual'>"
+      "<geometry>"
+      "<sphere><radius>1.0</radius></sphere>"
+      "</geometry>"
+      "</visual>"
+      "</link>"
+      "<plugin name='test_xmlns' filename='not-found'"
+      "        xmlns:test='http://example.org/schema'>"
+      "<test:parameter>content</test:parameter>"
+      "</plugin>"
+      "</model>"
+      "</sdf>";
 
   RCLCPP_INFO(node->get_logger(), "Publishing on /mock_robot_description");
   publisher->publish(message);

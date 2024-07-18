@@ -181,8 +181,9 @@ FSM_StateName qrFSMStateLocomotion<T>::CheckTransition() {
         this->transitionDuration = 0.;
         break;
       default:
-        std::cout << "[CONTROL FSM] Bad Request: Cannot transition from " << "K_LOCOMOTION" << " to "
-                  << this->_data->quadruped->fsmMode << std::endl;
+        std::cout << "[CONTROL FSM] Bad Request: Cannot transition from "
+                  << "K_LOCOMOTION"
+                  << " to " << this->_data->quadruped->fsmMode << std::endl;
     }
   } else {
     this->nextStateName = FSM_StateName::RECOVERY_STAND;

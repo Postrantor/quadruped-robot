@@ -21,14 +21,11 @@
 
 #define tol 10e-2
 
-using namespace std::literals::chrono_literals; // NOLINT
+using namespace std::literals::chrono_literals;  // NOLINT
 
-class GazeboRosJointPoseTrajectoryTest : public gazebo::ServerFixture
-{
-};
+class GazeboRosJointPoseTrajectoryTest : public gazebo::ServerFixture {};
 
-TEST_F(GazeboRosJointPoseTrajectoryTest, Publishing)
-{
+TEST_F(GazeboRosJointPoseTrajectoryTest, Publishing) {
   // Load test world and start paused
   this->Load("worlds/gazebo_ros_joint_pose_trajectory.world", true);
 
@@ -53,7 +50,7 @@ TEST_F(GazeboRosJointPoseTrajectoryTest, Publishing)
 
   // Create publisher
   auto pub = node->create_publisher<trajectory_msgs::msg::JointTrajectory>(
-    "test/set_trajectory_test", rclcpp::QoS(rclcpp::KeepLast(1)));
+      "test/set_trajectory_test", rclcpp::QoS(rclcpp::KeepLast(1)));
 
   auto joint_cmd = trajectory_msgs::msg::JointTrajectory();
   joint_cmd.header.frame_id = "world";
@@ -76,8 +73,7 @@ TEST_F(GazeboRosJointPoseTrajectoryTest, Publishing)
   ASSERT_NEAR(joint->Position(0), -1.57, tol);
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

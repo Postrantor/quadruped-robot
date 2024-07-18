@@ -20,16 +20,11 @@
 
 #define tol 10e-10
 
-enum AXIS
-{
-  X, Y, Z
-};
+enum AXIS { X, Y, Z };
 
-class GazeboRosForceTest : public gazebo::ServerFixture
-{
+class GazeboRosForceTest : public gazebo::ServerFixture {
 public:
-  void ApplyForceTorque(AXIS force_axis, double init_rotation = 0)
-  {
+  void ApplyForceTorque(AXIS force_axis, double init_rotation = 0) {
     // World
     auto world = gazebo::physics::get_world();
     ASSERT_NE(nullptr, world);
@@ -50,8 +45,7 @@ public:
     auto node = std::make_shared<rclcpp::Node>("gazebo_ros_force_test");
     ASSERT_NE(nullptr, node);
 
-    auto pub = node->create_publisher<geometry_msgs::msg::Wrench>(
-      "test/force_test", rclcpp::QoS(rclcpp::KeepLast(1)));
+    auto pub = node->create_publisher<geometry_msgs::msg::Wrench>("test/force_test", rclcpp::QoS(rclcpp::KeepLast(1)));
 
     // Wait for subscriber to come up
     unsigned int sleep = 0;
@@ -95,24 +89,21 @@ public:
   }
 };
 
-TEST_F(GazeboRosForceTest, ApplyForceTorqueWorld)
-{
+TEST_F(GazeboRosForceTest, ApplyForceTorqueWorld) {
   // Load test world and start paused
   this->Load("worlds/gazebo_ros_force.world", true);
 
   this->ApplyForceTorque(AXIS::X);
 }
 
-TEST_F(GazeboRosForceTest, ApplyForceTorqueLink)
-{
+TEST_F(GazeboRosForceTest, ApplyForceTorqueLink) {
   // Load test world and start paused
   this->Load("worlds/gazebo_ros_force_link.world", true);
 
   this->ApplyForceTorque(AXIS::Y, -M_PI / 2);
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

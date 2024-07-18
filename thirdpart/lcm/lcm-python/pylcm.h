@@ -8,17 +8,17 @@ extern "C" {
 #include <lcm/lcm.h>
 
 typedef struct {
-    PyObject_HEAD
+  PyObject_HEAD
 
-        lcm_t *lcm;
+      lcm_t *lcm;
 
-    int exception_raised;
+  int exception_raised;
 
-    PyObject *all_handlers;
+  PyObject *all_handlers;
 
-    // Stores the state of the thread that calls LCM.handle() or
-    // LCM.handle_timeout()
-    PyThreadState *saved_thread_state;
+  // Stores the state of the thread that calls LCM.handle() or
+  // LCM.handle_timeout()
+  PyThreadState *saved_thread_state;
 } PyLCMObject;
 
 #ifdef __cplusplus

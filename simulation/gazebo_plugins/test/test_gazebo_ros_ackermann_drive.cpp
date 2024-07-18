@@ -23,14 +23,11 @@
 
 #define tol 10e-1
 
-using namespace std::literals::chrono_literals; // NOLINT
+using namespace std::literals::chrono_literals;  // NOLINT
 
-class GazeboRosAckermannDriveTest : public gazebo::ServerFixture
-{
-};
+class GazeboRosAckermannDriveTest : public gazebo::ServerFixture {};
 
-TEST_F(GazeboRosAckermannDriveTest, Publishing)
-{
+TEST_F(GazeboRosAckermannDriveTest, Publishing) {
   // Load test world and start paused
   this->Load("worlds/gazebo_ros_ackermann_drive.world", true);
 
@@ -52,17 +49,13 @@ TEST_F(GazeboRosAckermannDriveTest, Publishing)
   // Create subscriber
   nav_msgs::msg::Odometry::SharedPtr latestMsg;
   auto sub = node->create_subscription<nav_msgs::msg::Odometry>(
-    "test/odom_test", rclcpp::QoS(rclcpp::KeepLast(1)),
-    [&latestMsg](const nav_msgs::msg::Odometry::SharedPtr _msg) {
-      latestMsg = _msg;
-    });
+      "test/odom_test", rclcpp::QoS(rclcpp::KeepLast(1)),
+      [&latestMsg](const nav_msgs::msg::Odometry::SharedPtr _msg) { latestMsg = _msg; });
 
   std_msgs::msg::Float32::SharedPtr latestSteerangle;
   auto subSteerangle = node->create_subscription<std_msgs::msg::Float32>(
-    "test/steerangle_test", rclcpp::QoS(rclcpp::KeepLast(1)),
-    [&latestSteerangle](const std_msgs::msg::Float32::SharedPtr _msg) {
-      latestSteerangle = _msg;
-    });
+      "test/steerangle_test", rclcpp::QoS(rclcpp::KeepLast(1)),
+      [&latestSteerangle](const std_msgs::msg::Float32::SharedPtr _msg) { latestSteerangle = _msg; });
 
   // Step a bit for model to settle
   world->Step(100);
@@ -77,7 +70,7 @@ TEST_F(GazeboRosAckermannDriveTest, Publishing)
 
   // Send command
   auto pub = node->create_publisher<geometry_msgs::msg::Twist>(
-    "test/cmd_test", rclcpp::QoS(rclcpp::KeepLast(1)).transient_local());
+      "test/cmd_test", rclcpp::QoS(rclcpp::KeepLast(1)).transient_local());
 
   auto msg = geometry_msgs::msg::Twist();
   msg.linear.x = 5.0;
@@ -92,9 +85,7 @@ TEST_F(GazeboRosAckermannDriveTest, Publishing)
   auto linear_vel = vehicle->WorldLinearVel();
   double linear_vel_x = cosf(yaw) * linear_vel.X() + sinf(yaw) * linear_vel.Y();
 
-  for (; sleep < maxSleep && (linear_vel_x < 4.0 ||
-    vehicle->WorldAngularVel().Z() < 0.0); ++sleep)
-  {
+  for (; sleep < maxSleep && (linear_vel_x < 4.0 || vehicle->WorldAngularVel().Z() < 0.0); ++sleep) {
     yaw = static_cast<float>(vehicle->WorldPose().Rot().Yaw());
     linear_vel = vehicle->WorldLinearVel();
     linear_vel_x = cosf(yaw) * linear_vel.X() + sinf(yaw) * linear_vel.Y();
@@ -122,8 +113,7 @@ TEST_F(GazeboRosAckermannDriveTest, Publishing)
   EXPECT_NEAR(0.1, vehicle->WorldAngularVel().Z(), tol);
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

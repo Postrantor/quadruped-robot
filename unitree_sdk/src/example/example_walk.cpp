@@ -15,8 +15,7 @@ using namespace UNITREE_LEGGED_SDK;
 
 class Custom {
 public:
-  Custom(uint8_t level)
-      : safe(UNITREE_LEGGED_SDK::LeggedType::Go1), udp(level, 8090, "192.168.123.161", 8082) {
+  Custom(uint8_t level) : safe(UNITREE_LEGGED_SDK::LeggedType::Go1), udp(level, 8090, "192.168.123.161", 8082) {
     udp.InitCmdData(cmd);
   }
   void UDPRecv();

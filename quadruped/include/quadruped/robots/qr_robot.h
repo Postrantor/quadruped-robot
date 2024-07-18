@@ -74,7 +74,7 @@ public:
    * @param motor_commands: 要执行的电机命令向量。
    * @param motor_control_mode: 例如制动的控制模式。
    */
-  virtual void ApplyAction(const std::vector<qrMotorCommand> &motor_commands, MotorMode motor_control_mode) {};
+  virtual void ApplyAction(const std::vector<qrMotorCommand> &motor_commands, MotorMode motor_control_mode){};
 
   /**
    * @brief 执行一次观测操作并应用命令。

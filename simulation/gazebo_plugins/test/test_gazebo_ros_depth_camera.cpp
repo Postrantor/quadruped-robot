@@ -20,11 +20,10 @@
 #include <memory>
 #include <string>
 
-using namespace std::literals::chrono_literals; // NOLINT
+using namespace std::literals::chrono_literals;  // NOLINT
 
 /// Test parameters
-struct TestParams
-{
+struct TestParams {
   /// Path to world file
   std::string world;
 
@@ -38,14 +37,10 @@ struct TestParams
   std::string pcl_topic;
 };
 
-class GazeboRosDepthCameraTest
-  : public gazebo::ServerFixture, public ::testing::WithParamInterface<TestParams>
-{
-};
+class GazeboRosDepthCameraTest : public gazebo::ServerFixture, public ::testing::WithParamInterface<TestParams> {};
 
 // Test that the camera image is published and has correct timestamp
-TEST_P(GazeboRosDepthCameraTest, DepthCameraSubscribeTest)
-{
+TEST_P(GazeboRosDepthCameraTest, DepthCameraSubscribeTest) {
   // Load test world and start paused
   this->Load(GetParam().world, true);
 
@@ -65,11 +60,12 @@ TEST_P(GazeboRosDepthCameraTest, DepthCameraSubscribeTest)
   builtin_interfaces::msg::Time image_stamp;
 
   auto sub = image_transport::create_subscription(
-    node.get(), GetParam().raw_image_topic,
-    [&](const sensor_msgs::msg::Image::ConstSharedPtr & msg) {
-      image_stamp = msg->header.stamp;
-      ++msg_count;
-    }, "raw");
+      node.get(), GetParam().raw_image_topic,
+      [&](const sensor_msgs::msg::Image::ConstSharedPtr& msg) {
+        image_stamp = msg->header.stamp;
+        ++msg_count;
+      },
+      "raw");
 
   // Update rate is 0.5 Hz, so we step 3s sim time to be sure we get exactly 1 image at 2s
   world->Step(3000);
@@ -91,11 +87,12 @@ TEST_P(GazeboRosDepthCameraTest, DepthCameraSubscribeTest)
   builtin_interfaces::msg::Time image_stamp_depth;
 
   auto sub_depth = image_transport::create_subscription(
-    node.get(), GetParam().depth_image_topic,
-    [&](const sensor_msgs::msg::Image::ConstSharedPtr & msg) {
-      image_stamp_depth = msg->header.stamp;
-      ++msg_count_depth;
-    }, "raw");
+      node.get(), GetParam().depth_image_topic,
+      [&](const sensor_msgs::msg::Image::ConstSharedPtr& msg) {
+        image_stamp_depth = msg->header.stamp;
+        ++msg_count_depth;
+      },
+      "raw");
 
   // Update rate is 0.5 Hz, so we step 3s sim time to be sure we get exactly 1 image at 2s
   world->Step(3000);
@@ -117,11 +114,10 @@ TEST_P(GazeboRosDepthCameraTest, DepthCameraSubscribeTest)
   builtin_interfaces::msg::Time image_stamp_pcl;
 
   auto sub_pcl = node->create_subscription<sensor_msgs::msg::PointCloud2>(
-    GetParam().pcl_topic, rclcpp::QoS(rclcpp::KeepLast(1)),
-    [&](const sensor_msgs::msg::PointCloud2::SharedPtr msg) {
-      image_stamp_pcl = msg->header.stamp;
-      ++msg_count_pcl;
-    });
+      GetParam().pcl_topic, rclcpp::QoS(rclcpp::KeepLast(1)), [&](const sensor_msgs::msg::PointCloud2::SharedPtr msg) {
+        image_stamp_pcl = msg->header.stamp;
+        ++msg_count_pcl;
+      });
 
   // Update rate is 0.5 Hz, so we step 3s sim time to be sure we get exactly 1 image at 2s
   world->Step(3000);
@@ -137,16 +133,13 @@ TEST_P(GazeboRosDepthCameraTest, DepthCameraSubscribeTest)
 }
 
 INSTANTIATE_TEST_SUITE_P(
-  GazeboRosDepthCamera, GazeboRosDepthCameraTest, ::testing::Values(
-    TestParams(
-      {"worlds/gazebo_ros_depth_camera.world",
-        "test_cam/camera/raw_image_test",
-        "test_cam/camera/depth_image_test",
-        "test_cam/camera/points_test"})
-));
+    GazeboRosDepthCamera,
+    GazeboRosDepthCameraTest,
+    ::testing::Values(TestParams(
+        {"worlds/gazebo_ros_depth_camera.world", "test_cam/camera/raw_image_test", "test_cam/camera/depth_image_test",
+         "test_cam/camera/points_test"})));
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   testing::InitGoogleTest(&argc, argv);
   int ret = RUN_ALL_TESTS();

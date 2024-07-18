@@ -20,8 +20,7 @@
 #include <memory>
 
 /// Simple example of a gazebo system plugin which uses a ROS2 node with gazebo_ros::Node.
-class ProperInit : public gazebo::SystemPlugin
-{
+class ProperInit : public gazebo::SystemPlugin {
 public:
   /// Constructor
   ProperInit();
@@ -32,23 +31,18 @@ public:
   /// Called by gazebo to load plugin. Creates #node, #timer_, and #pub
   /// \param[in] argc Argument count.
   /// \param[in] argv Argument values.
-  void Load(int argc, char ** argv);
+  void Load(int argc, char** argv);
 
 private:
   /// Timer called to publish a message every second
   std::shared_ptr<rclcpp::TimerBase> timer_;
 };
 
-ProperInit::ProperInit()
-{
-}
+ProperInit::ProperInit() {}
 
-ProperInit::~ProperInit()
-{
-}
+ProperInit::~ProperInit() {}
 
-void ProperInit::Load(int argc, char ** argv)
-{
+void ProperInit::Load(int argc, char** argv) {
   // Initialize ROS with arguments
   rclcpp::init(argc, argv);
 
@@ -56,25 +50,21 @@ void ProperInit::Load(int argc, char ** argv)
   auto node = gazebo_ros::Node::Get();
 
   // Create a publisher
-  auto pub = node->create_publisher<std_msgs::msg::String>(
-    "test",
-    rclcpp::QoS(rclcpp::KeepLast(1)).transient_local());
+  auto pub = node->create_publisher<std_msgs::msg::String>("test", rclcpp::QoS(rclcpp::KeepLast(1)).transient_local());
 
   // Run lambda every 1 second
   using namespace std::chrono_literals;
-  timer_ = node->create_wall_timer(
-    1s,
-    [node, pub]() {
-      // Create string message
-      auto msg = std_msgs::msg::String();
-      msg.data = "Hello world";
+  timer_ = node->create_wall_timer(1s, [node, pub]() {
+    // Create string message
+    auto msg = std_msgs::msg::String();
+    msg.data = "Hello world";
 
-      // Warn with this node's name (to test logging)
-      RCLCPP_WARN(node->get_logger(), "Publishing");
+    // Warn with this node's name (to test logging)
+    RCLCPP_WARN(node->get_logger(), "Publishing");
 
-      // Publish message
-      pub->publish(msg);
-    });
+    // Publish message
+    pub->publish(msg);
+  });
 }
 
 GZ_REGISTER_SYSTEM_PLUGIN(ProperInit)

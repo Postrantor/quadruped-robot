@@ -11,12 +11,12 @@ extern "C" {
 #endif
 
 typedef struct {
-    PyObject_HEAD
+  PyObject_HEAD
 
-        lcm_subscription_t *subscription;
+      lcm_subscription_t *subscription;
 
-    PyObject *handler;
-    PyLCMObject *lcm_obj;
+  PyObject *handler;
+  PyLCMObject *lcm_obj;
 } PyLCMSubscriptionObject;
 
 extern PyTypeObject pylcm_subscription_type;

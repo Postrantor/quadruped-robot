@@ -375,7 +375,7 @@ void amd_l_info(c_float Info[]);
  */
 
 #define AMD_DATE "May 4, 2016"
-#define AMD_VERSION_CODE(main, sub) ((main) * 1000 + (sub))
+#define AMD_VERSION_CODE(main, sub) ((main)*1000 + (sub))
 #define AMD_MAIN_VERSION 2
 #define AMD_SUB_VERSION 4
 #define AMD_SUBSUB_VERSION 6

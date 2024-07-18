@@ -35,79 +35,65 @@
 
 #define tol 0.01
 
-class GazeboRosPropertiesTest : public gazebo::ServerFixture
-{
+class GazeboRosPropertiesTest : public gazebo::ServerFixture {
 public:
   // Documentation inherited
   void SetUp() override;
 
-  void GetModelProperties(
-    const std::string & _model_name);
+  void GetModelProperties(const std::string& _model_name);
 
-  void GetJointProperties(
-    const std::string & _joint_name,
-    const double & _damping);
+  void GetJointProperties(const std::string& _joint_name, const double& _damping);
 
   void GetLinkProperties(
-    const std::string & _link_name,
-    const bool & _gravity_mode,
-    const double & _mass,
-    const double & _ixx,
-    const double & _ixy,
-    const double & _ixz,
-    const double & _iyy,
-    const double & _iyz,
-    const double & _izz);
+      const std::string& _link_name,
+      const bool& _gravity_mode,
+      const double& _mass,
+      const double& _ixx,
+      const double& _ixy,
+      const double& _ixz,
+      const double& _iyy,
+      const double& _iyz,
+      const double& _izz);
 
   void GetLightProperties(
-    const std::string & _light_name,
-    const ignition::math::Color & _diffuse,
-    const double & _attenuation_constant,
-    const double & _attenuation_linear,
-    const double & _attenuation_quadratic);
+      const std::string& _light_name,
+      const ignition::math::Color& _diffuse,
+      const double& _attenuation_constant,
+      const double& _attenuation_linear,
+      const double& _attenuation_quadratic);
 
-  void SetJointProperties(
-    const std::string & _joint_name,
-    const double & _damping);
+  void SetJointProperties(const std::string& _joint_name, const double& _damping);
 
   void SetLinkProperties(
-    const std::string & _link_name,
-    const bool & _gravity_mode,
-    const double & _mass,
-    const double & _ixx,
-    const double & _ixy,
-    const double & _ixz,
-    const double & _iyy,
-    const double & _iyz,
-    const double & _izz);
+      const std::string& _link_name,
+      const bool& _gravity_mode,
+      const double& _mass,
+      const double& _ixx,
+      const double& _ixy,
+      const double& _ixz,
+      const double& _iyy,
+      const double& _iyz,
+      const double& _izz);
 
   void SetLightProperties(
-    const std::string & _light_name,
-    const ignition::math::Color & _diffuse,
-    const double & _attenuation_constant,
-    const double & _attenuation_linear,
-    const double & _attenuation_quadratic);
+      const std::string& _light_name,
+      const ignition::math::Color& _diffuse,
+      const double& _attenuation_constant,
+      const double& _attenuation_linear,
+      const double& _attenuation_quadratic);
 
   gazebo::physics::WorldPtr world_;
   rclcpp::Node::SharedPtr node_;
-  std::shared_ptr<rclcpp::Client<gazebo_msgs::srv::GetModelProperties>>
-  get_model_properties_client_;
-  std::shared_ptr<rclcpp::Client<gazebo_msgs::srv::GetJointProperties>>
-  get_joint_properties_client_;
-  std::shared_ptr<rclcpp::Client<gazebo_msgs::srv::GetLinkProperties>>
-  get_link_properties_client_;
-  std::shared_ptr<rclcpp::Client<gazebo_msgs::srv::GetLightProperties>>
-  get_light_properties_client_;
-  std::shared_ptr<rclcpp::Client<gazebo_msgs::srv::SetJointProperties>>
-  set_joint_properties_client_;
-  std::shared_ptr<rclcpp::Client<gazebo_msgs::srv::SetLinkProperties>>
-  set_link_properties_client_;
-  std::shared_ptr<rclcpp::Client<gazebo_msgs::srv::SetLightProperties>>
-  set_light_properties_client_;
+  std::shared_ptr<rclcpp::Client<gazebo_msgs::srv::GetModelProperties>> get_model_properties_client_;
+  std::shared_ptr<rclcpp::Client<gazebo_msgs::srv::GetJointProperties>> get_joint_properties_client_;
+  std::shared_ptr<rclcpp::Client<gazebo_msgs::srv::GetLinkProperties>> get_link_properties_client_;
+  std::shared_ptr<rclcpp::Client<gazebo_msgs::srv::GetLightProperties>> get_light_properties_client_;
+  std::shared_ptr<rclcpp::Client<gazebo_msgs::srv::SetJointProperties>> set_joint_properties_client_;
+  std::shared_ptr<rclcpp::Client<gazebo_msgs::srv::SetLinkProperties>> set_link_properties_client_;
+  std::shared_ptr<rclcpp::Client<gazebo_msgs::srv::SetLightProperties>> set_light_properties_client_;
 };
 
-void GazeboRosPropertiesTest::SetUp()
-{
+void GazeboRosPropertiesTest::SetUp() {
   // Load world with state plugin and start paused
   this->Load("worlds/gazebo_ros_properties_test.world", true);
 
@@ -120,44 +106,40 @@ void GazeboRosPropertiesTest::SetUp()
   ASSERT_NE(nullptr, node_);
 
   get_model_properties_client_ =
-    node_->create_client<gazebo_msgs::srv::GetModelProperties>("test/get_model_properties");
+      node_->create_client<gazebo_msgs::srv::GetModelProperties>("test/get_model_properties");
   ASSERT_NE(nullptr, get_model_properties_client_);
   EXPECT_TRUE(get_model_properties_client_->wait_for_service(std::chrono::seconds(1)));
 
   get_joint_properties_client_ =
-    node_->create_client<gazebo_msgs::srv::GetJointProperties>("test/get_joint_properties");
+      node_->create_client<gazebo_msgs::srv::GetJointProperties>("test/get_joint_properties");
   ASSERT_NE(nullptr, get_joint_properties_client_);
   EXPECT_TRUE(get_joint_properties_client_->wait_for_service(std::chrono::seconds(1)));
 
-  get_link_properties_client_ =
-    node_->create_client<gazebo_msgs::srv::GetLinkProperties>("test/get_link_properties");
+  get_link_properties_client_ = node_->create_client<gazebo_msgs::srv::GetLinkProperties>("test/get_link_properties");
   ASSERT_NE(nullptr, get_link_properties_client_);
   EXPECT_TRUE(get_link_properties_client_->wait_for_service(std::chrono::seconds(1)));
 
   get_light_properties_client_ =
-    node_->create_client<gazebo_msgs::srv::GetLightProperties>("test/get_light_properties");
+      node_->create_client<gazebo_msgs::srv::GetLightProperties>("test/get_light_properties");
   ASSERT_NE(nullptr, get_light_properties_client_);
   EXPECT_TRUE(get_light_properties_client_->wait_for_service(std::chrono::seconds(1)));
 
   set_joint_properties_client_ =
-    node_->create_client<gazebo_msgs::srv::SetJointProperties>("test/set_joint_properties");
+      node_->create_client<gazebo_msgs::srv::SetJointProperties>("test/set_joint_properties");
   ASSERT_NE(nullptr, set_joint_properties_client_);
   EXPECT_TRUE(set_joint_properties_client_->wait_for_service(std::chrono::seconds(1)));
 
-  set_link_properties_client_ =
-    node_->create_client<gazebo_msgs::srv::SetLinkProperties>("test/set_link_properties");
+  set_link_properties_client_ = node_->create_client<gazebo_msgs::srv::SetLinkProperties>("test/set_link_properties");
   ASSERT_NE(nullptr, set_link_properties_client_);
   EXPECT_TRUE(set_link_properties_client_->wait_for_service(std::chrono::seconds(1)));
 
   set_light_properties_client_ =
-    node_->create_client<gazebo_msgs::srv::SetLightProperties>("test/set_light_properties");
+      node_->create_client<gazebo_msgs::srv::SetLightProperties>("test/set_light_properties");
   ASSERT_NE(nullptr, set_light_properties_client_);
   EXPECT_TRUE(set_light_properties_client_->wait_for_service(std::chrono::seconds(1)));
 }
 
-void GazeboRosPropertiesTest::GetModelProperties(
-  const std::string & _model_name)
-{
+void GazeboRosPropertiesTest::GetModelProperties(const std::string& _model_name) {
   // Get spawned Model properties
   auto entity = world_->EntityByName(_model_name);
   ASSERT_NE(nullptr, entity);
@@ -166,9 +148,7 @@ void GazeboRosPropertiesTest::GetModelProperties(
   request->model_name = _model_name;
 
   auto response_future = get_model_properties_client_->async_send_request(request);
-  EXPECT_EQ(
-    rclcpp::FutureReturnCode::SUCCESS,
-    rclcpp::spin_until_future_complete(node_, response_future));
+  EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node_, response_future));
 
   auto response = response_future.get();
   ASSERT_NE(nullptr, response);
@@ -206,17 +186,12 @@ void GazeboRosPropertiesTest::GetModelProperties(
   EXPECT_FALSE(response->is_static);
 }
 
-void GazeboRosPropertiesTest::GetJointProperties(
-  const std::string & _joint_name,
-  const double & _damping)
-{
+void GazeboRosPropertiesTest::GetJointProperties(const std::string& _joint_name, const double& _damping) {
   auto request = std::make_shared<gazebo_msgs::srv::GetJointProperties::Request>();
   request->joint_name = _joint_name;
 
   auto response_future = get_joint_properties_client_->async_send_request(request);
-  EXPECT_EQ(
-    rclcpp::FutureReturnCode::SUCCESS,
-    rclcpp::spin_until_future_complete(node_, response_future));
+  EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node_, response_future));
 
   auto response = response_future.get();
   ASSERT_NE(nullptr, response);
@@ -239,19 +214,14 @@ void GazeboRosPropertiesTest::GetJointProperties(
   }
 }
 
-void GazeboRosPropertiesTest::SetJointProperties(
-  const std::string & _joint_name,
-  const double & _damping)
-{
+void GazeboRosPropertiesTest::SetJointProperties(const std::string& _joint_name, const double& _damping) {
   auto request = std::make_shared<gazebo_msgs::srv::SetJointProperties::Request>();
   request->joint_name = _joint_name;
 
   request->ode_joint_config.damping.push_back(_damping);
 
   auto response_future = set_joint_properties_client_->async_send_request(request);
-  EXPECT_EQ(
-    rclcpp::FutureReturnCode::SUCCESS,
-    rclcpp::spin_until_future_complete(node_, response_future));
+  EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node_, response_future));
 
   auto response = response_future.get();
   ASSERT_NE(nullptr, response);
@@ -259,23 +229,20 @@ void GazeboRosPropertiesTest::SetJointProperties(
 }
 
 void GazeboRosPropertiesTest::GetLinkProperties(
-  const std::string & _link_name,
-  const bool & _gravity_mode,
-  const double & _mass,
-  const double & _ixx,
-  const double & _ixy,
-  const double & _ixz,
-  const double & _iyy,
-  const double & _iyz,
-  const double & _izz)
-{
+    const std::string& _link_name,
+    const bool& _gravity_mode,
+    const double& _mass,
+    const double& _ixx,
+    const double& _ixy,
+    const double& _ixz,
+    const double& _iyy,
+    const double& _iyz,
+    const double& _izz) {
   auto request = std::make_shared<gazebo_msgs::srv::GetLinkProperties::Request>();
   request->link_name = _link_name;
 
   auto response_future = get_link_properties_client_->async_send_request(request);
-  EXPECT_EQ(
-    rclcpp::FutureReturnCode::SUCCESS,
-    rclcpp::spin_until_future_complete(node_, response_future));
+  EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node_, response_future));
 
   auto response = response_future.get();
   ASSERT_NE(nullptr, response);
@@ -292,16 +259,15 @@ void GazeboRosPropertiesTest::GetLinkProperties(
 }
 
 void GazeboRosPropertiesTest::SetLinkProperties(
-  const std::string & _link_name,
-  const bool & _gravity_mode,
-  const double & _mass,
-  const double & _ixx,
-  const double & _ixy,
-  const double & _ixz,
-  const double & _iyy,
-  const double & _iyz,
-  const double & _izz)
-{
+    const std::string& _link_name,
+    const bool& _gravity_mode,
+    const double& _mass,
+    const double& _ixx,
+    const double& _ixy,
+    const double& _ixz,
+    const double& _iyy,
+    const double& _iyz,
+    const double& _izz) {
   auto request = std::make_shared<gazebo_msgs::srv::SetLinkProperties::Request>();
   request->link_name = _link_name;
   request->gravity_mode = _gravity_mode;
@@ -314,9 +280,7 @@ void GazeboRosPropertiesTest::SetLinkProperties(
   request->izz = _izz;
 
   auto response_future = set_link_properties_client_->async_send_request(request);
-  EXPECT_EQ(
-    rclcpp::FutureReturnCode::SUCCESS,
-    rclcpp::spin_until_future_complete(node_, response_future));
+  EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node_, response_future));
 
   auto response = response_future.get();
   ASSERT_NE(nullptr, response);
@@ -324,19 +288,16 @@ void GazeboRosPropertiesTest::SetLinkProperties(
 }
 
 void GazeboRosPropertiesTest::GetLightProperties(
-  const std::string & _light_name,
-  const ignition::math::Color & _diffuse,
-  const double & _attenuation_constant,
-  const double & _attenuation_linear,
-  const double & _attenuation_quadratic)
-{
+    const std::string& _light_name,
+    const ignition::math::Color& _diffuse,
+    const double& _attenuation_constant,
+    const double& _attenuation_linear,
+    const double& _attenuation_quadratic) {
   auto request = std::make_shared<gazebo_msgs::srv::GetLightProperties::Request>();
   request->light_name = _light_name;
 
   auto response_future = get_light_properties_client_->async_send_request(request);
-  EXPECT_EQ(
-    rclcpp::FutureReturnCode::SUCCESS,
-    rclcpp::spin_until_future_complete(node_, response_future));
+  EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node_, response_future));
 
   auto response = response_future.get();
   ASSERT_NE(nullptr, response);
@@ -353,12 +314,11 @@ void GazeboRosPropertiesTest::GetLightProperties(
 }
 
 void GazeboRosPropertiesTest::SetLightProperties(
-  const std::string & _light_name,
-  const ignition::math::Color & _diffuse,
-  const double & _attenuation_constant,
-  const double & _attenuation_linear,
-  const double & _attenuation_quadratic)
-{
+    const std::string& _light_name,
+    const ignition::math::Color& _diffuse,
+    const double& _attenuation_constant,
+    const double& _attenuation_linear,
+    const double& _attenuation_quadratic) {
   auto request = std::make_shared<gazebo_msgs::srv::SetLightProperties::Request>();
   request->light_name = _light_name;
   request->diffuse.r = _diffuse.R();
@@ -370,21 +330,16 @@ void GazeboRosPropertiesTest::SetLightProperties(
   request->attenuation_quadratic = _attenuation_quadratic;
 
   auto response_future = set_light_properties_client_->async_send_request(request);
-  EXPECT_EQ(
-    rclcpp::FutureReturnCode::SUCCESS,
-    rclcpp::spin_until_future_complete(node_, response_future));
+  EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node_, response_future));
 
   auto response = response_future.get();
   ASSERT_NE(nullptr, response);
   EXPECT_TRUE(response->success);
 }
 
-TEST_F(GazeboRosPropertiesTest, GetSetProperties)
-{
+TEST_F(GazeboRosPropertiesTest, GetSetProperties) {
   // Get model properties
-  {
-    this->GetModelProperties("simple_arm");
-  }
+  { this->GetModelProperties("simple_arm"); }
   // Get / set joint propertires
   {
     // Get initial joint properties (damping only).
@@ -401,42 +356,29 @@ TEST_F(GazeboRosPropertiesTest, GetSetProperties)
   // Get / set link properties
   {
     // Get initial link properties
-    this->GetLinkProperties(
-      "simple_arm::arm_base",
-      true, 101.0, 1.11, 0.0, 0.0, 100.11, 0.0, 1.01);
+    this->GetLinkProperties("simple_arm::arm_base", true, 101.0, 1.11, 0.0, 0.0, 100.11, 0.0, 1.01);
 
     // Set link properties
-    this->SetLinkProperties(
-      "simple_arm::arm_base",
-      true, 170.2, 1.2, 0.3, 0.2, 102.2, 0.2, 1.02);
+    this->SetLinkProperties("simple_arm::arm_base", true, 170.2, 1.2, 0.3, 0.2, 102.2, 0.2, 1.02);
 
     // Check new link properties
-    this->GetLinkProperties(
-      "simple_arm::arm_base",
-      true, 170.2, 1.2, 0.3, 0.2, 102.2, 0.2, 1.02);
+    this->GetLinkProperties("simple_arm::arm_base", true, 170.2, 1.2, 0.3, 0.2, 102.2, 0.2, 1.02);
   }
   // Get / set light properties
   {
     // Get initial light properties
-    this->GetLightProperties(
-      "sun", ignition::math::Color(0.8, 0.8, 0.8, 1.0),
-      0.9, 0.01, 0.001);
+    this->GetLightProperties("sun", ignition::math::Color(0.8, 0.8, 0.8, 1.0), 0.9, 0.01, 0.001);
 
     // Set light properties
-    this->SetLightProperties(
-      "sun", ignition::math::Color(0.7, 0.1, 0.5, 1.0),
-      0.92, 0.0092, 0.002);
+    this->SetLightProperties("sun", ignition::math::Color(0.7, 0.1, 0.5, 1.0), 0.92, 0.0092, 0.002);
 
     // Check new light properties. Wait for properties to be set first.
     rclcpp::sleep_for(std::chrono::milliseconds(500));
-    this->GetLightProperties(
-      "sun", ignition::math::Color(0.7, 0.1, 0.5, 1.0),
-      0.92, 0.0092, 0.002);
+    this->GetLightProperties("sun", ignition::math::Color(0.7, 0.1, 0.5, 1.0), 0.92, 0.0092, 0.002);
   }
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

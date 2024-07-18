@@ -23,9 +23,7 @@
 using namespace std::chrono_literals;
 
 void SpawnEntityRequest(
-  gazebo_msgs::srv::SpawnEntity::Request::SharedPtr req,
-  gazebo_msgs::srv::SpawnEntity::Response::SharedPtr res)
-{
+    gazebo_msgs::srv::SpawnEntity::Request::SharedPtr req, gazebo_msgs::srv::SpawnEntity::Response::SharedPtr res) {
   const std::string xmlnsParam = "<test:parameter>content</test:parameter>";
   if (std::string::npos == req->xml.find(xmlnsParam)) {
     res->status_message = "Unable to find '" + xmlnsParam + "' in " + req->xml;
@@ -36,14 +34,11 @@ void SpawnEntityRequest(
   res->success = true;
 }
 
-int main(int argc, char * argv[])
-{
+int main(int argc, char* argv[]) {
   rclcpp::init(argc, argv);
   auto node = rclcpp::Node::make_shared("mock_gazebo_ros_factory");
   auto service = node->create_service<gazebo_msgs::srv::SpawnEntity>(
-    "/spawn_entity",
-    std::bind(
-      &SpawnEntityRequest, std::placeholders::_1, std::placeholders::_2));
+      "/spawn_entity", std::bind(&SpawnEntityRequest, std::placeholders::_1, std::placeholders::_2));
 
   RCLCPP_INFO(node->get_logger(), "Listening to /spawn_entity");
   rclcpp::spin(node);

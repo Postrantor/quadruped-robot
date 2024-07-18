@@ -17,13 +17,10 @@
 #include <std_srvs/srv/empty.hpp>
 #include <memory>
 
-class GazeboRosInitTest : public gazebo::ServerFixture
-{
-};
+class GazeboRosInitTest : public gazebo::ServerFixture {};
 
 // Since the plugin calls rclcpp:init, and that can be called only once, we can only run one test
-TEST_F(GazeboRosInitTest, Commands)
-{
+TEST_F(GazeboRosInitTest, Commands) {
   // Load empty world with init plugin and start paused
   this->LoadArgs("-u --verbose -s libgazebo_ros_init.so worlds/free_fall.world");
 
@@ -53,9 +50,7 @@ TEST_F(GazeboRosInitTest, Commands)
     auto request = std::make_shared<std_srvs::srv::Empty::Request>();
 
     auto response_future = unpause_physics_client->async_send_request(request);
-    EXPECT_EQ(
-      rclcpp::FutureReturnCode::SUCCESS,
-      rclcpp::spin_until_future_complete(node, response_future));
+    EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node, response_future));
 
     auto response = response_future.get();
     ASSERT_NE(nullptr, response);
@@ -70,9 +65,7 @@ TEST_F(GazeboRosInitTest, Commands)
 
     // Request
     response_future = pause_physics_client->async_send_request(request);
-    EXPECT_EQ(
-      rclcpp::FutureReturnCode::SUCCESS,
-      rclcpp::spin_until_future_complete(node, response_future));
+    EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node, response_future));
 
     response = response_future.get();
     ASSERT_NE(nullptr, response);
@@ -99,9 +92,7 @@ TEST_F(GazeboRosInitTest, Commands)
     auto request = std::make_shared<std_srvs::srv::Empty::Request>();
 
     auto response_future = reset_simulation_client->async_send_request(request);
-    EXPECT_EQ(
-      rclcpp::FutureReturnCode::SUCCESS,
-      rclcpp::spin_until_future_complete(node, response_future));
+    EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node, response_future));
 
     auto response = response_future.get();
     ASSERT_NE(nullptr, response);
@@ -126,9 +117,7 @@ TEST_F(GazeboRosInitTest, Commands)
     request = std::make_shared<std_srvs::srv::Empty::Request>();
 
     response_future = reset_world_client->async_send_request(request);
-    EXPECT_EQ(
-      rclcpp::FutureReturnCode::SUCCESS,
-      rclcpp::spin_until_future_complete(node, response_future));
+    EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node, response_future));
 
     response = response_future.get();
     ASSERT_NE(nullptr, response);
@@ -143,8 +132,7 @@ TEST_F(GazeboRosInitTest, Commands)
   EXPECT_TRUE(reset_world_client->wait_for_service(std::chrono::seconds(1)));
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }

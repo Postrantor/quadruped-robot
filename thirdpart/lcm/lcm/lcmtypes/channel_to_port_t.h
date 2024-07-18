@@ -21,8 +21,8 @@ extern "C" {
 
 typedef struct _channel_to_port_t channel_to_port_t;
 struct _channel_to_port_t {
-    char *channel;
-    int16_t port;
+  char *channel;
+  int16_t port;
 };
 
 channel_to_port_t *channel_to_port_t_copy(const channel_to_port_t *p);
@@ -36,10 +36,8 @@ int channel_to_port_t_encoded_size(const channel_to_port_t *p);
 // LCM support functions. Users should not call these
 int64_t __channel_to_port_t_get_hash(void);
 int64_t __channel_to_port_t_hash_recursive(const __lcm_hash_ptr *p);
-int __channel_to_port_t_encode_array(void *buf, int offset, int maxlen, const channel_to_port_t *p,
-                                     int elements);
-int __channel_to_port_t_decode_array(const void *buf, int offset, int maxlen, channel_to_port_t *p,
-                                     int elements);
+int __channel_to_port_t_encode_array(void *buf, int offset, int maxlen, const channel_to_port_t *p, int elements);
+int __channel_to_port_t_decode_array(const void *buf, int offset, int maxlen, channel_to_port_t *p, int elements);
 int __channel_to_port_t_decode_array_cleanup(channel_to_port_t *p, int elements);
 int __channel_to_port_t_encoded_array_size(const channel_to_port_t *p, int elements);
 int __channel_to_port_t_clone_array(const channel_to_port_t *p, channel_to_port_t *q, int elements);

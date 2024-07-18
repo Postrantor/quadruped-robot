@@ -27,11 +27,10 @@
 #include <vector>
 #include <algorithm>
 
-using namespace std::literals::chrono_literals; // NOLINT
+using namespace std::literals::chrono_literals;  // NOLINT
 
 /// Tests the gazebo_ros_ray_sensor plugin
-class GazeboRosRaySensorTest : public gazebo::ServerFixture
-{
+class GazeboRosRaySensorTest : public gazebo::ServerFixture {
 protected:
   using position_t = ignition::math::Vector3d;
   using positions_t = std::vector<position_t>;
@@ -43,17 +42,17 @@ protected:
   static constexpr double ROUNDING_ERROR_TOL = 1E-2;
 
   /// Verify that a point is close to one of the ground truth points
-  bool VerifyPoint(const positions_t & positions, const ignition::math::Vector3d & point)
-  {
+  bool VerifyPoint(const positions_t& positions, const ignition::math::Vector3d& point) {
     for (auto real_point : positions) {
-      if (real_point.Distance(point) < POINT_DISTANCE_TOL) {return true;}
+      if (real_point.Distance(point) < POINT_DISTANCE_TOL) {
+        return true;
+      }
     }
     return false;
   }
 };
 
-TEST_F(GazeboRosRaySensorTest, CorrectOutput)
-{
+TEST_F(GazeboRosRaySensorTest, CorrectOutput) {
   // Load test world and start paused
   this->Load("worlds/gazebo_ros_ray_sensor.world", true);
 
@@ -92,13 +91,10 @@ TEST_F(GazeboRosRaySensorTest, CorrectOutput)
   auto node = std::make_shared<rclcpp::Node>("gazebo_ros_joint_state_publisher_test");
   ASSERT_NE(nullptr, node);
 
-  // Convienence function to subscribe to a topic and store it to a variable
-  #define SUBSCRIBE_SETTER(msg, topic) \
+// Convienence function to subscribe to a topic and store it to a variable
+#define SUBSCRIBE_SETTER(msg, topic)                      \
   node->create_subscription<decltype(msg)::element_type>( \
-    topic, rclcpp::SensorDataQoS(), \
-    [&msg](decltype(msg) _msg) { \
-      msg = _msg; \
-    })
+      topic, rclcpp::SensorDataQoS(), [&msg](decltype(msg) _msg) { msg = _msg; })
 
   // Create subscribe setter for each output type
   sensor_msgs::msg::LaserScan::SharedPtr ls = nullptr;
@@ -110,7 +106,7 @@ TEST_F(GazeboRosRaySensorTest, CorrectOutput)
   auto pc2_sub = SUBSCRIBE_SETTER(pc2, "/ray/pointcloud2");
   auto range_sub = SUBSCRIBE_SETTER(range, "/ray/range");
 
-  #undef SUBSCRIBE_SETTER
+#undef SUBSCRIBE_SETTER
 
   // Step world enough for one message to be published
   world->Step(400);
@@ -140,9 +136,7 @@ TEST_F(GazeboRosRaySensorTest, CorrectOutput)
   ASSERT_EQ(pc->points.size(), pc->channels[0].values.size());
   auto point = pc->points.begin();
   auto intensity = pc->channels[0].values.begin();
-  for (; point != pc->points.end();
-    ++point, ++intensity)
-  {
+  for (; point != pc->points.end(); ++point, ++intensity) {
     EXPECT_TRUE(VerifyPoint(positions, gazebo_ros::Convert<position_t>(*point)));
     EXPECT_NEAR(*intensity, 80, ROUNDING_ERROR_TOL);
   }
@@ -153,9 +147,7 @@ TEST_F(GazeboRosRaySensorTest, CorrectOutput)
   auto pc2_iter_y = sensor_msgs::PointCloud2Iterator<float>(*pc2, "y");
   auto pc2_iter_z = sensor_msgs::PointCloud2Iterator<float>(*pc2, "z");
   auto pc2_iter_intensity = sensor_msgs::PointCloud2Iterator<float>(*pc2, "intensity");
-  for (; pc2_iter_x != pc2_iter_x.end();
-    ++pc2_iter_x, ++pc2_iter_y, ++pc2_iter_z, ++pc2_iter_intensity)
-  {
+  for (; pc2_iter_x != pc2_iter_x.end(); ++pc2_iter_x, ++pc2_iter_y, ++pc2_iter_z, ++pc2_iter_intensity) {
     auto point = position_t(*pc2_iter_x, *pc2_iter_y, *pc2_iter_z);
     EXPECT_TRUE(VerifyPoint(positions, point));
     EXPECT_NEAR(*pc2_iter_intensity, 80, ROUNDING_ERROR_TOL);
@@ -168,8 +160,7 @@ TEST_F(GazeboRosRaySensorTest, CorrectOutput)
   EXPECT_NEAR(ls->angle_max, 0.5236, ROUNDING_ERROR_TOL);
   EXPECT_NEAR(ls->range_min, 0.05, ROUNDING_ERROR_TOL);
   EXPECT_NEAR(ls->range_max, 50.0, ROUNDING_ERROR_TOL);
-  EXPECT_NEAR(
-    ls->angle_increment, (ls->angle_max - ls->angle_min) / ls->ranges.size(), ROUNDING_ERROR_TOL);
+  EXPECT_NEAR(ls->angle_increment, (ls->angle_max - ls->angle_min) / ls->ranges.size(), ROUNDING_ERROR_TOL);
 
   // Ensure each ground truth range is found in the laserscan
   for (size_t i = 0; i < ranges.size(); ++i) {
@@ -177,8 +168,12 @@ TEST_F(GazeboRosRaySensorTest, CorrectOutput)
     double angle = angles[i];
     // Check for a correct range at roughly the ground truth angle
     int idx = (angle - ls->angle_min) / ls->angle_increment;
-    if (idx < 0) {idx = 0;}
-    if (idx > static_cast<int>(ls->ranges.size())) {idx = ls->ranges.size() - 1;}
+    if (idx < 0) {
+      idx = 0;
+    }
+    if (idx > static_cast<int>(ls->ranges.size())) {
+      idx = ls->ranges.size() - 1;
+    }
     EXPECT_NEAR(ls->ranges[idx], range, POINT_DISTANCE_TOL);
     EXPECT_NEAR(ls->intensities[idx], 80, ROUNDING_ERROR_TOL);
   }
@@ -188,8 +183,7 @@ TEST_F(GazeboRosRaySensorTest, CorrectOutput)
   gazebo::event::Events::sigInt();
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

@@ -8,39 +8,36 @@
 using namespace std;
 
 // Unit circle
-tinynurbs::Curve3f getShape()
-{
-    tinynurbs::Curve3f crv;
-    crv.control_points = {glm::vec3(-1, 0, 0), glm::vec3(1, 0, 0), glm::vec3(3, 0, 0),
-                          glm::vec3(3, 1, 0),  glm::vec3(3, 2, 0), glm::vec3(3, 3, 0),
-                          glm::vec3(5, 3, 0),  glm::vec3(6, 3, 0), glm::vec3(8, 3.5, 0),
-                          glm::vec3(9, 5, 0)};
-    // const float sqrt2_over_2 = std::sqrt(2.f) / 2.f;
-    // crv.weights = {1, sqrt2_over_2, 1, sqrt2_over_2, 1,
-    //                sqrt2_over_2, 1, sqrt2_over_2, 1
-    //               };
-    crv.knots = {0.f, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-    crv.degree = 9;
-    return crv;
+tinynurbs::Curve3f getShape() {
+  tinynurbs::Curve3f crv;
+  crv.control_points = {glm::vec3(-1, 0, 0),  glm::vec3(1, 0, 0), glm::vec3(3, 0, 0), glm::vec3(3, 1, 0),
+                        glm::vec3(3, 2, 0),   glm::vec3(3, 3, 0), glm::vec3(5, 3, 0), glm::vec3(6, 3, 0),
+                        glm::vec3(8, 3.5, 0), glm::vec3(9, 5, 0)};
+  // const float sqrt2_over_2 = std::sqrt(2.f) / 2.f;
+  // crv.weights = {1, sqrt2_over_2, 1, sqrt2_over_2, 1,
+  //                sqrt2_over_2, 1, sqrt2_over_2, 1
+  //               };
+  crv.knots = {0.f, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+  crv.degree = 9;
+  return crv;
 }
 
-TEST_CASE("curvePoint2 (non-rational)", "[curve, non-rational, evaluate]")
-{
-    auto crv = getShape();
-    glm::vec3 pt1 = tinynurbs::curvePoint(crv, 0.f);
-    printf("pt1 = %f, %f, %f\n", pt1.x, pt1.y, pt1.z);
-    REQUIRE(pt1.x == Approx(-1));
-    REQUIRE(pt1.y == Approx(0));
-    REQUIRE(pt1.z == Approx(0));
-    glm::vec3 pt2 = curvePoint(crv, 1.0f);
-    REQUIRE(pt2.x == Approx(9));
-    REQUIRE(pt2.y == Approx(5));
-    REQUIRE(pt2.z == Approx(0));
+TEST_CASE("curvePoint2 (non-rational)", "[curve, non-rational, evaluate]") {
+  auto crv = getShape();
+  glm::vec3 pt1 = tinynurbs::curvePoint(crv, 0.f);
+  printf("pt1 = %f, %f, %f\n", pt1.x, pt1.y, pt1.z);
+  REQUIRE(pt1.x == Approx(-1));
+  REQUIRE(pt1.y == Approx(0));
+  REQUIRE(pt1.z == Approx(0));
+  glm::vec3 pt2 = curvePoint(crv, 1.0f);
+  REQUIRE(pt2.x == Approx(9));
+  REQUIRE(pt2.y == Approx(5));
+  REQUIRE(pt2.z == Approx(0));
 
-    glm::vec3 pt3 = curvePoint(crv, 0.4f);
-    REQUIRE(pt3.x == Approx(3.070361088));
-    REQUIRE(pt3.y == Approx(1.554464768));
-    REQUIRE(pt3.z == Approx(0));
+  glm::vec3 pt3 = curvePoint(crv, 0.4f);
+  REQUIRE(pt3.x == Approx(3.070361088));
+  REQUIRE(pt3.y == Approx(1.554464768));
+  REQUIRE(pt3.z == Approx(0));
 }
 
 // TEST_CASE("curveTangent (rational)", "[curve, rational, evaluate]")

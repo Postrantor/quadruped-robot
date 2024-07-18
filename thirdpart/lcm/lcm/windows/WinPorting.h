@@ -32,18 +32,18 @@ extern "C" {
 // Microsoft implementation of these structures has the
 // pointer and length in reversed positions.
 typedef struct iovec {
-    ULONG iov_len;
-    char *iov_base;
+  ULONG iov_len;
+  char *iov_base;
 } iovec;
 
 typedef struct msghdr {
-    struct sockaddr *msg_name;
-    int msg_namelen;
-    iovec *msg_iov;
-    ULONG msg_iovlen;
-    int msg_controllen;
-    char *msg_control;
-    ULONG msg_flags;
+  struct sockaddr *msg_name;
+  int msg_namelen;
+  iovec *msg_iov;
+  ULONG msg_iovlen;
+  int msg_controllen;
+  char *msg_control;
+  ULONG msg_flags;
 } msghdr;
 
 int inet_aton(const char *cp, struct in_addr *inp);

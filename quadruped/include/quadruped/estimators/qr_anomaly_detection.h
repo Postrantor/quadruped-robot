@@ -41,7 +41,7 @@ public:
    * @brief 重置估算。
    * @param currentTime: 自计时器启动以来的当前时间。
    */
-  void Reset(float currentTime) {};
+  void Reset(float currentTime){};
 
   /**
    * @brief 计算是否发生滑动的概率。
@@ -327,7 +327,7 @@ public:
   Eigen::Matrix<float, 3, 4> Update();
 
   //! maybe need delete
-  void Detect() {};
+  void Detect(){};
 
 private:
   float currentTime;

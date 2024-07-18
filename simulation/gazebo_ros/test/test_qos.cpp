@@ -15,20 +15,17 @@
 #include <gtest/gtest.h>
 #include <gazebo_ros/qos.hpp>
 
-TEST(TestQoS, ValidConstruction)
-{
+TEST(TestQoS, ValidConstruction) {
   // No SDF
-  {
-    gazebo_ros::QoS qos;
-  }
+  { gazebo_ros::QoS qos; }
   // No <qos> element
   {
     auto sdf_str =
-      "<?xml version='1.0' ?>"
-      "<sdf version='1.6'>"
-      "  <world name='default'>"
-      "  </world>"
-      "</sdf>";
+        "<?xml version='1.0' ?>"
+        "<sdf version='1.6'>"
+        "  <world name='default'>"
+        "  </world>"
+        "</sdf>";
     sdf::SDF sdf;
     sdf.SetFromString(sdf_str);
     gazebo_ros::QoS qos(sdf.Root(), "test_node", "/", rclcpp::NodeOptions());
@@ -40,21 +37,17 @@ TEST(TestQoS, ValidConstruction)
   // Empty <qos> element
   {
     auto sdf_str =
-      "<?xml version='1.0' ?>"
-      "<sdf version='1.6'>"
-      "  <world name='default'>"
-      "    <plugin name='node_1' filename='libnode_name.so'>"
-      "      <qos />"
-      "    </plugin>"
-      "  </world>"
-      "</sdf>";
+        "<?xml version='1.0' ?>"
+        "<sdf version='1.6'>"
+        "  <world name='default'>"
+        "    <plugin name='node_1' filename='libnode_name.so'>"
+        "      <qos />"
+        "    </plugin>"
+        "  </world>"
+        "</sdf>";
     sdf::SDF sdf;
     sdf.SetFromString(sdf_str);
-    gazebo_ros::QoS qos(
-      sdf.Root()->GetElement("world")->GetElement("plugin"),
-      "test_node",
-      "/",
-      rclcpp::NodeOptions());
+    gazebo_ros::QoS qos(sdf.Root()->GetElement("world")->GetElement("plugin"), "test_node", "/", rclcpp::NodeOptions());
     // We should get the default QoS for an arbitrary topic
     rclcpp::QoS some_qos = qos.get_publisher_qos("foo/bar/baz", rclcpp::QoS(10));
     EXPECT_EQ(rclcpp::QoS(10), some_qos);
@@ -66,30 +59,28 @@ TEST(TestQoS, ValidConstruction)
     expected_sub_qos.transient_local();
 
     auto sdf_str =
-      "<?xml version='1.0' ?>"
-      "<sdf version='1.6'>"
-      "  <world name='default'>"
-      "    <plugin name='node_1' filename='libnode_name.so'>"
-      "      <ros>"
-      "        <qos>"
-      "          <topic name='foo'>"
-      "            <subscription>"
-      "              <reliability>reliable</reliability>"
-      "              <durability>transient_local</durability>"
-      "            </subscription>"
-      "          </topic>"
-      "        </qos>"
-      "      </ros>"
-      "    </plugin>"
-      "  </world>"
-      "</sdf>";
+        "<?xml version='1.0' ?>"
+        "<sdf version='1.6'>"
+        "  <world name='default'>"
+        "    <plugin name='node_1' filename='libnode_name.so'>"
+        "      <ros>"
+        "        <qos>"
+        "          <topic name='foo'>"
+        "            <subscription>"
+        "              <reliability>reliable</reliability>"
+        "              <durability>transient_local</durability>"
+        "            </subscription>"
+        "          </topic>"
+        "        </qos>"
+        "      </ros>"
+        "    </plugin>"
+        "  </world>"
+        "</sdf>";
     sdf::SDF sdf;
     sdf.SetFromString(sdf_str);
     gazebo_ros::QoS qos(
-      sdf.Root()->GetElement("world")->GetElement("plugin")->GetElement("ros"),
-      "test_node",
-      "/",
-      rclcpp::NodeOptions());
+        sdf.Root()->GetElement("world")->GetElement("plugin")->GetElement("ros"), "test_node", "/",
+        rclcpp::NodeOptions());
 
     rclcpp::QoS sub_qos = qos.get_subscription_qos("foo");
     EXPECT_EQ(expected_sub_qos, sub_qos);
@@ -117,44 +108,42 @@ TEST(TestQoS, ValidConstruction)
     expected_sub_qos.liveliness(RMW_QOS_POLICY_LIVELINESS_AUTOMATIC);
 
     auto sdf_str =
-      "<?xml version='1.0' ?>"
-      "<sdf version='1.6'>"
-      "  <world name='default'>"
-      "    <plugin name='node_1' filename='libnode_name.so'>"
-      "      <ros>"
-      "        <qos>"
-      "          <topic name='foo'>"
-      "            <publisher>"
-      "              <reliability>best_effort</reliability>"
-      "              <durability>transient_local</durability>"
-      "              <history>keep_all</history>"
-      "              <deadline>123</deadline>"
-      "              <lifespan>42</lifespan>"
-      "              <liveliness_lease_duration>1000</liveliness_lease_duration>"
-      "              <liveliness>manual_by_topic</liveliness>"
-      "            </publisher>"
-      "            <subscription>"
-      "              <reliability>reliable</reliability>"
-      "              <durability>volatile</durability>"
-      "              <history depth='3'>keep_last</history>"
-      "              <deadline>321</deadline>"
-      "              <lifespan>24</lifespan>"
-      "              <liveliness_lease_duration>1</liveliness_lease_duration>"
-      "              <liveliness>automatic</liveliness>"
-      "            </subscription>"
-      "          </topic>"
-      "        </qos>"
-      "      </ros>"
-      "    </plugin>"
-      "  </world>"
-      "</sdf>";
+        "<?xml version='1.0' ?>"
+        "<sdf version='1.6'>"
+        "  <world name='default'>"
+        "    <plugin name='node_1' filename='libnode_name.so'>"
+        "      <ros>"
+        "        <qos>"
+        "          <topic name='foo'>"
+        "            <publisher>"
+        "              <reliability>best_effort</reliability>"
+        "              <durability>transient_local</durability>"
+        "              <history>keep_all</history>"
+        "              <deadline>123</deadline>"
+        "              <lifespan>42</lifespan>"
+        "              <liveliness_lease_duration>1000</liveliness_lease_duration>"
+        "              <liveliness>manual_by_topic</liveliness>"
+        "            </publisher>"
+        "            <subscription>"
+        "              <reliability>reliable</reliability>"
+        "              <durability>volatile</durability>"
+        "              <history depth='3'>keep_last</history>"
+        "              <deadline>321</deadline>"
+        "              <lifespan>24</lifespan>"
+        "              <liveliness_lease_duration>1</liveliness_lease_duration>"
+        "              <liveliness>automatic</liveliness>"
+        "            </subscription>"
+        "          </topic>"
+        "        </qos>"
+        "      </ros>"
+        "    </plugin>"
+        "  </world>"
+        "</sdf>";
     sdf::SDF sdf;
     sdf.SetFromString(sdf_str);
     gazebo_ros::QoS qos(
-      sdf.Root()->GetElement("world")->GetElement("plugin")->GetElement("ros"),
-      "test_node",
-      "/",
-      rclcpp::NodeOptions());
+        sdf.Root()->GetElement("world")->GetElement("plugin")->GetElement("ros"), "test_node", "/",
+        rclcpp::NodeOptions());
 
     rclcpp::QoS pub_qos = qos.get_publisher_qos("foo");
     EXPECT_EQ(expected_pub_qos, pub_qos);
@@ -171,36 +160,34 @@ TEST(TestQoS, ValidConstruction)
     expected_pub_qos.transient_local();
 
     auto sdf_str =
-      "<?xml version='1.0' ?>"
-      "<sdf version='1.6'>"
-      "  <world name='default'>"
-      "    <plugin name='node_1' filename='libnode_name.so'>"
-      "      <ros>"
-      "       <qos>"
-      "         <topic name='foo'>"
-      "           <subscription>"
-      "             <reliability>best_effort</reliability>"
-      "             <durability>volatile</durability>"
-      "           </subscription>"
-      "         </topic>"
-      "         <topic name='foo'>"
-      "           <publisher>"
-      "             <reliability>reliable</reliability>"
-      "             <durability>transient_local</durability>"
-      "           </publisher>"
-      "         </topic>"
-      "       </qos>"
-      "      </ros>"
-      "    </plugin>"
-      "  </world>"
-      "</sdf>";
+        "<?xml version='1.0' ?>"
+        "<sdf version='1.6'>"
+        "  <world name='default'>"
+        "    <plugin name='node_1' filename='libnode_name.so'>"
+        "      <ros>"
+        "       <qos>"
+        "         <topic name='foo'>"
+        "           <subscription>"
+        "             <reliability>best_effort</reliability>"
+        "             <durability>volatile</durability>"
+        "           </subscription>"
+        "         </topic>"
+        "         <topic name='foo'>"
+        "           <publisher>"
+        "             <reliability>reliable</reliability>"
+        "             <durability>transient_local</durability>"
+        "           </publisher>"
+        "         </topic>"
+        "       </qos>"
+        "      </ros>"
+        "    </plugin>"
+        "  </world>"
+        "</sdf>";
     sdf::SDF sdf;
     sdf.SetFromString(sdf_str);
     gazebo_ros::QoS qos(
-      sdf.Root()->GetElement("world")->GetElement("plugin")->GetElement("ros"),
-      "test_node",
-      "/",
-      rclcpp::NodeOptions());
+        sdf.Root()->GetElement("world")->GetElement("plugin")->GetElement("ros"), "test_node", "/",
+        rclcpp::NodeOptions());
 
     rclcpp::QoS sub_qos = qos.get_subscription_qos("foo");
     EXPECT_EQ(expected_sub_qos, sub_qos);
@@ -209,90 +196,79 @@ TEST(TestQoS, ValidConstruction)
   }
 }
 
-TEST(TestQoS, InvalidConstruction)
-{
+TEST(TestQoS, InvalidConstruction) {
   // Missing topic name
   {
     auto sdf_str =
-      "<?xml version='1.0' ?>"
-      "<sdf version='1.6'>"
-      "  <world name='default'>"
-      "    <plugin name='node_1' filename='libnode_name.so'>"
-      "      <qos>"
-      "        <topic>"
-      "        </topic>"
-      "      </qos>"
-      "    </plugin>"
-      "  </world>"
-      "</sdf>";
+        "<?xml version='1.0' ?>"
+        "<sdf version='1.6'>"
+        "  <world name='default'>"
+        "    <plugin name='node_1' filename='libnode_name.so'>"
+        "      <qos>"
+        "        <topic>"
+        "        </topic>"
+        "      </qos>"
+        "    </plugin>"
+        "  </world>"
+        "</sdf>";
     sdf::SDF sdf;
     sdf.SetFromString(sdf_str);
     EXPECT_THROW(
-      gazebo_ros::QoS qos(
-        sdf.Root()->GetElement("world")->GetElement("plugin"),
-        "test_node",
-        "/",
-        rclcpp::NodeOptions()),
-      gazebo_ros::InvalidQoSException);
+        gazebo_ros::QoS qos(
+            sdf.Root()->GetElement("world")->GetElement("plugin"), "test_node", "/", rclcpp::NodeOptions()),
+        gazebo_ros::InvalidQoSException);
   }
   // Invalid <reliability> value
   {
     auto sdf_str =
-      "<?xml version='1.0' ?>"
-      "<sdf version='1.6'>"
-      "  <world name='default'>"
-      "    <plugin name='node_1' filename='libnode_name.so'>"
-      "      <qos>"
-      "        <topic>"
-      "          <publisher>"
-      "            <reliability>foo</reliability>"
-      "          </publisher>"
-      "        </topic>"
-      "      </qos>"
-      "    </plugin>"
-      "  </world>"
-      "</sdf>";
+        "<?xml version='1.0' ?>"
+        "<sdf version='1.6'>"
+        "  <world name='default'>"
+        "    <plugin name='node_1' filename='libnode_name.so'>"
+        "      <qos>"
+        "        <topic>"
+        "          <publisher>"
+        "            <reliability>foo</reliability>"
+        "          </publisher>"
+        "        </topic>"
+        "      </qos>"
+        "    </plugin>"
+        "  </world>"
+        "</sdf>";
     sdf::SDF sdf;
     sdf.SetFromString(sdf_str);
     EXPECT_THROW(
-      gazebo_ros::QoS qos(
-        sdf.Root()->GetElement("world")->GetElement("plugin"),
-        "test_node",
-        "/",
-        rclcpp::NodeOptions()),
-      gazebo_ros::InvalidQoSException);
+        gazebo_ros::QoS qos(
+            sdf.Root()->GetElement("world")->GetElement("plugin"), "test_node", "/", rclcpp::NodeOptions()),
+        gazebo_ros::InvalidQoSException);
   }
   // Missing depth attribute
   {
     auto sdf_str =
-      "<?xml version='1.0' ?>"
-      "<sdf version='1.6'>"
-      "  <world name='default'>"
-      "    <plugin name='node_1' filename='libnode_name.so'>"
-      "      <qos>"
-      "        <topic>"
-      "          <publisher>"
-      "            <history>keep_last</history>"
-      "          </publisher>"
-      "        </topic>"
-      "      </qos>"
-      "    </plugin>"
-      "  </world>"
-      "</sdf>";
+        "<?xml version='1.0' ?>"
+        "<sdf version='1.6'>"
+        "  <world name='default'>"
+        "    <plugin name='node_1' filename='libnode_name.so'>"
+        "      <qos>"
+        "        <topic>"
+        "          <publisher>"
+        "            <history>keep_last</history>"
+        "          </publisher>"
+        "        </topic>"
+        "      </qos>"
+        "    </plugin>"
+        "  </world>"
+        "</sdf>";
     sdf::SDF sdf;
     sdf.SetFromString(sdf_str);
     EXPECT_THROW(
-      gazebo_ros::QoS qos(
-        sdf.Root()->GetElement("world")->GetElement("plugin"),
-        "test_node",
-        "/",
-        rclcpp::NodeOptions()),
-      gazebo_ros::InvalidQoSException);
+        gazebo_ros::QoS qos(
+            sdf.Root()->GetElement("world")->GetElement("plugin"), "test_node", "/", rclcpp::NodeOptions()),
+        gazebo_ros::InvalidQoSException);
   }
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }

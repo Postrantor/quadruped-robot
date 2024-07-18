@@ -19,13 +19,10 @@
 #include <rclcpp/rclcpp.hpp>
 #include <memory>
 
-class GazeboRosFactoryTest : public gazebo::ServerFixture
-{
-};
+class GazeboRosFactoryTest : public gazebo::ServerFixture {};
 
 // Since the plugin calls rclcpp:init, and that can be called only once, we can only run one test
-TEST_F(GazeboRosFactoryTest, SpawnDeleteList)
-{
+TEST_F(GazeboRosFactoryTest, SpawnDeleteList) {
   // Load empty world with factory plugin and start paused
   this->LoadArgs("-u --verbose -s libgazebo_ros_factory.so");
 
@@ -62,24 +59,22 @@ TEST_F(GazeboRosFactoryTest, SpawnDeleteList)
     request1->initial_pose.position.y = -1.0;
     request1->initial_pose.position.z = 0.0;
     request1->xml =
-      "<?xml version='1.0' ?>"
-      "<sdf version='1.5'>"
-      "<model name='ignored'>"
-      "<static>true</static>"
-      "<link name='link'>"
-      "<visual name='visual'>"
-      "<geometry>"
-      "<sphere><radius>1.0</radius></sphere>"
-      "</geometry>"
-      "</visual>"
-      "</link>"
-      "</model>"
-      "</sdf>";
+        "<?xml version='1.0' ?>"
+        "<sdf version='1.5'>"
+        "<model name='ignored'>"
+        "<static>true</static>"
+        "<link name='link'>"
+        "<visual name='visual'>"
+        "<geometry>"
+        "<sphere><radius>1.0</radius></sphere>"
+        "</geometry>"
+        "</visual>"
+        "</link>"
+        "</model>"
+        "</sdf>";
 
     auto response_future1 = spawn_client->async_send_request(request1);
-    EXPECT_EQ(
-      rclcpp::FutureReturnCode::SUCCESS,
-      rclcpp::spin_until_future_complete(node, response_future1));
+    EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node, response_future1));
 
     auto response1 = response_future1.get();
     ASSERT_NE(nullptr, response1);
@@ -96,24 +91,22 @@ TEST_F(GazeboRosFactoryTest, SpawnDeleteList)
     request2->initial_pose.position.y = 1.5;
     request2->initial_pose.position.z = 0.0;
     request2->xml =
-      "<?xml version='1.0' ?>"
-      "<sdf version='1.5'>"
-      "<model name='ignored'>"
-      "<static>true</static>"
-      "<link name='link'>"
-      "<visual name='visual'>"
-      "<geometry>"
-      "<sphere><radius>2.0</radius></sphere>"
-      "</geometry>"
-      "</visual>"
-      "</link>"
-      "</model>"
-      "</sdf>";
+        "<?xml version='1.0' ?>"
+        "<sdf version='1.5'>"
+        "<model name='ignored'>"
+        "<static>true</static>"
+        "<link name='link'>"
+        "<visual name='visual'>"
+        "<geometry>"
+        "<sphere><radius>2.0</radius></sphere>"
+        "</geometry>"
+        "</visual>"
+        "</link>"
+        "</model>"
+        "</sdf>";
 
     auto response_future2 = spawn_client->async_send_request(request2);
-    EXPECT_EQ(
-      rclcpp::FutureReturnCode::SUCCESS,
-      rclcpp::spin_until_future_complete(node, response_future2));
+    EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node, response_future2));
 
     auto response2 = response_future2.get();
     ASSERT_NE(nullptr, response2);
@@ -123,9 +116,7 @@ TEST_F(GazeboRosFactoryTest, SpawnDeleteList)
     auto request3 = std::make_shared<gazebo_msgs::srv::GetModelList::Request>();
 
     auto response_future3 = model_list_client->async_send_request(request3);
-    EXPECT_EQ(
-      rclcpp::FutureReturnCode::SUCCESS,
-      rclcpp::spin_until_future_complete(node, response_future3));
+    EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node, response_future3));
 
     auto response3 = response_future3.get();
     ASSERT_NE(nullptr, response3);
@@ -148,24 +139,22 @@ TEST_F(GazeboRosFactoryTest, SpawnDeleteList)
     request->initial_pose.position.y = 2.0;
     request->initial_pose.position.z = 3.0;
     request->xml =
-      "<?xml version='1.0' ?>"
-      "<sdf version='1.5'>"
-      "<model name='ignored'>"
-      "<static>true</static>"
-      "<link name='link'>"
-      "<visual name='visual'>"
-      "<geometry>"
-      "<sphere><radius>1.0</radius></sphere>"
-      "</geometry>"
-      "</visual>"
-      "</link>"
-      "</model>"
-      "</sdf>";
+        "<?xml version='1.0' ?>"
+        "<sdf version='1.5'>"
+        "<model name='ignored'>"
+        "<static>true</static>"
+        "<link name='link'>"
+        "<visual name='visual'>"
+        "<geometry>"
+        "<sphere><radius>1.0</radius></sphere>"
+        "</geometry>"
+        "</visual>"
+        "</link>"
+        "</model>"
+        "</sdf>";
 
     auto response_future = spawn_client->async_send_request(request);
-    EXPECT_EQ(
-      rclcpp::FutureReturnCode::SUCCESS,
-      rclcpp::spin_until_future_complete(node, response_future));
+    EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node, response_future));
 
     auto response = response_future.get();
     ASSERT_NE(nullptr, response);
@@ -188,29 +177,27 @@ TEST_F(GazeboRosFactoryTest, SpawnDeleteList)
     request->initial_pose.position.z = 3.0;
     request->reference_frame = "sdf_box";
     request->xml =
-      "<?xml version='1.0' ?>"
-      "<robot name='urdf_box'>"
-      "<link name='link'>"
-      "<visual>"
-      "<geometry>"
-      "<sphere radius='1.0'/>"
-      "</geometry>"
-      "</visual>"
-      "<inertial>"
-      "<mass value='1'/>"
-      "<inertia ixx='1' ixy='0.0' ixz='0.0' iyy='1' iyz='0.0' izz='1'/>"
-      "</inertial>"
-      "</link>"
-      "<gazebo>"
-      "  <plugin filename='fake_plugin.so' name='fake'>"
-      "  </plugin>"
-      "</gazebo>"
-      "</robot>";
+        "<?xml version='1.0' ?>"
+        "<robot name='urdf_box'>"
+        "<link name='link'>"
+        "<visual>"
+        "<geometry>"
+        "<sphere radius='1.0'/>"
+        "</geometry>"
+        "</visual>"
+        "<inertial>"
+        "<mass value='1'/>"
+        "<inertia ixx='1' ixy='0.0' ixz='0.0' iyy='1' iyz='0.0' izz='1'/>"
+        "</inertial>"
+        "</link>"
+        "<gazebo>"
+        "  <plugin filename='fake_plugin.so' name='fake'>"
+        "  </plugin>"
+        "</gazebo>"
+        "</robot>";
 
     auto response_future = spawn_client->async_send_request(request);
-    EXPECT_EQ(
-      rclcpp::FutureReturnCode::SUCCESS,
-      rclcpp::spin_until_future_complete(node, response_future));
+    EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node, response_future));
 
     auto response = response_future.get();
     ASSERT_NE(nullptr, response);
@@ -225,9 +212,7 @@ TEST_F(GazeboRosFactoryTest, SpawnDeleteList)
 
     // Check it was spawned with the correct name
     ASSERT_NE(nullptr, world->ModelByName("urdf_box"));
-    EXPECT_EQ(
-      world->ModelByName("urdf_box")->WorldPose(),
-      ignition::math::Pose3d(2, 4, 6, 0, 0, 0));
+    EXPECT_EQ(world->ModelByName("urdf_box")->WorldPose(), ignition::math::Pose3d(2, 4, 6, 0, 0, 0));
   }
 
   // Spawn SDF light
@@ -241,15 +226,13 @@ TEST_F(GazeboRosFactoryTest, SpawnDeleteList)
     request->initial_pose.position.z = 10.0;
     request->reference_frame = "world";
     request->xml =
-      "<?xml version='1.0' ?>"
-      "<sdf version='1.5'>"
-      "<light name='ignored' type='directional'/>"
-      "</sdf>";
+        "<?xml version='1.0' ?>"
+        "<sdf version='1.5'>"
+        "<light name='ignored' type='directional'/>"
+        "</sdf>";
 
     auto response_future = spawn_client->async_send_request(request);
-    EXPECT_EQ(
-      rclcpp::FutureReturnCode::SUCCESS,
-      rclcpp::spin_until_future_complete(node, response_future));
+    EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node, response_future));
 
     auto response = response_future.get();
     ASSERT_NE(nullptr, response);
@@ -257,9 +240,7 @@ TEST_F(GazeboRosFactoryTest, SpawnDeleteList)
 
     // Check it was spawned with the correct name
     ASSERT_NE(nullptr, world->LightByName("dir"));
-    EXPECT_EQ(
-      world->LightByName("dir")->WorldPose(),
-      ignition::math::Pose3d(0, 0, 10, 0, 0, 0));
+    EXPECT_EQ(world->LightByName("dir")->WorldPose(), ignition::math::Pose3d(0, 0, 10, 0, 0, 0));
   }
 
   // Delete model
@@ -272,9 +253,7 @@ TEST_F(GazeboRosFactoryTest, SpawnDeleteList)
     request->name = "ground_plane";
 
     auto response_future = delete_client->async_send_request(request);
-    EXPECT_EQ(
-      rclcpp::FutureReturnCode::SUCCESS,
-      rclcpp::spin_until_future_complete(node, response_future));
+    EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node, response_future));
 
     auto response = response_future.get();
     ASSERT_NE(nullptr, response);
@@ -294,9 +273,7 @@ TEST_F(GazeboRosFactoryTest, SpawnDeleteList)
     request->name = "sun";
 
     auto response_future = delete_client->async_send_request(request);
-    EXPECT_EQ(
-      rclcpp::FutureReturnCode::SUCCESS,
-      rclcpp::spin_until_future_complete(node, response_future));
+    EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node, response_future));
 
     auto response = response_future.get();
     ASSERT_NE(nullptr, response);
@@ -307,8 +284,7 @@ TEST_F(GazeboRosFactoryTest, SpawnDeleteList)
   }
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }

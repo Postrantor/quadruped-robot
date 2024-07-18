@@ -21,14 +21,11 @@
 
 #define tol 10e-2
 
-using namespace std::literals::chrono_literals; // NOLINT
+using namespace std::literals::chrono_literals;  // NOLINT
 
-class GazeboRosHarnessTest : public gazebo::ServerFixture
-{
-};
+class GazeboRosHarnessTest : public gazebo::ServerFixture {};
 
-TEST_F(GazeboRosHarnessTest, Publishing)
-{
+TEST_F(GazeboRosHarnessTest, Publishing) {
   // Load test world and start paused
   this->Load("worlds/gazebo_ros_harness.world", true);
 
@@ -60,8 +57,7 @@ TEST_F(GazeboRosHarnessTest, Publishing)
   executor.add_node(node);
 
   // Send velocity
-  auto vel_pub = node->create_publisher<std_msgs::msg::Float32>(
-    "test/velocity_test", rclcpp::QoS(rclcpp::KeepLast(1)));
+  auto vel_pub = node->create_publisher<std_msgs::msg::Float32>("test/velocity_test", rclcpp::QoS(rclcpp::KeepLast(1)));
 
   auto vel_msg = std_msgs::msg::Float32();
   vel_msg.data = -1.0;
@@ -79,10 +75,8 @@ TEST_F(GazeboRosHarnessTest, Publishing)
   EXPECT_NEAR(0.0, link->WorldPose().Pos().Y(), tol);
   EXPECT_NEAR(1.5, link->WorldPose().Pos().Z(), tol);
 
-
   // Send detach command
-  auto detach_pub = node->create_publisher<std_msgs::msg::Empty>(
-    "test/detach_test", rclcpp::QoS(rclcpp::KeepLast(1)));
+  auto detach_pub = node->create_publisher<std_msgs::msg::Empty>("test/detach_test", rclcpp::QoS(rclcpp::KeepLast(1)));
 
   auto detach_msg = std_msgs::msg::Empty();
 
@@ -100,8 +94,7 @@ TEST_F(GazeboRosHarnessTest, Publishing)
   EXPECT_NEAR(0.5, link->WorldPose().Pos().Z(), tol);
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

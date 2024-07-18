@@ -19,20 +19,17 @@
 
 #include <memory>
 
-using namespace std::literals::chrono_literals; // NOLINT
+using namespace std::literals::chrono_literals;  // NOLINT
 
-class GazeboRosVideoTest : public gazebo::RenderingFixture
-{
+class GazeboRosVideoTest : public gazebo::RenderingFixture {
 public:
-  void TearDown() override
-  {
+  void TearDown() override {
     // Make sure they're destroyed even if test fails by ASSERT
     RenderingFixture::TearDown();
   }
 };
 
-TEST_F(GazeboRosVideoTest, VideoSubscribeTest)
-{
+TEST_F(GazeboRosVideoTest, VideoSubscribeTest) {
   // Load test world and start paused
   this->Load("worlds/gazebo_ros_video.world", true);
 
@@ -54,8 +51,7 @@ TEST_F(GazeboRosVideoTest, VideoSubscribeTest)
     model_vis = scene->GetVisual("box_display");
     link_vis = scene->GetVisual("box_display::base_link");
     visual_vis = scene->GetVisual("box_display::base_link::visual");
-    video_vis = scene->GetVisual(
-      "box_display::base_link::visual::video_visual::display_video_controller");
+    video_vis = scene->GetVisual("box_display::base_link::visual::video_visual::display_video_controller");
     gazebo::common::Time::MSleep(100);
   }
   EXPECT_LT(sleep, max_sleep);
@@ -72,8 +68,7 @@ TEST_F(GazeboRosVideoTest, VideoSubscribeTest)
   executor.add_node(node);
 
   // Send image
-  auto pub = node->create_publisher<sensor_msgs::msg::Image>(
-    "test/video_test", rclcpp::QoS(rclcpp::KeepLast(1)));
+  auto pub = node->create_publisher<sensor_msgs::msg::Image>("test/video_test", rclcpp::QoS(rclcpp::KeepLast(1)));
 
   auto msg = sensor_msgs::msg::Image();
   msg.height = 120;
@@ -99,14 +94,11 @@ TEST_F(GazeboRosVideoTest, VideoSubscribeTest)
     gazebo::event::Events::postRender();
 
     EXPECT_NE(nullptr, scene->GetVisual("box_display"));
-    EXPECT_NE(
-      nullptr, scene->GetVisual(
-        "box_display::base_link::visual::video_visual::display_video_controller"));
+    EXPECT_NE(nullptr, scene->GetVisual("box_display::base_link::visual::video_visual::display_video_controller"));
   }
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   int ret = RUN_ALL_TESTS();

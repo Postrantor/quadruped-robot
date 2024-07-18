@@ -19,20 +19,17 @@
 
 #include <memory>
 
-using namespace std::literals::chrono_literals; // NOLINT
+using namespace std::literals::chrono_literals;  // NOLINT
 
-class GazeboRosProjectorTest : public gazebo::RenderingFixture
-{
+class GazeboRosProjectorTest : public gazebo::RenderingFixture {
 public:
-  void TearDown() override
-  {
+  void TearDown() override {
     // Make sure they're destroyed even if test fails by ASSERT
     RenderingFixture::TearDown();
   }
 };
 
-TEST_F(GazeboRosProjectorTest, ProjectorPublisherTest)
-{
+TEST_F(GazeboRosProjectorTest, ProjectorPublisherTest) {
   // Load test world and start paused
   this->Load("worlds/gazebo_ros_projector.world", true);
 
@@ -69,8 +66,7 @@ TEST_F(GazeboRosProjectorTest, ProjectorPublisherTest)
   executor.add_node(node);
 
   // Send switch commands
-  auto pub = node->create_publisher<std_msgs::msg::Bool>(
-    "test/switch_test", rclcpp::QoS(rclcpp::KeepLast(1)));
+  auto pub = node->create_publisher<std_msgs::msg::Bool>("test/switch_test", rclcpp::QoS(rclcpp::KeepLast(1)));
 
   auto msg = std_msgs::msg::Bool();
   msg.data = false;
@@ -91,8 +87,7 @@ TEST_F(GazeboRosProjectorTest, ProjectorPublisherTest)
   }
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   int ret = RUN_ALL_TESTS();

@@ -17,8 +17,7 @@
 #include <gazebo_ros/conversions/builtin_interfaces.hpp>
 #include <gazebo_ros/conversions/geometry_msgs.hpp>
 
-TEST(TestConversions, Vector3)
-{
+TEST(TestConversions, Vector3) {
   // Ign to ROS
   ignition::math::Vector3d vec(1.0, 2.0, 3.0);
   auto msg = gazebo_ros::Convert<geometry_msgs::msg::Vector3>(vec);
@@ -32,8 +31,7 @@ TEST(TestConversions, Vector3)
   EXPECT_EQ(3.0, vec.Z());
 }
 
-TEST(TestConversions, Quaternion)
-{
+TEST(TestConversions, Quaternion) {
   // Ign to ROS
   ignition::math::Quaterniond quat(1.0, 0.2, 0.4, 0.6);
   auto quat_msg = gazebo_ros::Convert<geometry_msgs::msg::Quaternion>(quat);
@@ -49,8 +47,7 @@ TEST(TestConversions, Quaternion)
   EXPECT_EQ(1.0, ign_quat.W());
 }
 
-TEST(TestConversions, Pose)
-{
+TEST(TestConversions, Pose) {
   // Ign to ROS Pose
   ignition::math::Pose3d pose(0.6, 0.5, 0.7, 0.9, 0.0, 0.3, -0.1);
   auto pose_msg = gazebo_ros::Convert<geometry_msgs::msg::Pose>(pose);
@@ -83,8 +80,7 @@ TEST(TestConversions, Pose)
   EXPECT_EQ(-0.1, transform_msg.rotation.z);
 }
 
-TEST(TestConversions, Time)
-{
+TEST(TestConversions, Time) {
   // Gazebo time
   {
     gazebo::common::Time time(200, 100);

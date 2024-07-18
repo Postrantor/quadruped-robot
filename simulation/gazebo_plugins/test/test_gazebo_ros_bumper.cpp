@@ -23,12 +23,9 @@
 #define tol 10e-2
 
 /// Tests the gazebo_ros_bumper plugin
-class GazeboRosBumperTest : public gazebo::ServerFixture
-{
-};
+class GazeboRosBumperTest : public gazebo::ServerFixture {};
 
-TEST_F(GazeboRosBumperTest, BumperMessageCorrect)
-{
+TEST_F(GazeboRosBumperTest, BumperMessageCorrect) {
   // Load test world and start paused
   this->Load("worlds/gazebo_ros_bumper.world", true);
 
@@ -49,12 +46,9 @@ TEST_F(GazeboRosBumperTest, BumperMessageCorrect)
   ASSERT_NE(nullptr, node);
 
   gazebo_msgs::msg::ContactsState::SharedPtr msg = nullptr;
-  auto sub =
-    node->create_subscription<gazebo_msgs::msg::ContactsState>(
-    "/test/bumper_test", rclcpp::SensorDataQoS(),
-    [&msg](gazebo_msgs::msg::ContactsState::SharedPtr _msg) {
-      msg = _msg;
-    });
+  auto sub = node->create_subscription<gazebo_msgs::msg::ContactsState>(
+      "/test/bumper_test", rclcpp::SensorDataQoS(),
+      [&msg](gazebo_msgs::msg::ContactsState::SharedPtr _msg) { msg = _msg; });
 
   // Step until a contact message will have been published
   int sleep{0};
@@ -78,8 +72,7 @@ TEST_F(GazeboRosBumperTest, BumperMessageCorrect)
   EXPECT_NEAR(0.0, msg->states[0].total_wrench.torque.z, tol);
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

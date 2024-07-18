@@ -105,7 +105,7 @@
  * is negative, and FLIP of a number < EMTPY is positive.  FLIP (FLIP (i)) = i
  * for all integers i.  UNFLIP (i) is >= EMPTY. */
 #define EMPTY (-1)
-#define FLIP(i) (-(i) - 2)
+#define FLIP(i) (-(i)-2)
 #define UNFLIP(i) ((i < EMPTY) ? FLIP(i) : (i))
 
 /* for integer MAX/MIN, or for c_floats when we don't care how NaN's behave: */

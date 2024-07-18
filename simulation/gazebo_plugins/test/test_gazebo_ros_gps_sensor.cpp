@@ -25,12 +25,9 @@
 #define tol_vel 10e-3
 
 /// Tests the gazebo_ros_gps_sensor plugin
-class GazeboRosGpsSensorTest : public gazebo::ServerFixture
-{
-};
+class GazeboRosGpsSensorTest : public gazebo::ServerFixture {};
 
-TEST_F(GazeboRosGpsSensorTest, GpsMessageCorrect)
-{
+TEST_F(GazeboRosGpsSensorTest, GpsMessageCorrect) {
   // Load test world and start paused
   this->Load("worlds/gazebo_ros_gps_sensor.world", true);
 
@@ -52,16 +49,11 @@ TEST_F(GazeboRosGpsSensorTest, GpsMessageCorrect)
 
   sensor_msgs::msg::NavSatFix::SharedPtr msg = nullptr;
   auto sub = node->create_subscription<sensor_msgs::msg::NavSatFix>(
-    "/gps/data", rclcpp::SensorDataQoS(),
-    [&msg](sensor_msgs::msg::NavSatFix::SharedPtr _msg) {
-      msg = _msg;
-    });
+      "/gps/data", rclcpp::SensorDataQoS(), [&msg](sensor_msgs::msg::NavSatFix::SharedPtr _msg) { msg = _msg; });
   geometry_msgs::msg::Vector3Stamped::SharedPtr msg_vel = nullptr;
   auto sub_vel = node->create_subscription<geometry_msgs::msg::Vector3Stamped>(
-    "/gps/velocity", rclcpp::SensorDataQoS(),
-    [&msg_vel](geometry_msgs::msg::Vector3Stamped::SharedPtr _msg) {
-      msg_vel = _msg;
-    });
+      "/gps/velocity", rclcpp::SensorDataQoS(),
+      [&msg_vel](geometry_msgs::msg::Vector3Stamped::SharedPtr _msg) { msg_vel = _msg; });
 
   world->Step(1);
   EXPECT_NEAR(0.0, box->WorldPose().Pos().X(), tol);
@@ -126,8 +118,7 @@ TEST_F(GazeboRosGpsSensorTest, GpsMessageCorrect)
   EXPECT_NEAR(0.0, post_movement_msg_vel->vector.z, 0.1);
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

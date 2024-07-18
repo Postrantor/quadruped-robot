@@ -20,16 +20,13 @@
 #include <memory>
 #include <string>
 
-using namespace std::literals::chrono_literals; // NOLINT
+using namespace std::literals::chrono_literals;  // NOLINT
 
-class GazeboRosTriggeredCameraTest : public gazebo::ServerFixture
-{
-};
+class GazeboRosTriggeredCameraTest : public gazebo::ServerFixture {};
 
 // Test if the camera image is published at all, and that the timestamp
 // is not too long in the past.
-TEST_F(GazeboRosTriggeredCameraTest, CameraSubscribeTest)
-{
+TEST_F(GazeboRosTriggeredCameraTest, CameraSubscribeTest) {
   // Load test world and start paused
   this->Load("worlds/gazebo_ros_camera_triggered.world", true);
 
@@ -49,13 +46,12 @@ TEST_F(GazeboRosTriggeredCameraTest, CameraSubscribeTest)
   builtin_interfaces::msg::Time image_stamp;
 
   auto sub = image_transport::create_subscription(
-    node.get(),
-    "test_triggered_cam/image_raw_test",
-    [&](const sensor_msgs::msg::Image::ConstSharedPtr & msg) {
-      image_stamp = msg->header.stamp;
-      ++msg_count;
-    },
-    "raw");
+      node.get(), "test_triggered_cam/image_raw_test",
+      [&](const sensor_msgs::msg::Image::ConstSharedPtr& msg) {
+        image_stamp = msg->header.stamp;
+        ++msg_count;
+      },
+      "raw");
 
   // Step a bit and check that we do not get any messages
   world->Step(100);
@@ -65,8 +61,7 @@ TEST_F(GazeboRosTriggeredCameraTest, CameraSubscribeTest)
 
   // Trigger camera once
   std::string trigger_topic{"test_triggered_cam/image_trigger_test"};
-  auto pub = node->create_publisher<std_msgs::msg::Empty>(
-    trigger_topic, rclcpp::QoS(rclcpp::KeepLast(1)));
+  auto pub = node->create_publisher<std_msgs::msg::Empty>(trigger_topic, rclcpp::QoS(rclcpp::KeepLast(1)));
   std_msgs::msg::Empty msg;
 
   // Wait for trigger subscriber
@@ -109,8 +104,7 @@ TEST_F(GazeboRosTriggeredCameraTest, CameraSubscribeTest)
   sub.shutdown();
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   testing::InitGoogleTest(&argc, argv);
   int ret = RUN_ALL_TESTS();

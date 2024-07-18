@@ -46,7 +46,6 @@ namespace xpp {
  */
 class RobotStateCartesian {
 public:
-
   /**
    * @brief  Constructs a zero initialized robot state with n_ee endeffectors.
    * @param  n_ee  Number of endeffectors.

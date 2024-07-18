@@ -60,23 +60,23 @@ typedef struct _lcm_subscription_t lcm_subscription_t;
  */
 typedef struct _lcm_recv_buf_t lcm_recv_buf_t;
 struct _lcm_recv_buf_t {
-    /**
-     * the data received (raw bytes)
-     */
-    void *data;
-    /**
-     * the length of the data received (in bytes)
-     */
-    uint32_t data_size;
-    /**
-     * timestamp (micrseconds since the epoch) at which the message was
-     * received.
-     */
-    int64_t recv_utime;
-    /**
-     * pointer to the lcm_t struct that owns this buffer
-     */
-    lcm_t *lcm;
+  /**
+   * the data received (raw bytes)
+   */
+  void *data;
+  /**
+   * the length of the data received (in bytes)
+   */
+  uint32_t data_size;
+  /**
+   * timestamp (micrseconds since the epoch) at which the message was
+   * received.
+   */
+  int64_t recv_utime;
+  /**
+   * pointer to the lcm_t struct that owns this buffer
+   */
+  lcm_t *lcm;
 };
 
 /**
@@ -238,8 +238,7 @@ int lcm_get_fileno(lcm_t *lcm);
  *          the subscription object.
  */
 LCM_EXPORT
-lcm_subscription_t *lcm_subscribe(lcm_t *lcm, const char *channel, lcm_msg_handler_t handler,
-                                  void *userdata);
+lcm_subscription_t *lcm_subscribe(lcm_t *lcm, const char *channel, lcm_msg_handler_t handler, void *userdata);
 
 /**
  * @brief Unsubscribe a message handler.

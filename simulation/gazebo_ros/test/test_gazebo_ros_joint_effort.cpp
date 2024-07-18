@@ -20,15 +20,11 @@
 
 #define tol 10e-2
 
-class GazeboRosJointEffortTest : public gazebo::ServerFixture
-{
-};
+class GazeboRosJointEffortTest : public gazebo::ServerFixture {};
 
-TEST_F(GazeboRosJointEffortTest, JointEffortTest)
-{
+TEST_F(GazeboRosJointEffortTest, JointEffortTest) {
   // Load test world
-  this->LoadArgs(
-    "worlds/gazebo_ros_joint_effort_test.world -u --verbose -s libgazebo_ros_force_system.so");
+  this->LoadArgs("worlds/gazebo_ros_joint_effort_test.world -u --verbose -s libgazebo_ros_force_system.so");
 
   // World
   auto world = gazebo::physics::get_world();
@@ -38,13 +34,11 @@ TEST_F(GazeboRosJointEffortTest, JointEffortTest)
   auto node = std::make_shared<rclcpp::Node>("gazebo_ros_joint_effort_test");
   ASSERT_NE(nullptr, node);
 
-  auto apply_joint_effort =
-    node->create_client<gazebo_msgs::srv::ApplyJointEffort>("apply_joint_effort");
+  auto apply_joint_effort = node->create_client<gazebo_msgs::srv::ApplyJointEffort>("apply_joint_effort");
   ASSERT_NE(nullptr, apply_joint_effort);
   EXPECT_TRUE(apply_joint_effort->wait_for_service(std::chrono::seconds(1)));
 
-  auto clear_joint_efforts =
-    node->create_client<gazebo_msgs::srv::JointRequest>("clear_joint_efforts");
+  auto clear_joint_efforts = node->create_client<gazebo_msgs::srv::JointRequest>("clear_joint_efforts");
   ASSERT_NE(nullptr, clear_joint_efforts);
   EXPECT_TRUE(clear_joint_efforts->wait_for_service(std::chrono::seconds(1)));
 
@@ -54,9 +48,7 @@ TEST_F(GazeboRosJointEffortTest, JointEffortTest)
   apply_request->duration = rclcpp::Duration(-1, 0);
 
   auto apply_response_future = apply_joint_effort->async_send_request(apply_request);
-  EXPECT_EQ(
-    rclcpp::FutureReturnCode::SUCCESS,
-    rclcpp::spin_until_future_complete(node, apply_response_future));
+  EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node, apply_response_future));
 
   auto apply_response = apply_response_future.get();
   ASSERT_NE(nullptr, apply_response);
@@ -71,9 +63,7 @@ TEST_F(GazeboRosJointEffortTest, JointEffortTest)
   clear_request->joint_name = "upper_joint";
 
   auto clear_response_future = clear_joint_efforts->async_send_request(clear_request);
-  EXPECT_EQ(
-    rclcpp::FutureReturnCode::SUCCESS,
-    rclcpp::spin_until_future_complete(node, clear_response_future));
+  EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node, clear_response_future));
 
   auto clear_response = clear_response_future.get();
   ASSERT_NE(nullptr, clear_response);
@@ -83,8 +73,7 @@ TEST_F(GazeboRosJointEffortTest, JointEffortTest)
   EXPECT_NEAR(entity->GetForce(0), 10, tol);
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

@@ -10,8 +10,7 @@
 
 class Custom {
 public:
-  Custom(uint8_t level)
-      : safe(UNITREE_LEGGED_SDK::LeggedType::Go1), udp(level, 8090, "192.168.123.10", 8007) {
+  Custom(uint8_t level) : safe(UNITREE_LEGGED_SDK::LeggedType::Go1), udp(level, 8090, "192.168.123.10", 8007) {
     udp.InitCmdData(cmd);
   }
   void UDPRecv();
@@ -71,12 +70,9 @@ int main(void) {
   std::cin.ignore();
 
   Custom custom(UNITREE_LEGGED_SDK::LOWLEVEL);
-  UNITREE_LEGGED_SDK::LoopFunc loop_control(
-      "control_loop", custom.dt, boost::bind(&Custom::RobotControl, &custom));
-  UNITREE_LEGGED_SDK::LoopFunc loop_udpSend(
-      "udp_send", custom.dt, 3, boost::bind(&Custom::UDPSend, &custom));
-  UNITREE_LEGGED_SDK::LoopFunc loop_udpRecv(
-      "udp_recv", custom.dt, 3, boost::bind(&Custom::UDPRecv, &custom));
+  UNITREE_LEGGED_SDK::LoopFunc loop_control("control_loop", custom.dt, boost::bind(&Custom::RobotControl, &custom));
+  UNITREE_LEGGED_SDK::LoopFunc loop_udpSend("udp_send", custom.dt, 3, boost::bind(&Custom::UDPSend, &custom));
+  UNITREE_LEGGED_SDK::LoopFunc loop_udpRecv("udp_recv", custom.dt, 3, boost::bind(&Custom::UDPRecv, &custom));
 
   loop_udpSend.start();
   loop_udpRecv.start();

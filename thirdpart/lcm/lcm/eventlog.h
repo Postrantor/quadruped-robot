@@ -30,15 +30,15 @@ extern "C" {
 
 typedef struct _lcm_eventlog_t lcm_eventlog_t;
 struct _lcm_eventlog_t {
-    /**
-     * The underlying file handle.  Made available for debugging.
-     */
-    FILE *f;
+  /**
+   * The underlying file handle.  Made available for debugging.
+   */
+  FILE *f;
 
-    /**
-     * Internal counter, keeps track of how many events have been written.
-     */
-    int64_t eventcount;
+  /**
+   * Internal counter, keeps track of how many events have been written.
+   */
+  int64_t eventcount;
 };
 
 /**
@@ -46,33 +46,33 @@ struct _lcm_eventlog_t {
  */
 typedef struct _lcm_eventlog_event_t lcm_eventlog_event_t;
 struct _lcm_eventlog_event_t {
-    /**
-     * A monotonically increasing number assigned to the message to identify it
-     * in the log file.
-     */
-    int64_t eventnum;
-    /**
-     * Time that the message was received, in microseconds since the UNIX
-     * epoch
-     */
-    int64_t timestamp;
-    /**
-     * Length of @c channel, in bytes
-     */
-    int32_t channellen;
-    /**
-     * Length of @c data, in bytes
-     */
-    int32_t datalen;
+  /**
+   * A monotonically increasing number assigned to the message to identify it
+   * in the log file.
+   */
+  int64_t eventnum;
+  /**
+   * Time that the message was received, in microseconds since the UNIX
+   * epoch
+   */
+  int64_t timestamp;
+  /**
+   * Length of @c channel, in bytes
+   */
+  int32_t channellen;
+  /**
+   * Length of @c data, in bytes
+   */
+  int32_t datalen;
 
-    /**
-     * Channel that the message was received on
-     */
-    char *channel;
-    /**
-     * Raw byte buffer containing the message payload.
-     */
-    void *data;
+  /**
+   * Channel that the message was received on
+   */
+  char *channel;
+  /**
+   * Raw byte buffer containing the message payload.
+   */
+  void *data;
 };
 
 /**

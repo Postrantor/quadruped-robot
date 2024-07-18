@@ -68,96 +68,89 @@ typedef int SOCKET;
 /************************* Packet Headers *******************/
 
 typedef struct _lcm2_header_short {
-    uint32_t magic;
-    uint32_t msg_seqno;
+  uint32_t magic;
+  uint32_t msg_seqno;
 } lcm2_header_short_t;
 
 typedef struct _lcm2_header_long {
-    uint32_t magic;
-    uint32_t msg_seqno;
-    uint32_t msg_size;
-    uint32_t fragment_offset;
-    uint16_t fragment_no;
-    uint16_t fragments_in_msg;
+  uint32_t magic;
+  uint32_t msg_seqno;
+  uint32_t msg_size;
+  uint32_t fragment_offset;
+  uint16_t fragment_no;
+  uint16_t fragments_in_msg;
 } lcm2_header_long_t;
 // if fragment_no == 0, then header is immediately followed by NULL-terminated
 // ASCII-encoded channel name, followed by the payload data
 // if fragment_no > 0, then header is immediately followed by the payload data
 
 /************************* Utility Functions *******************/
-static inline int lcm_close_socket(SOCKET fd)
-{
+static inline int lcm_close_socket(SOCKET fd) {
 #ifdef WIN32
-    return closesocket(fd);
+  return closesocket(fd);
 #else
-    return close(fd);
+  return close(fd);
 #endif
 }
 
-static inline int lcm_timeval_compare(const GTimeVal *a, const GTimeVal *b)
-{
-    if (a->tv_sec == b->tv_sec && a->tv_usec == b->tv_usec)
-        return 0;
-    if (a->tv_sec > b->tv_sec || (a->tv_sec == b->tv_sec && a->tv_usec > b->tv_usec))
-        return 1;
-    return -1;
+static inline int lcm_timeval_compare(const GTimeVal *a, const GTimeVal *b) {
+  if (a->tv_sec == b->tv_sec && a->tv_usec == b->tv_usec) return 0;
+  if (a->tv_sec > b->tv_sec || (a->tv_sec == b->tv_sec && a->tv_usec > b->tv_usec)) return 1;
+  return -1;
 }
 
-static inline void lcm_timeval_add(const GTimeVal *a, const GTimeVal *b, GTimeVal *dest)
-{
-    dest->tv_sec = a->tv_sec + b->tv_sec;
-    dest->tv_usec = a->tv_usec + b->tv_usec;
-    if (dest->tv_usec > 999999) {
-        dest->tv_usec -= 1000000;
-        dest->tv_sec++;
-    }
+static inline void lcm_timeval_add(const GTimeVal *a, const GTimeVal *b, GTimeVal *dest) {
+  dest->tv_sec = a->tv_sec + b->tv_sec;
+  dest->tv_usec = a->tv_usec + b->tv_usec;
+  if (dest->tv_usec > 999999) {
+    dest->tv_usec -= 1000000;
+    dest->tv_sec++;
+  }
 }
 
-static inline void lcm_timeval_subtract(const GTimeVal *a, const GTimeVal *b, GTimeVal *dest)
-{
-    dest->tv_sec = a->tv_sec - b->tv_sec;
-    dest->tv_usec = a->tv_usec - b->tv_usec;
-    if (dest->tv_usec < 0) {
-        dest->tv_usec += 1000000;
-        dest->tv_sec--;
-    }
+static inline void lcm_timeval_subtract(const GTimeVal *a, const GTimeVal *b, GTimeVal *dest) {
+  dest->tv_sec = a->tv_sec - b->tv_sec;
+  dest->tv_usec = a->tv_usec - b->tv_usec;
+  if (dest->tv_usec < 0) {
+    dest->tv_usec += 1000000;
+    dest->tv_sec--;
+  }
 }
 
-static inline int64_t lcm_timestamp_now()
-{
-    GTimeVal tv;
-    g_get_current_time(&tv);
-    return (int64_t) tv.tv_sec * 1000000 + tv.tv_usec;
+static inline int64_t lcm_timestamp_now() {
+  GTimeVal tv;
+  g_get_current_time(&tv);
+  return (int64_t)tv.tv_sec * 1000000 + tv.tv_usec;
 }
 
 /******************** message buffer **********************/
 typedef struct _lcm_buf {
-    char channel_name[LCM_MAX_CHANNEL_NAME_LENGTH + 1];
-    int channel_size;  // length of channel name
+  char channel_name[LCM_MAX_CHANNEL_NAME_LENGTH + 1];
+  int channel_size;  // length of channel name
 
-    int64_t recv_utime;  // timestamp of first datagram receipt
-    char *buf;           // pointer to beginning of message.  This includes
-                         // the header for unfragmented messages, and does
-                         // not include the header for fragmented messages.
+  int64_t recv_utime;  // timestamp of first datagram receipt
+  char *buf;           // pointer to beginning of message.  This includes
+                       // the header for unfragmented messages, and does
+                       // not include the header for fragmented messages.
 
-    int data_offset;         // offset to payload
-    int data_size;           // size of payload
-    lcm_ringbuf_t *ringbuf;  // the ringbuffer used to allocate buf.  NULL if
-                             // not allocated from ringbuf
+  int data_offset;         // offset to payload
+  int data_size;           // size of payload
+  lcm_ringbuf_t *ringbuf;  // the ringbuffer used to allocate buf.  NULL if
+                           // not allocated from ringbuf
 
-    int packet_size;  // total bytes received
-    int buf_size;     // bytes allocated
+  int packet_size;  // total bytes received
+  int buf_size;     // bytes allocated
 
-    struct sockaddr from;  // sender
-    socklen_t fromlen;
-    struct _lcm_buf *next;
+  struct sockaddr from;  // sender
+  socklen_t fromlen;
+  struct _lcm_buf *next;
 } lcm_buf_t;
 
 /******* Functions for managing a queue of message buffers *******/
 typedef struct _lcm_buf_queue {
-    lcm_buf_t *head;
-    lcm_buf_t **tail;
-    int count;
+  lcm_buf_t *head;
+  lcm_buf_t **tail;
+  int count;
 } lcm_buf_queue_t;
 
 lcm_buf_queue_t *lcm_buf_queue_new(void);
@@ -176,26 +169,30 @@ void lcm_buf_free_data(lcm_buf_t *lcmb, lcm_ringbuf_t *ringbuf);
 
 /******************** fragment buffer **********************/
 typedef struct _lcm_frag_buf {
-    char channel[LCM_MAX_CHANNEL_NAME_LENGTH + 1];
-    struct sockaddr_in from;
-    char *data;
-    uint32_t data_size;
-    uint16_t fragments_remaining;
-    uint32_t msg_seqno;
-    int64_t last_packet_utime;
+  char channel[LCM_MAX_CHANNEL_NAME_LENGTH + 1];
+  struct sockaddr_in from;
+  char *data;
+  uint32_t data_size;
+  uint16_t fragments_remaining;
+  uint32_t msg_seqno;
+  int64_t last_packet_utime;
 } lcm_frag_buf_t;
 
-lcm_frag_buf_t *lcm_frag_buf_new(struct sockaddr_in from, const char *channel, uint32_t msg_seqno,
-                                 uint32_t data_size, uint16_t nfragments,
-                                 int64_t first_packet_utime);
+lcm_frag_buf_t *lcm_frag_buf_new(
+    struct sockaddr_in from,
+    const char *channel,
+    uint32_t msg_seqno,
+    uint32_t data_size,
+    uint16_t nfragments,
+    int64_t first_packet_utime);
 void lcm_frag_buf_destroy(lcm_frag_buf_t *fbuf);
 
 /******************** fragment buffer store **********************/
 typedef struct _lcm_frag_buf_store {
-    uint32_t total_size;
-    uint32_t max_total_size;
-    uint32_t max_n_frag_bufs;
-    GHashTable *frag_bufs;
+  uint32_t total_size;
+  uint32_t max_total_size;
+  uint32_t max_n_frag_bufs;
+  GHashTable *frag_bufs;
 } lcm_frag_buf_store;
 
 lcm_frag_buf_store *lcm_frag_buf_store_new(uint32_t max_total_size, uint32_t max_n_frag_bufs);

@@ -90,7 +90,7 @@ public:
    */
   virtual std::tuple<std::map<int, qrMotorCommand>, Eigen::Matrix<float, 3, 4>> GetAction();
 
-/**
+  /**
    * @brief 四足机器人的期望线速度，由用户命令。
    */
   Vec3<float> desiredSpeed;

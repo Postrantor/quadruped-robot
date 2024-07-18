@@ -96,7 +96,7 @@ private:
    */
   float rollDes;
 
-/**
+  /**
    * @brief 期望俯仰角。
    */
   float pitchDes;

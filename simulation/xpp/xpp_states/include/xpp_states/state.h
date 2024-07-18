@@ -44,20 +44,20 @@ class StateAng3d;
 class State3d;
 class State3dEuler;
 
-using Vector2d    = Eigen::Vector2d;
-using Vector3d    = Eigen::Vector3d;
-using Vector6d    = Eigen::Matrix<double,6,1>;
-using VectorXd    = Eigen::VectorXd;
+using Vector2d = Eigen::Vector2d;
+using Vector3d = Eigen::Vector3d;
+using Vector6d = Eigen::Matrix<double, 6, 1>;
+using VectorXd = Eigen::VectorXd;
 using Quaterniond = Eigen::Quaterniond;
 
-enum MotionDerivative { kPos=0, kVel, kAcc, kJerk };
+enum MotionDerivative { kPos = 0, kVel, kAcc, kJerk };
 
 /**
  * @brief Represents position, velocity and acceleration in x-dimensions.
  */
 class StateLinXd {
 public:
-  VectorXd p_, v_, a_; ///< position, velocity and acceleration
+  VectorXd p_, v_, a_;  ///< position, velocity and acceleration
 
   /**
    * @brief  Constructs an object of dimensions _dim.
@@ -110,33 +110,31 @@ public:
   int kNumDim = 0;  ///< the number of dimenions this state represents.
 };
 
-
 // some state classes of explicit dimensions for type safety as well as
 // conversions from the general base class.
-class StateLin1d  : public StateLinXd {
+class StateLin1d : public StateLinXd {
 public:
-  StateLin1d() : StateLinXd(1) {};
-  virtual ~StateLin1d() {};
+  StateLin1d() : StateLinXd(1){};
+  virtual ~StateLin1d(){};
 };
 
-class StateLin2d  : public StateLinXd {
+class StateLin2d : public StateLinXd {
 public:
-  StateLin2d() : StateLinXd(2) {};
-  virtual ~StateLin2d() {};
+  StateLin2d() : StateLinXd(2){};
+  virtual ~StateLin2d(){};
 };
 
 class StateLin3d : public StateLinXd {
 public:
-  StateLin3d() : StateLinXd(3) {};
+  StateLin3d() : StateLinXd(3){};
   StateLin3d(const StateLinXd&);
-  virtual ~StateLin3d() {};
+  virtual ~StateLin3d(){};
 
   /**
    * @brief Extracts only the 2-dimensional part (x,y) from this 3-D state.
    */
   StateLin2d Get2D() const;
 };
-
 
 /**
  * @brief Angular state of an object in 3-dimensional space.
@@ -147,8 +145,8 @@ public:
 class StateAng3d {
 public:
   Quaterniond q;  ///< orientation expressed as Quaternion.
-  Vector3d    w;  ///< angular velocity (omega).
-  Vector3d   wd;  ///< angular acceleration (omega dot).
+  Vector3d w;     ///< angular velocity (omega).
+  Vector3d wd;    ///< angular acceleration (omega dot).
 
   /**
    * @brief Builds an angular state.
@@ -160,12 +158,10 @@ public:
    * angular vel/acc expressed in base or world frame) can be chosen by the
    * user.
    */
-  explicit StateAng3d(Quaterniond _q = Quaterniond(1.0, 0.0, 0.0, 0.0),
-                      Vector3d   _w  = Vector3d::Zero(),
-                      Vector3d   _wd = Vector3d::Zero())
-  : q(_q), w(_w), wd(_wd) {}
+  explicit StateAng3d(
+      Quaterniond _q = Quaterniond(1.0, 0.0, 0.0, 0.0), Vector3d _w = Vector3d::Zero(), Vector3d _wd = Vector3d::Zero())
+      : q(_q), w(_w), wd(_wd) {}
 };
-
 
 /**
  * @brief 6D-State (linear+angular) of an object in 3-dimensional space,
@@ -173,8 +169,8 @@ public:
  */
 class State3d {
 public:
-  StateLin3d lin; ///< linear position, velocity and acceleration
-  StateAng3d ang; ///< Quaternion, velocity and acceleration
+  StateLin3d lin;  ///< linear position, velocity and acceleration
+  StateAng3d ang;  ///< Quaternion, velocity and acceleration
 
   Vector6d Get6dVel() const;
   Vector6d Get6dAcc() const;
@@ -186,11 +182,9 @@ public:
  */
 class State3dEuler {
 public:
-  StateLin3d lin; ///< linear position, velocity and acceleration
-  StateLin3d ang; ///< roll-pitch-yaw Euler angles, rates- and rate derivatives.
+  StateLin3d lin;  ///< linear position, velocity and acceleration
+  StateLin3d ang;  ///< roll-pitch-yaw Euler angles, rates- and rate derivatives.
 };
-
-
 
 // Conversions between Euler angles and Quaternions
 /**
@@ -203,8 +197,7 @@ public:
  * @param  q  Quaternion expressing current orientation.
  * @return first element is roll angle in radians, then pitch, then yaw
  */
-static Vector3d GetEulerZYXAngles(const Quaterniond& q)
-{
+static Vector3d GetEulerZYXAngles(const Quaterniond& q) {
   Vector3d yaw_pitch_roll = q.normalized().toRotationMatrix().eulerAngles(Z, Y, X);
   return yaw_pitch_roll.reverse();
 }
@@ -216,31 +209,24 @@ static Vector3d GetEulerZYXAngles(const Quaterniond& q)
  * then around new y' axis,
  * finally around newest x'' axis.
  */
-static Quaterniond GetQuaternionFromEulerZYX(double yaw, double pitch, double roll)
-{
+static Quaterniond GetQuaternionFromEulerZYX(double yaw, double pitch, double roll) {
   using namespace Eigen;
   Quaterniond q;
 
-  q =   AngleAxisd(yaw,   Vector3d::UnitZ())
-      * AngleAxisd(pitch, Vector3d::UnitY())
-      * AngleAxisd(roll,  Vector3d::UnitX());
+  q = AngleAxisd(yaw, Vector3d::UnitZ()) * AngleAxisd(pitch, Vector3d::UnitY()) * AngleAxisd(roll, Vector3d::UnitX());
 
   return q;
 }
 
-
-
 // convenience functions for easy readability
-inline std::ostream& operator<<(std::ostream& out, const StateLinXd& pos)
-{
+inline std::ostream& operator<<(std::ostream& out, const StateLinXd& pos) {
   out << "p=" << pos.p_.transpose() << "  "
       << "v=" << pos.v_.transpose() << "  "
       << "a=" << pos.a_.transpose();
   return out;
 }
 
-inline StateLinXd operator+(const StateLinXd& lhs, const StateLinXd& rhs)
-{
+inline StateLinXd operator+(const StateLinXd& lhs, const StateLinXd& rhs) {
   StateLinXd ret(lhs.kNumDim);
   ret.p_ = lhs.p_ + rhs.p_;
   ret.v_ = lhs.v_ + rhs.v_;
@@ -248,8 +234,7 @@ inline StateLinXd operator+(const StateLinXd& lhs, const StateLinXd& rhs)
   return ret;
 }
 
-inline StateLinXd operator*(double mult, const StateLinXd& rhs)
-{
+inline StateLinXd operator*(double mult, const StateLinXd& rhs) {
   StateLinXd ret(rhs.kNumDim);
   ret.p_ = mult * rhs.p_;
   ret.v_ = mult * rhs.v_;
@@ -257,36 +242,28 @@ inline StateLinXd operator*(double mult, const StateLinXd& rhs)
   return ret;
 }
 
-inline bool StateLinXd::operator==(const StateLinXd &other) const
-{
-  bool all_equal = (p_==other.p_
-                 && v_==other.v_
-                 && a_==other.a_);
+inline bool StateLinXd::operator==(const StateLinXd& other) const {
+  bool all_equal = (p_ == other.p_ && v_ == other.v_ && a_ == other.a_);
   return all_equal;
 }
 
-inline bool StateLinXd::operator!=(const StateLinXd &other) const
-{
-  return !(*this == other);
-}
+inline bool StateLinXd::operator!=(const StateLinXd& other) const { return !(*this == other); }
 
-inline std::ostream& operator<<(std::ostream& out, const StateAng3d& ori)
-{
+inline std::ostream& operator<<(std::ostream& out, const StateAng3d& ori) {
   Vector3d rpy_rad;
   rpy_rad = GetEulerZYXAngles(ori.q);
   out << "rpy=" << rpy_rad.transpose() << "  "
-      << "v="   << ori.w.transpose() << "  "
-      << "a="   << ori.wd.transpose();
+      << "v=" << ori.w.transpose() << "  "
+      << "a=" << ori.wd.transpose();
   return out;
 }
 
-inline std::ostream& operator<<(std::ostream& out, const State3d& pose)
-{
+inline std::ostream& operator<<(std::ostream& out, const State3d& pose) {
   out << "\tPos: " << pose.lin << "\n"
       << "\tOri: " << pose.ang;
   return out;
 }
 
-} // namespace xpp
+}  // namespace xpp
 
-#endif // _XPP_STATES_STATE_H_
+#endif  // _XPP_STATES_STATE_H_

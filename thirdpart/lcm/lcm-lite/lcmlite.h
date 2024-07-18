@@ -51,50 +51,50 @@ typedef struct lcmlite_subscription lcmlite_subscription_t;
 typedef struct lcmlite lcmlite_t;
 
 struct fragment_buffer {
-    int32_t last_fragment_count;
+  int32_t last_fragment_count;
 
-    uint64_t from_addr;
-    uint32_t msg_seq;
+  uint64_t from_addr;
+  uint32_t msg_seq;
 
-    char channel[LCM_MAX_CHANNEL_LENGTH];
-    int fragments_remaining;
-    char buf[LCM3_MAX_PACKET_SIZE];
-    uint8_t frag_received[LCM3_MAX_FRAGMENTS];
+  char channel[LCM_MAX_CHANNEL_LENGTH];
+  int fragments_remaining;
+  char buf[LCM3_MAX_PACKET_SIZE];
+  uint8_t frag_received[LCM3_MAX_FRAGMENTS];
 };
 
 struct lcmlite_subscription {
-    char *channel;
+  char *channel;
 
-    void (*callback)(lcmlite_t *lcm, const char *channel, const void *buf, int buf_len, void *user);
-    void *user;
+  void (*callback)(lcmlite_t *lcm, const char *channel, const void *buf, int buf_len, void *user);
+  void *user;
 
-    // 'next' field is for lcmlite internal use.
-    lcmlite_subscription_t *next;
+  // 'next' field is for lcmlite internal use.
+  lcmlite_subscription_t *next;
 };
 
 struct lcmlite {
-    /** Buffers for reassembling multi-fragment messages. **/
-    struct fragment_buffer fragment_buffers[LCM3_NUM_BUFFERS];
+  /** Buffers for reassembling multi-fragment messages. **/
+  struct fragment_buffer fragment_buffers[LCM3_NUM_BUFFERS];
 
-    /** every time we receive a fragment, we increment this counter
-        and write the value to the corresponding fragment buffer. This
-        allows us to measure how "stale" a fragment is (how long it's
-        been since we received a fragment for it).
-    **/
-    int32_t last_fragment_count;
+  /** every time we receive a fragment, we increment this counter
+      and write the value to the corresponding fragment buffer. This
+      allows us to measure how "stale" a fragment is (how long it's
+      been since we received a fragment for it).
+  **/
+  int32_t last_fragment_count;
 
-    void (*transmit_packet)(const void *_buf, int buf_len, void *user);
-    void *transmit_user;
+  void (*transmit_packet)(const void *_buf, int buf_len, void *user);
+  void *transmit_user;
 
-    uint8_t publish_buffer[LCM_PUBLISH_BUFFER_SIZE];
-    uint32_t msg_seq;
+  uint8_t publish_buffer[LCM_PUBLISH_BUFFER_SIZE];
+  uint32_t msg_seq;
 
-    lcmlite_subscription_t *first_subscription;
+  lcmlite_subscription_t *first_subscription;
 };
 
 // Caller allocates the lcmlite_t object, which we initialize.
-int lcmlite_init(lcmlite_t *lcm, void (*transmit_packet)(const void *_buf, int buf_len, void *user),
-                 void *transmit_user);
+int lcmlite_init(
+    lcmlite_t *lcm, void (*transmit_packet)(const void *_buf, int buf_len, void *user), void *transmit_user);
 
 // The user is responsible for creating and listening on a UDP
 // multicast socket. When a packet is received, call this function. Do

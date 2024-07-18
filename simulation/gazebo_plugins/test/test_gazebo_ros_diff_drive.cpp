@@ -23,23 +23,17 @@
 
 #define tol 10e-2
 
-using namespace std::literals::chrono_literals; // NOLINT
+using namespace std::literals::chrono_literals;  // NOLINT
 
 /// Test parameters
-struct TestParams
-{
+struct TestParams {
   /// Path to world file
   std::string world;
 };
 
+class GazeboRosDiffDriveTest : public gazebo::ServerFixture, public ::testing::WithParamInterface<TestParams> {};
 
-class GazeboRosDiffDriveTest
-  : public gazebo::ServerFixture, public ::testing::WithParamInterface<TestParams>
-{
-};
-
-TEST_P(GazeboRosDiffDriveTest, Publishing)
-{
+TEST_P(GazeboRosDiffDriveTest, Publishing) {
   // Load test world and start paused
   this->Load(GetParam().world, true);
 
@@ -61,10 +55,8 @@ TEST_P(GazeboRosDiffDriveTest, Publishing)
   // Create subscriber
   nav_msgs::msg::Odometry::SharedPtr latestMsg;
   auto sub = node->create_subscription<nav_msgs::msg::Odometry>(
-    "test/odom_test", rclcpp::QoS(rclcpp::KeepLast(1)),
-    [&latestMsg](const nav_msgs::msg::Odometry::SharedPtr _msg) {
-      latestMsg = _msg;
-    });
+      "test/odom_test", rclcpp::QoS(rclcpp::KeepLast(1)),
+      [&latestMsg](const nav_msgs::msg::Odometry::SharedPtr _msg) { latestMsg = _msg; });
 
   // Step a bit for model to settle
   world->Step(200);
@@ -78,8 +70,7 @@ TEST_P(GazeboRosDiffDriveTest, Publishing)
   EXPECT_NEAR(0.0, vehicle->WorldAngularVel().Z(), tol);
 
   // Send command
-  auto pub = node->create_publisher<geometry_msgs::msg::Twist>(
-    "test/cmd_test", rclcpp::QoS(rclcpp::KeepLast(1)));
+  auto pub = node->create_publisher<geometry_msgs::msg::Twist>("test/cmd_test", rclcpp::QoS(rclcpp::KeepLast(1)));
 
   auto msg = geometry_msgs::msg::Twist();
   msg.linear.x = 1.0;
@@ -94,9 +85,7 @@ TEST_P(GazeboRosDiffDriveTest, Publishing)
   auto linear_vel = vehicle->WorldLinearVel();
   double linear_vel_x = cosf(yaw) * linear_vel.X() + sinf(yaw) * linear_vel.Y();
 
-  for (; sleep < maxSleep && (linear_vel_x < 0.9 ||
-    vehicle->WorldAngularVel().Z() < 0.09); ++sleep)
-  {
+  for (; sleep < maxSleep && (linear_vel_x < 0.9 || vehicle->WorldAngularVel().Z() < 0.09); ++sleep) {
     yaw = static_cast<float>(vehicle->WorldPose().Rot().Yaw());
     linear_vel = vehicle->WorldLinearVel();
     linear_vel_x = cosf(yaw) * linear_vel.X() + sinf(yaw) * linear_vel.Y();
@@ -123,14 +112,14 @@ TEST_P(GazeboRosDiffDriveTest, Publishing)
 }
 
 INSTANTIATE_TEST_SUITE_P(
-  GazeboRosDiffDrive, GazeboRosDiffDriveTest, ::testing::Values(
-    TestParams({"worlds/gazebo_ros_diff_drive.world"}),
-    TestParams({"worlds/gazebo_ros_skid_steer_drive.world"})
-    // cppcheck-suppress syntaxError
-));
+    GazeboRosDiffDrive,
+    GazeboRosDiffDriveTest,
+    ::testing::Values(
+        TestParams({"worlds/gazebo_ros_diff_drive.world"}), TestParams({"worlds/gazebo_ros_skid_steer_drive.world"})
+        // cppcheck-suppress syntaxError
+        ));
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   int ret = RUN_ALL_TESTS();

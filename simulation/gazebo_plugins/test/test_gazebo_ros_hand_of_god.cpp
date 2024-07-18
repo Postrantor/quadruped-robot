@@ -21,12 +21,9 @@
 
 #define tol 10e-2
 
-class GazeboRosHandOfGodTest : public gazebo::ServerFixture
-{
-};
+class GazeboRosHandOfGodTest : public gazebo::ServerFixture {};
 
-TEST_F(GazeboRosHandOfGodTest, HandOfGodTransform)
-{
+TEST_F(GazeboRosHandOfGodTest, HandOfGodTransform) {
   // Load test world and start paused
   this->Load("worlds/gazebo_ros_hand_of_god.world", true);
 
@@ -78,8 +75,7 @@ TEST_F(GazeboRosHandOfGodTest, HandOfGodTransform)
   EXPECT_NEAR(10, box->WorldPose().Pos().Z(), tol);
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

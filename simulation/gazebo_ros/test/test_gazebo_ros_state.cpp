@@ -28,27 +28,26 @@
 
 #define tol 10e-2
 
-using namespace std::literals::chrono_literals; // NOLINT
+using namespace std::literals::chrono_literals;  // NOLINT
 
-class GazeboRosStateTest : public gazebo::ServerFixture
-{
+class GazeboRosStateTest : public gazebo::ServerFixture {
 public:
   // Documentation inherited
   void SetUp() override;
 
   /// Helper function to call get state service
   void GetState(
-    const std::string & _entity,
-    const ignition::math::Pose3d & _pose,
-    const ignition::math::Vector3d & _lin_vel = ignition::math::Vector3d::Zero,
-    const ignition::math::Vector3d & _ang_vel = ignition::math::Vector3d::Zero);
+      const std::string& _entity,
+      const ignition::math::Pose3d& _pose,
+      const ignition::math::Vector3d& _lin_vel = ignition::math::Vector3d::Zero,
+      const ignition::math::Vector3d& _ang_vel = ignition::math::Vector3d::Zero);
 
   /// Helper function to call set state service
   void SetState(
-    const std::string & _entity,
-    const ignition::math::Pose3d & _pose,
-    const ignition::math::Vector3d & _lin_vel = ignition::math::Vector3d::Zero,
-    const ignition::math::Vector3d & _ang_vel = ignition::math::Vector3d::Zero);
+      const std::string& _entity,
+      const ignition::math::Pose3d& _pose,
+      const ignition::math::Vector3d& _lin_vel = ignition::math::Vector3d::Zero,
+      const ignition::math::Vector3d& _ang_vel = ignition::math::Vector3d::Zero);
 
   gazebo::physics::WorldPtr world_;
   rclcpp::Node::SharedPtr node_;
@@ -58,8 +57,7 @@ public:
   rclcpp::Subscription<gazebo_msgs::msg::ModelStates>::SharedPtr model_states_sub_;
 };
 
-void GazeboRosStateTest::SetUp()
-{
+void GazeboRosStateTest::SetUp() {
   // Load world with state plugin and start paused
   this->Load("worlds/gazebo_ros_state_test.world", true);
 
@@ -71,23 +69,20 @@ void GazeboRosStateTest::SetUp()
   node_ = std::make_shared<rclcpp::Node>("gazebo_ros_state_test");
   ASSERT_NE(nullptr, node_);
 
-  get_state_client_ =
-    node_->create_client<gazebo_msgs::srv::GetEntityState>("test/get_entity_state");
+  get_state_client_ = node_->create_client<gazebo_msgs::srv::GetEntityState>("test/get_entity_state");
   ASSERT_NE(nullptr, get_state_client_);
   EXPECT_TRUE(get_state_client_->wait_for_service(std::chrono::seconds(1)));
 
-  set_state_client_ =
-    node_->create_client<gazebo_msgs::srv::SetEntityState>("test/set_entity_state");
+  set_state_client_ = node_->create_client<gazebo_msgs::srv::SetEntityState>("test/set_entity_state");
   ASSERT_NE(nullptr, set_state_client_);
   EXPECT_TRUE(set_state_client_->wait_for_service(std::chrono::seconds(1)));
 }
 
 void GazeboRosStateTest::GetState(
-  const std::string & _entity,
-  const ignition::math::Pose3d & _pose,
-  const ignition::math::Vector3d & _lin_vel,
-  const ignition::math::Vector3d & _ang_vel)
-{
+    const std::string& _entity,
+    const ignition::math::Pose3d& _pose,
+    const ignition::math::Vector3d& _lin_vel,
+    const ignition::math::Vector3d& _ang_vel) {
   auto entity = world_->EntityByName(_entity);
   ASSERT_NE(nullptr, entity);
 
@@ -95,9 +90,7 @@ void GazeboRosStateTest::GetState(
   request->name = _entity;
 
   auto response_future = get_state_client_->async_send_request(request);
-  EXPECT_EQ(
-    rclcpp::FutureReturnCode::SUCCESS,
-    rclcpp::spin_until_future_complete(node_, response_future));
+  EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node_, response_future));
 
   auto response = response_future.get();
   ASSERT_NE(nullptr, response);
@@ -122,31 +115,26 @@ void GazeboRosStateTest::GetState(
 }
 
 void GazeboRosStateTest::SetState(
-  const std::string & _entity,
-  const ignition::math::Pose3d & _pose,
-  const ignition::math::Vector3d & _lin_vel,
-  const ignition::math::Vector3d & _ang_vel)
-{
+    const std::string& _entity,
+    const ignition::math::Pose3d& _pose,
+    const ignition::math::Vector3d& _lin_vel,
+    const ignition::math::Vector3d& _ang_vel) {
   auto request = std::make_shared<gazebo_msgs::srv::SetEntityState::Request>();
   request->state.name = _entity;
   request->state.pose.position = gazebo_ros::Convert<geometry_msgs::msg::Point>(_pose.Pos());
-  request->state.pose.orientation =
-    gazebo_ros::Convert<geometry_msgs::msg::Quaternion>(_pose.Rot());
+  request->state.pose.orientation = gazebo_ros::Convert<geometry_msgs::msg::Quaternion>(_pose.Rot());
   request->state.twist.linear = gazebo_ros::Convert<geometry_msgs::msg::Vector3>(_lin_vel);
   request->state.twist.angular = gazebo_ros::Convert<geometry_msgs::msg::Vector3>(_ang_vel);
 
   auto response_future = set_state_client_->async_send_request(request);
-  EXPECT_EQ(
-    rclcpp::FutureReturnCode::SUCCESS,
-    rclcpp::spin_until_future_complete(node_, response_future));
+  EXPECT_EQ(rclcpp::FutureReturnCode::SUCCESS, rclcpp::spin_until_future_complete(node_, response_future));
 
   auto response = response_future.get();
   ASSERT_NE(nullptr, response);
   EXPECT_TRUE(response->success);
 }
 
-TEST_F(GazeboRosStateTest, GetSet)
-{
+TEST_F(GazeboRosStateTest, GetSet) {
   // Get / set model state
   {
     // Get initial state
@@ -154,13 +142,13 @@ TEST_F(GazeboRosStateTest, GetSet)
 
     // Set new state
     this->SetState(
-      "boxes", ignition::math::Pose3d(1.0, 2.0, 10.0, 0, 0, 0),
-      ignition::math::Vector3d(4.0, 0, 0), ignition::math::Vector3d::Zero);
+        "boxes", ignition::math::Pose3d(1.0, 2.0, 10.0, 0, 0, 0), ignition::math::Vector3d(4.0, 0, 0),
+        ignition::math::Vector3d::Zero);
 
     // Check new state
     this->GetState(
-      "boxes", ignition::math::Pose3d(1.0, 2.0, 10.0, 0, 0, 0),
-      ignition::math::Vector3d(4.0, 0, 0), ignition::math::Vector3d::Zero);
+        "boxes", ignition::math::Pose3d(1.0, 2.0, 10.0, 0, 0, 0), ignition::math::Vector3d(4.0, 0, 0),
+        ignition::math::Vector3d::Zero);
   }
 
   // Get / set light state
@@ -179,18 +167,18 @@ TEST_F(GazeboRosStateTest, GetSet)
   {
     // Get initial state - note that is was moved with the model
     this->GetState(
-      "boxes::top", ignition::math::Pose3d(1.0, 2.0, 11.25, 0, 0, 0),
-      ignition::math::Vector3d(4.0, 0, 0), ignition::math::Vector3d::Zero);
+        "boxes::top", ignition::math::Pose3d(1.0, 2.0, 11.25, 0, 0, 0), ignition::math::Vector3d(4.0, 0, 0),
+        ignition::math::Vector3d::Zero);
 
     // Set new state
     this->SetState(
-      "boxes::top", ignition::math::Pose3d(10, 20, 30, 0.1, 0, 0),
-      ignition::math::Vector3d(1.0, 2.0, 3.0), ignition::math::Vector3d(0.0, 0.0, 4.0));
+        "boxes::top", ignition::math::Pose3d(10, 20, 30, 0.1, 0, 0), ignition::math::Vector3d(1.0, 2.0, 3.0),
+        ignition::math::Vector3d(0.0, 0.0, 4.0));
 
     // Check new state
     this->GetState(
-      "boxes::top", ignition::math::Pose3d(10, 20, 30, 0.1, 0, 0),
-      ignition::math::Vector3d(1.0, 2.0, 3.0), ignition::math::Vector3d(0.0, 0.0, 4.0));
+        "boxes::top", ignition::math::Pose3d(10, 20, 30, 0.1, 0, 0), ignition::math::Vector3d(1.0, 2.0, 3.0),
+        ignition::math::Vector3d(0.0, 0.0, 4.0));
   }
 
   // Model states
@@ -202,10 +190,8 @@ TEST_F(GazeboRosStateTest, GetSet)
     executor.add_node(node_);
     gazebo_msgs::msg::ModelStates::SharedPtr model_states_msg{nullptr};
     model_states_sub_ = node_->create_subscription<gazebo_msgs::msg::ModelStates>(
-      "test/model_states_test", rclcpp::SystemDefaultsQoS(),
-      [&model_states_msg](gazebo_msgs::msg::ModelStates::SharedPtr _msg) {
-        model_states_msg = _msg;
-      });
+        "test/model_states_test", rclcpp::SystemDefaultsQoS(),
+        [&model_states_msg](gazebo_msgs::msg::ModelStates::SharedPtr _msg) { model_states_msg = _msg; });
 
     // Wait for a message
     world_->Step(1000);
@@ -235,10 +221,8 @@ TEST_F(GazeboRosStateTest, GetSet)
     executor.add_node(node_);
     gazebo_msgs::msg::LinkStates::SharedPtr link_states_msg{nullptr};
     link_states_sub_ = node_->create_subscription<gazebo_msgs::msg::LinkStates>(
-      "test/link_states_test", rclcpp::SystemDefaultsQoS(),
-      [&link_states_msg](gazebo_msgs::msg::LinkStates::SharedPtr _msg) {
-        link_states_msg = _msg;
-      });
+        "test/link_states_test", rclcpp::SystemDefaultsQoS(),
+        [&link_states_msg](gazebo_msgs::msg::LinkStates::SharedPtr _msg) { link_states_msg = _msg; });
 
     // Wait for a message
     world_->Step(1000);
@@ -263,8 +247,7 @@ TEST_F(GazeboRosStateTest, GetSet)
   }
 }
 
-int main(int argc, char ** argv)
-{
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
