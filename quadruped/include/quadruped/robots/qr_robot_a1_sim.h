@@ -27,10 +27,10 @@ class qrRobotA1Sim : public qrRobot {
 public:
   /**
    * @brief qrRobotA1Sim 类的构造函数
-   * @param nhIn: ROS 节点句柄。
+   * @param nh: ROS 节点句柄。
    * @param configFilePath: 配置文件路径。
    */
-  qrRobotA1Sim(const rclcpp::Node::SharedPtr& nhIn, std::string configFilePath);
+  qrRobotA1Sim(const rclcpp::Node::SharedPtr& nh, std::string configFilePath);
 
   ~qrRobotA1Sim() = default;
 

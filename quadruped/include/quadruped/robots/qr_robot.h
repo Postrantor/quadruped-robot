@@ -84,7 +84,7 @@ public:
    * @param motor_control_mode: 控制模式。
    */
   virtual void Step(const std::vector<qrMotorCommand> &motor_commands, MotorMode motor_control_mode) {
-    std::cout << "a opppp" << std::endl;
+    std::cout << "apply a step() ..." << std::endl;
   }
 
   /**

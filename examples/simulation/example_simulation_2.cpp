@@ -6,6 +6,8 @@
  */
 
 #include <future>
+#include <Eigen/Dense>
+#include <chrono>
 
 #include "rclcpp/rclcpp.hpp"
 #include "ament_index_cpp/get_package_share_directory.hpp"
@@ -86,14 +88,16 @@ auto reset_robot(
   auto joint_state_response_future = joint_state_client->async_send_request(joint_state_request);
 
   // 等待并检查响应结果
-  if (rclcpp::spin_until_future_complete(node, entity_state_response_future) == rclcpp::FutureReturnCode::SUCCESS &&
-      rclcpp::spin_until_future_complete(node, joint_state_response_future) == rclcpp::FutureReturnCode::SUCCESS) {
+  if (rclcpp::spin_until_future_complete(node, entity_state_response_future) == rclcpp::FutureReturnCode::SUCCESS  //
+      && rclcpp::spin_until_future_complete(node, joint_state_response_future) == rclcpp::FutureReturnCode::SUCCESS) {
     RCLCPP_INFO(rclcpp::get_logger("unitree_robot"), "robot reset successfully");
     return true;
   } else {
     RCLCPP_ERROR(rclcpp::get_logger("unitree_robot"), "failed to reset the robot");
     return false;
   }
+
+  return false;
 }
 
 /**
@@ -113,12 +117,11 @@ void get_com_position_in_world_frame(
 
   // 异步发送获取链接状态请求
   auto response_future = base_state_client->async_send_request(request);
-
   if (rclcpp::spin_until_future_complete(node, response_future)  //
       == rclcpp::FutureReturnCode::SUCCESS) {
     const auto& response = response_future.get();
     if (!response->success) {
-      RCLCPP_WARN(rclcpp::get_logger("unitree_robot"), "Failed to get Gazebo link state");
+      RCLCPP_WARN(rclcpp::get_logger("unitree_robot"), "failed to get gazebo link state");
       return;
     }
 
@@ -127,14 +130,13 @@ void get_com_position_in_world_frame(
     const auto& twist = response->state.twist;
 
     Vec3<double> pos_in{pose.position.x, pose.position.y, pose.position.z};
-    Quat<double> orientation_in{pose.orientation.w, pose.orientation.x, pose.orientation.y, pose.orientation.z};
     Vec3<double> v_in{twist.linear.x, twist.linear.y, twist.linear.z};
+    Quat<double> orientation_in{pose.orientation.w, pose.orientation.x, pose.orientation.y, pose.orientation.z};
 
     // 更新机器人实例的状态信息
     quadruped->gazeboBasePosition = pos_in.cast<float>();
     quadruped->gazeboBaseOrientation = orientation_in.cast<float>();
     quadruped->gazeboBaseVInBaseFrame = v_in.cast<float>();
-
     // 获取并更新机器人足端的位置
     quadruped->gazeboFootPositionInWorldFrame =  //
         quadruped->GetFootPositionsInWorldFrame(
@@ -154,7 +156,7 @@ void get_com_position_in_world_frame(
  */
 std::unique_ptr<Quadruped::qrRobotA1Sim> initialize_and_reset_robot(const std::shared_ptr<rclcpp::Node>& node) {
   // 创建服务客户端
-  // 这里指定的服务名称`/gazebo/set_entity_state`是应该通过"gazebo_ros_state"插件配置的
+  // 服务`/gazebo/set_entity_state`由"gazebo_ros_state"插件配置
   // 在empty.world文件中通过remap参数进行重映射或者添加命名空间得到
   auto entity_state_client = node->create_client<gazebo_msgs::srv::SetEntityState>("/gazebo/set_entity_state");
   // 这个服务在ros2版本上还是没有？

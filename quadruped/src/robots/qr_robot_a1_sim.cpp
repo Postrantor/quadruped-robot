@@ -432,27 +432,16 @@ void qrRobotA1Sim::MotorStateCallback(const unitree_msgs::msg::MotorState::Share
 }
 
 void qrRobotA1Sim::FRhipCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(msg, 0); }
-
 void qrRobotA1Sim::FRthighCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(msg, 1); }
-
 void qrRobotA1Sim::FRcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(msg, 2); }
-
 void qrRobotA1Sim::FLhipCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(msg, 3); }
-
 void qrRobotA1Sim::FLthighCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(msg, 4); }
-
 void qrRobotA1Sim::FLcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(msg, 5); }
-
 void qrRobotA1Sim::RRhipCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(msg, 6); }
-
 void qrRobotA1Sim::RRthighCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(msg, 7); }
-
 void qrRobotA1Sim::RRcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(msg, 8); }
-
 void qrRobotA1Sim::RLhipCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(msg, 9); }
-
 void qrRobotA1Sim::RLthighCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(msg, 10); }
-
 void qrRobotA1Sim::RLcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(msg, 11); }
 
 // void qrRobotA1Sim::FootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg, int index) {
@@ -463,11 +452,8 @@ void qrRobotA1Sim::RLcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr
 // }
 
 // void qrRobotA1Sim::FRfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg) { FootCallback(msg, 0); }
-
 // void qrRobotA1Sim::FLfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg) { FootCallback(msg, 1); }
-
 // void qrRobotA1Sim::RRfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg) { FootCallback(msg, 2); }
-
 // void qrRobotA1Sim::RLfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr &msg) { FootCallback(msg, 3); }
 
 void qrRobotA1Sim::SendCommand(const std::array<float, 60> motorcmd) {

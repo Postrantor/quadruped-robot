@@ -10,6 +10,7 @@ endif()
 
 # find_package
 find_package(ament_cmake REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(quadruped REQUIRED)
 find_package(backward_ros REQUIRED)
@@ -19,7 +20,6 @@ find_package(sensor_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
-find_package(ament_index_cpp REQUIRED)
 
 # find_package(unitree_legged_sdk REQUIRED)
 find_package(Eigen3 REQUIRED)
@@ -27,6 +27,7 @@ find_package(Eigen3 REQUIRED)
 # dependency
 set(DEPENDENCIES
   rclcpp
+  ament_index_cpp
   quadruped
   unitree_msgs
   gazebo_msgs
