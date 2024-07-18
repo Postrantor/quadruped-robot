@@ -5,7 +5,7 @@
  * @copyright MIT License
  */
 
-#include "planner/qr_foothold_planner.h"
+#include "quadruped/planner/qr_foothold_planner.h"
 
 using robotics::math::clip;
 
@@ -256,8 +256,8 @@ void qrFootholdPlanner::ComputeMITFootHold(int legId) {
       pRobotFrame;  // in base frame
 
   Mat3<float> rollR = robotics::math::coordinateRotation(CoordinateAxis::X, rpy[0]);  // abad->hip offset vector
-  Vec3<float> Pf = robotBaseR * (pYawCorrected + desiredSpeed * 0 /*gaitGenerator->swingTimeRemaining[legId]*/
-                                 + rollR * Vec3<float>{0, interleave_y[legId], 0})
+  Vec3<float> Pf = robotBaseR * (pYawCorrected + desiredSpeed * 0 + /*gaitGenerator->swingTimeRemaining[legId]*/
+                                 rollR * Vec3<float>{0, interleave_y[legId], 0})
       // +robot->basePosition
       ;
 

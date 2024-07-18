@@ -11,10 +11,10 @@
 #include <deque>
 #include <numeric>
 
-#include "estimators/qr_moving_window_filter.hpp"
-#include "gait/qr_openloop_gait_generator.h"
-#include "robots/qr_robot.h"
-#include "utils/qr_se3.h"
+#include "quadruped/estimators/qr_moving_window_filter.hpp"
+#include "quadruped/gait/qr_openloop_gait_generator.h"
+#include "quadruped/robots/qr_robot.h"
+#include "quadruped/utils/qr_se3.h"
 
 /* 这是一个外部库，但使用了qr_filter.hpp中定义的变量*/
 #include "TinyEKF.h"
@@ -66,12 +66,12 @@ public:
   /**
    * @brief 获取成员estimatedVelocity的Getter方法。
    */
-  const Vec3<float> &GetEstimatedVelocity() const { return estimatedVelocity; };
+  const Vec3<float> &GetEstimatedVelocity() const { return estimatedVelocity; }
 
   /**
    * @brief 获取成员estimatedAngularVelocity的Getter方法。
    */
-  const Vec3<float> &GetEstimatedAngularVelocity() const { return estimatedAngularVelocity; };
+  const Vec3<float> &GetEstimatedAngularVelocity() const { return estimatedAngularVelocity; }
 
 private:
   /**

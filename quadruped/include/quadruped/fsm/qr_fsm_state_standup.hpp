@@ -8,7 +8,7 @@
 #ifndef QR_FSM_STATE_STANDUP_H
 #define QR_FSM_STATE_STANDUP_H
 
-#include "qr_fsm_state.hpp"
+#include "quadruped/fsm/qr_fsm_state.hpp"
 
 template <typename T>
 class qrFSMStateStandUp : public qrFSMState<T> {

@@ -5,20 +5,20 @@
  * @copyright MIT License
  */
 
-#include "controllers/mpc/qr_mpc_stance_leg_controller.h"
+#include "quadruped/controllers/mpc/qr_mpc_stance_leg_controller.h"
 
 using robotics::math::clip;
 
 namespace Quadruped {
 
 MPCStanceLegController::MPCStanceLegController(
-    qrRobot *robot,
-    qrGaitGenerator *gaitGenerator,
-    qrStateEstimatorContainer *stateEstimators,
-    qrComAdjuster *comAdjuster,
-    qrPosePlanner *posePlanner,
-    qrFootholdPlanner *footholdPlanner,
-    qrUserParameters &userParameters,
+    qrRobot* robot,
+    qrGaitGenerator* gaitGenerator,
+    qrStateEstimatorContainer* stateEstimators,
+    qrComAdjuster* comAdjuster,
+    qrPosePlanner* posePlanner,
+    qrFootholdPlanner* footholdPlanner,
+    qrUserParameters& userParameters,
     std::string configFilepath)
     :
 
@@ -71,7 +71,7 @@ void MPCStanceLegController::Reset(float t) {
   yawTurnRate = 0;
 
   double maxForce = robot->totalMass * 9.81;
-  float *weights = Q;
+  float* weights = Q;
   float alpha = 4e-6;
 
   Vec3<float> inertia;
@@ -84,7 +84,7 @@ void MPCStanceLegController::Reset(float t) {
   mpcUpdated = false;
 
   if (useWBC) {
-    auto &wbcData = robot->stateDataFlow.wbcData;
+    auto& wbcData = robot->stateDataFlow.wbcData;
     for (int i = 0; i < NumLeg; ++i) {
       wbcData.Fr_des[i] << 0, 0, float(maxForce / 4);
     }
@@ -190,11 +190,11 @@ void MPCStanceLegController::SetupCommand() {
   pitchDes = desiredStateCommand->stateDes(4);
 }
 
-void MPCStanceLegController::Run(std::map<int, qrMotorCommand> &legCommand, int gaitType, int robotMode) {
+void MPCStanceLegController::Run(std::map<int, qrMotorCommand>& legCommand, int gaitType, int robotMode) {
   SetupCommand();
 
   Vec4<bool> contactState = contacts;
-  auto &seResult = robot->stateDataFlow;
+  auto& seResult = robot->stateDataFlow;
   Vec3<float> vBodyInBaseFrame = robot->GetBaseVelocityInBaseFrame();
   Vec3<float> rpy = robot->GetBaseRollPitchYaw();
 
@@ -318,7 +318,7 @@ void MPCStanceLegController::Run(std::map<int, qrMotorCommand> &legCommand, int 
   ++iterationCounter;
 }
 
-void MPCStanceLegController::UpdateMPC(qrRobot *robot) {
+void MPCStanceLegController::UpdateMPC(qrRobot* robot) {
   /* To ensure the frequency, MPC is calculated twice in an MPC horizon.
    * MPC is calculated at every first 50 iterations.
    * We found that the effect is as same as that of calculating MPC every iteration. */
@@ -352,7 +352,9 @@ void MPCStanceLegController::UpdateMPC(qrRobot *robot) {
 
     /* Predict the future state by accmulating the velocity. */
     for (int i = 0; i < horizonLength; ++i) {
-      for (int j = 0; j < 12; ++j) trajAll[12 * i + j] = trajInitial[j];
+      for (int j = 0; j < 12; ++j) {
+        trajAll[12 * i + j] = trajInitial[j];
+      }
       if (i == 0) {
         trajAll[2] = yawDesTrue;
       } else {
@@ -368,8 +370,8 @@ void MPCStanceLegController::UpdateMPC(qrRobot *robot) {
   }
 }
 
-void MPCStanceLegController::SolveDenseMPC(qrRobot *robot) {
-  auto &seResult = robot->stateDataFlow;
+void MPCStanceLegController::SolveDenseMPC(qrRobot* robot) {
+  auto& seResult = robot->stateDataFlow;
 
   /* Get base/CoM information. */
   Vec3<float> rpy = robot->GetBaseRollPitchYaw();
@@ -380,7 +382,7 @@ void MPCStanceLegController::SolveDenseMPC(qrRobot *robot) {
   /* Get foothold position to the CoM. */
   Eigen::Matrix<float, 3, 4> foot2ComInWorldFrame =
       seResult.baseRMat * (footPosInBaseFrame.colwise() - robot->comOffset);
-  float *r = foot2ComInWorldFrame.data();
+  float* r = foot2ComInWorldFrame.data();
 
   SolveMPCKernel(
       pos, seResult.baseVInWorldFrame, quat, seResult.baseWInWorldFrame, foot2ComInWorldFrame, rpy, trajAll,

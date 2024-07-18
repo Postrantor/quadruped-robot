@@ -8,14 +8,14 @@
 #ifndef QR_TORQUE_STANCE_LEG_CONTROLLER_H
 #define QR_TORQUE_STANCE_LEG_CONTROLLER_H
 
-#include "controllers/qr_desired_state_command.hpp"
-#include "estimators/qr_state_estimator_container.h"
-#include "gait/qr_openloop_gait_generator.h"
-#include "planner/qr_com_adjuster.h"
-#include "planner/qr_foothold_planner.h"
-#include "planner/qr_pose_planner.h"
-#include "robots/qr_robot.h"
-#include "utils/qr_se3.h"
+#include "quadruped/controllers/qr_desired_state_command.hpp"
+#include "quadruped/estimators/qr_state_estimator_container.h"
+#include "quadruped/gait/qr_openloop_gait_generator.h"
+#include "quadruped/planner/qr_com_adjuster.h"
+#include "quadruped/planner/qr_foothold_planner.h"
+#include "quadruped/planner/qr_pose_planner.h"
+#include "quadruped/robots/qr_robot.h"
+#include "quadruped/utils/qr_se3.h"
 
 namespace Quadruped {
 
@@ -33,13 +33,13 @@ public:
    * @param configFilepath: 配置文件路径字符串。
    */
   TorqueStanceLegController(
-      qrRobot *robot,
-      qrGaitGenerator *gaitGenerator,
-      qrStateEstimatorContainer *stateEstimators,
-      qrComAdjuster *comAdjuster,
-      qrPosePlanner *posePlanner,
-      qrFootholdPlanner *footholdPlanner,
-      qrUserParameters &userParameters,
+      qrRobot* robot,
+      qrGaitGenerator* gaitGenerator,
+      qrStateEstimatorContainer* stateEstimators,
+      qrComAdjuster* comAdjuster,
+      qrPosePlanner* posePlanner,
+      qrFootholdPlanner* footholdPlanner,
+      qrUserParameters& userParameters,
       std::string configFilepath);
 
   /**
@@ -56,7 +56,7 @@ public:
    * @brief 将期望状态命令绑定到这个stance腿控制器上。
    * @param desiredStateCommandIn
    */
-  void BindCommand(qrDesiredStateCommand *desiredStateCommandIn) { desiredStateCommand = desiredStateCommandIn; }
+  void BindCommand(qrDesiredStateCommand* desiredStateCommandIn) { desiredStateCommand = desiredStateCommandIn; }
 
   /**
    * @brief 使用当前时间重置stance腿控制器。
@@ -70,7 +70,7 @@ public:
    * @param N: 接触脚部数量
    * @param normalizedPhase:摆动腿相位
    */
-  void UpdateFRatio(Vec4<bool> &contacts, int &N, float &normalizedPhase);
+  void UpdateFRatio(Vec4<bool>& contacts, int& N, float& normalizedPhase);
 
   /**
    * @brief 更新期望命令，特别是使用KP/KD方法的加速度命令。
@@ -110,42 +110,42 @@ public:
   /**
    * @brief 机器人指针。
    */
-  qrRobot *robot;
+  qrRobot* robot;
 
   /**
    * @brief 步态生成器指针。
    */
-  qrGaitGenerator *gaitGenerator;
+  qrGaitGenerator* gaitGenerator;
 
   /**
    * @brief 机器人状态估计器指针。
    */
-  qrRobotEstimator *robotEstimator;
+  qrRobotEstimator* robotEstimator;
 
   /**
    * @brief 地面状态估计器指针。
    */
-  qrGroundSurfaceEstimator *groundEstimator;
+  qrGroundSurfaceEstimator* groundEstimator;
 
   /**
    * @brief COM 调整器指针。
    */
-  qrComAdjuster *comAdjuster;
+  qrComAdjuster* comAdjuster;
 
   /**
    * @brief 姿态规划器指针。
    */
-  qrPosePlanner *posePlanner;
+  qrPosePlanner* posePlanner;
 
   /**
    * @brief 脚部规划器指针。
    */
-  qrFootholdPlanner *footholdPlanner;
+  qrFootholdPlanner* footholdPlanner;
 
   /**
    * @brief 期望状态命令指针。
    */
-  qrDesiredStateCommand *desiredStateCommand;
+  qrDesiredStateCommand* desiredStateCommand;
 
   /**
    * @brief 蹲踞时的期望身体高度。

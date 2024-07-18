@@ -5,7 +5,7 @@
  * @copyright MIT License
  */
 
-#include "utils/qr_visualization.h"
+#include "quadruped/utils/qr_visualization.h"
 
 #include "matplotlibcpp.h"
 
@@ -65,7 +65,9 @@ Visualization2D::Visualization2D() {
 }
 
 void Visualization2D::SetLabelNames(std::vector<std::string> labelNamesIn) {
-  if (labelNamesIn.size() < 5) printf("ERROR IN Visualization2D::SetLabelNames\n");
+  if (labelNamesIn.size() < 5) {
+    printf("ERROR IN Visualization2D::SetLabelNames\n");
+  }
   labelNames.clear();
   labelNames = labelNamesIn;
 }
@@ -81,14 +83,26 @@ void Visualization2D::Show() {
     map_["cmap"] = "viridis";
     map_["alpha"] = "0.5";
 
-    if (datay1.size() == n) plt::plot(datax, datay1, {{"label", labelNames[0]}, {"linestyle", "-."}});
+    if (datay1.size() == n) {
+      plt::plot(datax, datay1, {{"label", labelNames[0]}, {"linestyle", "-."}});
+    }
     // plt::scatter(datax,datay5, 1.0, map_);
-    if (datay2.size() == n) plt::plot(datax, datay2, {{"label", labelNames[1]}, {"linestyle", "-."}});
-    if (datay3.size() == n) plt::plot(datax, datay3, {{"label", labelNames[2]}, {"linestyle", "--"}});
-    if (datay4.size() == n) plt::plot(datax, datay4, {{"label", labelNames[3]}, {"linestyle", "--"}});
-    if (datay5.size() == n) plt::plot(datax, datay5, {{"label", labelNames[4]}, {"linestyle", "--"}});
+    if (datay2.size() == n) {
+      plt::plot(datax, datay2, {{"label", labelNames[1]}, {"linestyle", "-."}});
+    }
+    if (datay3.size() == n) {
+      plt::plot(datax, datay3, {{"label", labelNames[2]}, {"linestyle", "--"}});
+    }
+    if (datay4.size() == n) {
+      plt::plot(datax, datay4, {{"label", labelNames[3]}, {"linestyle", "--"}});
+    }
+    if (datay5.size() == n) {
+      plt::plot(datax, datay5, {{"label", labelNames[4]}, {"linestyle", "--"}});
+    }
     // plt::scatter(datay4,datay5, 1.0, map_);
-    if (datay6.size() == n) plt::plot(datax, datay6, {{"label", labelNames[5]}, {"linestyle", "--"}});
+    if (datay6.size() == n) {
+      plt::plot(datax, datay6, {{"label", labelNames[5]}, {"linestyle", "--"}});
+    }
 
     // std::vector<float> xticks = {2.5f, 5.0f, 7.5f, 10.f};
     // plt::xticks(xticks);

@@ -8,7 +8,7 @@
 #ifndef QR_TRANSITION_DATA_H
 #define QR_TRANSITION_DATA_H
 
-#include "robots/qr_robot.h"
+#include "quadruped/robots/qr_robot.h"
 
 /**
  * @brief 在状态转换期间传递数据的相关数据结构。

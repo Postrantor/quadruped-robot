@@ -5,21 +5,20 @@
  * @copyright MIT License
  */
 
-#include "controllers/balance_controller/qr_torque_stance_leg_controller.h"
+#include "quadruped/controllers/balance_controller/qr_torque_stance_leg_controller.h"
+#include "quadruped/controllers/balance_controller/qr_qp_torque_optimizer.h"
 
-#include "controllers/balance_controller/qr_qp_torque_optimizer.h"
 using namespace std;
-
 namespace Quadruped {
 
 TorqueStanceLegController::TorqueStanceLegController(
-    qrRobot *robot,
-    qrGaitGenerator *gaitGenerator,
-    qrStateEstimatorContainer *stateEstimators,
-    qrComAdjuster *comAdjuster,
-    qrPosePlanner *posePlanner,
-    qrFootholdPlanner *footholdPlanner,
-    qrUserParameters &userParameters,
+    qrRobot* robot,
+    qrGaitGenerator* gaitGenerator,
+    qrStateEstimatorContainer* stateEstimators,
+    qrComAdjuster* comAdjuster,
+    qrPosePlanner* posePlanner,
+    qrFootholdPlanner* footholdPlanner,
+    qrUserParameters& userParameters,
     std::string configFilepath) {
   this->robot = robot;
   this->gaitGenerator = gaitGenerator;
@@ -58,7 +57,7 @@ void TorqueStanceLegController::Reset(float currentTime_) {
 
 void TorqueStanceLegController::Update(float currentTime_) { currentTime = currentTime_; }
 
-void TorqueStanceLegController::UpdateFRatio(Vec4<bool> &contacts, int &N, float &moveBasePhase) {
+void TorqueStanceLegController::UpdateFRatio(Vec4<bool>& contacts, int& N, float& moveBasePhase) {
   moveBasePhase = 1.f;
   N = 0;
 
@@ -312,15 +311,16 @@ void TorqueStanceLegController::UpdateDesCommand() {
         /* Transform into world frame. */
         desiredComRpy = robotComRpy + robot->timeStep * desiredComAngularVelocity;
         desiredComRpy[0] = 0;
-        desiredComVelocity =
-            robotics::math::invertRigidTransform({0, 0, 0}, robotComOrientation, desiredComVelocity);  // in world frame
+        desiredComVelocity = robotics::math::invertRigidTransform(
+            {0, 0, 0}, robotComOrientation,
+            desiredComVelocity);  // in world frame
       }
       break;
     }
     case LocomotionMode::ADVANCED_TROT: {
       if (computeForceInWorldFrame) {
         /* MPC uses comAdjuster to get desired CoM position and transform it into world frame. */
-        auto &comAdjPosInBaseFrame = comAdjuster->GetComPosInBaseFrame();
+        auto& comAdjPosInBaseFrame = comAdjuster->GetComPosInBaseFrame();
         Vec3<float> newComPosInWorldFrame = Rb * comAdjPosInBaseFrame + robot->basePosition;
         desiredComPosition = {newComPosInWorldFrame[0], newComPosInWorldFrame[1], desiredStateCommand->stateDes(2)};
 
@@ -346,7 +346,9 @@ void TorqueStanceLegController::UpdateDesCommand() {
          * Users can adjust this part.
          */
         float footX = std::min(footPosInBaseFrame(0, 0), footPosInBaseFrame(0, 1));
-        if (footX < 0.1f) scaleFactor = std::max(0.1f, footX / 0.1f);
+        if (footX < 0.1f) {
+          scaleFactor = std::max(0.1f, footX / 0.1f);
+        }
 
         /* The linear and angular velocity are actually in base frame.
          * But this does not has any effects if using same frame in KP/KD calculation.
@@ -407,7 +409,7 @@ void TorqueStanceLegController::UpdateDesCommand() {
     }
     case LocomotionMode::POSITION_LOCOMOTION: {
       /* POSITION_LOCOMOTION uses comAdjuster to get desired CoM position in base frame. */
-      auto &comAdjPosInBaseFrame = comAdjuster->GetComPosInBaseFrame();
+      auto& comAdjPosInBaseFrame = comAdjuster->GetComPosInBaseFrame();
 
       desiredComPosition = {comAdjPosInBaseFrame[0], comAdjPosInBaseFrame[1], desiredBodyHeight};
       desiredComVelocity = {desiredSpeed[0], desiredSpeed[1], 0.f};

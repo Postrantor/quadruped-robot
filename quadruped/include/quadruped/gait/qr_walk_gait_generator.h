@@ -8,8 +8,8 @@
 #ifndef QR_WALK_GAIT_GENERATOR_H
 #define QR_WALK_GAIT_GENERATOR_H
 
-#include "gait/qr_gait.h"
-#include "robots/qr_robot.h"
+#include "quadruped/gait/qr_gait.h"
+#include "quadruped/robots/qr_robot.h"
 
 namespace Quadruped {
 
@@ -28,7 +28,7 @@ public:
    * @param robot: 生成所需步态的机器人。
    * @param configFilePath: 给定的配置文件路径。
    */
-  qrWalkGaitGenerator(qrRobot *robot, std::string configFilePath);
+  qrWalkGaitGenerator(qrRobot* robot, std::string configFilePath);
 
   /**
    * @brief WalkGaitGenerator 类的构造函数。
@@ -42,7 +42,7 @@ public:
    * @param contactDetectionPhaseThreshold: contactDetectionPhaseThreshold 指定腿状态从 SWING 到 STANCE 的检测阈值。
    */
   qrWalkGaitGenerator(
-      qrRobot *robot,
+      qrRobot* robot,
       std::vector<SubLegState> stateSwitchQue,
       std::vector<float> stateRatioQue,
       Eigen::Matrix<float, 4, 1> stanceDuration,

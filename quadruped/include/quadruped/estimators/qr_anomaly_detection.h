@@ -8,15 +8,15 @@
 #ifndef QR_CONTACT_DETECTION_H
 #define QR_CONTACT_DETECTION_H
 
-#include "estimators/qr_moving_window_filter.hpp"
-#include "robots/qr_robot.h"
-
+#include "quadruped/estimators/qr_moving_window_filter.hpp"
+#include "quadruped/robots/qr_robot.h"
 /* this is a external lib, but using some variables defined in qr_filter.hpp*/
 #include "TinyEKF.h"
-#include "estimators/qr_ground_surface_estimator.h"
-#include "gait/qr_gait.h"
-#include "gait/qr_walk_gait_generator.h"
-#include "utils/physics_transform.h"
+
+#include "quadruped/estimators/qr_ground_surface_estimator.h"
+#include "quadruped/gait/qr_gait.h"
+#include "quadruped/gait/qr_walk_gait_generator.h"
+#include "quadruped/utils/physics_transform.h"
 
 namespace Quadruped {
 
@@ -28,7 +28,7 @@ public:
    * @param gaitGeneratorIn: 生成所需的步态计划以进行机动。
    * @param groundEstimatorIn: 估算脚部接触的 3D 平面。
    */
-  qrContactDetection(qrRobot* robotIn, qrGaitGenerator* gaitGeneratorIn, qrGroundSurfaceEstimator* groundEstimatorIn);
+  qrContactDetection(qrRobot *robotIn, qrGaitGenerator *gaitGeneratorIn, qrGroundSurfaceEstimator *groundEstimatorIn);
 
   /**
    * @brief 更新接触状态，使用先前的数据和观测数据进行 Kalman 滤波估算。
@@ -41,7 +41,7 @@ public:
    * @brief 重置估算。
    * @param currentTime: 自计时器启动以来的当前时间。
    */
-  void Reset(float currentTime){};
+  void Reset(float currentTime) {}
 
   /**
    * @brief 计算是否发生滑动的概率。
@@ -71,27 +71,27 @@ private:
   /**
    * @brief 异常检测用的机器人类。
    */
-  qrRobot* robot;
+  qrRobot *robot;
 
   /**
    * @brief 生成所需的步态计划以进行机动。
    */
-  qrGaitGenerator* gaitGenerator;
+  qrGaitGenerator *gaitGenerator;
 
   /**
    * @brief 估算脚部接触的 3D 平面。
    */
-  qrGroundSurfaceEstimator* groundEstimator;
+  qrGroundSurfaceEstimator *groundEstimator;
 
   /**
    * @brief 用于接触状态检测的 Kalman 滤波器。
    */
-  TinyEKF<4, 12>* filterContact;  // dim state=4, dim obs=8
+  TinyEKF<4, 12> *filterContact;  // dim state=4, dim obs=8
 
   /**
    * @brief 用于滑动检测的 Kalman 滤波器。
    */
-  TinyEKF<4, 4>* filterSlip;  // dim state=4, dim obs=4
+  TinyEKF<4, 4> *filterSlip;  // dim state=4, dim obs=4
 
   /**
    * @brief 自计时器重新启动以来的时间。
@@ -273,7 +273,7 @@ public:
    * @param gaitGeneratorIn: 生成所需的步态计划用于机器人 locomotion
    * @param groundEstimatorIn: 估算脚部接触的 3D 平面
    */
-  SlipDetection(qrRobot* robotIn, qrGaitGenerator* gaitGeneratorIn, qrGroundSurfaceEstimator* groundEstimatorIn);
+  SlipDetection(qrRobot *robotIn, qrGaitGenerator *gaitGeneratorIn, qrGroundSurfaceEstimator *groundEstimatorIn);
 
   /**
    * @brief 检测机器人脚部是否滑移
@@ -286,7 +286,7 @@ private:
   /**
    * @brief 滑移检测的机器人类
    */
-  qrRobot* robot;
+  qrRobot *robot;
 
   /**
    * @brief 自计时器重启以来的时间
@@ -315,7 +315,7 @@ public:
    * @param robotIn: 机器人类用于接触检测
    * @param groundEstimatorIn: 估算脚部接触的 3D 平面
    */
-  WorkspaceDetection(qrRobot* robotIn, qrGroundSurfaceEstimator* groundEstimatorIn)
+  WorkspaceDetection(qrRobot *robotIn, qrGroundSurfaceEstimator *groundEstimatorIn)
       : robot(robotIn), groundEstimator(groundEstimator){};
 
   /**
@@ -327,27 +327,27 @@ public:
   Eigen::Matrix<float, 3, 4> Update();
 
   //! maybe need delete
-  void Detect(){};
+  void Detect() {}
 
 private:
   float currentTime;
 
   Vec3<float> allowedWorkSpace = {0.1f, 0.1f, 0.05f};
 
-  qrRobot* robot;
+  qrRobot *robot;
 
-  qrGroundSurfaceEstimator* groundEstimator;
+  qrGroundSurfaceEstimator *groundEstimator;
 };
 
 //! maybe need delete
 class AnomalyDetection {
 public:
-  AnomalyDetection(qrRobot* robotIn, qrGaitGenerator* gaitGeneratorIn, qrGroundSurfaceEstimator* groundEstimatorIn);
+  AnomalyDetection(qrRobot *robotIn, qrGaitGenerator *gaitGeneratorIn, qrGroundSurfaceEstimator *groundEstimatorIn);
 
 private:
-  qrRobot* robot;
-  qrGaitGenerator* gaitGenerator;
-  qrGroundSurfaceEstimator* groundEstimator;
+  qrRobot *robot;
+  qrGaitGenerator *gaitGenerator;
+  qrGroundSurfaceEstimator *groundEstimator;
   qrContactDetection contactDetection;
   SlipDetection slipDetection;
 };

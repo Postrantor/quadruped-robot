@@ -5,15 +5,15 @@
  * @copyright MIT License
  */
 
-#include "fsm/qr_control_fsm.hpp"
+#include "quadruped/fsm/qr_control_fsm.hpp"
 
 template <typename T>
 qrControlFSM<T>::qrControlFSM(
-    Quadruped::qrRobot *quadruped,
-    Quadruped::qrStateEstimatorContainer *stateEstimators,
-    Quadruped::qrGaitGenerator *gaitScheduler,
-    Quadruped::qrDesiredStateCommand *desiredStateCommand,
-    qrUserParameters *userParameters) {
+    Quadruped::qrRobot* quadruped,
+    Quadruped::qrStateEstimatorContainer* stateEstimators,
+    Quadruped::qrGaitGenerator* gaitScheduler,
+    Quadruped::qrDesiredStateCommand* desiredStateCommand,
+    qrUserParameters* userParameters) {
   data.quadruped = quadruped;
   data.stateEstimators = stateEstimators;
   data.gaitGenerator = gaitScheduler;
@@ -42,7 +42,7 @@ void qrControlFSM<T>::Initialize() {
 }
 
 template <typename T>
-void qrControlFSM<T>::RunFSM(std::vector<Quadruped::qrMotorCommand> &hybridAction) {
+void qrControlFSM<T>::RunFSM(std::vector<Quadruped::qrMotorCommand>& hybridAction) {
   /* If joy command has received, set up next FSM mode according to the received joy RC mode. */
   if (data.desiredStateCommand->getJoyCtrlStateChangeRequest()) {
     const Quadruped::RC_MODE ctrlState = data.desiredStateCommand->getJoyCtrlState();
@@ -141,7 +141,7 @@ FSM_OperatingMode qrControlFSM<T>::SafetyPostCheck() {
 }
 
 template <typename T>
-qrFSMState<T> *qrControlFSM<T>::GetNextState(FSM_StateName stateName) {
+qrFSMState<T>* qrControlFSM<T>::GetNextState(FSM_StateName stateName) {
   /* Choose the correct FSM State by enumerated state name. */
   switch (stateName) {
     case FSM_StateName::INVALID:

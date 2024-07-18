@@ -5,7 +5,7 @@
  * @copyright MIT License
  */
 
-#include "controllers/mpc/qr_mpc_interface.h"
+#include "quadruped/controllers/mpc/qr_mpc_interface.h"
 
 #include <unsupported/Eigen/MatrixFunctions>
 
@@ -96,7 +96,9 @@ namespace {
  * @param n_items: number of elements in the matrix.
  */
 inline void EigenToFloatArray(float *dst, float *src, s32 n_items) {
-  for (s32 i = 0; i < n_items; i++) *dst++ = *src++;
+  for (s32 i = 0; i < n_items; i++) {
+    *dst++ = *src++;
+  }
 }
 
 /**
@@ -355,7 +357,9 @@ void SolveMPC(ProblemConfig *setup) {
    * The weight should repeat for %horizon times in QP formulation.
    */
   Matrix<float, 13, 1> full_weight;
-  for (u8 i = 0; i < 12; ++i) full_weight(i) = setup->weights[i];
+  for (u8 i = 0; i < 12; ++i) {
+    full_weight(i) = setup->weights[i];
+  }
   full_weight(12) = 0.f;
 
   /* Copy the predictive trajectory to X_d. */
@@ -423,7 +427,9 @@ void SolveMPC(ProblemConfig *setup) {
 }
 
 double GetMPCSolution(int index) {
-  if (!has_solved) return 0.f;
+  if (!has_solved) {
+    return 0.f;
+  }
   double *qs = q_soln;
   return qs[index];
 }

@@ -11,8 +11,9 @@
 #include <cmath>
 #include <deque>
 
-#include "Eigen/Dense"
-#include "qr_config.h"
+#include <Eigen/Dense>
+
+#include "quadruped/config/qr_config.h"
 
 #define Nsta 3  // 状态维度
 #define Mobs 3  // 观测维度
@@ -48,19 +49,19 @@ public:
    * @param Args:
    *          value: 要添加到窗口的新值。
    */
-  void NeumaierSum(const Eigen::Matrix<T, N, 1> &value);
+  void NeumaierSum(const Eigen::Matrix<T, N, 1>& value);
 
   /**
    * @brief 将新值推送到窗口队列中，
    * 并计算窗口队列中的平均值。
    * @param newValue: 将新值推送到窗口队列中。
    */
-  Eigen::Matrix<T, N, 1> CalculateAverage(const Eigen::Matrix<T, N, 1> &newValue);
+  Eigen::Matrix<T, N, 1> CalculateAverage(const Eigen::Matrix<T, N, 1>& newValue);
 
   /**
    * @brief 获取成员 sum 的 getter 方法。
    */
-  Eigen::Matrix<T, N, 1> GetSum() { return sum; };
+  Eigen::Matrix<T, N, 1> GetSum() { return sum; }
 
 private:
   /**
@@ -112,7 +113,7 @@ void qrMovingWindowFilter<T, N>::Reset() {
 }
 
 template <class T, int N>
-void qrMovingWindowFilter<T, N>::NeumaierSum(const Eigen::Matrix<T, N, 1> &value) {
+void qrMovingWindowFilter<T, N>::NeumaierSum(const Eigen::Matrix<T, N, 1>& value) {
   Eigen::Matrix<T, N, 1> newSum = sum + value;
   for (int i = 0; i < N; ++i) {
     if (std::abs(sum[i]) >= std::abs(value[i])) {
@@ -135,7 +136,7 @@ void qrMovingWindowFilter<T, N>::NeumaierSum(const Eigen::Matrix<T, N, 1> &value
  *   窗口内值的平均值。
  */
 template <class T, int N>
-Eigen::Matrix<T, N, 1> qrMovingWindowFilter<T, N>::CalculateAverage(const Eigen::Matrix<T, N, 1> &newValue) {
+Eigen::Matrix<T, N, 1> qrMovingWindowFilter<T, N>::CalculateAverage(const Eigen::Matrix<T, N, 1>& newValue) {
   int dequeLen = valueDeque.size();
   if (dequeLen >= moveWindowSize) {
     // 从移动窗口 sum 中减去左侧最值。
@@ -163,7 +164,7 @@ public:
     moveWindowSize = DEFAULT_WINDOW_SIZE;
     sum = 0.;
     correction = 0.;
-  };
+  }
 
   /**
    * @brief 类 MovingWindowFilter 的构造函数。
@@ -173,7 +174,7 @@ public:
     moveWindowSize = windowSizeIn;
     sum = 0.;
     correction = 0.;
-  };
+  }
 
   /**
    * @brief 重置方法中的某些中间变量，
@@ -183,7 +184,7 @@ public:
     sum = 0.;
     correction = 0.;
     valueDeque.clear();
-  };
+  }
 
   /**
    * @brief 使用 Neumaier 算法更新移动窗口 sum。
@@ -191,7 +192,7 @@ public:
    *           https://en.wikipedia.org/wiki/Kahan_summation_algorithm#Further_enhancements
    * @param value: 要添加到窗口的新值。
    */
-  void NeumaierSum(const double &value) {
+  void NeumaierSum(const double& value) {
     double newSum = sum + value;
     if (std::abs(sum) >= std::abs(value)) {
       // 如果 sum 比 value 大，则 value 的低位数字丢失。
@@ -201,14 +202,14 @@ public:
       correction += (value - newSum) + sum;
     }
     sum = newSum;
-  };
+  }
 
   /**
    * @brief 将新值推送到窗口队列中，
    * 并计算窗口队列中的平均值。
    * @param newValue: 将新值推送到窗口队列中。
    */
-  double CalculateAverage(const double &newValue) {
+  double CalculateAverage(const double& newValue) {
     int dequeLen = valueDeque.size();
     if (dequeLen >= moveWindowSize) {
       // 从移动窗口 sum 中减去左侧最值。
@@ -220,12 +221,12 @@ public:
     NeumaierSum(newValue);
     valueDeque.push_back(newValue);
     return (sum + correction) / (dequeLen + 1);
-  };
+  }
 
   /**
    * @brief 成员 sum 的 getter 方法。
    */
-  double GetSum() { return sum; };
+  double GetSum() { return sum; }
 
 private:
   /**

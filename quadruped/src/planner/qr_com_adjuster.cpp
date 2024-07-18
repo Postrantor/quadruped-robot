@@ -5,11 +5,11 @@
  * @copyright MIT License
  */
 
-#include "planner/qr_com_adjuster.h"
+#include "quadruped/planner/qr_com_adjuster.h"
 
 namespace Quadruped {
 
-qrComAdjuster::qrComAdjuster(qrRobot *robotIn, qrGaitGenerator *gaitGeneratorIn, qrRobotEstimator *robotEstimatorIn)
+qrComAdjuster::qrComAdjuster(qrRobot* robotIn, qrGaitGenerator* gaitGeneratorIn, qrRobotEstimator* robotEstimatorIn)
     : robot(robotIn), gaitGenerator(gaitGeneratorIn), robotEstimator(robotEstimatorIn), delta(1.0f) {
   Reset(0.f);
 }

@@ -5,7 +5,7 @@
  * @copyright MIT License
  */
 
-#include "controllers/wbc/qr_wbc_locomotion_controller.hpp"
+#include "quadruped/controllers/wbc/qr_wbc_locomotion_controller.hpp"
 
 template <typename T>
 qrWbcLocomotionController<T>::qrWbcLocomotionController(

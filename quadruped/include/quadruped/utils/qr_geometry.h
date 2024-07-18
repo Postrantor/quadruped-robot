@@ -12,9 +12,9 @@
 #include <iostream>
 #include <type_traits>
 
-#include "utils/qr_algebra.h"
-#include "utils/qr_cpptypes.h"
-#include "utils/qr_se3.h"
+#include "quadruped/utils/qr_algebra.h"
+#include "quadruped/utils/qr_cpptypes.h"
+#include "quadruped/utils/qr_se3.h"
 
 namespace robotics {
 
@@ -91,7 +91,7 @@ public:
    */
   ~qrCubicSplineInSO3() = default;
 
-  void GetPoint(float currentTime, Mat3<float> &outR, Vec3<float> &outwb);
+  void GetPoint(float currentTime, Mat3<float>& outR, Vec3<float>& outwb);
 
 private:
   float t0;
@@ -131,14 +131,14 @@ public:
       xdd = 0.0;
     }
 
-    friend std::ostream &operator<<(std::ostream &cout, Point &p);
+    friend std::ostream& operator<<(std::ostream& cout, Point& p);
 
     float x;
     float xd;
     float xdd;
   };
 
-  qrSpline::Point operator=(const qrSpline::Point &rhs) {
+  qrSpline::Point operator=(const qrSpline::Point& rhs) {
     qrSpline::Point out;
     out.x = rhs.x;
     out.xd = rhs.xd;
@@ -158,7 +158,7 @@ public:
    * @param start: 起点
    * @param end: 终点
    */
-  qrSpline(const float &initial_time, const float &duration, const Point &start, const Point &end);
+  qrSpline(const float& initial_time, const float& duration, const Point& start, const Point& end);
 
   /**
    * @brief Spline 类的构造函数。
@@ -167,7 +167,7 @@ public:
    * @param start_p: 起始点
    * @param end_p: 终点
    */
-  qrSpline(const float &initial_time, const float &duration, float start_p, float end_p);
+  qrSpline(const float& initial_time, const float& duration, float start_p, float end_p);
 
   /**
    * @brief Spline 类的析构函数。
@@ -181,7 +181,7 @@ public:
    * @param start_p: 起始点
    * @param end_p: 终点
    */
-  void setBoundary(const float &initial_time, const float &duration, const Point &start_p, const Point &end_p);
+  void setBoundary(const float& initial_time, const float& duration, const Point& start_p, const Point& end_p);
 
   /**
    * @brief 设置 Spline 的边界
@@ -190,23 +190,23 @@ public:
    * @param start_p: 起始点
    * @param end_p: 终点
    */
-  void setBoundary(const float &initial_time, const float &duration, const float &start_p, const float &end_p);
+  void setBoundary(const float& initial_time, const float& duration, const float& start_p, const float& end_p);
 
   /**
    * @brief 根据 Spline 插值获取点的值
    * @param current_time: 当前时间
    * @param p: 点值
    */
-  virtual bool getPoint(const float &current_time, Point &p) = 0;
+  virtual bool getPoint(const float& current_time, Point& p) = 0;
 
   /**
    * @brief 根据 Spline 插值获取点的值
    * @param current_time: 当前时间
    * @param p: 点值
    */
-  virtual bool getPoint(const float &current_time, float &p) = 0;
+  virtual bool getPoint(const float& current_time, float& p) = 0;
 
-  bool isTimeElapsed(float &time);
+  bool isTimeElapsed(float& time);
 
 protected:
   /** @brief Spline 的初始时间 */
@@ -222,12 +222,13 @@ protected:
   Point end_;
 };
 
-inline bool qrSpline::isTimeElapsed(float &t) {
+inline bool qrSpline::isTimeElapsed(float& t) {
   /* 这只在时间间隔之外有效 */
-  if ((t - initial_time_) > duration_)
+  if ((t - initial_time_) > duration_) {
     return true;
-  else
+  } else {
     return false;
+  }
 }
 
 class qrQuadraticSpline : public qrSpline {
@@ -244,7 +245,7 @@ public:
    * @param start: 起始点
    * @param end: 终点
    */
-  qrQuadraticSpline(const float &initial_time, const float &duration, const Point &start, const Point &end)
+  qrQuadraticSpline(const float& initial_time, const float& duration, const Point& start, const Point& end)
       : qrSpline(initial_time, duration, start, end) {}
 
   /**
@@ -254,7 +255,7 @@ public:
    * @param start: 起始点
    * @param end: 终点
    */
-  qrQuadraticSpline(const float &initial_time, const float &duration, float start, float end)
+  qrQuadraticSpline(const float& initial_time, const float& duration, float start, float end)
       : qrSpline(initial_time, duration, start, end) {}
 
   /**
@@ -268,9 +269,9 @@ public:
    * @param mid: 中间点值
    * @param p: 点值
    */
-  bool getPoint(const float &current_time, float mid, Point &p);
+  bool getPoint(const float& current_time, float mid, Point& p);
 
-  virtual bool getPoint(const float &current_time, Point &p);
+  virtual bool getPoint(const float& current_time, Point& p);
 
   /**
    * @brief 根据 Spline 插值获取点的值
@@ -278,9 +279,9 @@ public:
    * @param mid: 中间点值
    * @param p: 点值
    */
-  bool getPoint(const float &current_time, float mid, float &p);
+  bool getPoint(const float& current_time, float mid, float& p);
 
-  virtual bool getPoint(const float &current_time, float &p);
+  virtual bool getPoint(const float& current_time, float& p);
 };
 
 /**
@@ -300,7 +301,7 @@ public:
    * @param start: 起始点
    * @param end: 终点
    */
-  qrCubicSpline(const float &initial_time, const float &duration, const Point &start, const Point &end)
+  qrCubicSpline(const float& initial_time, const float& duration, const Point& start, const Point& end)
       : qrSpline(initial_time, duration, start, end) {}
 
   /**
@@ -310,7 +311,7 @@ public:
    * @param start: 起始点
    * @param end: 终点
    */
-  qrCubicSpline(const float &initial_time, const float &duration, float start, float end)
+  qrCubicSpline(const float& initial_time, const float& duration, float start, float end)
       : qrSpline(initial_time, duration, start, end) {}
 
   /**
@@ -323,14 +324,14 @@ public:
    * @param current_time: 当前时间
    * @param p: 点值
    */
-  bool getPoint(const float &current_time, Point &p);
+  bool getPoint(const float& current_time, Point& p);
 
   /**
    * @brief 根据插值获取点值
    * @param current_time: 当前时间
    * @param p: 点值
    */
-  bool getPoint(const float &current_time, float &p);
+  bool getPoint(const float& current_time, float& p);
 };
 
 /**
@@ -350,7 +351,7 @@ public:
    * @param start: 起始点
    * @param end: 终点
    */
-  qrFifthOrderPolySpline(const float &initial_time, const float &duration, const Point &start, const Point &end)
+  qrFifthOrderPolySpline(const float& initial_time, const float& duration, const Point& start, const Point& end)
       : qrSpline(initial_time, duration, start, end) {}
 
   /**
@@ -363,14 +364,14 @@ public:
    * @param current_time: 当前时间
    * @param p: 点值
    */
-  bool getPoint(const float &current_time, Point &p);
+  bool getPoint(const float& current_time, Point& p);
 
   /**
    * @brief 根据插值获取点值
    * @param current_time: 当前时间
    * @param p: 点值
    */
-  bool getPoint(const float &current_time, float &p);
+  bool getPoint(const float& current_time, float& p);
 };
 
 /**
@@ -390,7 +391,7 @@ public:
    * @param start: 起始点
    * @param end: 终点
    */
-  qrLinearSpline(const float &initial_time, const float &duration, const Point &start, const Point &end)
+  qrLinearSpline(const float& initial_time, const float& duration, const Point& start, const Point& end)
       : qrSpline(initial_time, duration, start, end) {}
 
   /**
@@ -403,14 +404,14 @@ public:
    * @param current_time: 当前时间
    * @param p: 点值
    */
-  bool getPoint(const float &current_time, Point &p);
+  bool getPoint(const float& current_time, Point& p);
 
   /**
    * @brief 根据插值获取点值
    * @param current_time: 当前时间
    * @param p: 点值
    */
-  bool getPoint(const float &current_time, float &p);
+  bool getPoint(const float& current_time, float& p);
 };
 
 /**

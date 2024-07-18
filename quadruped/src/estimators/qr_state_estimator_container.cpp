@@ -5,14 +5,14 @@
  * @copyright MIT License
  */
 
-#include "estimators/qr_state_estimator_container.h"
+#include "quadruped/estimators/qr_state_estimator_container.h"
 
 namespace Quadruped {
 
 qrStateEstimatorContainer::qrStateEstimatorContainer(
-    qrRobot *quadrupedIn,
-    qrGaitGenerator *gaitGeneratorIn,
-    qrUserParameters *userParametersIn,
+    qrRobot* quadrupedIn,
+    qrGaitGenerator* gaitGeneratorIn,
+    qrUserParameters* userParametersIn,
     std::string terrainConfigPath,
     std::string homeDir)
     :

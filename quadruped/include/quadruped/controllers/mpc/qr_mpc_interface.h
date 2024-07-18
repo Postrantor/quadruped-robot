@@ -10,9 +10,9 @@
 
 #include "qpOASES.hpp"
 
-#include "robots/qr_timer.h"
-#include "utils/qr_se3.h"
-#include "utils/qr_tools.h"
+#include "quadruped/robots/qr_timer.h"
+#include "quadruped/utils/qr_se3.h"
+#include "quadruped/utils/qr_tools.h"
 
 #define K_MAX_GAIT_SEGMENTS 16
 
@@ -141,8 +141,8 @@ void SetupProblem(
     double frictionCoeff,
     double fMax,
     double totalMass,
-    float *inertia,
-    float *weight,
+    float* inertia,
+    float* weight,
     float alpha);
 
 /**
@@ -174,8 +174,8 @@ void ComputeContinuousTimeStateSpaceMatrices(
     float mass,
     Eigen::Matrix<float, 3, 4> r_feet,
     Mat3<float> yawRotMat,
-    Eigen::Matrix<float, 13, 13> &A,
-    Eigen::Matrix<float, 13, 12> &B);
+    Eigen::Matrix<float, 13, 13>& A,
+    Eigen::Matrix<float, 13, 12>& B);
 
 /**
  * @brief 解决 MPC 问题。
@@ -190,20 +190,20 @@ void ComputeContinuousTimeStateSpaceMatrices(
  * @param gait： horzion 步骤中的步态状态。通常是 STANCE 或 SWING。
  */
 void SolveMPCKernel(
-    Vec3<float> &p,
-    Vec3<float> &v,
-    Quat<float> &q,
-    Vec3<float> &w,
-    Eigen::Matrix<float, 3, 4> &r,
-    Vec3<float> &rpy,
-    float *state_trajectory,
-    float *gait);
+    Vec3<float>& p,
+    Vec3<float>& v,
+    Quat<float>& q,
+    Vec3<float>& w,
+    Eigen::Matrix<float, 3, 4>& r,
+    Vec3<float>& rpy,
+    float* state_trajectory,
+    float* gait);
 
 /**
  * @brief 解决 MPC 问题。准备必要的数据以供 MPC 使用，并调用 %SolveMPCKernel 解决它。
  * @param setup：MPC 问题的一些参数。
  */
-void SolveMPC(ProblemConfig *setup);
+void SolveMPC(ProblemConfig* setup);
 
 /**
  * @brief 获取 MPC 解的值，该值以 qpOASES 浮点向量形式出现。

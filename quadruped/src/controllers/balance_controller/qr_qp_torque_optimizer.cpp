@@ -5,7 +5,7 @@
  * @copyright MIT License
  */
 
-#include "controllers/balance_controller/qr_qp_torque_optimizer.h"
+#include "quadruped/controllers/balance_controller/qr_qp_torque_optimizer.h"
 
 #include "Array.hh"
 #include "QuadProg++.hh"

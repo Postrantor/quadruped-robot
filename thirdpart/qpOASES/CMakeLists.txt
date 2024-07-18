@@ -28,6 +28,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(qpOASES CXX)
 
+find_package(ament_cmake REQUIRED)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 
 set(PACKAGE_NAME "qpOASES")
@@ -121,55 +123,49 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 file(GLOB SRC src/*.cpp)
 
 # library
-add_library(qpOASES ${SRC})
+add_library(${PROJECT_NAME} SHARED ${SRC})
 install(
-  TARGETS qpOASES
+  TARGETS ${PROJECT_NAME}
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
   RUNTIME DESTINATION lib)
-set_target_properties(qpOASES PROPERTIES SOVERSION ${PACKAGE_SO_VERSION})
+set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${PACKAGE_SO_VERSION})
 
-# headers
-install(FILES include/qpOASES.hpp DESTINATION include)
 install(
-  DIRECTORY include/qpOASES
-  DESTINATION include
-  FILES_MATCHING
-  PATTERN "*.hpp"
-  PATTERN "*.ipp"
-  PATTERN ".svn" EXCLUDE)
+  DIRECTORY include
+  DESTINATION .
+)
+
+ament_export_include_directories(include)
+ament_export_libraries(${PROJECT_NAME})
+
+ament_package()
 
 # ##############################################################################
 # ######################## examples #########################
 # ##############################################################################
 
-if(QPOASES_BUILD_EXAMPLES)
-  # compile qpOASES examples
-  set(EXAMPLE_NAMES
-      example1
-      example1a
-      example1b
-      example2
-      example3
-      example3b
-      example4
-      example5
-      exampleLP
-      qrecipe
-      qrecipeSchur)
+# if(QPOASES_BUILD_EXAMPLES)
+#   # compile qpOASES examples
+#   set(EXAMPLE_NAMES
+#       example1
+#       example1a
+#       example1b
+#       example2
+#       example3
+#       example3b
+#       example4
+#       example5
+#       exampleLP
+#       qrecipe
+#       qrecipeSchur)
 
-  foreach(ELEMENT ${EXAMPLE_NAMES})
-    add_executable(${ELEMENT} examples/${ELEMENT}.cpp)
-    target_link_libraries(${ELEMENT} qpOASES)
-  endforeach(ELEMENT ${EXAMPLE_NAMES})
-endif(QPOASES_BUILD_EXAMPLES)
+#   foreach(ELEMENT ${EXAMPLE_NAMES})
+#     add_executable(${ELEMENT} examples/${ELEMENT}.cpp)
+#     target_link_libraries(${ELEMENT} qpOASES)
+#   endforeach(ELEMENT ${EXAMPLE_NAMES})
+# endif(QPOASES_BUILD_EXAMPLES)
 
 #
 # end of file
 #
-
-find_package(ament_cmake REQUIRED)
-ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME})
-
-ament_package()

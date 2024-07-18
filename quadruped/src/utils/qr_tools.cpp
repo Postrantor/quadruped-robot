@@ -5,7 +5,7 @@
  * @copyright MIT License
  */
 
-#include "utils/qr_tools.h"
+#include "quadruped/utils/qr_tools.h"
 
 namespace robotics {
 

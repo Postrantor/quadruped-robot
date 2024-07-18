@@ -5,12 +5,12 @@
  * @copyright MIT License
  */
 
-#include "estimators/qr_robot_velocity_estimator.h"
+#include "quadruped/estimators/qr_robot_velocity_estimator.h"
 
 namespace Quadruped {
 
 qrRobotVelocityEstimator::qrRobotVelocityEstimator(
-    qrRobot *robotIn, qrGaitGenerator *gaitGeneratorIn, qrUserParameters *userParametersIn)
+    qrRobot* robotIn, qrGaitGenerator* gaitGeneratorIn, qrUserParameters* userParametersIn)
     :
 
       robot(robotIn),
@@ -65,7 +65,7 @@ void qrRobotVelocityEstimator::Update(float currentTime) {
   double deltaV[3] = {calibratedAcc[0] * deltaTime, calibratedAcc[1] * deltaTime, calibratedAcc[2] * deltaTime};
   // Correct estimation using contact legs
   std::vector<Vec3<float>> observedVelocities;
-  const Vec4<bool> &footContact = robot->GetFootContact();
+  const Vec4<bool>& footContact = robot->GetFootContact();
   Eigen::Matrix<float, 3, 4> footPInBaseFrame = robot->GetFootPositionsInBaseFrame();
   Eigen::Matrix<float, 3, 4> footVInBaseFrame =
       robot->stateDataFlow.footVelocitiesInBaseFrame;  // foot relative to body
@@ -83,7 +83,7 @@ void qrRobotVelocityEstimator::Update(float currentTime) {
   int num = observedVelocities.size();
   if (num > 0) {
     Vec3<float> MeanObservedVelocity = Vec3<float>::Zero();
-    for (auto &v : observedVelocities) {
+    for (auto& v : observedVelocities) {
       MeanObservedVelocity += v;  // std::mean(observedVelocities);
     }
     MeanObservedVelocity /= num;

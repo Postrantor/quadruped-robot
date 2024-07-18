@@ -5,10 +5,9 @@
  * @copyright MIT License
  */
 
-#include "robots/qr_robot_a1.h"
+#include <Eigen/Dense>
 
-using std::cout;
-using std::endl;
+#include "quadruped/robots/qr_robot_a1.h"
 
 namespace Quadruped {
 
@@ -128,10 +127,11 @@ void qrRobotA1::ReceiveObservation() {
   baseAccInBaseFrame << state.imu.accelerometer[0], state.imu.accelerometer[1], state.imu.accelerometer[2];
   stateDataFlow.baseLinearAcceleration = accFilter.CalculateAverage(baseAccInBaseFrame);
   float calibratedYaw = rpy[2] - yawOffset;
-  if (calibratedYaw >= M_PI)
+  if (calibratedYaw >= M_PI) {
     calibratedYaw -= M_2PI;
-  else if (calibratedYaw <= -M_PI)
+  } else if (calibratedYaw <= -M_PI) {
     calibratedYaw += M_2PI;
+  }
   float groundPitch = robotics::math::quatToRPY(stateDataFlow.groundOrientation)[1];
 
   baseRollPitchYaw << rpy[0], rpy[1], calibratedYaw;

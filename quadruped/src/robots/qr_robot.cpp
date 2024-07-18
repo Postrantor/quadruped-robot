@@ -5,7 +5,9 @@
  * @copyright MIT License
  */
 
-#include "robots/qr_robot.h"
+#include <Eigen/Dense>
+
+#include "quadruped/robots/qr_robot.h"
 
 namespace Quadruped {
 
@@ -53,7 +55,7 @@ void qrRobot::UpdateDataFlow() {
 void qrRobot::ComputeMoment() {
   stateDataFlow.estimatedMoment.setZero();
   for (int legId = 0; legId < NumLeg; ++legId) {
-    const Mat3<float> &Ji = stateDataFlow.footJvs[legId];
+    const Mat3<float>& Ji = stateDataFlow.footJvs[legId];
     Vec3<float> Fi = Ji.transpose().inverse() * motortorque.segment(3 * legId, 3);
     stateDataFlow.estimatedFootForce.col(legId) = Fi;
     stateDataFlow.estimatedMoment += (stateDataFlow.footPositionsInBaseFrame.col(legId).cross(Fi));
@@ -62,7 +64,7 @@ void qrRobot::ComputeMoment() {
       stateDataFlow.estimatedMoment.cwiseQuotient(stateDataFlow.estimatedFootForce.rowwise().sum());
 }
 
-Vec3<float> qrRobot::WithLegSigns(const Vec3<float> &v, int leg_id) {
+Vec3<float> qrRobot::WithLegSigns(const Vec3<float>& v, int leg_id) {
   switch (leg_id) {
     case 0:
       return Vec3<float>(v[0], -v[1], v[2]);
@@ -77,7 +79,7 @@ Vec3<float> qrRobot::WithLegSigns(const Vec3<float> &v, int leg_id) {
   }
 }
 
-Vec3<float> qrRobot::FootPositionInHipFrameToJointAngle(Vec3<float> &foot_position, int hip_sign) {
+Vec3<float> qrRobot::FootPositionInHipFrameToJointAngle(Vec3<float>& foot_position, int hip_sign) {
   /* hip sign means the left or right hip frame is different */
   float signedHipLength = hipLength * hip_sign;
   Vec3<float> xyz(foot_position[0], foot_position[1], foot_position[2]);
@@ -97,7 +99,7 @@ Vec3<float> qrRobot::FootPositionInHipFrameToJointAngle(Vec3<float> &foot_positi
   return Vec3<float>(thetaAB, thetaHip, thetaKnee);
 }
 
-Vec3<float> qrRobot::FootPositionInHipFrame(Vec3<float> &angles, int hip_sign) {
+Vec3<float> qrRobot::FootPositionInHipFrame(Vec3<float>& angles, int hip_sign) {
   /* Simple geometric caculation */
   float thetaAB = angles[0], thetaHip = angles[1], thetaKnee = angles[2];
   float signedHipLength = hipLength * hip_sign;
@@ -117,7 +119,7 @@ Vec3<float> qrRobot::FootPositionInHipFrame(Vec3<float> &angles, int hip_sign) {
   return Vec3<float>(offX, offY, offZ);
 }
 
-Eigen::Matrix<float, 3, 3> qrRobot::AnalyticalLegJacobian(Vec3<float> &leg_angles, int leg_id) {
+Eigen::Matrix<float, 3, 3> qrRobot::AnalyticalLegJacobian(Vec3<float>& leg_angles, int leg_id) {
   float signedHipLength = hipLength * pow(-1, leg_id + 1);
   Vec3<float> t = leg_angles;
 
@@ -155,7 +157,7 @@ Mat34<float> qrRobot::FootPositionsInBaseFrame(Eigen::Matrix<float, 12, 1> foot_
 Mat34<float> qrRobot::ComputeFootVelocitiesInBaseFrame() {
   Eigen::Matrix<float, 3, 4> footVelocitiesInBaseFrame;
   for (int legId = 0; legId < NumLeg; ++legId) {
-    const Mat3<float> &jacobian = stateDataFlow.footJvs[legId];  // ComputeJacobian(legId);
+    const Mat3<float>& jacobian = stateDataFlow.footJvs[legId];  // ComputeJacobian(legId);
     /* Only pick the jacobian related to joint motors */
     Vec3<float> jointVelocities = motorVelocities.segment(legId * 3, 3);
     footVelocitiesInBaseFrame.col(legId) = jacobian * jointVelocities;
@@ -164,7 +166,7 @@ Mat34<float> qrRobot::ComputeFootVelocitiesInBaseFrame() {
 }
 
 void qrRobot::ComputeMotorAnglesFromFootLocalPosition(
-    int leg_id, Vec3<float> foot_local_position, Eigen::Matrix<int, 3, 1> &joint_idx, Vec3<float> &joint_angles) {
+    int leg_id, Vec3<float> foot_local_position, Eigen::Matrix<int, 3, 1>& joint_idx, Vec3<float>& joint_angles) {
   joint_idx << NumMotorOfOneLeg * leg_id, NumMotorOfOneLeg * leg_id + 1, NumMotorOfOneLeg * leg_id + 2;
   Vec3<float> singleFootLocalPosition = foot_local_position - hipOffset.col(leg_id);
   joint_angles = this->FootPositionInHipFrameToJointAngle(singleFootLocalPosition, pow(-1, (leg_id + 1)));
@@ -193,7 +195,7 @@ Eigen::Matrix<float, 3, 3> qrRobot::ComputeJacobian(int leg_id) {
 }
 
 std::map<int, float> qrRobot::MapContactForceToJointTorques(int leg_id, Vec3<float> contact_force) {
-  const Eigen::Matrix<float, 3, 3> &jv = stateDataFlow.footJvs[leg_id];
+  const Eigen::Matrix<float, 3, 3>& jv = stateDataFlow.footJvs[leg_id];
   Vec3<float> motorTorquesPerLeg = jv.transpose() * contact_force;
   std::map<int, float> motorTorquesDict;
   for (int torqueIndex = 0; torqueIndex < motorTorquesPerLeg.size(); torqueIndex++) {

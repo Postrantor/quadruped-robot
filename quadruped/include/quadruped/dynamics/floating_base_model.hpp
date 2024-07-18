@@ -15,7 +15,7 @@
 
 #include <eigen3/Eigen/StdVector>
 
-#include "dynamics/spatial.hpp"
+#include "quadruped/dynamics/spatial.hpp"
 using namespace spatial;
 
 /*!

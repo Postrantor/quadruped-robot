@@ -12,25 +12,20 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
-
 #include <yaml-cpp/yaml.h>
 #include <Eigen/Dense>
 
-#include "config/qr_config.h"
-#include "config/qr_enum_types.h"
-
-#include "controllers/qr_state_dataflow.h"
-#include "dynamics/floating_base_model.hpp"
-#include "estimators/qr_moving_window_filter.hpp"
-
-#include "robots/qr_motor.h"
-#include "robots/qr_timer.h"
-
-#include "utils/qr_print.hpp"
-#include "utils/qr_se3.h"
-#include "utils/qr_tools.h"
-
-#include "unitree_legged_sdk/unitree_interface.h"
+#include "quadruped/config/qr_config.h"
+#include "quadruped/config/qr_enum_types.h"
+#include "quadruped/controllers/qr_state_dataflow.h"
+#include "quadruped/dynamics/floating_base_model.hpp"
+#include "quadruped/estimators/qr_moving_window_filter.hpp"
+#include "quadruped/robots/qr_motor.h"
+#include "quadruped/robots/qr_timer.h"
+#include "quadruped/robots/qr_interface.h"
+#include "quadruped/utils/qr_print.hpp"
+#include "quadruped/utils/qr_se3.h"
+#include "quadruped/utils/qr_tools.h"
 
 namespace Quadruped {
 
@@ -74,7 +69,7 @@ public:
    * @param motor_commands: 要执行的电机命令向量。
    * @param motor_control_mode: 例如制动的控制模式。
    */
-  virtual void ApplyAction(const std::vector<qrMotorCommand> &motor_commands, MotorMode motor_control_mode){};
+  virtual void ApplyAction(const std::vector<qrMotorCommand> &motor_commands, MotorMode motor_control_mode) {}
 
   /**
    * @brief 执行一次观测操作并应用命令。
@@ -90,7 +85,7 @@ public:
    */
   virtual void Step(const std::vector<qrMotorCommand> &motor_commands, MotorMode motor_control_mode) {
     std::cout << "a opppp" << std::endl;
-  };
+  }
 
   /**
    * @brief 更新一些动力学数据，如速度和一些旋转矩阵。
@@ -198,13 +193,13 @@ public:
   /**
    * @brief 重置计时器。
    */
-  void ResetTimer() { timer.ResetStartTime(); };
+  void ResetTimer() { timer.ResetStartTime(); }
 
   /**
    * @brief 构建机器人的动力学模型。
    * @return 如果工作已完成，则返回true。
    */
-  virtual bool BuildDynamicModel() { return false; };
+  virtual bool BuildDynamicModel() { return false; }
 
   /**
    * @brief 获取足端在机器人基坐标系下的位置。
@@ -215,7 +210,7 @@ public:
   /**
    * @brief 获取机器人的控制模式。
    */
-  std::string GetControlMode() { return modeMap[controlParams["mode"]]; };
+  std::string GetControlMode() { return modeMap[controlParams["mode"]]; }
 
   /**
    * @brief 获取成员baseVelocityInBaseFrame的取值。
@@ -225,7 +220,7 @@ public:
   /**
    * @brief 获取成员tick的取值。
    */
-  inline uint32_t GetTick() { return tick; };
+  inline uint32_t GetTick() { return tick; }
 
   /**
    * @brief 获取成员motorAngles的取值。
@@ -235,68 +230,68 @@ public:
   /**
    * @brief 获取成员motorVelocities的取值。
    */
-  inline Eigen::Matrix<float, 12, 1> GetMotorVelocities() const { return motorVelocities; };
+  inline Eigen::Matrix<float, 12, 1> GetMotorVelocities() const { return motorVelocities; }
 
   /**
    * @brief 获取成员basePosition的取值。
    */
-  inline Vec3<float> GetBasePosition() const { return basePosition; };
+  inline Vec3<float> GetBasePosition() const { return basePosition; }
 
   /**
    * @brief 获取成员baseOrientation的取值。
    */
-  inline Eigen::Matrix<float, 4, 1> GetBaseOrientation() const { return baseOrientation; };
+  inline Eigen::Matrix<float, 4, 1> GetBaseOrientation() const { return baseOrientation; }
 
   /**
    * @brief 获取成员defaultHipPosition的取值。
    */
-  inline Mat34<float> GetDefaultHipPosition() const { return defaultHipPosition; };
+  inline Mat34<float> GetDefaultHipPosition() const { return defaultHipPosition; }
 
   /**
    * @brief 获取成员baseRollPitchYaw的取值。
    */
-  inline Vec3<float> GetBaseRollPitchYaw() const { return baseRollPitchYaw; };
+  inline Vec3<float> GetBaseRollPitchYaw() const { return baseRollPitchYaw; }
 
   /**
    * @brief 获取成员baseRollPitchYawRate的取值。
    */
-  inline Vec3<float> GetBaseRollPitchYawRate() const { return baseRollPitchYawRate; };
+  inline Vec3<float> GetBaseRollPitchYawRate() const { return baseRollPitchYawRate; }
 
   /**
    * @brief 获取成员footForce的取值。
    */
-  inline Eigen::Matrix<float, 4, 1> GetFootForce() const { return footForce; };
+  inline Eigen::Matrix<float, 4, 1> GetFootForce() const { return footForce; }
 
   /**
    * @brief 获取成员footContact的取值。
    */
-  inline Eigen::Matrix<bool, 4, 1> GetFootContact() const { return footContact; };
+  inline Eigen::Matrix<bool, 4, 1> GetFootContact() const { return footContact; }
 
   /**
    * @brief 获取成员motorKps的取值。
    */
-  inline Eigen::Matrix<float, 12, 1> GetMotorKps() const { return motorKps; };
+  inline Eigen::Matrix<float, 12, 1> GetMotorKps() const { return motorKps; }
 
   /**
    * @brief 获取成员motorKds的取值。
    */
-  inline Eigen::Matrix<float, 12, 1> GetMotorKdp() const { return motorKds; };
+  inline Eigen::Matrix<float, 12, 1> GetMotorKdp() const { return motorKds; }
 
   /**
    * @brief 获取成员timeStep的取值。
    */
-  inline float GetTimeStep() { return timeStep; };
+  inline float GetTimeStep() { return timeStep; }
 
   /**
    * @brief 获取成员timer的取值。
    */
-  inline qrTimerInterface &GetTimer() { return timer; };
+  inline qrTimerInterface &GetTimer() { return timer; }
 
   /**
    * @brief 获取机器人自上次重置以来经过的时间。
    * @return 重置后的时间。
    */
-  float GetTimeSinceReset() { return timer.GetTimeSinceReset(); };
+  float GetTimeSinceReset() { return timer.GetTimeSinceReset(); }
 
   /**
    * @brief 机器人配置文件的路径。

@@ -8,8 +8,8 @@
 #ifndef QR_Foothold_PLANNER_H
 #define QR_Foothold_PLANNER_H
 
-#include "fsm/qr_control_fsm_data.hpp"
-#include "planner/qr_foot_stepper.h"
+#include "quadruped/fsm/qr_control_fsm_data.hpp"
+#include "quadruped/planner/qr_foot_stepper.h"
 
 namespace Quadruped {
 
@@ -24,11 +24,11 @@ public:
    * @param groundEstimator 地面估算器。
    */
   qrFootholdPlanner(
-      qrRobot* quadrupedIn,
-      qrGaitGenerator* gaitGeneratorIn,
-      qrStateEstimatorContainer* stateEstimatorsIn,
-      qrUserParameters* userParametersIn,
-      qrDesiredStateCommand* desiredStateCommandIn);
+      qrRobot *quadrupedIn,
+      qrGaitGenerator *gaitGeneratorIn,
+      qrStateEstimatorContainer *stateEstimatorsIn,
+      qrUserParameters *userParametersIn,
+      qrDesiredStateCommand *desiredStateCommandIn);
 
   /**
    * @brief qrFootholdPlanner 对象的析构函数。
@@ -43,7 +43,7 @@ public:
   /**
    * @brief 更新 foothold 规划器。
    */
-  void Update(){};
+  void Update() {}
 
   /**
    * @brief 只在抬腿前一刻调用。
@@ -58,10 +58,10 @@ public:
    * @param legIds 腿的顺序。
    */
   Eigen::Matrix<float, 3, 4> ComputeNextFootholds(
-      Eigen::Matrix<float, 3, 4>& currentFootholds,
-      Eigen::Matrix<float, 6, 1>& currentComPose,
-      Eigen::Matrix<float, 6, 1>& desiredComPose,
-      std::vector<int>& legIds);
+      Eigen::Matrix<float, 3, 4> &currentFootholds,
+      Eigen::Matrix<float, 6, 1> &currentComPose,
+      Eigen::Matrix<float, 6, 1> &desiredComPose,
+      std::vector<int> &legIds);
 
   /**
    * @brief 计算位置模式下的脚端位置增量。
@@ -76,12 +76,12 @@ public:
   /**
    * @brief 获取期望 COM 位移和姿态。
    */
-  inline const Eigen::Matrix<float, 6, 1>& GetDesiredComPose() const { return desiredComPose; };
+  inline const Eigen::Matrix<float, 6, 1> &GetDesiredComPose() const { return desiredComPose; }
 
   /**
    * @brief 获取期望脚端位置增量。
    */
-  inline const Eigen::Matrix<float, 3, 4>& GetFootholdsOffset() const { return desiredFootholdsOffset; };
+  inline const Eigen::Matrix<float, 3, 4> &GetFootholdsOffset() const { return desiredFootholdsOffset; }
 
   /**
    * @brief 获取期望 COM 位移和姿态。
@@ -112,32 +112,32 @@ public:
   /**
    * @brief 机器人对象。
    */
-  qrRobot* robot;
+  qrRobot *robot;
 
   /**
    * @brief 步态生成器对象。
    */
-  qrGaitGenerator* gaitGenerator;
+  qrGaitGenerator *gaitGenerator;
 
   /**
    * @brief 地面估计器对象。
    */
-  qrGroundSurfaceEstimator* groundEsitmator;
+  qrGroundSurfaceEstimator *groundEsitmator;
 
   /**
    * @brief 一些计算参数，包括 EKF、地形、滑动窗口等。
    */
-  qrUserParameters* userParameters;
+  qrUserParameters *userParameters;
 
   /**
    * @brief 期望状态命令。
    */
-  qrDesiredStateCommand* desiredStateCommand;
+  qrDesiredStateCommand *desiredStateCommand;
 
   /**
    * @brief qrFootStepper 对象。
    */
-  qrFootStepper* footstepper;
+  qrFootStepper *footstepper;
 
   /**
    * @brief 重置时的时间。
@@ -172,7 +172,7 @@ public:
   /**
    * @brief 地形信息。
    */
-  qrTerrain& terrain;
+  qrTerrain &terrain;
 
   /**
    * @brief 默认的地图尺寸。

@@ -8,9 +8,9 @@
 #ifndef QR_GROUND_ESTIMATOR_H
 #define QR_GROUND_ESTIMATOR_H
 
-#include "estimators/qr_base_state_estimator.h"
-#include "robots/qr_robot.h"
-#include "utils/qr_se3.h"
+#include "quadruped/estimators/qr_base_state_estimator.h"
+#include "quadruped/robots/qr_robot.h"
+#include "quadruped/utils/qr_se3.h"
 
 namespace Quadruped {
 
@@ -187,13 +187,13 @@ public:
    * @brief 获取世界坐标系中的控制帧朝向四元数。
    * @return 控制帧相对于世界帧的朝向四元数。
    */
-  Quat<float> GetControlFrameOrientation() const { return controlFrameOrientation.cast<float>(); };
+  Quat<float> GetControlFrameOrientation() const { return controlFrameOrientation.cast<float>(); }
 
   /**
    * @brief 获取世界坐标系中的控制帧 roll-pitch-yaw。
    * @return 控制帧相对于世界帧的 roll-pitch-yaw。
    */
-  Vec3<float> GetControlFrameRPY() const { return controlFrameRPY.cast<float>(); };
+  Vec3<float> GetControlFrameRPY() const { return controlFrameRPY.cast<float>(); }
 
   /**
    * @brief 控制帧相对于世界帧的 roll-pitch-yaw。

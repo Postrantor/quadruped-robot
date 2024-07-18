@@ -27,7 +27,7 @@ public:
    * @brief qrTeleKeyboard 的构造函数。
    * @param nh 该类创建的 ROS 节点。
    */
-  qrTeleKeyboard(const rclcpp::Node::SharedPtr &nhIn);
+  qrTeleKeyboard(const rclcpp::Node::SharedPtr& nhIn);
 
   /**
    * @brief qrTeleKeyboard 的默认析构函数。
@@ -70,7 +70,7 @@ private:
   /**
    * @brief 该类创建的 ROS 节点。
    */
-  rclcpp::Node::SharedPtr &nh;
+  rclcpp::Node::SharedPtr& nh;
 };
 
 #endif  // QR_TELEKEYBOARD_H

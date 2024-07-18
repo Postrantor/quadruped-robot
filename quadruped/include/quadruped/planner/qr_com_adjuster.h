@@ -14,10 +14,10 @@
 #include <string>
 #include <vector>
 
-#include "estimators/qr_robot_estimator.h"
-#include "gait/qr_openloop_gait_generator.h"
-#include "robots/qr_robot.h"
-#include "utils/qr_se3.h"
+#include "quadruped/estimators/qr_robot_estimator.h"
+#include "quadruped/gait/qr_openloop_gait_generator.h"
+#include "quadruped/robots/qr_robot.h"
+#include "quadruped/utils/qr_se3.h"
 
 namespace Quadruped {
 
@@ -38,17 +38,17 @@ private:
   /**
    * @brief 机器人类用于 CoM 计划。
    */
-  qrRobot *robot;
+  qrRobot* robot;
 
   /**
    * @brief 步态生成器对象。
    */
-  qrGaitGenerator *gaitGenerator;
+  qrGaitGenerator* gaitGenerator;
 
   /**
    * @brief 机器人估算器对象。
    */
-  qrRobotEstimator *robotEstimator;
+  qrRobotEstimator* robotEstimator;
 
   /**
    * @brief 机器人状态中的 CoM 位置。
@@ -119,7 +119,7 @@ public:
    * @param gaitGeneratorIn: 生成所需步态。
    * @param robotEstimatorIn: 估算 CoM 姿态和位置。
    */
-  qrComAdjuster(qrRobot *robotIn, qrGaitGenerator *gaitGeneratorIn, qrRobotEstimator *robotEstimatorIn);
+  qrComAdjuster(qrRobot* robotIn, qrGaitGenerator* gaitGeneratorIn, qrRobotEstimator* robotEstimatorIn);
 
   /**
    * @brief ComAdjuster 类的析构函数。
@@ -144,7 +144,7 @@ public:
   /**
    * @brief 获取 comPosInBaseFrame 成员的 getter 方法。
    */
-  inline Eigen::Matrix<float, 3, 1> &GetComPosInBaseFrame() { return comPosInBaseFrame; };
+  inline Eigen::Matrix<float, 3, 1>& GetComPosInBaseFrame() { return comPosInBaseFrame; };
 };
 
 }  // Namespace Quadruped

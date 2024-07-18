@@ -8,8 +8,8 @@
 #ifndef QR_STANCE_LEG_CONTROLLER_INTERFACE_H
 #define QR_STANCE_LEG_CONTROLLER_INTERFACE_H
 
-#include "controllers/balance_controller/qr_torque_stance_leg_controller.h"
-#include "controllers/mpc/qr_mpc_stance_leg_controller.h"
+#include "quadruped/controllers/balance_controller/qr_torque_stance_leg_controller.h"
+#include "quadruped/controllers/mpc/qr_mpc_stance_leg_controller.h"
 
 namespace Quadruped {
 

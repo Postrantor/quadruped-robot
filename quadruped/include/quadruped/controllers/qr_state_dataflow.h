@@ -10,10 +10,10 @@
 
 #include <yaml-cpp/yaml.h>
 
-#include "config/qr_config.h"
-#include "utils/qr_geometry.h"
-#include "utils/qr_se3.h"
-#include "utils/qr_visualization.h"
+#include "quadruped/config/qr_config.h"
+#include "quadruped/utils/qr_geometry.h"
+#include "quadruped/utils/qr_se3.h"
+#include "quadruped/utils/qr_visualization.h"
 
 struct qrUserParameters {
   /**

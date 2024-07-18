@@ -7,13 +7,11 @@ find_package(ament_cmake_ros REQUIRED)
 include_directories(include)
 link_directories(lib)
 
-# install
 install(
   DIRECTORY lib include
   DESTINATION .
 )
 
-# export
 ament_export_include_directories(include)
 
 ament_package()

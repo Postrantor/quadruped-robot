@@ -34,7 +34,7 @@ public:
     finish = clock();
     double timeSinceReset = (double)(finish - startTime) / CLOCKS_PER_SEC;  // 秒
     return timeSinceReset;
-  };
+  }
 
   /**
    * @brief 设置当前时间为开始时间
@@ -43,7 +43,7 @@ public:
     start = clock();
     startTime = (double)start;
     return startTime;
-  };
+  }
 
 private:
   /**
@@ -77,7 +77,7 @@ public:
   virtual double GetTimeSinceReset() {
     double timeSinceReset = rclcpp::Clock().now().seconds() - startRos;
     return timeSinceReset;
-  };
+  }
 
   /**
    * @see qrTimer::ResetStartTime
@@ -85,7 +85,7 @@ public:
   virtual double ResetStartTime() {
     startRos = rclcpp::Clock().now().seconds();
     return startRos;
-  };
+  }
 
 private:
   /**
@@ -119,9 +119,9 @@ public:
   double GetTimeSinceReset() {
     timeSinceReset = timerPtr->GetTimeSinceReset();
     return timeSinceReset;
-  };
+  }
 
-  void ResetStartTime() { startTime = timerPtr->ResetStartTime(); };
+  void ResetStartTime() { startTime = timerPtr->ResetStartTime(); }
 
 private:
   bool useRosTime;

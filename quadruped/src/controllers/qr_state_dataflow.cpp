@@ -5,7 +5,7 @@
  * @copyright MIT License
  */
 
-#include "controllers/qr_state_dataflow.h"
+#include "quadruped/controllers/qr_state_dataflow.h"
 
 qrUserParameters::qrUserParameters(std::string filePath) {
   YAML::Node userConfig = YAML::LoadFile(filePath);

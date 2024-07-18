@@ -8,9 +8,9 @@
 #ifndef QR_MOTOR_H
 #define QR_MOTOR_H
 
-#include <Eigen/Dense>
 #include <iostream>
 #include <vector>
+#include <Eigen/Dense>
 
 namespace Quadruped {
 

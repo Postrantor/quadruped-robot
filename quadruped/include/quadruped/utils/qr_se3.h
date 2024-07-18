@@ -13,8 +13,8 @@
 #include <iostream>
 #include <type_traits>
 
-#include "utils/qr_algebra.h"
-#include "utils/qr_cpptypes.h"
+#include "quadruped/utils/qr_algebra.h"
+#include "quadruped/utils/qr_cpptypes.h"
 
 namespace robotics {
 

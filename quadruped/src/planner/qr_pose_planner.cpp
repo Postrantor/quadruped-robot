@@ -5,7 +5,7 @@
  * @copyright MIT License
  */
 
-#include "planner/qr_pose_planner.h"
+#include "quadruped/planner/qr_pose_planner.h"
 
 #include "Array.hh"
 #include "QuadProg++.hh"

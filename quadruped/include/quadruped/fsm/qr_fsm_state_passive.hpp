@@ -8,7 +8,7 @@
 #ifndef QR_FSM_STATE_PASSIVE_H
 #define QR_FSM_STATE_PASSIVE_H
 
-#include "fsm/qr_fsm_state.hpp"
+#include "quadruped/fsm/qr_fsm_state.hpp"
 
 template <typename T>
 class qrFSMStatePassive : public qrFSMState<T> {
@@ -17,7 +17,7 @@ public:
    * @brief FSM_State_Passive的构造函数。
    * @param _controlFSMData: 指向该FSM所需数据的指针。
    */
-  qrFSMStatePassive(qrControlFSMData<T> *_controlFSMData);
+  qrFSMStatePassive(qrControlFSMData<T>* _controlFSMData);
 
   /**
    * @see qrFSMState::OnEnter

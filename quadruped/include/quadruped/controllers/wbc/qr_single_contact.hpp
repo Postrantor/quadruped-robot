@@ -8,7 +8,7 @@
 #ifndef QR_SINGLE_CONTACT_H
 #define QR_SINGLE_CONTACT_H
 
-#include "dynamics/floating_base_model.hpp"
+#include "quadruped/dynamics/floating_base_model.hpp"
 
 template <typename T>
 class qrSingleContact {

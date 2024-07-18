@@ -5,7 +5,7 @@
  * @copyright MIT License
  */
 
-#include "controllers/wbc/task_set/qr_task_link_position.hpp"
+#include "quadruped/controllers/wbc/task_set/qr_task_link_position.hpp"
 
 template <typename T>
 qrTaskLinkPosition<T>::qrTaskLinkPosition(const FloatingBaseModel<T> *fb_model, int link_idx, bool virtual_depend)

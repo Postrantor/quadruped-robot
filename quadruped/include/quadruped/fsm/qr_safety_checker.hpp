@@ -10,20 +10,19 @@
 
 #include <iostream>
 
-#include "fsm/qr_control_fsm_data.hpp"
+#include "quadruped/fsm/qr_control_fsm_data.hpp"
 
 /**
  * @brief 安全检查器处理ControlFSM请求的检查。
  */
 template <typename T>
-
 class qrSafetyChecker {
 public:
   /**
    * @brief qrSafetyChecker成员的构造函数
    * @param dataIn: 需要检查的数据，一般是机器人状态和混合命令。
    */
-  qrSafetyChecker(qrControlFSMData<T>* dataIn) : data(dataIn){};
+  qrSafetyChecker(qrControlFSMData<T>* dataIn) : data(dataIn) {}
 
   /**
    * @brief 检查机器人的方向是否安全以便控制。

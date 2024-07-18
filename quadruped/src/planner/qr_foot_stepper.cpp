@@ -5,7 +5,7 @@
  * @copyright MIT License
  */
 
-#include "planner/qr_foot_stepper.h"
+#include "quadruped/planner/qr_foot_stepper.h"
 
 #include "Array.hh"
 #include "QuadProg++.hh"

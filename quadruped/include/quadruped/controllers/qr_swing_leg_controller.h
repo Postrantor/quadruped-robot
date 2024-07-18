@@ -8,11 +8,11 @@
 #ifndef QR_RAIBERT_SWING_LEG_CONTROLLER_H
 #define QR_RAIBERT_SWING_LEG_CONTROLLER_H
 
-#include "controllers/qr_foot_trajectory_generator.h"
-#include "estimators/qr_state_estimator_container.h"
-#include "gait/qr_openloop_gait_generator.h"
-#include "planner/qr_foothold_planner.h"
-#include "robots/qr_motor.h"
+#include "quadruped/controllers/qr_foot_trajectory_generator.h"
+#include "quadruped/estimators/qr_state_estimator_container.h"
+#include "quadruped/gait/qr_openloop_gait_generator.h"
+#include "quadruped/planner/qr_foothold_planner.h"
+#include "quadruped/robots/qr_motor.h"
 
 namespace Quadruped {
 
@@ -28,11 +28,11 @@ public:
    * @param configPath: 配置文件的路径。
    */
   qrRaibertSwingLegController(
-      qrRobot *robot,
-      qrGaitGenerator *gaitGenerator,
-      qrStateEstimatorContainer *stateEstimators,
-      qrFootholdPlanner *qrFootholdPlanner,
-      qrUserParameters &userParameters,
+      qrRobot* robot,
+      qrGaitGenerator* gaitGenerator,
+      qrStateEstimatorContainer* stateEstimators,
+      qrFootholdPlanner* qrFootholdPlanner,
+      qrUserParameters& userParameters,
       std::string configPath);
 
   ~qrRaibertSwingLegController() = default;
@@ -41,7 +41,7 @@ public:
    * @brief 将所需命令绑定到这个摆动腿控制器。
    * @param desiredStateCommandIn: 指向 DesiredStateCommand 的指针。
    */
-  void BindCommand(qrDesiredStateCommand *desired_state_command) { desiredStateCommand = desired_state_command; }
+  void BindCommand(qrDesiredStateCommand* desired_state_command) { desiredStateCommand = desired_state_command; }
 
   /**
    * @brief 二次插值函数，用于生成多边形曲线。
@@ -83,7 +83,7 @@ public:
   /**
    * @brief 指向 DesiredStateCommand 的指针。
    */
-  qrDesiredStateCommand *desiredStateCommand;
+  qrDesiredStateCommand* desiredStateCommand;
 
   /**
    * @brief 四足机器人的所需速度。
@@ -107,32 +107,32 @@ public:
   /**
    * @brief 指向 Robot 的指针。
    */
-  qrRobot *robot;
+  qrRobot* robot;
 
   /**
    * @brief 指向 GaitGenerator 的指针。
    */
-  qrGaitGenerator *gaitGenerator;
+  qrGaitGenerator* gaitGenerator;
 
   /**
    * @brief 指向 RobotEstimator 的指针。
    */
-  qrRobotEstimator *stateEstimator;
+  qrRobotEstimator* stateEstimator;
 
   /**
    * @brief 指向 GroundSurfaceEstimator 的指针。
    */
-  qrGroundSurfaceEstimator *groundEstimator;
+  qrGroundSurfaceEstimator* groundEstimator;
 
   /**
    * @brief 指向 FootholdPlanner 的指针。
    */
-  qrFootholdPlanner *footholdPlanner;
+  qrFootholdPlanner* footholdPlanner;
 
   /**
    * @brief 指向 UserParameters 的指针。
    */
-  qrUserParameters *userParameters;
+  qrUserParameters* userParameters;
 
   /**
    * @brief 存储摆动腿的腿id。

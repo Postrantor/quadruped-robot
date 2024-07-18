@@ -5,13 +5,14 @@
  * @copyright MIT License
  */
 
-#include "robots/qr_motor.h"
-
 #include <iomanip>
+#include <Eigen/Dense>
+
+#include "quadruped/robots/qr_motor.h"
 
 namespace Quadruped {
 
-qrMotorCommand::qrMotorCommand(const Eigen::Matrix<float, 5, 1> &cmd) {
+qrMotorCommand::qrMotorCommand(const Eigen::Matrix<float, 5, 1>& cmd) {
   p = cmd[0];
   Kp = cmd[1];
   d = cmd[2];
@@ -33,7 +34,7 @@ Eigen::Matrix<float, 5, 1> qrMotorCommand::convertToVector() const {
   return HybridMotorCommandVector;
 }
 
-std::ostream &operator<<(std::ostream &os, qrMotorCommand &data) {
+std::ostream& operator<<(std::ostream& os, qrMotorCommand& data) {
   os << std::setprecision(3) << data.p << " " << data.Kp << " " << data.d << " " << data.Kd << " " << data.tua;
   return os;
 }

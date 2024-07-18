@@ -8,11 +8,11 @@
 #ifndef QR_ROBOT_ESTIMATOR_H
 #define QR_ROBOT_ESTIMATOR_H
 
-#include "estimators/qr_ground_surface_estimator.h"
-#include "estimators/qr_robot_pose_estimator.h"
-#include "estimators/qr_robot_velocity_estimator.h"
-#include "robots/qr_robot.h"
-#include "utils/qr_se3.h"
+#include "quadruped/estimators/qr_ground_surface_estimator.h"
+#include "quadruped/estimators/qr_robot_pose_estimator.h"
+#include "quadruped/estimators/qr_robot_velocity_estimator.h"
+#include "quadruped/robots/qr_robot.h"
+#include "quadruped/utils/qr_se3.h"
 
 /* CMU paramaters */
 #define PROCESS_NOISE_PIMU 0.01
@@ -39,10 +39,10 @@ public:
    * @param userParametersIn: 存储估算器配置参数。
    */
   qrRobotEstimator(
-      qrRobot *robotIn,
-      qrGaitGenerator *gaitGeneratorIn,
-      qrGroundSurfaceEstimator *groundEstimatorIn,
-      qrUserParameters *userParametersIn);
+      qrRobot* robotIn,
+      qrGaitGenerator* gaitGeneratorIn,
+      qrGroundSurfaceEstimator* groundEstimatorIn,
+      qrUserParameters* userParametersIn);
 
   /**
    * @brief 重置估算器。
@@ -82,28 +82,28 @@ public:
   /**
    * @brief estimatedVelocity 的 getter 方法。
    */
-  inline const Vec3<float> &GetEstimatedVelocity() const { return estimatedVelocity; };
+  inline const Vec3<float>& GetEstimatedVelocity() const { return estimatedVelocity; }
 
   /**
    * @brief estimatedAngularVelocity 的 getter 方法。
    */
-  inline const Vec3<float> &GetEstimatedAngularVelocity() const { return estimatedAngularVelocity; };
+  inline const Vec3<float>& GetEstimatedAngularVelocity() const { return estimatedAngularVelocity; }
 
   /**
    * @brief estimatedPosition 的 getter 方法。
    */
-  inline const Vec3<float> &GetEstimatedPosition() const { return estimatedPosition; };
+  inline const Vec3<float>& GetEstimatedPosition() const { return estimatedPosition; }
 
   /**
    * @brief estimatedRPY 的 getter 方法。
    */
-  inline const Vec3<float> &GetEstimatedRPY() { return estimatedRPY; };
+  inline const Vec3<float>& GetEstimatedRPY() { return estimatedRPY; };
 
 private:
   /**
    * @brief 估算机器人的机器人类。
    */
-  qrRobot *robot;
+  qrRobot* robot;
 
   /**
    * @brief 机器人的速度估算器。

@@ -14,7 +14,7 @@
 #include <iostream>
 #include <string>
 
-#include "qr_cpptypes.h"
+#include "quadruped/utils/qr_cpptypes.h"
 
 enum class PrintColor { Default, Red, Green, Yellow, Blue, Magenta, Cyan };
 
@@ -60,7 +60,9 @@ void pretty_print(
     os << prefix << " (empty)" << nlornot;
   } else {
     if (vecmode) {
-      if (!prefix.empty()) os << prefix;
+      if (!prefix.empty()) {
+        os << prefix;
+      }
       for (int ir(0); ir < mm.rows(); ++ir) {
         os << pretty_string(mm.coeff(ir, 0));
       }
@@ -68,7 +70,9 @@ void pretty_print(
 
     } else {
       for (int ir(0); ir < mm.rows(); ++ir) {
-        if (!prefix.empty()) os << prefix;
+        if (!prefix.empty()) {
+          os << prefix;
+        }
         for (int ic(0); ic < mm.cols(); ++ic) {
           os << pretty_string(mm.coeff(ir, ic));
         }
@@ -147,7 +151,9 @@ void pretty_print(const T *_vec, const char *title, size_t size) {
 template <class T>
 void print_array(T *array, u16 rows, u16 cols) {
   for (u16 r = 0; r < rows; r++) {
-    for (u16 c = 0; c < cols; c++) std::cout << (fpt)array[c + r * cols] << " ";
+    for (u16 c = 0; c < cols; c++) {
+      std::cout << (fpt)array[c + r * cols] << " ";
+    }
     printf("\n");
   }
 }

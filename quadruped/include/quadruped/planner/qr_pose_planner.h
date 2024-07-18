@@ -11,11 +11,11 @@
 #include <map>
 #include <set>
 
-#include "estimators/qr_state_estimator_container.h"
-#include "gait/qr_openloop_gait_generator.h"
-#include "robots/qr_robot.h"
-#include "utils/qr_geometry.h"
-#include "utils/qr_se3.h"
+#include "quadruped/estimators/qr_state_estimator_container.h"
+#include "quadruped/gait/qr_openloop_gait_generator.h"
+#include "quadruped/robots/qr_robot.h"
+#include "quadruped/utils/qr_geometry.h"
+#include "quadruped/utils/qr_se3.h"
 
 namespace Quadruped {
 
@@ -50,22 +50,22 @@ public:
   /**
    * @brief qrRobot 对象。
    */
-  qrRobot* robot;
+  qrRobot *robot;
 
   /**
    * @brief RobotEstimator 对象。
    */
-  qrRobotEstimator* robotEstimator;
+  qrRobotEstimator *robotEstimator;
 
   /**
    * @brief GroundSurfaceEstimator 对象。
    */
-  qrGroundSurfaceEstimator* groundEstimator;
+  qrGroundSurfaceEstimator *groundEstimator;
 
   /**
    * @brief GaitGenerator 对象。
    */
-  qrGaitGenerator* gaitGenerator;
+  qrGaitGenerator *gaitGenerator;
 
   /**
    * @brief 髋部（偏移）位置在基准框架中。
@@ -261,7 +261,7 @@ public:
    * @param gaitGeneratorIn: 生成期望的步态。
    * @param stateEstimators: 估算当前运动状态。
    */
-  qrPosePlanner(qrRobot* robotIn, qrGaitGenerator* gaitGeneratorIn, qrStateEstimatorContainer* stateEstimators);
+  qrPosePlanner(qrRobot *robotIn, qrGaitGenerator *gaitGeneratorIn, qrStateEstimatorContainer *stateEstimators);
 
   /**
    * @brief PosePlanner 类的析构函数。
@@ -272,7 +272,7 @@ public:
    * @brief 在控制器开始时调用。
    * @param current_time:墙面时间，以秒为单位。
    */
-  void Reset(float currentTime){};
+  void Reset(float currentTime) {}
 
   /**
    * @brief poseDest 成员的 getter 方法。
@@ -292,7 +292,7 @@ public:
     twist << 0, 0, 0, 0, 0, 0;
     std::cout << "resetTime = " << resetTime << ", reset poseDest = " << poseDest.transpose() << std::endl;
     segment.Reset(pose, poseDest);
-  };
+  }
 
   /**
    * @brief 给定当前时间，获取相应的位置和姿态。
@@ -399,22 +399,22 @@ public:
    * @return 期望姿态和拉格朗日因子。
    */
   std::tuple<Vec6<float>, Eigen::MatrixXf> QpSolver(
-      Mat6<float>& hessF,
-      Mat6<float>& hessGSum,
-      Vec6<float>& gradientF,
-      Eigen::MatrixXf& gradientG,
-      Eigen::MatrixXf& GValue);
+      Mat6<float> &hessF,
+      Mat6<float> &hessGSum,
+      Vec6<float> &gradientF,
+      Eigen::MatrixXf &gradientG,
+      Eigen::MatrixXf &GValue);
 
   /**
    * @brief 将矩阵列进行逆时针旋转。
    * @param 输入&输出矩阵。
    */
-  void ToCounterClockOrder(Eigen::Matrix<float, 3, 4>& A) {
+  void ToCounterClockOrder(Eigen::Matrix<float, 3, 4> &A) {
     Eigen::PermutationMatrix<4, 4> perm;
     perm.indices() = {0, 2, 3, 1};
     // Permutate cols
     A = A * perm;
-  };
+  }
 
   /**
    * @brief 将数组列进行逆时针旋转。
@@ -425,7 +425,7 @@ public:
     array[1] = array[2];
     array[2] = array[3];
     array[3] = temp;
-  };
+  }
 };
 
 }  // Namespace Quadruped

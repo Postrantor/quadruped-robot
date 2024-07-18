@@ -5,21 +5,21 @@
  * @copyright MIT License
  */
 
-#include "estimators/qr_robot_estimator.h"
+#include "quadruped/estimators/qr_robot_estimator.h"
 
 namespace Quadruped {
 
 qrRobotEstimator::qrRobotEstimator(
-    qrRobot *robotIn,
-    qrGaitGenerator *gaitGeneratorIn,
-    qrGroundSurfaceEstimator *groundEstimatorIn,
-    qrUserParameters *userParametersIn)
+    qrRobot* robotIn,
+    qrGaitGenerator* gaitGeneratorIn,
+    qrGroundSurfaceEstimator* groundEstimatorIn,
+    qrUserParameters* userParametersIn)
     : robot(robotIn),
       velocityEstimator(robotIn, gaitGeneratorIn, userParametersIn),
       poseEstimator(robotIn, gaitGeneratorIn, groundEstimatorIn, &velocityEstimator) {
   estimatedVelocity = velocityEstimator.GetEstimatedVelocity();
   estimatedAngularVelocity = velocityEstimator.GetEstimatedAngularVelocity();
-  const Vec6<float> &pose = poseEstimator.GetEstimatedPose();
+  const Vec6<float>& pose = poseEstimator.GetEstimatedPose();
   estimatedPosition = pose.head(3);
   estimatedRPY = pose.tail(3);
   std::cout << "estimatedPosition = " << estimatedPosition.transpose() << std::endl;
@@ -35,7 +35,7 @@ void qrRobotEstimator::Reset(float currentTime) {
   estimatedVelocity = velocityEstimator.GetEstimatedVelocity();
   lastEstimatedVelocity.setZero();
   estimatedAngularVelocity = velocityEstimator.GetEstimatedAngularVelocity();
-  const Vec6<float> &pose = poseEstimator.GetEstimatedPose();
+  const Vec6<float>& pose = poseEstimator.GetEstimatedPose();
   estimatedPosition = pose.head(3);
   estimatedRPY = pose.tail(3);
   lastTimestamp = 0;
@@ -60,7 +60,7 @@ void qrRobotEstimator::Update(float currentTime) {
 
   estimatedVelocity = velocityEstimator.GetEstimatedVelocity();
   estimatedAngularVelocity = velocityEstimator.GetEstimatedAngularVelocity();
-  const Vec6<float> &pose = poseEstimator.GetEstimatedPose();
+  const Vec6<float>& pose = poseEstimator.GetEstimatedPose();
   estimatedPosition = pose.head(3);
   estimatedRPY = pose.tail(3);
   ComputeZMP();
@@ -69,7 +69,7 @@ void qrRobotEstimator::Update(float currentTime) {
 /** @brief Cart-On-Table Model: x_zmp = x_m-(z_m*dtdt_x_m)/(dtdt_z_m+g) */
 Vec3<float> qrRobotEstimator::ComputeZMP() {
   Vec3<float> basePos = robot->GetBasePosition();
-  Vec3<float> &baseAcc = robot->stateDataFlow.baseLinearAcceleration;
+  Vec3<float>& baseAcc = robot->stateDataFlow.baseLinearAcceleration;
   float filterF = 0.5;
   baseAcc = filterF * baseAcc + 1000 * (1 - filterF) * (estimatedVelocity - lastEstimatedVelocity);
   robot->stateDataFlow.zmp[0] = basePos[0] - basePos[2] * baseAcc[0] / (baseAcc[2]);

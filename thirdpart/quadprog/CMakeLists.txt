@@ -11,14 +11,14 @@ file(GLOB sources src/*.cc)
 file(GLOB headers include/*.hh)
 set(library_sources ${sources})
 list(REMOVE_ITEM library_sources ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cc)
-add_library(quadprog SHARED ${library_sources} ${headers})
-set_property(TARGET quadprog PROPERTY POSITION_INDEPENDENT_CODE 1)
-set_property(TARGET quadprog PROPERTY PUBLIC_HEADER ${headers})
+add_library(${PROJECT_NAME} SHARED ${library_sources} ${headers})
+set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE 1)
+set_property(TARGET ${PROJECT_NAME} PROPERTY PUBLIC_HEADER ${headers})
 
-# add_executable(main main.cc ${headers}) target_link_libraries(main quadprog)
+# add_executable(main main.cc ${headers}) target_link_libraries(main ${PROJECT_NAME})
 
 install(
-  TARGETS quadprog
+  TARGETS ${PROJECT_NAME}
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
 )
@@ -29,6 +29,6 @@ install(
 )
 
 ament_export_include_directories(include)
-ament_export_libraries(quadprog)
+ament_export_libraries(${PROJECT_NAME})
 
 ament_package()

@@ -19,7 +19,7 @@ public:
   ~qrSwitchModeReceiver() = default;
 
   void SwitchModeCallback(const std_msgs::msg::Int8::SharedPtr input);
-  inline int GetSwitchMode() { return switchMode; };
+  inline int GetSwitchMode() { return switchMode; }
 
   rclcpp::Subscription<std_msgs::msg::Int8>::SharedPtr switchModeSub;
   std::string switchModeTopic = "/switch_mode";

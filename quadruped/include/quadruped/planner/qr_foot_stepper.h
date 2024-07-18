@@ -17,9 +17,10 @@
 
 #include "Array.hh"
 #include "QuadProg++.hh"
-#include "estimators/qr_state_estimator_container.h"
-#include "robots/qr_robot.h"
-#include "utils/qr_se3.h"
+
+#include "quadruped/estimators/qr_state_estimator_container.h"
+#include "quadruped/robots/qr_robot.h"
+#include "quadruped/utils/qr_se3.h"
 
 namespace Quadruped {
 
@@ -35,9 +36,9 @@ public:
    * @param defaultFootholdOffset: 默认的脚端偏移量。
    * @param level: 地形的级别。
    */
-  qrFootStepper(qrTerrain& terrain, float defaultFootholdOffset, std::string level);
+  qrFootStepper(qrTerrain &terrain, float defaultFootholdOffset, std::string level);
 
-  void Reset(float timeSinceReset){};
+  void Reset(float timeSinceReset) {}
 
   /**
    * @brief 获取默认的脚端偏移量。
@@ -78,10 +79,10 @@ public:
    * @return 下一个脚部placement 在世界坐标系中的位置。
    */
   std::tuple<Eigen::Matrix<float, 3, 4>, Eigen::Matrix<float, 3, 4>> GetFootholdsInWorldFrame(
-      Eigen::Matrix<float, 3, 4>& currentFootholds,
-      Eigen::Matrix<float, 6, 1>& currentComPose,
-      Eigen::Matrix<float, 6, 1>& desiredComPose,
-      std::vector<int>& legIds);
+      Eigen::Matrix<float, 3, 4> &currentFootholds,
+      Eigen::Matrix<float, 6, 1> &currentComPose,
+      Eigen::Matrix<float, 6, 1> &desiredComPose,
+      std::vector<int> &legIds);
 
   /**
    * @brief 查找最佳的脚部placement，并检查它。
@@ -99,7 +100,7 @@ public:
    * @brief 生成下一个步骤偏移量沿 x 轴 untuk 腿跨过障碍。
    * @return int, 0: 成功, -1: 调整之前的步骤, -2: 无效解决方案。
    */
-  int StepGenerator(Eigen::Matrix<float, 1, 4>& currentFootholds, Eigen::Matrix<float, 1, 4>& desiredFootholdsOffset);
+  int StepGenerator(Eigen::Matrix<float, 1, 4> &currentFootholds, Eigen::Matrix<float, 1, 4> &desiredFootholdsOffset);
 
 protected:
   /**

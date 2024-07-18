@@ -5,15 +5,15 @@
  * @copyright MIT License
  */
 
-#include "estimators/qr_robot_pose_estimator.h"
+#include "quadruped/estimators/qr_robot_pose_estimator.h"
 
 namespace Quadruped {
 
 qrRobotPoseEstimator::qrRobotPoseEstimator(
-    qrRobot *robotIn,
-    qrGaitGenerator *gaitGeneratorIn,
-    qrGroundSurfaceEstimator *groundEstimatorIn,
-    qrRobotVelocityEstimator *velocityEstimatorIn)
+    qrRobot* robotIn,
+    qrGaitGenerator* gaitGeneratorIn,
+    qrGroundSurfaceEstimator* groundEstimatorIn,
+    qrRobotVelocityEstimator* velocityEstimatorIn)
     :
 
       robot(robotIn),
@@ -109,9 +109,9 @@ float qrRobotPoseEstimator::EstimateRobotHeight() {
 }
 
 void qrRobotPoseEstimator::ComputePose(float deltaTime) {
-  const Vec3<float> &estimatedVelocity = velocityEstimator->GetEstimatedVelocity();
-  const Vec3<float> &baseRollPitchYawRate = velocityEstimator->GetEstimatedAngularVelocity();
-  const Vec3<float> &baseRollPitchYaw = robot->GetBaseRollPitchYaw();
+  const Vec3<float>& estimatedVelocity = velocityEstimator->GetEstimatedVelocity();
+  const Vec3<float>& baseRollPitchYawRate = velocityEstimator->GetEstimatedAngularVelocity();
+  const Vec3<float>& baseRollPitchYaw = robot->GetBaseRollPitchYaw();
   float vX = estimatedVelocity[0];
   float vY = estimatedVelocity[1];
   float vZ = estimatedVelocity[2];

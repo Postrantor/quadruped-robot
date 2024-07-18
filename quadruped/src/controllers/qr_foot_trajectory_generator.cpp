@@ -5,11 +5,11 @@
  * @copyright MIT License
  */
 
-#include "controllers/qr_foot_trajectory_generator.h"
+#include "quadruped/controllers/qr_foot_trajectory_generator.h"
 
 namespace Quadruped {
 
-qrFootBSplinePatternGenerator::qrFootBSplinePatternGenerator(qrSplineInfo &splineInfo) {
+qrFootBSplinePatternGenerator::qrFootBSplinePatternGenerator(qrSplineInfo& splineInfo) {
   controlPointsTemplate = {glm::vec3(-10, 0, 0),  glm::vec3(-10.3, 0, 0.2), glm::vec3(-13, 0, 2),
                            glm::vec3(-15, 0, 7),  glm::vec3(0, 0, 7.8),     glm::vec3(11, 0, 8),
                            glm::vec3(10.5, 0, 4), glm::vec3(10.2, 0, 1),    glm::vec3(10, 0, 0)};
@@ -23,9 +23,9 @@ qrFootBSplinePatternGenerator::qrFootBSplinePatternGenerator(qrSplineInfo &splin
 
 void qrFootBSplinePatternGenerator::SetParameters(
     const float initial_time,
-    const Eigen::Vector3f &initial_pos,
-    const Eigen::Vector3f &target_pos,
-    const qrStepParameters &params) {
+    const Eigen::Vector3f& initial_pos,
+    const Eigen::Vector3f& target_pos,
+    const qrStepParameters& params) {
   /* Setting the initial time and duration of the swing movements. */
   initialTime = initial_time;
   this->duration = params.duration;
@@ -58,11 +58,11 @@ void qrFootBSplinePatternGenerator::SetParameters(
 void qrFootBSplinePatternGenerator::UpdateSpline(
     float initial_time,
     float duration,
-    const Eigen::Vector3f &initial_pos,
+    const Eigen::Vector3f& initial_pos,
     float target_appex,
-    const Eigen::Vector3f &target_pos) {
-  std::vector<glm::vec3> &controlPoints = crv.control_points;
-  std::vector<float> &knots = crv.knots;
+    const Eigen::Vector3f& target_pos) {
+  std::vector<glm::vec3>& controlPoints = crv.control_points;
+  std::vector<float>& knots = crv.knots;
   target_appex *= 100.f;
   startPos << 0.f, 0.f, 0.f;
   endPos = RTheta * (target_pos * 100.f);
@@ -103,11 +103,13 @@ void qrFootBSplinePatternGenerator::UpdateSpline(
 }
 
 bool qrFootBSplinePatternGenerator::GenerateTrajectory(
-    Vec3<float> &foot_pos, Vec3<float> &foot_vel, Vec3<float> &foot_acc, float time) {
+    Vec3<float>& foot_pos, Vec3<float>& foot_vel, Vec3<float>& foot_acc, float time) {
   float dt = time - initialTime;
 
   /* The float number is not exactly representation, so add 1e-3. */
-  if (dt < -1e-3 || dt >= duration + 1e-3) return false;
+  if (dt < -1e-3 || dt >= duration + 1e-3) {
+    return false;
+  }
 
   auto pv = tinynurbs::curveDerivatives(crv, 1, dt);
 
@@ -126,9 +128,9 @@ bool qrFootBSplinePatternGenerator::GenerateTrajectory(
 
 void qrFootParabolaPatternGenerator::SetParameters(
     const float initial_time,
-    const Eigen::Vector3f &initial_pos,
-    const Eigen::Vector3f &target_pos,
-    const qrStepParameters &params) {
+    const Eigen::Vector3f& initial_pos,
+    const Eigen::Vector3f& target_pos,
+    const qrStepParameters& params) {
   /* Setting the initial time and duration of the swing movements. */
   initialTime = initial_time;
   this->duration = params.duration;
@@ -141,10 +143,14 @@ void qrFootParabolaPatternGenerator::SetParameters(
 }
 
 bool qrFootParabolaPatternGenerator::GenerateTrajectory(
-    Vec3<float> &foot_pos, Vec3<float> &foot_vel, Vec3<float> &foot_acc, float phase) {
-  if (phase < initialTime - 1e-3) return false;
+    Vec3<float>& foot_pos, Vec3<float>& foot_vel, Vec3<float>& foot_acc, float phase) {
+  if (phase < initialTime - 1e-3) {
+    return false;
+  }
 
-  if (phase >= initialTime + duration + 1e-3) return false;
+  if (phase >= initialTime + duration + 1e-3) {
+    return false;
+  }
 
   robotics::math::qrSpline::Point swing_traj_x, swing_traj_y, swing_traj_z;
 
@@ -166,9 +172,9 @@ bool qrFootParabolaPatternGenerator::GenerateTrajectory(
 
 void qrFootCubicPatternGenerator::SetParameters(
     const float initial_time,
-    const Eigen::Vector3f &initial_pos,
-    const Eigen::Vector3f &target_pos,
-    const qrStepParameters &params) {
+    const Eigen::Vector3f& initial_pos,
+    const Eigen::Vector3f& target_pos,
+    const qrStepParameters& params) {
   /* Setting the initial time and duration of the swing movements. */
   initialTime = initial_time;
   this->duration = params.duration;
@@ -198,23 +204,28 @@ void qrFootCubicPatternGenerator::SetParameters(
 }
 
 bool qrFootCubicPatternGenerator::GenerateTrajectory(
-    Vec3<float> &foot_pos, Vec3<float> &foot_vel, Vec3<float> &foot_acc, float time) {
-  if (time < initialTime - 1e-3) return false;
+    Vec3<float>& foot_pos, Vec3<float>& foot_vel, Vec3<float>& foot_acc, float time) {
+  if (time < initialTime - 1e-3) {
+    return false;
+  }
   robotics::math::qrSpline::Point swing_traj_x, swing_traj_y, swing_traj_z;
   float dt = time - initialTime;
   footSplinerX.getPoint(time, swing_traj_x);
   footSplinerY.getPoint(time, swing_traj_y);
 
-  if (dt <= (duration / 2.0f))
+  if (dt <= (duration / 2.0f)) {
     footSplinerUpZ.getPoint(time, swing_traj_z);
-  else
+  } else {
     footSplinerDownZ.getPoint(time, swing_traj_z);
+  }
 
   foot_pos << swing_traj_x.x, swing_traj_y.x, swing_traj_z.x;
   foot_vel << swing_traj_x.xd, swing_traj_y.xd, swing_traj_z.xd;
   foot_acc << swing_traj_x.xdd, swing_traj_y.xdd, swing_traj_z.xdd;
 
-  if (time >= initialTime + duration + 1e-3) return false;
+  if (time >= initialTime + duration + 1e-3) {
+    return false;
+  }
 
   return true;
 }
@@ -247,14 +258,14 @@ SwingFootTrajectory::SwingFootTrajectory(
   footTarjGen->SetParameters(0., startPos, endPos, stepParams);
 }
 
-SwingFootTrajectory::SwingFootTrajectory(const SwingFootTrajectory &item) {
+SwingFootTrajectory::SwingFootTrajectory(const SwingFootTrajectory& item) {
   mid = item.mid;
   stepParams = item.stepParams;
   footTarjGen->SetParameters(0., item.startPos, item.endPos, stepParams);
 }
 
 bool SwingFootTrajectory::GenerateTrajectoryPoint(
-    Vec3<float> &footPos, Vec3<float> &footV, Vec3<float> &footA, float t, bool phaseModule) {
+    Vec3<float>& footPos, Vec3<float>& footV, Vec3<float>& footA, float t, bool phaseModule) {
   float inputPhase = t;
   float phase;
   if (phaseModule) {

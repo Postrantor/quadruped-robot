@@ -5,7 +5,7 @@
  * @copyright MIT License
  */
 
-#include "utils/qr_geometry.h"
+#include "quadruped/utils/qr_geometry.h"
 
 #include <Eigen/SVD>
 
@@ -13,7 +13,7 @@ namespace robotics {
 
 namespace math {
 
-std::ostream &operator<<(std::ostream &cout, qrSpline::Point &p) {
+std::ostream& operator<<(std::ostream& cout, qrSpline::Point& p) {
   cout << "x = " << p.x << ", dx = " << p.xd << ", ddx = " << p.xdd;
   return cout;
 }
@@ -33,7 +33,7 @@ qrCubicSplineInSO3::qrCubicSplineInSO3(Mat3<float> R1, Mat3<float> R2, float t0,
   W = 0.5 * inertial.trace() * Eigen::Matrix<float, 3, 3>::Identity() - inertial;
 }
 
-void qrCubicSplineInSO3::GetPoint(float currentTime, Mat3<float> &outR, Vec3<float> &outwb) {
+void qrCubicSplineInSO3::GetPoint(float currentTime, Mat3<float>& outR, Vec3<float>& outwb) {
   currentTime = currentTime + 1e-3;
   float t = currentTime - t0;
   if (t > dt) {
@@ -54,28 +54,28 @@ void qrCubicSplineInSO3::GetPoint(float currentTime, Mat3<float> &outR, Vec3<flo
   lastR = outR;
 }
 
-qrSpline::qrSpline(const float &initial_time, const float &duration, const Point &start_p, const Point &end_p)
+qrSpline::qrSpline(const float& initial_time, const float& duration, const Point& start_p, const Point& end_p)
     : initial_time_(initial_time), duration_(duration), start_(start_p), end_(end_p) {
   if (duration <= 0.) {
     throw std::invalid_argument("Cannot create a Spliner with zero or negative duration");
   }
 }
 
-qrSpline::qrSpline(const float &initial_time, const float &duration, float start_p, float end_p)
+qrSpline::qrSpline(const float& initial_time, const float& duration, float start_p, float end_p)
     : initial_time_(initial_time), duration_(duration), start_(start_p), end_(end_p) {
   if (duration <= 0.) {
     throw std::invalid_argument("Cannot create a Spliner with zero or negative duration");
   }
 }
 
-void qrSpline::setBoundary(const float &initial_time, const float &duration, const Point &start_p, const Point &end_p) {
+void qrSpline::setBoundary(const float& initial_time, const float& duration, const Point& start_p, const Point& end_p) {
   initial_time_ = initial_time;
   duration_ = duration;
   start_ = start_p;
   end_ = end_p;
 }
 
-void qrSpline::setBoundary(const float &initial_time, const float &duration, const float &start_p, const float &end_p) {
+void qrSpline::setBoundary(const float& initial_time, const float& duration, const float& start_p, const float& end_p) {
   initial_time_ = initial_time;
   duration_ = duration;
 
@@ -88,11 +88,11 @@ void qrSpline::setBoundary(const float &initial_time, const float &duration, con
   end_.xdd = 0.0;
 }
 
-bool qrQuadraticSpline::getPoint(const float &current_time, Point &p) { return false; }
+bool qrQuadraticSpline::getPoint(const float& current_time, Point& p) { return false; }
 
-bool qrQuadraticSpline::getPoint(const float &current_time, float &p) { return false; }
+bool qrQuadraticSpline::getPoint(const float& current_time, float& p) { return false; }
 
-bool qrQuadraticSpline::getPoint(const float &current_time, float mid, Point &out) {
+bool qrQuadraticSpline::getPoint(const float& current_time, float mid, Point& out) {
   /* Sanity check: no interpolation is required if the duration is zero. */
   if (duration_ == 0.) {
     out = start_;
@@ -126,7 +126,7 @@ bool qrQuadraticSpline::getPoint(const float &current_time, float mid, Point &ou
   return true;
 }
 
-bool qrQuadraticSpline::getPoint(const float &current_time, float mid, float &pos) {
+bool qrQuadraticSpline::getPoint(const float& current_time, float mid, float& pos) {
   Point out;
   qrQuadraticSpline::getPoint(current_time, mid, out);
   pos = out.x;
@@ -134,7 +134,7 @@ bool qrQuadraticSpline::getPoint(const float &current_time, float mid, float &po
   return true;
 }
 
-bool qrCubicSpline::getPoint(const float &current_time, Point &out) {
+bool qrCubicSpline::getPoint(const float& current_time, Point& out) {
   /* Sanity check: no interpolation is required if the duration is zero. */
   if (duration_ == 0.) {
     out = start_;
@@ -179,7 +179,7 @@ bool qrCubicSpline::getPoint(const float &current_time, Point &out) {
   return true;
 }
 
-bool qrCubicSpline::getPoint(const float &current_time, float &pos) {
+bool qrCubicSpline::getPoint(const float& current_time, float& pos) {
   Point out;
   qrCubicSpline::getPoint(current_time, out);
   pos = out.x;
@@ -187,7 +187,7 @@ bool qrCubicSpline::getPoint(const float &current_time, float &pos) {
   return true;
 }
 
-bool qrFifthOrderPolySpline::getPoint(const float &current_time, Point &out) {
+bool qrFifthOrderPolySpline::getPoint(const float& current_time, Point& out) {
   /* Sanity check: no interpolation is required if the duration is zero. */
   if (almostEqual(duration_, 0.f, 1e-3f)) {
     out = start_;
@@ -258,7 +258,7 @@ bool qrFifthOrderPolySpline::getPoint(const float &current_time, Point &out) {
   return true;
 }
 
-bool qrFifthOrderPolySpline::getPoint(const float &current_time, float &pos) {
+bool qrFifthOrderPolySpline::getPoint(const float& current_time, float& pos) {
   Point out;
   qrFifthOrderPolySpline::getPoint(current_time, out);
   pos = out.x;
@@ -266,7 +266,7 @@ bool qrFifthOrderPolySpline::getPoint(const float &current_time, float &pos) {
   return true;
 }
 
-bool qrLinearSpline::getPoint(const float &current_time, Point &out) {
+bool qrLinearSpline::getPoint(const float& current_time, Point& out) {
   /* Sanity check: no interpolation is required if the duration is zero. */
   if (almostEqual(duration_, 0.f, 1e-3f)) {
     out = start_;
@@ -290,7 +290,7 @@ bool qrLinearSpline::getPoint(const float &current_time, Point &out) {
   return true;
 }
 
-bool qrLinearSpline::getPoint(const float &current_time, float &pos) {
+bool qrLinearSpline::getPoint(const float& current_time, float& pos) {
   Point out;
   qrLinearSpline::getPoint(current_time, out);
   pos = out.x;

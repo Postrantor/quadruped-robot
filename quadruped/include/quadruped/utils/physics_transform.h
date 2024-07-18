@@ -1,8 +1,8 @@
 #ifndef QR_PHYSICS_TRANSFORM_H
 #define QR_PHYSICS_TRANSFORM_H
 
-#include "utils/qr_cpptypes.h"
-#include "utils/qr_se3.h"
+#include "quadruped/utils/qr_cpptypes.h"
+#include "quadruped/utils/qr_se3.h"
 
 namespace Quadruped {
 

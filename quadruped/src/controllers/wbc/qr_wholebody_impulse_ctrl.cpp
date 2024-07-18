@@ -5,9 +5,9 @@
  * @copyright MIT License
  */
 
-#include "controllers/wbc/qr_wholebody_impulse_ctrl.hpp"
+#include "quadruped/controllers/wbc/qr_wholebody_impulse_ctrl.hpp"
 
-#include "utils/qr_cpptypes.h"
+#include "quadruped/utils/qr_cpptypes.h"
 
 template <typename T>
 qrWholeBodyImpulseCtrl<T>::qrWholeBodyImpulseCtrl(

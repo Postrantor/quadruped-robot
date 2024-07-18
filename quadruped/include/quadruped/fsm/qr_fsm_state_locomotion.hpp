@@ -8,10 +8,10 @@
 #ifndef QR_FSM_STATE_LOCOMOTION_H
 #define QR_FSM_STATE_LOCOMOTION_H
 
-#include "controllers/qr_locomotion_controller.h"
-#include "controllers/wbc/qr_wbc_locomotion_controller.hpp"
-#include "qr_control_fsm_data.hpp"
-#include "qr_fsm_state.hpp"
+#include "quadruped/controllers/qr_locomotion_controller.h"
+#include "quadruped/controllers/wbc/qr_wbc_locomotion_controller.hpp"
+#include "quadruped/fsm/qr_control_fsm_data.hpp"
+#include "quadruped/fsm/qr_fsm_state.hpp"
 
 /**
  * @brief 机器人行走FSM状态。管理联系逻辑和处理控制器接口的调用。
@@ -26,13 +26,13 @@ public:
    * @brief qrFSMStateLocomotion的构造函数
    * @param control_fsm_data: 指向该FSM所需数据的指针
    */
-  qrFSMStateLocomotion(qrControlFSMData<T> *control_fsm_data);
+  qrFSMStateLocomotion(qrControlFSMData<T>* control_fsm_data);
 
   /**
    * @brief 获取行走控制器的方法。
    * @return 指向行走控制器的指针。
    */
-  Quadruped::qrLocomotionController *GetLocomotionController() const { return locomotionController; }
+  Quadruped::qrLocomotionController* GetLocomotionController() const { return locomotionController; }
 
   /**
    * @see qrFSMState::OnEnter
@@ -94,17 +94,17 @@ private:
   /**
    * @brief 指向行走控制器的指针。
    */
-  Quadruped::qrLocomotionController *locomotionController;
+  Quadruped::qrLocomotionController* locomotionController;
 
   /**
    * @brief 指向整体控制器的指针。
    */
-  qrWbcLocomotionController<T> *wbcController;
+  qrWbcLocomotionController<T>* wbcController;
 
   /**
    * @brief 指向整体控制器所需数据的指针。
    */
-  qrWbcCtrlData *wbcData;
+  qrWbcCtrlData* wbcData;
 
   /**
    * @brief 跟踪行走控制器的迭代次数。

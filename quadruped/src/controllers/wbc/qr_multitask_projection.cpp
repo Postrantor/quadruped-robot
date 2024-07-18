@@ -5,7 +5,7 @@
  * @copyright MIT License
  */
 
-#include "controllers/wbc/qr_multitask_projection.hpp"
+#include "quadruped/controllers/wbc/qr_multitask_projection.hpp"
 
 template <typename T>
 qrMultitaskProjection<T>::qrMultitaskProjection(size_t dim_qdot)

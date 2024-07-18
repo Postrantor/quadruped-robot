@@ -5,10 +5,10 @@
  * @copyright MIT License
  */
 
-#include "fsm/qr_fsm_state_standup.hpp"
+#include "quadruped/fsm/qr_fsm_state_standup.hpp"
 
 template <typename T>
-qrFSMStateStandUp<T>::qrFSMStateStandUp(qrControlFSMData<T> *_controlFSMData)
+qrFSMStateStandUp<T>::qrFSMStateStandUp(qrControlFSMData<T>* _controlFSMData)
     : qrFSMState<T>(_controlFSMData, FSM_StateName::STAND_UP, "STAND_UP") {
   /* Disable the safety checks. Standup state do not need these check. */
   this->checkSafeOrientation = false;
@@ -49,7 +49,9 @@ void qrFSMStateStandUp<T>::Run() {
 
   if (this->_data->legCmd.size() != NumMotor) {
     this->_data->legCmd.clear();
-    for (int i(0); i < NumMotor; ++i) this->_data->legCmd.push_back(Quadruped::qrMotorCommand());
+    for (int i(0); i < NumMotor; ++i) {
+      this->_data->legCmd.push_back(Quadruped::qrMotorCommand());
+    }
   }
 
   for (int i(0); i < NumMotor; ++i) {
@@ -65,10 +67,14 @@ FSM_StateName qrFSMStateStandUp<T>::CheckTransition() {
   /* The %fsmMode will be set according to joy RC mode. Check next state by %fsmMode. */
   switch (int(this->_data->quadruped->fsmMode)) {
     case K_STAND_UP:
-      if (!isUp) standUp = 1;
+      if (!isUp) {
+        standUp = 1;
+      }
       break;
     case K_STAND_DOWN:
-      if (isUp) standUp = -1;
+      if (isUp) {
+        standUp = -1;
+      }
       break;
     case K_BALANCE_STAND:
       this->nextStateName = FSM_StateName::BALANCE_STAND;

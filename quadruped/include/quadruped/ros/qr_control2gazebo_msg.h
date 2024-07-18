@@ -20,13 +20,14 @@
 // #include "xpp_states/convert.h"
 // #include "xpp_states/robot_state_cartesian.h"
 
-#include "controllers/qr_locomotion_controller.h"
+#include "quadruped/controllers/qr_locomotion_controller.h"
 
 namespace Quadruped {
 
 class qrController2GazeboMsg : public rclcpp::Node {
 public:
-  qrController2GazeboMsg(qrRobot *robotIn, qrLocomotionController *locomotionController);
+  qrController2GazeboMsg(qrRobot *robotIn,
+                         qrLocomotionController *locomotionController);
 
   void PublishGazeboStateCallback();
 
@@ -35,8 +36,10 @@ private:
   qrLocomotionController *locomotionController;
   qrPosePlanner *posePlanner;
 
-  // rclcpp::Publisher<xpp_msgs::msg::RobotStateCartesian>::SharedPtr gazeboStatePublish;
-  // rclcpp::Publisher<xpp_msgs::msg::RobotParameters>::SharedPtr gazeboParamPublish;
+  // rclcpp::Publisher<xpp_msgs::msg::RobotStateCartesian>::SharedPtr
+  // gazeboStatePublish;
+  // rclcpp::Publisher<xpp_msgs::msg::RobotParameters>::SharedPtr
+  // gazeboParamPublish;
   rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr posePlannerPublish;
   rclcpp::Client<gazebo_msgs::srv::GetEntityState>::SharedPtr baseStateClient;
   std::shared_ptr<tf2_ros::TransformBroadcaster> desiredPoseFramebr;
@@ -50,7 +53,7 @@ private:
   rclcpp::Time lastTime;
 };
 
-}  // namespace Quadruped
+} // namespace Quadruped
 
-#endif  // QR_CONTROL2GAZEBO_MSG_H_
+#endif // QR_CONTROL2GAZEBO_MSG_H_
 #endif

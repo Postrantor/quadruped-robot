@@ -10,9 +10,9 @@
 
 #include <stdio.h>
 
-#include "action/qr_action.h"
-#include "qr_control_fsm_data.hpp"
-#include "qr_transition_data.hpp"
+#include "quadruped/action/qr_action.h"
+#include "quadruped/fsm/qr_control_fsm_data.hpp"
+#include "quadruped/fsm/qr_transition_data.hpp"
 
 /* 对应RC模式的机器人状态。
  * MIT cheetah3 定义的一些状态在我们的项目中没有使用。
@@ -70,7 +70,7 @@ public:
    * @param stateNameIn: 枚举类型，所构造状态的名称。
    * @param stateStringIn: 字符串类型，状态名称的字符串。
    */
-  qrFSMState(qrControlFSMData<T> *controlFSMData, FSM_StateName stateNameIn, std::string stateStringIn);
+  qrFSMState(qrControlFSMData<T>* controlFSMData, FSM_StateName stateNameIn, std::string stateStringIn);
 
   /**
    * @brief 进入状态时执行的操作。
@@ -163,7 +163,7 @@ protected:
   /**
    * @brief 保存所有相关的控制数据。
    */
-  qrControlFSMData<T> *_data;
+  qrControlFSMData<T>* _data;
 
   /**
    * @brief 转换所需的数据。

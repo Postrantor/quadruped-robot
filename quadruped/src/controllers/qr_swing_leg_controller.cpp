@@ -5,7 +5,7 @@
  * @copyright MIT License
  */
 
-#include "controllers/qr_swing_leg_controller.h"
+#include "quadruped/controllers/qr_swing_leg_controller.h"
 
 using namespace Eigen;
 using namespace std;

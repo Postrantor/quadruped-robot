@@ -8,7 +8,7 @@
 #ifndef QR_GAIT_GENERATOR_H
 #define QR_GAIT_GENERATOR_H
 
-#include "robots/qr_robot.h"
+#include "quadruped/robots/qr_robot.h"
 
 /**
  * @brief qrGaitGenerator 类生成相应的步态，使用定义的步态参数。该类还定期重置和更新这些参数。
@@ -27,7 +27,7 @@ public:
    * @param robot: 机器人状态类。
    * @param configFilePath: 给定的配置文件。
    */
-  qrGaitGenerator(qrRobot *robot, std::string configFilePath);
+  qrGaitGenerator(qrRobot* robot, std::string configFilePath);
 
   /**
    * @brief 使用给定的参数构造 qrGaitGenerator 对象。
@@ -39,7 +39,7 @@ public:
    * @param contactDetectionPhaseThreshold: 指定腿状态从 SWING 到 STANCE 的触摸检测阈值。
    */
   qrGaitGenerator(
-      qrRobot *robot,
+      qrRobot* robot,
       Eigen::Matrix<float, 4, 1> stanceDuration,
       Eigen::Matrix<float, 4, 1> dutyFactor,
       Eigen::Matrix<int, 4, 1> initialLegState,
@@ -65,7 +65,7 @@ public:
     desiredLegState = curLegState;
     firstStanceAngles = robot->standUpMotorAngles;
     contactStartPhase.setZero();
-  };
+  }
 
   /**
    * @brief 使用给定的时间更新步态参数。
@@ -87,7 +87,7 @@ public:
   /**
    * @brief 机器人对象。
    */
-  qrRobot *robot;
+  qrRobot* robot;
 
   /**
    * @brief 步态名称。

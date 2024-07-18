@@ -10,11 +10,11 @@
 
 #include <iostream>
 
-#include "qr_control_fsm_data.hpp"
-#include "qr_fsm_state_locomotion.hpp"
-#include "qr_fsm_state_passive.hpp"
-#include "qr_fsm_state_standup.hpp"
-#include "qr_safety_checker.hpp"
+#include "quadruped/fsm/qr_control_fsm_data.hpp"
+#include "quadruped/fsm/qr_fsm_state_locomotion.hpp"
+#include "quadruped/fsm/qr_fsm_state_passive.hpp"
+#include "quadruped/fsm/qr_fsm_state_standup.hpp"
+#include "quadruped/fsm/qr_safety_checker.hpp"
 
 /**
  * @brief Enumerate all of the operating modes.
@@ -23,10 +23,10 @@ enum class FSM_OperatingMode { NORMAL, TRANSITIONING, ESTOP, EDAMP };
 
 template <typename T>
 struct qrFSMStatesList {
-  qrFSMState<T> *invalid;
-  qrFSMStatePassive<T> *passive;
-  qrFSMStateStandUp<T> *standUp;
-  qrFSMStateLocomotion<T> *locomotion;
+  qrFSMState<T>* invalid;
+  qrFSMStatePassive<T>* passive;
+  qrFSMStateStandUp<T>* standUp;
+  qrFSMStateLocomotion<T>* locomotion;
 };
 
 /**
@@ -44,11 +44,11 @@ public:
    * @param userParameters: 用户参数指针。
    */
   qrControlFSM(
-      Quadruped::qrRobot *quadruped,
-      Quadruped::qrStateEstimatorContainer *stateEstimator,
-      Quadruped::qrGaitGenerator *gaitScheduler,
-      Quadruped::qrDesiredStateCommand *desiredStateCommand,
-      qrUserParameters *userParameters);
+      Quadruped::qrRobot* quadruped,
+      Quadruped::qrStateEstimatorContainer* stateEstimator,
+      Quadruped::qrGaitGenerator* gaitScheduler,
+      Quadruped::qrDesiredStateCommand* desiredStateCommand,
+      qrUserParameters* userParameters);
 
   ~qrControlFSM() = default;
 
@@ -72,7 +72,7 @@ public:
    * @brief 执行ControlFSM一次。它将在一个状态或过渡中。
    * @param hybridAction: 期望电机命令的返回值。
    */
-  void RunFSM(std::vector<Quadruped::qrMotorCommand> &hybridAction);
+  void RunFSM(std::vector<Quadruped::qrMotorCommand>& hybridAction);
 
   /**
    * @brief 在计算命令之前检查机器人状态。
@@ -92,13 +92,13 @@ public:
    * @param stateName: 所需状态的名称。
    * @return FSM状态列表中的指针
    */
-  qrFSMState<T> *GetNextState(FSM_StateName stateName);
+  qrFSMState<T>* GetNextState(FSM_StateName stateName);
 
   /**
    * @brief 获取行走控制器在行走状态下的指针。
    * @return 指向行走控制器的指针
    */
-  Quadruped::qrLocomotionController *GetLocomotionController() const {
+  Quadruped::qrLocomotionController* GetLocomotionController() const {
     return statesList.locomotion->GetLocomotionController();
   }
 
@@ -122,7 +122,7 @@ private:
   /**
    * @brief 检查输入和计算命令。
    */
-  qrSafetyChecker<T> *safetyChecker;
+  qrSafetyChecker<T>* safetyChecker;
 
   /**
    * @brief 在过渡时存储数据。
@@ -137,12 +137,12 @@ private:
   /**
    * @brief 当前的FSM状态。
    */
-  qrFSMState<T> *currentState;
+  qrFSMState<T>* currentState;
 
   /**
    * @brief 下一个FSM状态。
    */
-  qrFSMState<T> *nextState;
+  qrFSMState<T>* nextState;
 
   /**
    * @brief 下一个FSM状态的名称。

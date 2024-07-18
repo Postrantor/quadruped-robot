@@ -23,6 +23,7 @@ endif()
 # ros
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(yaml_cpp_vendor REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(nav_msgs REQUIRED)
@@ -31,8 +32,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(unitree_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 
-find_package(Eigen3 3.3 REQUIRED NO_MODULE)
-find_package(yaml_cpp_vendor REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(unitree_legged_sdk REQUIRED) # A1 & AligenGo
 find_package(deeprobotics_legged_sdk REQUIRED)
 find_package(tiny_ekf REQUIRED)
@@ -49,25 +49,13 @@ if(USE_BLAS)
   find_package(BLAS REQUIRED)
   set(BLA_VENDOR Intel10_64lp)
   add_definitions(-DEIGEN_USE_MKL_ALL)
-  # ${BLAS_LIBRARIES}
 endif()
 
 include_directories(
-  ${EIGEN3_INCLUDE_DIR}
-  ${YAML_INCLUDE_DIRS}
   ${unitree_legged_sdk_INCLUDE_DIRS}
-  ${deeprobotics_legged_sdk_INCLUDE_DIRS}
-  ${tiny_ekf_INCLUDE_DIRS}
-  ${tinynurbs_INCLUDE_DIRS}
-  ${quadprog_INCLUDE_DIRS}
-  ${qpOASES_INCLUDE_DIRS}
-  ${lcm_INCLUDE_DIRS}
   ${matplotlib_cpp_INCLUDE_DIRS}
-  include/quadruped
-  include/quadruped/config
+  include
 )
-
-link_directories()
 
 if(CMAKE_CROSSCOMPILING)
   message("[quadruped] crosscompile arm target")
@@ -97,25 +85,25 @@ if(NOT ${USE_SIM})
 endif()
 
 # create library
-add_library(quadruped SHARED ${sources})
-target_link_libraries(quadruped PUBLIC
+add_library(${PROJECT_NAME} SHARED ${sources})
+target_link_libraries(${PROJECT_NAME} PUBLIC
   ${UNITREE_SDK_LIB}
+  lcm # needed by unitree_legged_sdk
   Eigen3::Eigen
 )
 
-ament_target_dependencies(quadruped PUBLIC
-  deeprobotics_legged_sdk
-  yaml_cpp_vendor
+ament_target_dependencies(${PROJECT_NAME} PUBLIC
   tiny_ekf
   quadprog
+  tinynurbs
   qpOASES
   MITAMD
-  tinynurbs
-  lcm
+  deeprobotics_legged_sdk
 )
 
-ament_target_dependencies(quadruped PUBLIC
+ament_target_dependencies(${PROJECT_NAME} PUBLIC
   rclcpp
+  yaml_cpp_vendor
   std_msgs
   std_srvs
   nav_msgs
@@ -126,17 +114,28 @@ ament_target_dependencies(quadruped PUBLIC
 )
 
 install(
-  TARGETS quadruped
+  TARGETS ${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
 )
 
 install(
   DIRECTORY include
-  DESTINATION include
+  DESTINATION .
 )
 
-# ament_export_include_directories(include)
-# ament_export_libraries(quadruped)
+ament_export_include_directories(include)
+ament_export_libraries(${PROJECT_NAME})
+ament_export_dependencies(
+  Eigen3
+  yaml_cpp_vendor
+  unitree_legged_sdk
+  deeprobotics_legged_sdk
+  tiny_ekf
+  quadprog
+  qpOASES
+  tinynurbs
+  lcm
+)
 
 ament_package()

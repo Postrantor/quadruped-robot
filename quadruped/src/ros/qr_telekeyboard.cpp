@@ -104,8 +104,12 @@ public:
     joy_msg.buttons = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     joy_msg.axes = {0, 0, 0, 0, 0, 0, 0, 0};
     while (rclcpp::ok()) {
-      if (finish) break;
-      if (!mutex) pub->publish(joy_msg);
+      if (finish) {
+        break;
+      }
+      if (!mutex) {
+        pub->publish(joy_msg);
+      }
       std::this_thread::sleep_for(std::chrono::seconds(1));
       rclcpp::spin_some(this->get_node_base_interface());
     }
@@ -118,7 +122,7 @@ private:
   const std::string cmdTopic = "cmd_topic";
 };
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
   auto node = std::make_shared<qrTeleKeyboard>();
   std::thread run_thread(&qrTeleKeyboard::run, node);

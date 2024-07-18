@@ -5,7 +5,7 @@
  * @copyright MIT License
  */
 
-#include "estimators/qr_ground_surface_estimator.h"
+#include "quadruped/estimators/qr_ground_surface_estimator.h"
 
 namespace Quadruped {
 

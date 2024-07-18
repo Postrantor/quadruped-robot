@@ -12,8 +12,8 @@
 
 #include <algorithm>
 
-#include "controllers/qr_locomotion_controller.h"
-#include "robots/qr_robot.h"
+#include "quadruped/controllers/qr_locomotion_controller.h"
+#include "quadruped/robots/qr_robot.h"
 
 /**
  * @brief Quadruped命名空间用于ascend-quadruped-cpp的子目录。\n
@@ -22,7 +22,7 @@ namespace Quadruped {
 
 namespace Action {
 
-void ShinkLeg(qrRobot *robot, float totalTime, float timeStep);
+void ShinkLeg(qrRobot* robot, float totalTime, float timeStep);
 
 /**
  * @brief 站立动作函数。
@@ -31,7 +31,7 @@ void ShinkLeg(qrRobot *robot, float totalTime, float timeStep);
  * @param totalTime 机器人开始执行其他操作的时间。
  * @param timeStep 每步需要花费的时间。
  */
-void StandUp(qrRobot *robot, float standUpTime, float totalTime, float timeStep);
+void StandUp(qrRobot* robot, float standUpTime, float totalTime, float timeStep);
 
 /**
  * @brief 坐下动作函数。
@@ -39,7 +39,7 @@ void StandUp(qrRobot *robot, float standUpTime, float totalTime, float timeStep)
  * @param sitDownTime 坐下动作需要花费的时间。
  * @param timeStep 每步需要花费的时间。
  */
-void SitDown(qrRobot *robot, float sitDownTime, float timeStep);
+void SitDown(qrRobot* robot, float sitDownTime, float timeStep);
 
 /**
  * @brief 保持站立动作函数。
@@ -47,7 +47,7 @@ void SitDown(qrRobot *robot, float sitDownTime, float timeStep);
  * @param KeepStandTime 机器人保持站立的时间。
  * @param timeStep 每步需要花费的时间。
  */
-void KeepStand(qrRobot *robot, float KeepStandTime = 1.0, float timeStep = 0.001);
+void KeepStand(qrRobot* robot, float KeepStandTime = 1.0, float timeStep = 0.001);
 
 /**
  * @brief 控制脚动作函数。这用于步行步态。
@@ -56,7 +56,7 @@ void KeepStand(qrRobot *robot, float KeepStandTime = 1.0, float timeStep = 0.001
  * @param walkTime 控制脚动作需要花费的时间。
  * @param timeStep 每步需要花费的时间。
  */
-void ControlFoot(qrRobot *robot, qrLocomotionController *locomotionController, float walkTime, float timeStep);
+void ControlFoot(qrRobot* robot, qrLocomotionController* locomotionController, float walkTime, float timeStep);
 
 }  // Namespace Action
 

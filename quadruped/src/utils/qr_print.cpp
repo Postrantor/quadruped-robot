@@ -5,11 +5,13 @@
  * @copyright MIT License
  */
 
-#include "utils/qr_print.hpp"
+#include "quadruped/utils/qr_print.hpp"
 
-void printf_color(PrintColor color, const char *fmt, ...) {
+void printf_color(PrintColor color, const char* fmt, ...) {
   auto color_id = (uint32_t)color;
-  if (color_id) printf("\033[1;%dm", (uint32_t)color + 30);
+  if (color_id) {
+    printf("\033[1;%dm", (uint32_t)color + 30);
+  }
   va_list args;
   va_start(args, fmt);
   vprintf(fmt, args);
@@ -17,9 +19,11 @@ void printf_color(PrintColor color, const char *fmt, ...) {
   printf("\033[0m");
 }
 
-void fprintf_color(PrintColor color, FILE *stream, const char *fmt, ...) {
+void fprintf_color(PrintColor color, FILE* stream, const char* fmt, ...) {
   auto color_id = (uint32_t)color;
-  if (color_id) fprintf(stream, "\033[1;%dm", (uint32_t)color + 30);
+  if (color_id) {
+    fprintf(stream, "\033[1;%dm", (uint32_t)color + 30);
+  }
   va_list args;
   va_start(args, fmt);
   vfprintf(stream, fmt, args);

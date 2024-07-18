@@ -15,8 +15,8 @@
 #include <iostream>
 #include <string>
 
-#include "utils/qr_print.hpp"
-#include "utils/qr_visualization.h"
+#include "quadruped/utils/qr_print.hpp"
+#include "quadruped/utils/qr_visualization.h"
 
 namespace robotics {
 

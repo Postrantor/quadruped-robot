@@ -5,10 +5,10 @@
  * @copyright MIT License
  */
 
-#include "controllers/wbc/qr_single_contact.hpp"
+#include "quadruped/controllers/wbc/qr_single_contact.hpp"
 
 template <typename T>
-qrSingleContact<T>::qrSingleContact(FloatingBaseModel<T> *robot, int pt)
+qrSingleContact<T>::qrSingleContact(FloatingBaseModel<T>* robot, int pt)
     : fbModel(robot), maxFz(robot->totalNonRotorMass() * (T)9.81), indexContact(pt), dimU(6), mu(0.4f), dimContact(3) {
   indexFz = dimContact - 1;
 

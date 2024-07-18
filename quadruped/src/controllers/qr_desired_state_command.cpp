@@ -5,10 +5,10 @@
  * @copyright MIT License
  */
 
-#include <rclcpp/logger.hpp>
+#include "rclcpp/logger.hpp"
 #include "rclcpp/rclcpp.hpp"
 
-#include "controllers/qr_desired_state_command.hpp"
+#include "quadruped/controllers/qr_desired_state_command.hpp"
 
 using robotics::math::clip;
 
@@ -99,7 +99,6 @@ int Quadruped::qrDesiredStateCommand::RecvSocket() {
             std::cout << "vx = " << joyCmdVx << std::endl;
           } else {
             // joyCmdVx = 0;
-            ;
           }
 
           /* Right joy stick horizontal movement. */
@@ -108,7 +107,6 @@ int Quadruped::qrDesiredStateCommand::RecvSocket() {
             std::cout << "vy = " << joyCmdVy << std::endl;
           } else {
             // joyCmdVy = 0;
-            ;
           }
           /* Left joy stick horizontal movement. */
           if (socket_value[0] == 0x21010135) {
@@ -116,7 +114,6 @@ int Quadruped::qrDesiredStateCommand::RecvSocket() {
             std::cout << "w = " << joyCmdYawRate << std::endl;
           } else {
             // joyCmdYawRate = 0;
-            ;
           }
           /* left cross button left/right movement
            * if you want to enable it, use:

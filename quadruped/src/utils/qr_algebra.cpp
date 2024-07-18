@@ -5,7 +5,7 @@
  * @copyright MIT License
  */
 
-#include "utils/qr_algebra.h"
+#include "quadruped/utils/qr_algebra.h"
 
 #include <cassert>
 #include <iostream>

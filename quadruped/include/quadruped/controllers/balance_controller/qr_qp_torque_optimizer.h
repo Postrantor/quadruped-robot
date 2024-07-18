@@ -11,8 +11,8 @@
 #include <Eigen/Dense>
 #include <tuple>
 
-#include "estimators/qr_ground_surface_estimator.h"
-#include "robots/qr_robot.h"
+#include "quadruped/estimators/qr_ground_surface_estimator.h"
+#include "quadruped/robots/qr_robot.h"
 
 namespace Quadruped {
 

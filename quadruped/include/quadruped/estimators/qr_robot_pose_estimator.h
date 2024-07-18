@@ -8,10 +8,10 @@
 #ifndef QR_ROBOT_POSE_ESTIMATOR_H
 #define QR_ROBOT_POSE_ESTIMATOR_H
 
-#include "estimators/qr_ground_surface_estimator.h"
-#include "estimators/qr_robot_velocity_estimator.h"
-#include "gait/qr_openloop_gait_generator.h"
-#include "robots/qr_robot.h"
+#include "quadruped/estimators/qr_ground_surface_estimator.h"
+#include "quadruped/estimators/qr_robot_velocity_estimator.h"
+#include "quadruped/gait/qr_openloop_gait_generator.h"
+#include "quadruped/robots/qr_robot.h"
 
 namespace Quadruped {
 
@@ -28,10 +28,10 @@ public:
    * @param velocityEstimator：速度估算类用于速度估算。
    */
   qrRobotPoseEstimator(
-      qrRobot *robotIn,
-      qrGaitGenerator *gaitGeneratorIn,
-      qrGroundSurfaceEstimator *groundEstimatorIn,
-      qrRobotVelocityEstimator *velocityEstimator);
+      qrRobot* robotIn,
+      qrGaitGenerator* gaitGeneratorIn,
+      qrGroundSurfaceEstimator* groundEstimatorIn,
+      qrRobotVelocityEstimator* velocityEstimator);
 
   /**
    * @brief 重置估算器
@@ -67,13 +67,13 @@ public:
   /**
    * @brief 获取估算姿态的Getter方法。
    */
-  const Vec6<float> &GetEstimatedPose() const { return estimatedPose; };
+  const Vec6<float>& GetEstimatedPose() const { return estimatedPose; }
 
 private:
   /**
    * @brief 机器人类用于姿态估算。
    */
-  qrRobot *robot;
+  qrRobot* robot;
 
   /**
    * @brief 上一个循环完成的时间戳。
@@ -88,17 +88,17 @@ private:
   /**
    * @brief 生成所需步态计划用于行走。
    */
-  qrGaitGenerator *gaitGenerator;
+  qrGaitGenerator* gaitGenerator;
 
   /**
    * @brief 估算脚部接触的3D平面。
    */
-  qrGroundSurfaceEstimator *groundEstimator;
+  qrGroundSurfaceEstimator* groundEstimator;
 
   /**
    * @brief 速度估算类用于姿态估算。
    */
-  qrRobotVelocityEstimator *velocityEstimator;
+  qrRobotVelocityEstimator* velocityEstimator;
 };
 
 }  // Namespace Quadruped

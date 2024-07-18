@@ -5,7 +5,7 @@
  * @copyright MIT License
  */
 
-#include "estimators/qr_anomaly_detection.h"
+#include "quadruped/estimators/qr_anomaly_detection.h"
 
 namespace Quadruped {
 
@@ -316,24 +316,36 @@ Eigen::Matrix<float, 3, 4> WorkspaceDetection::Update() {
     if (code > 0) {           // outside the box
       if (code & 0b000001) {  // intersect with x-
         ratio = allowedWorkSpace[0] / (-p[0]);
-        if (ratio < 1.0) p *= ratio;
+        if (ratio < 1.0) {
+          p *= ratio;
+        }
       } else if (code & 0b000010) {  // intersect with x+
         ratio = allowedWorkSpace[0] / p[0];
-        if (ratio < 1.0) p *= ratio;
+        if (ratio < 1.0) {
+          p *= ratio;
+        }
       }
       if (code & 0b000100) {  // intersect with y-
         ratio = allowedWorkSpace[1] / (-p[1]);
-        if (ratio < 1.0) p *= ratio;
+        if (ratio < 1.0) {
+          p *= ratio;
+        }
       } else if (code & 0b001000) {  // intersect with y+
         ratio = allowedWorkSpace[1] / p[1];
-        if (ratio < 1.0) p *= ratio;
+        if (ratio < 1.0) {
+          p *= ratio;
+        }
       }
       if (code & 0b010000) {  // intersect with z-
         ratio = allowedWorkSpace[2] / (-p[2]);
-        if (ratio < 1.0) p *= ratio;
+        if (ratio < 1.0) {
+          p *= ratio;
+        }
       } else if (code & 0b100000) {  // intersect with z+
         ratio = allowedWorkSpace[2] / p[2];
-        if (ratio < 1.0) p *= ratio;
+        if (ratio < 1.0) {
+          p *= ratio;
+        }
       }
       printf("[warning] the leg %d, is outside the workspace!", legId);
     }

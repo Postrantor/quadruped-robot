@@ -5,7 +5,7 @@
  * @copyright MIT License
  */
 
-#include "controllers/wbc/task_set/qr_task_body_orientation.hpp"
+#include "quadruped/controllers/wbc/task_set/qr_task_body_orientation.hpp"
 
 template <typename T>
 qrTaskBodyOrientation<T>::qrTaskBodyOrientation(const FloatingBaseModel<T> *fb_model)

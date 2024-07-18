@@ -5,10 +5,10 @@
  * @copyright MIT License
  */
 
-#include "controllers/wbc/task_set/qr_task_body_position.hpp"
+#include "quadruped/controllers/wbc/task_set/qr_task_body_position.hpp"
 
 template <typename T>
-qrTaskBodyPosition<T>::qrTaskBodyPosition(const FloatingBaseModel<T>* fb_model) : qrTask<T>(3), fbModel(fb_model) {
+qrTaskBodyPosition<T>::qrTaskBodyPosition(const FloatingBaseModel<T> *fb_model) : qrTask<T>(3), fbModel(fb_model) {
   TK::Jt = DMat<T>::Zero(TK::dimTask, this->dimConfig);
   TK::Jt.block(0, 3, 3, 3).setIdentity();
   TK::JtDotQdot = DVec<T>::Zero(TK::dimTask);
@@ -19,8 +19,8 @@ qrTaskBodyPosition<T>::qrTaskBodyPosition(const FloatingBaseModel<T>* fb_model) 
 }
 
 template <typename T>
-bool qrTaskBodyPosition<T>::UpdateCommand(const void* des_pos, const DVec<T>& des_vel, const DVec<T>& des_acc) {
-  Vec3<T>* pos_cmd = (Vec3<T>*)des_pos;
+bool qrTaskBodyPosition<T>::UpdateCommand(const void *des_pos, const DVec<T> &des_vel, const DVec<T> &des_acc) {
+  Vec3<T> *pos_cmd = (Vec3<T> *)des_pos;
   Vec3<T> link_pos = fbModel->_state.bodyPosition; /* Body position in world frame. */
 
   Quat<T> quat = fbModel->_state.bodyOrientation;

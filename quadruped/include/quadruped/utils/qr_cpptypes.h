@@ -15,7 +15,7 @@
 #include <cassert>
 #include <vector>
 
-#include "qr_ctypes.h"
+#include "quadruped/utils/qr_ctypes.h"
 
 /* USE (void) to silent unused warnings. */
 #define assertm(exp, msg) assert(((void)msg, exp))

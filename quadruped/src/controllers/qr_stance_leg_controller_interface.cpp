@@ -5,7 +5,7 @@
  * @copyright MIT License
  */
 
-#include "controllers/qr_stance_leg_controller_interface.h"
+#include "quadruped/controllers/qr_stance_leg_controller_interface.h"
 
 namespace Quadruped {
 

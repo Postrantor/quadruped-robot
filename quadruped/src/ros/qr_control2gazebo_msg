@@ -7,7 +7,7 @@
 
 #ifndef NOT_USE_SIM
 
-#include "ros/qr_control2gazebo_msg.h"
+#include "quadruped/ros/qr_control2gazebo_msg.h"
 
 namespace Quadruped {
 

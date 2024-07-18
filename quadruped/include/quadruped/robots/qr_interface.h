@@ -4,6 +4,7 @@ Use of this source code is governed by the MPL-2.0 license, see LICENSE.
 ************************************************************************/
 
 #include "unitree_legged_sdk/unitree_legged_sdk.h"
+
 #include <array>
 #include <math.h>
 #include <iostream>

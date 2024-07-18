@@ -8,13 +8,13 @@
 #ifndef QR_WBC_LOCOMOTION_CONTROLLER_H
 #define QR_WBC_LOCOMOTION_CONTROLLER_H
 
-#include "controllers/qr_desired_state_command.hpp"
-#include "qr_multitask_projection.hpp"
-#include "qr_wholebody_impulse_ctrl.hpp"
-#include "robots/qr_robot.h"
-#include "task_set/qr_task_body_orientation.hpp"
-#include "task_set/qr_task_body_position.hpp"
-#include "task_set/qr_task_link_position.hpp"
+#include "quadruped/controllers/qr_desired_state_command.hpp"
+#include "quadruped/controllers/wbc/qr_multitask_projection.hpp"
+#include "quadruped/controllers/wbc/qr_wholebody_impulse_ctrl.hpp"
+#include "quadruped/robots/qr_robot.h"
+#include "quadruped/controllers/wbc/task_set/qr_task_body_orientation.hpp"
+#include "quadruped/controllers/wbc/task_set/qr_task_body_position.hpp"
+#include "quadruped/controllers/wbc/task_set/qr_task_link_position.hpp"
 
 template <typename T>
 class qrWbcLocomotionController {

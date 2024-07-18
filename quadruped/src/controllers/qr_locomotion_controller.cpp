@@ -5,20 +5,20 @@
  * @copyright MIT License
  */
 
-#include "controllers/qr_locomotion_controller.h"
+#include "quadruped/controllers/qr_locomotion_controller.h"
 
 namespace Quadruped {
 
 qrLocomotionController::qrLocomotionController(
-    qrRobot *robotIn,
-    qrGaitGenerator *gaitGeneratorIn,
-    qrDesiredStateCommand *desiredStateCommandIn,
-    qrStateEstimatorContainer *stateEstimatorIn,
-    qrComAdjuster *comAdjusterIn,
-    qrPosePlanner *posePlannerIn,
-    qrRaibertSwingLegController *swingLegControllerIn,
-    qrStanceLegControllerInterface *stanceLegControllerIn,
-    qrUserParameters *userParameters)
+    qrRobot* robotIn,
+    qrGaitGenerator* gaitGeneratorIn,
+    qrDesiredStateCommand* desiredStateCommandIn,
+    qrStateEstimatorContainer* stateEstimatorIn,
+    qrComAdjuster* comAdjusterIn,
+    qrPosePlanner* posePlannerIn,
+    qrRaibertSwingLegController* swingLegControllerIn,
+    qrStanceLegControllerInterface* stanceLegControllerIn,
+    qrUserParameters* userParameters)
     :
 
       robot(robotIn),
@@ -56,8 +56,8 @@ void qrLocomotionController::Update() {
   bool switchToSwing = false;
   if (robot->controlParams["mode"] == LocomotionMode::WALK_LOCOMOTION) {
     // for walk mode
-    const Vec4<int> &newLegState = gaitGenerator->legState;
-    const Vec4<int> &curLegState = gaitGenerator->curLegState;
+    const Vec4<int>& newLegState = gaitGenerator->legState;
+    const Vec4<int>& curLegState = gaitGenerator->curLegState;
     for (int legId = 0; legId < 4; legId++) {
       if ((newLegState(legId) == LegState::SWING && curLegState(legId) == LegState::STANCE) ||
           newLegState(legId) == LegState::USERDEFINED_SWING) {
@@ -77,7 +77,6 @@ void qrLocomotionController::Update() {
         printf("stop robot!============\n");
         posePlanner->ResetBasePose(timeSinceReset);
       } else {  // swingSemaphore == -1
-        ;
       }
     }
   }

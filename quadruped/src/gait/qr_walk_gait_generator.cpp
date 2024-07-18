@@ -5,7 +5,7 @@
  * @copyright MIT License
  */
 
-#include "gait/qr_walk_gait_generator.h"
+#include "quadruped/gait/qr_walk_gait_generator.h"
 
 using namespace Eigen;
 using namespace std;
@@ -13,7 +13,7 @@ using namespace std;
 namespace Quadruped {
 
 qrWalkGaitGenerator::qrWalkGaitGenerator(
-    qrRobot *robot,
+    qrRobot* robot,
     std::vector<SubLegState> stateSwitchQue,
     std::vector<float> stateRatioQue,
     Eigen::Matrix<float, 4, 1> stanceDuration,
@@ -43,7 +43,7 @@ qrWalkGaitGenerator::qrWalkGaitGenerator(
   this->Reset(0);
 }
 
-qrWalkGaitGenerator::qrWalkGaitGenerator(qrRobot *robot, string configFilePath) {
+qrWalkGaitGenerator::qrWalkGaitGenerator(qrRobot* robot, string configFilePath) {
   config = YAML::LoadFile(configFilePath);
 
   this->robot = robot;
@@ -72,7 +72,7 @@ qrWalkGaitGenerator::qrWalkGaitGenerator(qrRobot *robot, string configFilePath) 
     assertm(stateSwitchStrQue.size() == stateRatioQue_.size(), "size different!");
     float standRatioInSwing = 0.f;
     int id = -1;  // the id of state in walk cycle
-    for (string &item : stateSwitchStrQue) {
+    for (string& item : stateSwitchStrQue) {
       id++;
       if (stateRatioQue_[id] < 0.01) {
         continue;
@@ -215,8 +215,8 @@ void qrWalkGaitGenerator::Update(float currentTime) {
       float phaseInSwingCycle = (phaseInFullCycle[legId] - dutyFactor[legId]) / (1.0 - dutyFactor[legId]);
       printf("[leg %d] phaseInSwingCycle = %f\n", legId, phaseInSwingCycle);
       // phaseInSwingCycle = max(0.f, min(1.0f, phaseInSwingCycle));
-      if (phaseInSwingCycle <= endRatioPoint &&
-          phaseInSwingCycle >= startRatioPoint) {  // not finish this state process
+      if (phaseInSwingCycle <= endRatioPoint && phaseInSwingCycle >= startRatioPoint)  // not finish this state process
+      {
         desiredLegState[legId] = stateSwitchQue[stateIdx];
         normalizedPhase[legId] = (phaseInSwingCycle - startRatioPoint) / (endRatioPoint - startRatioPoint);
       } else {  // go into next state process

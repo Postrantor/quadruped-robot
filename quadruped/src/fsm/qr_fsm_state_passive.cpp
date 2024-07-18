@@ -5,10 +5,10 @@
  * @copyright MIT License
  */
 
-#include "fsm/qr_fsm_state_passive.hpp"
+#include "quadruped/fsm/qr_fsm_state_passive.hpp"
 
 template <typename T>
-qrFSMStatePassive<T>::qrFSMStatePassive(qrControlFSMData<T> *_controlFSMData)
+qrFSMStatePassive<T>::qrFSMStatePassive(qrControlFSMData<T>* _controlFSMData)
     : qrFSMState<T>(_controlFSMData, FSM_StateName::PASSIVE, "PASSIVE") {
   /* Disable the safety checks. Passive state do not need these check. */
   this->checkSafeOrientation = false;

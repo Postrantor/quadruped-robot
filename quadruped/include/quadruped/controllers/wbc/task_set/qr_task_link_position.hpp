@@ -8,7 +8,7 @@
 #ifndef QR_TASK_LINK_POSITION_H
 #define QR_TASK_LINK_POSITION_H
 
-#include "qr_task.hpp"
+#include "quadruped/controllers/wbc/task_set/qr_task.hpp"
 
 template <typename T>
 class qrTaskLinkPosition : public qrTask<T> {
@@ -19,7 +19,7 @@ public:
    * @param link_idx: 机器人模型中的链接索引。
    * @param virtual_depend: 如果链接 virtaully 依赖。
    */
-  qrTaskLinkPosition(const FloatingBaseModel<T> *fb_model, int link_idx, bool virtual_depend = true);
+  qrTaskLinkPosition(const FloatingBaseModel<T>* fb_model, int link_idx, bool virtual_depend = true);
 
   virtual ~qrTaskLinkPosition() = default;
 
@@ -44,7 +44,7 @@ protected:
   /**
    * @see qrTask::UpdateCommand
    */
-  virtual bool UpdateCommand(const void *des_pos, const DVec<T> &des_vel, const DVec<T> &des_acc);
+  virtual bool UpdateCommand(const void* des_pos, const DVec<T>& des_vel, const DVec<T>& des_acc);
 
   /**
    * @see qrTask::UpdateTaskJacobian
@@ -60,7 +60,7 @@ protected:
    * @brief 指向 MIT 浮动基体模型的指针。
    * 用于获取 Jc 和 JDotQDot。
    */
-  const FloatingBaseModel<T> *fbModel;
+  const FloatingBaseModel<T>* fbModel;
 
   /**
    * @brief 当前链接位置任务的链接索引。

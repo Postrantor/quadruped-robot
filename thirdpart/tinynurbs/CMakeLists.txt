@@ -53,11 +53,6 @@ target_include_directories(
 add_custom_target(tinynurbs_dummy SOURCES ${HEADER_FILES} CMakeLists.txt)
 
 install(
-  TARGETS tinynurbs
-  LIBRARY DESTINATION lib
-)
-
-install(
   DIRECTORY include
   DESTINATION .
 )

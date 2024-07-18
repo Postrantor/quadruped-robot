@@ -7,12 +7,12 @@
  * @copyright MIT License
  */
 
-#include "robots/qr_robot_a1_sim.h"
-
 #include <vector>
 #include <string>
+#include <Eigen/Dense>
 
 #include "rclcpp/rclcpp.hpp"
+#include "quadruped/robots/qr_robot_a1_sim.h"
 
 namespace Quadruped {
 
@@ -22,7 +22,7 @@ namespace Quadruped {
  * @param nhIn no use
  * @param configFilePath
  */
-qrRobotA1Sim::qrRobotA1Sim(const rclcpp::Node::SharedPtr &nhIn, std::string configFilePath) : nh(nhIn) {
+qrRobotA1Sim::qrRobotA1Sim(const rclcpp::Node::SharedPtr& nhIn, std::string configFilePath) : nh(nhIn) {
   /// read paramsters
   // 初始化变量
   baseOrientation << 1.f, 0.f, 0.f, 0.f;
@@ -263,11 +263,11 @@ bool qrRobotA1Sim::BuildDynamicModel() {
 
   Mat3<float> I3 = Mat3<float>::Identity();
 
-  auto &abadRotorInertia = rotorInertiaX;
+  auto& abadRotorInertia = rotorInertiaX;
   float abadGearRatio = 1;  // 6
-  auto &hipRotorInertia = rotorInertiaY;
+  auto& hipRotorInertia = rotorInertiaY;
   float hipGearRatio = 1;  // 6
-  auto &kneeRotorInertia = rotorInertiaY;
+  auto& kneeRotorInertia = rotorInertiaY;
   float kneeGearRatio = 1;  // 9.33
   float kneeLinkY_offset = 0.004;
 
@@ -384,7 +384,9 @@ bool qrRobotA1Sim::BuildDynamicModel() {
     A = model.getMassMatrix();
     for (int i = 0; i < 18; ++i) {
       for (int j = 0; j < 18; ++j) {
-        if (A(i, j) < 1e-6) A(i, j) = 0;
+        if (A(i, j) < 1e-6) {
+          A(i, j) = 0;
+        }
       }
     }
     std::cout << "A = \n" << A << std::endl;
@@ -540,7 +542,7 @@ void qrRobotA1Sim::ReceiveObservation() {
   UpdateDataFlow();
 }
 
-void qrRobotA1Sim::ApplyAction(const Eigen::MatrixXf &motorCommands, MotorMode motorControlMode) {
+void qrRobotA1Sim::ApplyAction(const Eigen::MatrixXf& motorCommands, MotorMode motorControlMode) {
   std::array<float, 60> motorCommandsArray = {0};
   if (motorControlMode == POSITION_MODE) {
     Eigen::Matrix<float, 1, 12> motorCommandsShaped = motorCommands.transpose();
@@ -580,7 +582,7 @@ void qrRobotA1Sim::ApplyAction(const Eigen::MatrixXf &motorCommands, MotorMode m
   SendCommand(motorCommandsArray);
 }
 
-void qrRobotA1Sim::ApplyAction(const std::vector<qrMotorCommand> &motorCommands, MotorMode motorControlMode) {
+void qrRobotA1Sim::ApplyAction(const std::vector<qrMotorCommand>& motorCommands, MotorMode motorControlMode) {
   std::array<float, 60> motorCommandsArray = {0};
   for (int motorId = 0; motorId < NumMotor; motorId++) {
     motorCommandsArray[motorId * 5] = motorCommands[motorId].p;
@@ -593,7 +595,7 @@ void qrRobotA1Sim::ApplyAction(const std::vector<qrMotorCommand> &motorCommands,
   // robotInterface.SendCommand(motorCommandsArray);
 }
 
-void qrRobotA1Sim::Step(const Eigen::MatrixXf &action, MotorMode motorControlMode) {
+void qrRobotA1Sim::Step(const Eigen::MatrixXf& action, MotorMode motorControlMode) {
   ReceiveObservation();
   ApplyAction(action, motorControlMode);
 }

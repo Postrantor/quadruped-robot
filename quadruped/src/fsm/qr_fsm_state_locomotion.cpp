@@ -5,24 +5,24 @@
  * @copyright MIT License
  */
 
-#include "fsm/qr_fsm_state_locomotion.hpp"
+#include "quadruped/fsm/qr_fsm_state_locomotion.hpp"
 
 #include "ament_index_cpp/get_package_share_directory.hpp"
 
 using namespace Quadruped;
 
-extern qrLocomotionController *SetUpController(
-    qrRobot *quadruped,
-    qrGaitGenerator *gaitGenerator,
-    qrDesiredStateCommand *desiredStateCommand,
-    qrStateEstimatorContainer *stateEstimators,
-    qrUserParameters *userParameters,
-    std::string &homeDir);
+extern qrLocomotionController* SetUpController(
+    qrRobot* quadruped,
+    qrGaitGenerator* gaitGenerator,
+    qrDesiredStateCommand* desiredStateCommand,
+    qrStateEstimatorContainer* stateEstimators,
+    qrUserParameters* userParameters,
+    std::string& homeDir);
 
-extern void UpdateControllerParams(qrLocomotionController *controller, Eigen::Vector3f linSpeed, float angSpeed);
+extern void UpdateControllerParams(qrLocomotionController* controller, Eigen::Vector3f linSpeed, float angSpeed);
 
 template <typename T>
-qrFSMStateLocomotion<T>::qrFSMStateLocomotion(qrControlFSMData<T> *controlFSMData)
+qrFSMStateLocomotion<T>::qrFSMStateLocomotion(qrControlFSMData<T>* controlFSMData)
     : qrFSMState<T>(controlFSMData, FSM_StateName::LOCOMOTION, "LOCOMOTION") {
   std::string homeDir = ament_index_cpp::get_package_share_directory("quadruped") + "/";
   locomotionController = SetUpController(
@@ -238,7 +238,7 @@ qrTransitionData<T> qrFSMStateLocomotion<T>::Transition() {
 
 template <typename T>
 bool qrFSMStateLocomotion<T>::SwitchMode() {
-  qrRobot *robot = this->_data->quadruped;
+  qrRobot* robot = this->_data->quadruped;
 
   if (iter >= this->transitionDuration * 1000) {
     robot->fsmMode = K_LOCOMOTION;
@@ -280,7 +280,7 @@ bool qrFSMStateLocomotion<T>::SwitchMode() {
 template <typename T>
 bool qrFSMStateLocomotion<T>::StandLoop() {
   /* Similar logic to %SwitchMode(). */
-  qrRobot *robot = this->_data->quadruped;
+  qrRobot* robot = this->_data->quadruped;
   if (iter >= 1000) {
     robot->fsmMode = K_LOCOMOTION;
     iter = 0;

@@ -12,15 +12,15 @@
 #include <iostream>
 #include <map>
 
-#include "controllers/qr_stance_leg_controller_interface.h"
-#include "controllers/qr_swing_leg_controller.h"
-#include "estimators/qr_state_estimator_container.h"
-#include "gait/qr_openloop_gait_generator.h"
-#include "gait/qr_walk_gait_generator.h"
-#include "planner/qr_com_adjuster.h"
-#include "planner/qr_pose_planner.h"
-#include "robots/qr_robot.h"
-#include "utils/qr_cpptypes.h"
+#include "quadruped/controllers/qr_stance_leg_controller_interface.h"
+#include "quadruped/controllers/qr_swing_leg_controller.h"
+#include "quadruped/estimators/qr_state_estimator_container.h"
+#include "quadruped/gait/qr_openloop_gait_generator.h"
+#include "quadruped/gait/qr_walk_gait_generator.h"
+#include "quadruped/planner/qr_com_adjuster.h"
+#include "quadruped/planner/qr_pose_planner.h"
+#include "quadruped/robots/qr_robot.h"
+#include "quadruped/utils/qr_cpptypes.h"
 
 namespace Quadruped {
 
@@ -39,15 +39,15 @@ public:
    * @param userParameters: 用户参数指针。
    */
   qrLocomotionController(
-      qrRobot *robot,
-      qrGaitGenerator *gaitGenerator,
-      qrDesiredStateCommand *desiredStateCommand,
-      qrStateEstimatorContainer *stateEstimator,
-      qrComAdjuster *comAdjuster,
-      qrPosePlanner *posePlanner,
-      qrRaibertSwingLegController *swingLegController,
-      qrStanceLegControllerInterface *stanceLegController,
-      qrUserParameters *userParameters);
+      qrRobot* robot,
+      qrGaitGenerator* gaitGenerator,
+      qrDesiredStateCommand* desiredStateCommand,
+      qrStateEstimatorContainer* stateEstimator,
+      qrComAdjuster* comAdjuster,
+      qrPosePlanner* posePlanner,
+      qrRaibertSwingLegController* swingLegController,
+      qrStanceLegControllerInterface* stanceLegController,
+      qrUserParameters* userParameters);
 
   ~qrLocomotionController() = default;
 
@@ -84,22 +84,22 @@ public:
   /**
    * @brief 获取成员 gaitGenerator。
    */
-  inline qrGaitGenerator *GetGaitGenerator() const { return gaitGenerator; }
+  inline qrGaitGenerator* GetGaitGenerator() const { return gaitGenerator; }
 
   /**
    * @brief 获取成员 swingLegController。
    */
-  inline qrRaibertSwingLegController *GetSwingLegController() const { return swingLegController; }
+  inline qrRaibertSwingLegController* GetSwingLegController() const { return swingLegController; }
 
   /**
    * @brief 获取成员 stanceLegController。
    */
-  inline TorqueStanceLegController *GetStanceLegController() const { return stanceLegController->c; }
+  inline TorqueStanceLegController* GetStanceLegController() const { return stanceLegController->c; }
 
   /**
    * @brief 获取成员 posePlanner。
    */
-  inline qrPosePlanner *GetPosePlanner() { return posePlanner; }
+  inline qrPosePlanner* GetPosePlanner() { return posePlanner; }
 
   /**
    * @brief 获取机器人自重置以来的当前时间
@@ -110,12 +110,12 @@ public:
   /**
    * @brief RaibertSwingLegController 指针
    */
-  qrRaibertSwingLegController *swingLegController;
+  qrRaibertSwingLegController* swingLegController;
 
   /**
    * @brief StanceLegControllerInterface 指针
    */
-  qrStanceLegControllerInterface *stanceLegController;
+  qrStanceLegControllerInterface* stanceLegController;
 
   /**
    * @brief 表示是否已停止机器人
@@ -130,32 +130,32 @@ private:
   /**
    * @brief 指向机器人指针。
    */
-  qrRobot *robot;
+  qrRobot* robot;
 
   /**
    * @brief 指向步态生成器指针。
    */
-  qrGaitGenerator *gaitGenerator;
+  qrGaitGenerator* gaitGenerator;
 
   /**
    * @brief 指向状态估计容器指针。
    */
-  qrStateEstimatorContainer *stateEstimator;
+  qrStateEstimatorContainer* stateEstimator;
 
   /**
    * @brief 指向 COM 调整器指针。
    */
-  qrComAdjuster *comAdjuster;
+  qrComAdjuster* comAdjuster;
 
   /**
    * @brief 指向姿态规划器指针。
    */
-  qrPosePlanner *posePlanner;
+  qrPosePlanner* posePlanner;
 
   /**
    * @brief 指向 DesiredStateCommand 指针。
    */
-  qrDesiredStateCommand *desiredStateCommand;
+  qrDesiredStateCommand* desiredStateCommand;
 
   /**
    * @brief 每个控制循环将发送到 Gazebo/实际四足机器人的命令列表。

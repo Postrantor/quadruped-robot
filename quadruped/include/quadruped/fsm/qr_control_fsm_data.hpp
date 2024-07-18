@@ -8,10 +8,10 @@
 #ifndef QR_CONTROL_FSM_DATA_H
 #define QR_CONTROL_FSM_DATA_H
 
-#include "controllers/qr_desired_state_command.hpp"
-#include "estimators/qr_state_estimator_container.h"
-#include "gait/qr_gait.h"
-#include "robots/qr_robot.h"
+#include "quadruped/controllers/qr_desired_state_command.hpp"
+#include "quadruped/estimators/qr_state_estimator_container.h"
+#include "quadruped/gait/qr_gait.h"
+#include "quadruped/robots/qr_robot.h"
 
 /**
  * @brief 控制FSM数据

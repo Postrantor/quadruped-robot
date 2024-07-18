@@ -8,7 +8,7 @@
 #ifndef QR_TASK_BODY_ORIENTATION_H
 #define QR_TASK_BODY_ORIENTATION_H
 
-#include "qr_task.hpp"
+#include "quadruped/controllers/wbc/task_set/qr_task.hpp"
 
 template <typename T>
 class qrTaskBodyOrientation : public qrTask<T> {
@@ -17,7 +17,7 @@ public:
    * @brief qrTaskBodyOrientation 类的构造函数。
    * @param fb_model: 指向 MIT 浮动基体模型的指针。
    */
-  qrTaskBodyOrientation(const FloatingBaseModel<T> *fb_model);
+  qrTaskBodyOrientation(const FloatingBaseModel<T>* fb_model);
 
   virtual ~qrTaskBodyOrientation() = default;
 
@@ -42,7 +42,7 @@ protected:
   /**
    * @see qrTask::UpdateCommand
    */
-  virtual bool UpdateCommand(const void *des_pos, const DVec<T> &des_vel, const DVec<T> &des_acc);
+  virtual bool UpdateCommand(const void* des_pos, const DVec<T>& des_vel, const DVec<T>& des_acc);
 
   /**
    * @see qrTask::UpdateTaskJacobian
@@ -59,7 +59,7 @@ protected:
    * @brief 指向 MIT 浮动基体模型的指针。
    * 用于获取 Jc 和 JDotQDot。
    */
-  const FloatingBaseModel<T> *fbModel;
+  const FloatingBaseModel<T>* fbModel;
 };
 
 #endif  // QR_TASK_BODY_ORIENTATION_H

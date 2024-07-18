@@ -8,7 +8,7 @@
 #ifndef QR_TASK_H
 #define QR_TASK_H
 
-#include "dynamics/floating_base_model.hpp"
+#include "quadruped/dynamics/floating_base_model.hpp"
 
 #define TK qrTask<T>
 
@@ -30,7 +30,7 @@ public:
    * @param des_acc: 任务的期望加速度。
    * @return 如果更新成功，则返回 true。
    */
-  bool UpdateTask(const void *des_pos, const DVec<T> &des_vel, const DVec<T> &des_acc) {
+  bool UpdateTask(const void* des_pos, const DVec<T>& des_vel, const DVec<T>& des_acc) {
     UpdateTaskJacobian();
     UpdateTaskJDotQdot();
     UpdateCommand(des_pos, des_vel, des_acc);
@@ -41,39 +41,39 @@ public:
   /**
    * @brief 获取成员 xddotCmd。
    */
-  void GetXddotCmd(DVec<T> &xddot_cmd) const { xddot_cmd = this->xddotCmd; }
+  void GetXddotCmd(DVec<T>& xddot_cmd) const { xddot_cmd = this->xddotCmd; }
 
   /**
    * @brief 获取成员 Jt。
    */
-  void GetJt(DMat<T> &Jt) const { Jt = this->Jt; }
+  void GetJt(DMat<T>& Jt) const { Jt = this->Jt; }
 
   /**
    * @brief 获取成员 JtDotQdot。
    */
-  void GetJtDotQdot(DVec<T> &JtDot_Qdot) const { JtDot_Qdot = this->JtDotQdot; }
+  void GetJtDotQdot(DVec<T>& JtDot_Qdot) const { JtDot_Qdot = this->JtDotQdot; }
 
   /**
    * @brief 获取成员 posErr。
    */
-  const DVec<T> &GetPosErr() const { return posErr; }
+  const DVec<T>& GetPosErr() const { return posErr; }
 
   /**
    * @brief 获取成员 desiredVel。
    */
-  const DVec<T> &GetDesiredVel() const { return desiredVel; }
+  const DVec<T>& GetDesiredVel() const { return desiredVel; }
 
   /**
    * @brief 获取成员 desiredAcc。
    */
-  const DVec<T> &GetDesiredAcc() const { return desiredAcc; }
+  const DVec<T>& GetDesiredAcc() const { return desiredAcc; }
 
 protected:
   /**
    * @brief 更新期望加速度命令或位置误差，如果需要。
    * @return 如果更新成功，则返回 true。
    */
-  virtual bool UpdateCommand(const void *pos_des, const DVec<T> &vel_des, const DVec<T> &acc_des) = 0;
+  virtual bool UpdateCommand(const void* pos_des, const DVec<T>& vel_des, const DVec<T>& acc_des) = 0;
 
   /**
    * @brief 更新任务雅可比矩阵。

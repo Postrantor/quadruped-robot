@@ -5,7 +5,7 @@
  * @copyright MIT License
  */
 
-#include "fsm/qr_fsm_state.hpp"
+#include "quadruped/fsm/qr_fsm_state.hpp"
 
 template <typename T>
 qrFSMState<T>::qrFSMState(qrControlFSMData<T>* _controlFSMData, FSM_StateName stateNameIn, std::string stateStringIn)

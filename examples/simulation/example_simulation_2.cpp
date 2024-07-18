@@ -19,7 +19,7 @@
 #include "quadruped/robots/qr_robot_a1_sim.h"
 #include "quadruped/exec/qr_robot_runner.h"
 #include "quadruped/ros/qr_control2gazebo_msg.h"
-#include "utils/qr_cpptypes.h"
+#include "quadruped/utils/qr_cpptypes.h"
 
 /**
  * @brief 重置机器人的姿态和关节状态

@@ -8,10 +8,10 @@
 #ifndef QR_MPC_STANCE_LEG_CONTROLLER_H
 #define QR_MPC_STANCE_LEG_CONTROLLER_H
 
-#include "controllers/balance_controller/qr_torque_stance_leg_controller.h"
-#include "controllers/wbc/qr_wbc_locomotion_controller.hpp"
-#include "fsm/qr_control_fsm_data.hpp"
-#include "qr_mpc_interface.h"
+#include "quadruped/controllers/balance_controller/qr_torque_stance_leg_controller.h"
+#include "quadruped/controllers/wbc/qr_wbc_locomotion_controller.hpp"
+#include "quadruped/fsm/qr_control_fsm_data.hpp"
+#include "quadruped/controllers/mpc/qr_mpc_interface.h"
 
 namespace Quadruped {
 
@@ -31,13 +31,13 @@ public:
    * @param configFilepath：配置文件路径字符串。
    */
   MPCStanceLegController(
-      qrRobot *robot,
-      qrGaitGenerator *gaitGenerator,
-      qrStateEstimatorContainer *stateEstimators,
-      qrComAdjuster *comAdjuster,
-      qrPosePlanner *posePlanner,
-      qrFootholdPlanner *footholdPlanner,
-      qrUserParameters &userParameters,
+      qrRobot* robot,
+      qrGaitGenerator* gaitGenerator,
+      qrStateEstimatorContainer* stateEstimators,
+      qrComAdjuster* comAdjuster,
+      qrPosePlanner* posePlanner,
+      qrFootholdPlanner* footholdPlanner,
+      qrUserParameters& userParameters,
       std::string configFilepath);
 
   /**
@@ -61,7 +61,7 @@ public:
    * @param robotMode：当前机器人模式。
    * 这可能在未来被删除。
    */
-  void Run(std::map<int, qrMotorCommand> &legCommand, int gaitType, int robotMode = 0);
+  void Run(std::map<int, qrMotorCommand>& legCommand, int gaitType, int robotMode = 0);
 
 private:
   /**
@@ -73,13 +73,13 @@ private:
    * @brief 更新当前迭代的MPC状态。
    * @param robot：机器人指针。
    */
-  void UpdateMPC(qrRobot *robot);
+  void UpdateMPC(qrRobot* robot);
 
   /**
    * @brief 解决MPC问题
    * @param robot：机器人指针。
    */
-  void SolveDenseMPC(qrRobot *robot);
+  void SolveDenseMPC(qrRobot* robot);
 
   /**
    * @brief 偏航角速度。

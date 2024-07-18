@@ -21,6 +21,9 @@ find_package(nav_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 
+# find_package(unitree_legged_sdk REQUIRED)
+find_package(Eigen3 REQUIRED)
+
 # dependency
 set(DEPENDENCIES
   rclcpp
@@ -35,9 +38,12 @@ set(DEPENDENCIES
 
 include_directories(
   include
-  ${quadruped_INCLUDE_DIRS}/quadruped
-  /usr/include/eigen3
 )
 
-add_executable(robot_sim simulation/example_simulation_2.cpp)
-ament_target_dependencies(robot_sim ${DEPENDENCIES})
+add_executable(${PROJECT_NAME} simulation/example_simulation_2.cpp)
+target_link_libraries(${PROJECT_NAME}
+  Eigen3::Eigen
+)
+ament_target_dependencies(${PROJECT_NAME} ${DEPENDENCIES})
+
+ament_package()

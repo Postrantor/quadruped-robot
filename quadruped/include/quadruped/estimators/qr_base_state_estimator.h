@@ -8,7 +8,7 @@
 #ifndef QR_BASE_STATE_ESTIMATOR_H
 #define QR_BASE_STATE_ESTIMATOR_H
 
-#include "robots/qr_robot.h"
+#include "quadruped/robots/qr_robot.h"
 
 /**
  * @brief 所有估算器都应该继承自这个类。

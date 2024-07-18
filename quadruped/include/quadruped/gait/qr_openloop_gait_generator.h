@@ -12,8 +12,8 @@
 
 #include <vector>
 
-#include "gait/qr_gait.h"
-#include "robots/qr_robot.h"
+#include "quadruped/gait/qr_gait.h"
+#include "quadruped/robots/qr_robot.h"
 
 namespace Quadruped {
 
@@ -32,7 +32,7 @@ public:
    * @param robot: 生成所需步态的机器人。
    * @param configFilePath: 给定的配置文件路径。
    */
-  qrOpenLoopGaitGenerator(qrRobot *robot, std::string configFilePath);
+  qrOpenLoopGaitGenerator(qrRobot* robot, std::string configFilePath);
 
   /**
    * @brief 通过直接参数构造 OpenloopGaitGenerator 类。
@@ -44,7 +44,7 @@ public:
    * @param contactDetectionPhaseThreshold: contactDetectionPhaseThreshold 指定腿状态从 SWING 到 STANCE 的检测阈值。
    */
   qrOpenLoopGaitGenerator(
-      qrRobot *robot,
+      qrRobot* robot,
       Eigen::Matrix<float, 4, 1> stanceDuration,
       Eigen::Matrix<float, 4, 1> dutyFactor,
       Eigen::Matrix<int, 4, 1> initialLegState,

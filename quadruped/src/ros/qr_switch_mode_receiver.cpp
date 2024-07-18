@@ -1,4 +1,10 @@
-#include "ros/qr_switch_mode_receiver.h"
+/**
+ * @brief
+ * @date 2022
+ * @copyright MIT License
+ */
+
+#include "quadruped/ros/qr_switch_mode_receiver.h"
 
 namespace Quadruped {
 

@@ -10,7 +10,7 @@
 #ifndef QR_ROBOT_A1_SIM_H
 #define QR_ROBOT_A1_SIM_H
 
-#include "robots/qr_robot.h"
+#include "quadruped/robots/qr_robot.h"
 
 #include "rclcpp/rclcpp.hpp"
 
@@ -30,7 +30,7 @@ public:
    * @param nhIn: ROS 节点句柄。
    * @param configFilePath: 配置文件路径。
    */
-  qrRobotA1Sim(const rclcpp::Node::SharedPtr &nhIn, std::string configFilePath);
+  qrRobotA1Sim(const rclcpp::Node::SharedPtr& nhIn, std::string configFilePath);
 
   ~qrRobotA1Sim() = default;
 
@@ -48,17 +48,17 @@ public:
   /**
    * @see qrRobot::ApplyAction
    */
-  void ApplyAction(const Eigen::MatrixXf &motorCommands, MotorMode motorControlMode) override;
+  void ApplyAction(const Eigen::MatrixXf& motorCommands, MotorMode motorControlMode) override;
 
   /**
    * @see qrRobot::ApplyAction
    */
-  void ApplyAction(const std::vector<qrMotorCommand> &motorCommands, MotorMode motorControlMode);
+  void ApplyAction(const std::vector<qrMotorCommand>& motorCommands, MotorMode motorControlMode);
 
   /**
    * @see qrRobot::Step
    */
-  void Step(const Eigen::MatrixXf &action, MotorMode motorControlMode) override;
+  void Step(const Eigen::MatrixXf& action, MotorMode motorControlMode) override;
 
   /**
    * @see qrRobot::BuildDynamicModel

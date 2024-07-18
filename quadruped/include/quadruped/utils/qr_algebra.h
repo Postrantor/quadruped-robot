@@ -11,7 +11,7 @@
 #include <eigen3/Eigen/LU>
 #include <eigen3/Eigen/SVD>
 
-#include "qr_cpptypes.h"
+#include "quadruped/utils/qr_cpptypes.h"
 
 namespace robotics {
 
@@ -72,7 +72,9 @@ bool almostEqual(const Eigen::MatrixBase<T>& a, const Eigen::MatrixBase<T>& b, T
   for (long i = 0; i < x; i++) {
     for (long j = 0; j < y; j++) {
       T2 error = std::abs(a(i, j) - b(i, j));
-      if (error >= tol) return false;
+      if (error >= tol) {
+        return false;
+      }
     }
   }
   return true;

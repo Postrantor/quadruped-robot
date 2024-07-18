@@ -8,9 +8,9 @@
 #ifndef QR_MULTITASK_PROJECTION_H
 #define QR_MULTITASK_PROJECTION_H
 
-#include "fsm/qr_control_fsm_data.hpp"
-#include "qr_single_contact.hpp"
-#include "task_set/qr_task.hpp"
+#include "quadruped/fsm/qr_control_fsm_data.hpp"
+#include "quadruped/controllers/wbc/qr_single_contact.hpp"
+#include "quadruped/controllers/wbc/task_set/qr_task.hpp"
 
 template <typename T>
 class qrMultitaskProjection {

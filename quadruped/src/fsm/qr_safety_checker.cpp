@@ -5,7 +5,7 @@
  * @copyright MIT License
  */
 
-#include "fsm/qr_safety_checker.hpp"
+#include "quadruped/fsm/qr_safety_checker.hpp"
 
 template <typename T>
 bool qrSafetyChecker<T>::CheckSafeOrientation() {

@@ -8,10 +8,10 @@
 #ifndef QR_STATE_ESTIMATOR_CONTAINER_H
 #define QR_STATE_ESTIMATOR_CONTAINER_H
 
-#include "estimators/qr_anomaly_detection.h"
-#include "estimators/qr_base_state_estimator.h"
-#include "estimators/qr_ground_surface_estimator.h"
-#include "estimators/qr_robot_estimator.h"
+#include "quadruped/estimators/qr_anomaly_detection.h"
+#include "quadruped/estimators/qr_base_state_estimator.h"
+#include "quadruped/estimators/qr_ground_surface_estimator.h"
+#include "quadruped/estimators/qr_robot_estimator.h"
 
 namespace Quadruped {
 
@@ -33,9 +33,9 @@ public:
    //!警告  homeDir：这个不再使用
    */
   qrStateEstimatorContainer(
-      qrRobot *quadrupedIn,
-      qrGaitGenerator *gaitGeneratorIn,
-      qrUserParameters *userParametersIn,
+      qrRobot* quadrupedIn,
+      qrGaitGenerator* gaitGeneratorIn,
+      qrUserParameters* userParametersIn,
       std::string terrainConfigPath,
       std::string homeDir);
 
@@ -49,7 +49,7 @@ public:
     contactDetection->Reset(timeSinceReset);
     robotEstimator->Reset(timeSinceReset);
     std::cout << "StateEstimatorContainer Reset" << std::endl;
-  };
+  }
 
   /**
    * @brief 更新所有包含的泛型估算器
@@ -59,7 +59,7 @@ public:
     // contactDetection->Update(timeSinceReset);
     groundEstimator->Update(timeSinceReset);
     robotEstimator->Update(timeSinceReset);
-  };
+  }
 
   /**
    * @brief 删除所有包含的泛型估算器
@@ -69,7 +69,7 @@ public:
       delete estimator;
     }
     _estimators.clear();
-  };
+  }
 
   /**
    * @brief 状态估算器容器的析构函数
@@ -79,53 +79,53 @@ public:
   /**
    * @brief 获取contactDetection类用于状态估算
    */
-  inline qrContactDetection *GetContactDetection() { return contactDetection; };
+  inline qrContactDetection* GetContactDetection() { return contactDetection; }
 
   /**
    * @brief 获取robotEstimator类用于状态估算
    */
-  inline qrRobotEstimator *GetRobotEstimator() { return robotEstimator; };
+  inline qrRobotEstimator* GetRobotEstimator() { return robotEstimator; }
 
   /**
    * @brief 获取GroundSurfaceEstimator类用于状态估算
    */
-  inline qrGroundSurfaceEstimator *GetGroundEstimator() { return groundEstimator; };
+  inline qrGroundSurfaceEstimator* GetGroundEstimator() { return groundEstimator; }
 
 private:
   /**
    * @brief 机器人用于状态估算
    */
-  qrRobot *quadruped;
+  qrRobot* quadruped;
 
   /**
    * @brief 步态计划生成器用于状态估算
    */
-  qrGaitGenerator *gaitGenerator;
+  qrGaitGenerator* gaitGenerator;
 
   /**
    * @brief 卡尔曼滤波器和移动窗口算法的参数
    */
-  qrUserParameters *userParameters;
+  qrUserParameters* userParameters;
 
   /**
    * @brief 存储所有包含的泛型估算器
    */
-  std::vector<qrBaseStateEstimator *> _estimators;
+  std::vector<qrBaseStateEstimator*> _estimators;
 
   /**
    * @brief 估算接触平面
    */
-  qrGroundSurfaceEstimator *groundEstimator;
+  qrGroundSurfaceEstimator* groundEstimator;
 
   /**
    * @brief 接触检测类用于状态估算
    */
-  qrContactDetection *contactDetection;
+  qrContactDetection* contactDetection;
 
   /**
    * @brief 机器人估算类用于状态估算
    */
-  qrRobotEstimator *robotEstimator;
+  qrRobotEstimator* robotEstimator;
 
   /**
    * @brief 计时器重启的时间

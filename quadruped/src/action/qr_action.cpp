@@ -5,13 +5,13 @@
  * @copyright MIT License
  */
 
-#include "action/qr_action.h"
+#include "quadruped/action/qr_action.h"
 
 namespace Quadruped {
 
 namespace Action {
 
-void ShinkLeg(qrRobot *robot, float totalTime, float timeStep) {
+void ShinkLeg(qrRobot* robot, float totalTime, float timeStep) {
   qrTimer timer;
   robot->ReceiveObservation();
   Eigen::Matrix<float, 12, 1> motorAnglesBeforeStandUP = robot->GetMotorAngles();
@@ -29,13 +29,14 @@ void ShinkLeg(qrRobot *robot, float totalTime, float timeStep) {
   }
 }
 
-void StandUp(qrRobot *robot, float standUpTime, float totalTime, float timeStep) {
+void StandUp(qrRobot* robot, float standUpTime, float totalTime, float timeStep) {
   qrTimer timer;
   robot->ReceiveObservation();
   Eigen::Matrix<float, 12, 1> motorAnglesBeforeStandUP = robot->GetMotorAngles();
   Eigen::Matrix<float, 12, 1> diff = motorAnglesBeforeStandUP - robot->lastMotorCommands.col(0);
   if (robot->lastMotorControlMode == MotorMode::POSITION_MODE &&
-      diff.cwiseAbs().maxCoeff() < 0.15) {  // use last action for smoothness
+      diff.cwiseAbs().maxCoeff() < 0.15)  // use last action for smoothness
+  {
     motorAnglesBeforeStandUP = robot->lastMotorCommands.col(0);
   }
   std::cout << "---------------------Standing Up---------------------" << std::endl;
@@ -57,7 +58,7 @@ void StandUp(qrRobot *robot, float standUpTime, float totalTime, float timeStep)
   std::cout << "---------------------Stand Up Finished---------------------" << std::endl;
 }
 
-void SitDown(qrRobot *robot, float sitDownTime, float timeStep) {
+void SitDown(qrRobot* robot, float sitDownTime, float timeStep) {
   robot->ReceiveObservation();
   float startTime = robot->GetTimeSinceReset();
   float endTime = startTime + sitDownTime;
@@ -77,7 +78,7 @@ void SitDown(qrRobot *robot, float sitDownTime, float timeStep) {
   std::cout << "---------------------Sit down Finished---------------------" << std::endl;
 }
 
-void KeepStand(qrRobot *robot, float KeepStandTime, float timeStep) {
+void KeepStand(qrRobot* robot, float KeepStandTime, float timeStep) {
   float startTime = robot->GetTimeSinceReset();
   float endTime = startTime + KeepStandTime;
   // record current motor angles.
@@ -97,7 +98,7 @@ void KeepStand(qrRobot *robot, float KeepStandTime, float timeStep) {
   }
 }
 
-void ControlFoot(qrRobot *robot, qrLocomotionController *locomotionController, float walkTime, float timeStep) {
+void ControlFoot(qrRobot* robot, qrLocomotionController* locomotionController, float walkTime, float timeStep) {
   const float FREQ = 1;
   qrTimer timer;
   float startTime = timer.GetTimeSinceReset();
@@ -127,7 +128,7 @@ void ControlFoot(qrRobot *robot, qrLocomotionController *locomotionController, f
       action[jointIdx[i]] = jointAngles[i];
     }
   }
-  Visualization2D &vis = robot->stateDataFlow.visualizer;
+  Visualization2D& vis = robot->stateDataFlow.visualizer;
 
   while (currentTime - startTime < walkTime) {
     startTimeWall = timer.GetTimeSinceReset();

@@ -5,7 +5,7 @@
  * @copyright MIT License
  */
 
-#include "gait/qr_openloop_gait_generator.h"
+#include "quadruped/gait/qr_openloop_gait_generator.h"
 
 using namespace Eigen;
 using namespace std;
@@ -13,7 +13,7 @@ namespace Quadruped {
 qrOpenLoopGaitGenerator::qrOpenLoopGaitGenerator() {}
 
 qrOpenLoopGaitGenerator::qrOpenLoopGaitGenerator(
-    qrRobot *robot,
+    qrRobot* robot,
     Eigen::Matrix<float, 4, 1> stanceDuration,
     Eigen::Matrix<float, 4, 1> dutyFactor,
     Eigen::Matrix<int, 4, 1> initialLegState,
@@ -39,7 +39,7 @@ qrOpenLoopGaitGenerator::qrOpenLoopGaitGenerator(
   this->Reset(0);
 }
 
-qrOpenLoopGaitGenerator::qrOpenLoopGaitGenerator(qrRobot *robot, string configFilePath) {
+qrOpenLoopGaitGenerator::qrOpenLoopGaitGenerator(qrRobot* robot, string configFilePath) {
   this->robot = robot;
   config = YAML::LoadFile(configFilePath);
 

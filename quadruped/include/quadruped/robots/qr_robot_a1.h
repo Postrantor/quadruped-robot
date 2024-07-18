@@ -8,7 +8,7 @@
 #ifndef QR_ROBOT_A1_H
 #define QR_A1_ROBOT_H
 
-#include "qr_robot.h"
+#include "quadruped/robots/qr_robot.h"
 
 namespace Quadruped {
 
@@ -30,17 +30,17 @@ public:
   /**
    * @see qrRobot::ApplyAction
    */
-  void ApplyAction(const Eigen::MatrixXf &motorCommands, MotorMode motorControlMode) override;
+  void ApplyAction(const Eigen::MatrixXf& motorCommands, MotorMode motorControlMode) override;
 
   /**
    * @see qrRobot::ApplyAction
    */
-  void ApplyAction(const std::vector<qrMotorCommand> &motorCommands, MotorMode motorControlMode) override;
+  void ApplyAction(const std::vector<qrMotorCommand>& motorCommands, MotorMode motorControlMode) override;
 
   /**
    * @see qrRobot::Step
    */
-  void Step(const Eigen::MatrixXf &action, MotorMode motorControlMode) override;
+  void Step(const Eigen::MatrixXf& action, MotorMode motorControlMode) override;
 
   /**
    * @see qrRobot::BuildDynamicModel

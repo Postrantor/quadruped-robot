@@ -13,9 +13,9 @@
 
 #include <Eigen/Dense>
 
-#include "config.h"
-#include "utils/qr_geometry.h"
-#include "utils/qr_tools.h"
+#include "quadruped/config/qr_config.h"
+#include "quadruped/utils/qr_geometry.h"
+#include "quadruped/utils/qr_tools.h"
 
 namespace Quadruped {
 
@@ -330,7 +330,7 @@ public:
     stepParams.duration = duration;
     stepParams.height = height;
     footTarjGen->SetParameters(0., initialPos, targetPos, stepParams);
-  };
+  }
 
   /**
    * @brief 在中空中出错，调整行为。
@@ -338,7 +338,7 @@ public:
   void ResetFootTrajectory(float duration, float currentTime, const Vec3<float> &targetPos) {
     stepParams.duration = duration;
     footTarjGen->SetParameters(currentTime, startPos, targetPos, stepParams);
-  };
+  }
 
   float mid;
   Vec3<float> startPos;
