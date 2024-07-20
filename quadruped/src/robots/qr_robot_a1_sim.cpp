@@ -480,6 +480,13 @@ void qrRobotA1Sim::ImuCallback(const sensor_msgs::msg::Imu::SharedPtr msg) {
   lowState.imu.accelerometer[2] = msg->linear_acceleration.z;
 }
 
+void qrRobotA1Sim::MotorStateCallback(int index, const unitree_msgs::msg::MotorState::SharedPtr msg) {
+  lowState.motor_state[index].mode = msg->mode;
+  lowState.motor_state[index].q = msg->q;
+  lowState.motor_state[index].dq = msg->dq;
+  lowState.motor_state[index].tau = msg->tau;
+  lowState.motor_state[index].temp = msg->temp;
+}
 void qrRobotA1Sim::FRhipCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(0, msg); }
 void qrRobotA1Sim::FRthighCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(1, msg); }
 void qrRobotA1Sim::FRcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(2, msg); }
@@ -493,6 +500,12 @@ void qrRobotA1Sim::RLhipCallback(const unitree_msgs::msg::MotorState::SharedPtr 
 void qrRobotA1Sim::RLthighCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(10, msg); }
 void qrRobotA1Sim::RLcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(11, msg); }
 
+// void qrRobotA1Sim::FootCallback(int index, const geometry_msgs::msg::WrenchStamped::SharedPtr msg) {
+//   lowState.foot_force_est[index].x = msg->wrench.force.x;
+//   lowState.foot_force_est[index].y = msg->wrench.force.y;
+//   lowState.foot_force_est[index].z = msg->wrench.force.z;
+//   lowState.foot_force[index] = msg->wrench.force.z;
+// }
 // void qrRobotA1Sim::FRfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr msg) { FootCallback(0, msg); }
 // void qrRobotA1Sim::FLfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr msg) { FootCallback(1, msg); }
 // void qrRobotA1Sim::RRfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr msg) { FootCallback(2, msg); }
