@@ -1,0 +1,31 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "colcon",
+      "args": [
+        "build",
+        "--symlink-install",
+        "--event-handlers",
+        "console_cohesion+",
+        "--base-paths",
+        "/home/trantor/project/model_ws",
+        "--cmake-args",
+        "-DCMAKE_BUILD_TYPE=RelWithDebInfo",
+        "--packages-select",
+        "${input:packages_name}"
+      ],
+      "problemMatcher": ["$catkin-gcc"],
+      "group": "build",
+      "label": "colcon: build package"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "packages_name",
+      "type": "promptString",
+      "description": "Enter the packages to select",
+      "default": "robot_sim"
+    }
+  ]
+}

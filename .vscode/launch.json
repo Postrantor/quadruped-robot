@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "debug quadruped",
+      "type": "cppdbg",
+      "request": "launch",
+      "MIMode": "gdb",
+      // "program": "${workspaceFolder}/install/robot_sim/bin/robot_sim",
+      "program": "${workspaceFolder}/install/robot_sim/bin/robot_sim",
+      "args": [
+        // "${workspaceFolder}/install/example_vip_channel/lib/example_vip_channel"
+      ],
+      "preLaunchTask": "colcon: build package",
+      "stopAtEntry": true,
+      "cwd": "${workspaceFolder}",
+      "externalConsole": false,
+      "setupCommands": [
+        {
+          "description": "Enable pretty-priting for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ]
+    }
+  ]
+}
