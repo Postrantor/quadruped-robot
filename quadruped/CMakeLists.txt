@@ -124,7 +124,7 @@ install(
 )
 
 install(
-  DIRECTORY include
+  DIRECTORY include config
   DESTINATION .
 )
 

@@ -210,7 +210,7 @@ void control_loop(
   // 1. 初始化机器人并接收初始观测数据
   quadruped->Step(Eigen::Matrix<float, 5, 12>::Zero(), Quadruped::HYBRID_MODE);
   quadruped->ReceiveObservation();
-  // 输出机器人的基础朝向信息
+  // 机器人的基础朝向信息
   RCLCPP_INFO(
       rclcpp::get_logger("unitree_robot"), "Base Orientation: %f %f %f %f",  //
       quadruped->GetBaseOrientation().x(),                                   //

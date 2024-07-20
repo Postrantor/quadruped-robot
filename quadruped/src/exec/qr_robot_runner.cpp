@@ -22,30 +22,57 @@ qrLocomotionController* SetUpController(
     qrStateEstimatorContainer* stateEstimators,
     qrUserParameters* userParameters,
     std::string& homeDir) {
-  qrComAdjuster* comAdjuster = new qrComAdjuster(quadruped, gaitGenerator, stateEstimators->GetRobotEstimator());
-  std::cout << "init comAdjuster finish\n" << std::endl;
+  qrComAdjuster* comAdjuster = new qrComAdjuster(
+      quadruped,      //
+      gaitGenerator,  //
+      stateEstimators->GetRobotEstimator());
+  std::cout << "init comAdjuster finish" << std::endl;
 
-  qrPosePlanner* posePlanner = new qrPosePlanner(quadruped, gaitGenerator, stateEstimators);
-  std::cout << "init posePlanner finish\n" << std::endl;
+  qrPosePlanner* posePlanner = new qrPosePlanner(
+      quadruped,      //
+      gaitGenerator,  //
+      stateEstimators);
+  std::cout << "init posePlanner finish" << std::endl;
 
-  qrFootholdPlanner* footholdPlanner =
-      new qrFootholdPlanner(quadruped, gaitGenerator, stateEstimators, userParameters, desiredStateCommand);
-  std::cout << "init footholdPlanner finish\n" << std::endl;
+  qrFootholdPlanner* footholdPlanner = new qrFootholdPlanner(
+      quadruped,        //
+      gaitGenerator,    //
+      stateEstimators,  //
+      userParameters,   //
+      desiredStateCommand);
+  std::cout << "init footholdPlanner finish" << std::endl;
 
   qrRaibertSwingLegController* swingLegController = new qrRaibertSwingLegController(
-      quadruped, gaitGenerator, stateEstimators, footholdPlanner, *userParameters,
+      quadruped,        //
+      gaitGenerator,    //
+      stateEstimators,  //
+      footholdPlanner,  //
+      *userParameters,  //
       homeDir + "config/" + quadruped->robotName + "/swing_leg_controller.yaml");
-  std::cout << "init swingLegController finish\n" << std::endl;
+  std::cout << "init swingLegController finish" << std::endl;
 
   qrStanceLegControllerInterface* stanceLegController = new qrStanceLegControllerInterface(
-      quadruped, gaitGenerator, stateEstimators, comAdjuster, posePlanner, footholdPlanner, *userParameters,
+      quadruped,        //
+      gaitGenerator,    //
+      stateEstimators,  //
+      comAdjuster,      //
+      posePlanner,      //
+      footholdPlanner,  //
+      *userParameters,  //
       homeDir + "config/" + quadruped->robotName + "/stance_leg_controller.yaml");
-  std::cout << "init stanceLegController finish\n" << std::endl;
+  std::cout << "init stanceLegController finish" << std::endl;
 
   qrLocomotionController* locomotionController = new qrLocomotionController(
-      quadruped, gaitGenerator, desiredStateCommand, stateEstimators, comAdjuster, posePlanner, swingLegController,
-      stanceLegController, userParameters);
-  std::cout << "init locomotionController finish\n" << std::endl;
+      quadruped,            //
+      gaitGenerator,        //
+      desiredStateCommand,  //
+      stateEstimators,      //
+      comAdjuster,          //
+      posePlanner,          //
+      swingLegController,   //
+      stanceLegController,  //
+      userParameters);
+  std::cout << "init locomotionController finish" << std::endl;
 
   return locomotionController;
 }
@@ -57,7 +84,10 @@ void UpdateControllerParams(qrLocomotionController* controller, Eigen::Vector3f 
   controller->stanceLegController->c->desiredTwistingSpeed = angSpeed;
 }
 
-qrRobotRunner::qrRobotRunner(qrRobot* quadrupedIn, std::string& homeDir, const rclcpp::Node::SharedPtr& nh)
+qrRobotRunner::qrRobotRunner(
+    qrRobot* quadrupedIn,  //
+    std::string& homeDir,  //
+    const rclcpp::Node::SharedPtr& nh)
     : quadruped(quadrupedIn),
       desiredStateCommand(new qrDesiredStateCommand(nh, quadruped)),
       userParameters(homeDir + "config/user_parameters.yaml") {
@@ -90,7 +120,7 @@ qrRobotRunner::qrRobotRunner(qrRobot* quadrupedIn, std::string& homeDir, const r
     gaitGenerator = new qrOpenLoopGaitGenerator(
         quadruped, homeDir + "config/" + quadruped->robotName + "/openloop_gait_generator.yaml");
   }
-  std::cout << "init gaitGenerator finish\n" << std::endl;
+  std::cout << "init gaitGenerator finish" << std::endl;
 
   stateEstimators = new qrStateEstimatorContainer(
       quadruped, gaitGenerator, &userParameters, "config/" + quadruped->robotName + "/terrain.yaml", homeDir);

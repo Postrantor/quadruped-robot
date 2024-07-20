@@ -32,9 +32,9 @@
 using namespace Quadruped;
 
 /**
- * @brief 启动所有控制器、规划器和估算器。
- * @param quadruped : 机器人指针。
- * @return LocomotionController 指针。
+ * @brief 启动所有控制器、规划器和估算器
+ * @param quadruped : 机器人指针
+ * @return LocomotionController 指针
  */
 qrLocomotionController *SetUpController(
     qrRobot *quadruped,
@@ -45,7 +45,7 @@ qrLocomotionController *SetUpController(
     std::string &homeDir);
 
 /**
- * @brief 设置机器人的期望速度。
+ * @brief 设置机器人的期望速度
  */
 void UpdateControllerParams(qrLocomotionController *controller, Eigen::Vector3f linSpeed, float angSpeed);
 

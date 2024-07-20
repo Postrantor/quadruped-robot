@@ -5,12 +5,17 @@
  * @copyright MIT License
  */
 
+#include <iostream>
+
 #include "quadruped/controllers/qr_state_dataflow.h"
 
 qrUserParameters::qrUserParameters(std::string filePath) {
   YAML::Node userConfig = YAML::LoadFile(filePath);
+
   stairsTime = userConfig["stairsTime"].as<float>();
+
   stairsVel = userConfig["stairsVel"].as<float>();
+
   controlFrequency = userConfig["controlFrequency"].as<unsigned int>();
 
   filterWindowSize = userConfig["filterWindowSize"].as<unsigned int>();
@@ -40,7 +45,7 @@ qrUserParameters::qrUserParameters(std::string filePath) {
 
   useWBC = userConfig["useWBC"].as<bool>();
 
-  std::cout << "init UserParameters finish\n";
+  std::cout << "init UserParameters finish" << std::endl;
 }
 
 Quadruped::qrStateDataFlow::qrStateDataFlow() {
