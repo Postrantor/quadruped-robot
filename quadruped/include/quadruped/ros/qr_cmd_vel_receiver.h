@@ -1,6 +1,6 @@
 /**
  * @author Robot Motion and Vision Laboratory at East China Normal University
- * @brief
+ * @brief for real robot
  * @date 2022
  * @copyright MIT License
  */
@@ -10,14 +10,13 @@
 
 #include <iostream>
 #include <string>
+#include <Eigen/Dense>
 
 #include "rclcpp/rclcpp.hpp"
 
 #include "geometry_msgs/msg/pose.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "nav_msgs/msg/odometry.hpp"
-
-#include <Eigen/Dense>
 
 namespace Quadruped {
 
