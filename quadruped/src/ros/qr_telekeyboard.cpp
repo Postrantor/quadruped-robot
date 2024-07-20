@@ -124,10 +124,13 @@ private:
 
 int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
+
   auto node = std::make_shared<qrTeleKeyboard>();
   std::thread run_thread(&qrTeleKeyboard::run, node);
   node->run_default();
   run_thread.join();
+
   rclcpp::shutdown();
+
   return 0;
 }
