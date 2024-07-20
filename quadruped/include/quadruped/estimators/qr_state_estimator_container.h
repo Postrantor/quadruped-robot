@@ -30,14 +30,12 @@ public:
    * @param gaitGeneratorIn：生成所需步态计划用于行走
    * @param userParametersIn：卡尔曼滤波器和移动窗口算法的参数
    * @param terrainConfigPath：地形配置文件路径
-   //!警告  homeDir：这个不再使用
    */
   qrStateEstimatorContainer(
       qrRobot* quadrupedIn,
       qrGaitGenerator* gaitGeneratorIn,
       qrUserParameters* userParametersIn,
-      std::string terrainConfigPath,
-      std::string homeDir);
+      std::string terrainConfigPath);
 
   /**
    * @brief 重置所有包含的泛型估算器

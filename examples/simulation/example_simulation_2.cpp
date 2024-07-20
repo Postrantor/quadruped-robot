@@ -88,12 +88,16 @@ auto reset_robot(
   auto joint_state_response_future = joint_state_client->async_send_request(joint_state_request);
 
   // 等待并检查响应结果
-  if (rclcpp::spin_until_future_complete(node, entity_state_response_future) == rclcpp::FutureReturnCode::SUCCESS  //
-      && rclcpp::spin_until_future_complete(node, joint_state_response_future) == rclcpp::FutureReturnCode::SUCCESS) {
-    RCLCPP_INFO(rclcpp::get_logger("unitree_robot"), "robot reset successfully");
+  if (rclcpp::spin_until_future_complete(
+          node, entity_state_response_future, std::chrono::duration<double, std::milli>(5000)) ==
+          rclcpp::FutureReturnCode::SUCCESS  //
+      && rclcpp::spin_until_future_complete(
+             node, joint_state_response_future, std::chrono::duration<double, std::milli>(5000)) ==
+             rclcpp::FutureReturnCode::SUCCESS) {
+    RCLCPP_INFO_STREAM(node->get_logger(), "robot reset successfully");
     return true;
   } else {
-    RCLCPP_ERROR(rclcpp::get_logger("unitree_robot"), "failed to reset the robot");
+    RCLCPP_ERROR_STREAM(node->get_logger(), "failed to reset the robot");
     return false;
   }
 
@@ -117,11 +121,11 @@ void get_com_position_in_world_frame(
 
   // 异步发送获取链接状态请求
   auto response_future = base_state_client->async_send_request(request);
-  if (rclcpp::spin_until_future_complete(node, response_future)  //
+  if (rclcpp::spin_until_future_complete(node, response_future, std::chrono::duration<double, std::milli>(5000))  //
       == rclcpp::FutureReturnCode::SUCCESS) {
     const auto& response = response_future.get();
     if (!response->success) {
-      RCLCPP_WARN(rclcpp::get_logger("unitree_robot"), "failed to get gazebo link state");
+      RCLCPP_WARN_STREAM(node->get_logger(), "failed to get gazebo link state");
       return;
     }
 
@@ -144,7 +148,7 @@ void get_com_position_in_world_frame(
             pos_in.cast<float>(),  //
             orientation_in.cast<float>());
   } else {
-    RCLCPP_ERROR(rclcpp::get_logger("unitree_robot"), "service call failed");
+    RCLCPP_ERROR(node->get_logger(), "call `GetEntityState` service failed");
   }
 }
 
@@ -155,6 +159,7 @@ void get_com_position_in_world_frame(
  * @return 指向Quadruped机器人实例的智能指针
  */
 std::unique_ptr<Quadruped::qrRobotA1Sim> initialize_and_reset_robot(const std::shared_ptr<rclcpp::Node>& node) {
+  RCLCPP_INFO_STREAM(node->get_logger(), "initialize and reset robot.");
   // 创建服务客户端
   // 服务`/gazebo/set_entity_state`由"gazebo_ros_state"插件配置
   // 在empty.world文件中通过remap参数进行重映射或者添加命名空间得到
@@ -165,34 +170,36 @@ std::unique_ptr<Quadruped::qrRobotA1Sim> initialize_and_reset_robot(const std::s
 
   // 等待服务可用
   if (!entity_state_client->wait_for_service(std::chrono::seconds(5))) {
-    RCLCPP_ERROR(rclcpp::get_logger("unitree_robot"), "model state service not available");
-    rclcpp::shutdown();
-    throw std::runtime_error("model state service not available");
+    RCLCPP_ERROR_STREAM(node->get_logger(), "model state service not available");
+    // rclcpp::shutdown();
+    // throw std::runtime_error("model state service not available");
   }
   if (!joint_state_client->wait_for_service(std::chrono::seconds(5))) {
-    RCLCPP_ERROR(rclcpp::get_logger("unitree_robot"), "joint state service not available");
-    rclcpp::shutdown();
-    throw std::runtime_error("joint state service not available");
+    RCLCPP_ERROR_STREAM(node->get_logger(), "joint state service not available");
+    // rclcpp::shutdown();
+    // throw std::runtime_error("joint state service not available");
   }
 
   // 重置机器人状态
   if (!reset_robot(node, entity_state_client, joint_state_client)) {
-    rclcpp::shutdown();
-    throw std::runtime_error("failed to reset the robot");
+    RCLCPP_ERROR_STREAM(node->get_logger(), "reset robot failed.");
+    // rclcpp::shutdown();
+    // throw std::runtime_error("failed to reset the robot");
   }
-  RCLCPP_INFO(rclcpp::get_logger("unitree_robot"), "reset the robot pose");
+  RCLCPP_INFO_STREAM(node->get_logger(), "reset the robot pose success.");
 
   // 获取功能包 "quadruped" 的共享目录路径
   std::string package_path;
   try {
     package_path = ament_index_cpp::get_package_share_directory("quadruped");
+    RCLCPP_INFO_STREAM(node->get_logger(), "find package path in: \n\t- `" << package_path << "`");
   } catch (const std::exception& e) {
-    std::cerr << "Error: " << e.what() << std::endl;
+    RCLCPP_ERROR_STREAM(node->get_logger(), e.what());
     return nullptr;
   }
   // 构建配置文件路径
-  std::string config_file_path = package_path + "/config/a1_sim/a1_sim.yaml";
-  std::cout << "Config file path: " << config_file_path << std::endl;
+  std::string config_file_path = package_path + "/../../config/a1_sim/a1_sim.yaml";
+  RCLCPP_INFO_STREAM(node->get_logger(), "config file path: \n\t- `" << config_file_path << "`");
 
   // 创建并返回机器人实例
   return std::make_unique<Quadruped::qrRobotA1Sim>(node, config_file_path);
@@ -207,16 +214,18 @@ std::unique_ptr<Quadruped::qrRobotA1Sim> initialize_and_reset_robot(const std::s
 void control_loop(
     Quadruped::qrRobotA1Sim* quadruped,  //
     const std::shared_ptr<rclcpp::Node>& node) {
+  RCLCPP_INFO_STREAM(node->get_logger(), "entry control loop.");
   // 1. 初始化机器人并接收初始观测数据
   quadruped->Step(Eigen::Matrix<float, 5, 12>::Zero(), Quadruped::HYBRID_MODE);
   quadruped->ReceiveObservation();
   // 机器人的基础朝向信息
-  RCLCPP_INFO(
-      rclcpp::get_logger("unitree_robot"), "Base Orientation: %f %f %f %f",  //
-      quadruped->GetBaseOrientation().x(),                                   //
-      quadruped->GetBaseOrientation().y(),                                   //
-      quadruped->GetBaseOrientation().z(),                                   //
-      quadruped->GetBaseOrientation().w());
+  RCLCPP_INFO_STREAM(
+      node->get_logger(),
+      "\n\t"
+          << "base orientation: [" << quadruped->GetBaseOrientation().x()  //
+          << ", " << quadruped->GetBaseOrientation().y()                   //
+          << ", " << quadruped->GetBaseOrientation().z()                   //
+          << ", " << quadruped->GetBaseOrientation().w() << "]");
   // 设置可视化标签
   // Quadruped::Visualization2D& vis = quadruped->stateDataFlow.visualizer;
   // vis.SetLabelNames({"pitch", "H", "vx in world", "vy in world", "vz in world"});
@@ -224,14 +233,15 @@ void control_loop(
   // 2. 创建服务客户端，获取初始状态
   auto base_state_client = node->create_client<gazebo_msgs::srv::GetEntityState>("/gazebo/get_entity_state");
   if (!base_state_client->wait_for_service(std::chrono::seconds(5))) {
-    RCLCPP_ERROR(rclcpp::get_logger("unitree_robot"), "base state service not available");
-    rclcpp::shutdown();
-    return;
+    RCLCPP_ERROR(node->get_logger(), "base state service not available");
+    // rclcpp::shutdown();
+    // return;
   }
   get_com_position_in_world_frame(quadruped, node, base_state_client);
 
   // 3. 创建机器人运行实例
-  std::string home_dir = ament_index_cpp::get_package_share_directory("quadruped");
+  std::string home_dir = ament_index_cpp::get_package_share_directory("quadruped") + "/../../";
+  RCLCPP_INFO_STREAM(node->get_logger(), "get package config dir: \n\t- `" << home_dir << "`");
   qrRobotRunner robotRunner(quadruped, home_dir, node);
 
   // 4. 创建并初始化控制器消息传递实例
@@ -239,9 +249,9 @@ void control_loop(
   //     quadruped,                              //
   //     robotRunner.GetLocomotionController(),  //
   //     node);
-  // RCLCPP_INFO(rclcpp::get_logger("unitree_robot"), "ros2 modules init finished");
+  // RCLCPP_INFO(node->get_logger(), "ros2 modules init finished");
 
-  // 5. 主循环
+  // 5. main loop
   rclcpp::Rate loop_rate1(1000);  // 设置循环频率
   rclcpp::Rate loop_rate2(700);
 
@@ -262,14 +272,16 @@ void control_loop(
         quadruped->stateDataFlow.heightInControlFrame < 0.05 ||  //
         quadruped->basePosition[2] > 0.40 ||                     //
         std::abs(quadruped->baseRollPitchYaw[0]) > 0.6) {
-      RCLCPP_ERROR(rclcpp::get_logger("unitree_robot"), "the dog is going down, main function exit.");
-      std::cout << "base pos:" << quadruped->basePosition << std::endl;
-      std::cout << "base rpy:" << quadruped->GetBaseRollPitchYaw() << std::endl;
+      RCLCPP_INFO_STREAM(
+          node->get_logger(), "\n\t"
+                                  << "base pos:" << quadruped->basePosition << "\n\t"
+                                  << "base rpy:" << quadruped->GetBaseRollPitchYaw());
+      RCLCPP_ERROR(node->get_logger(), "the dog is going down, main function exit.");
       break;
     }
 
     // 根据时间控制节奏
-    // FIXME(@zhiqi.jia) :: use timer
+    // FIXME(@zhiqi.jia) :: use timer callback
     if (quadruped->useRosTime) {
       rclcpp::spin_some(node);  // 非阻塞回调执行
       if (quadruped->timeStep < 0.0015)
@@ -291,14 +303,13 @@ void control_loop(
  */
 int main(int argc, char** argv) {
   rclcpp::init(argc, argv);
-
-  auto node = rclcpp::Node::make_shared("a1_sim");
+  const std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared("a1_sim");
+  RCLCPP_INFO_STREAM(node->get_logger(), "start robot_sim node.");
 
   try {
-    auto quadruped = initialize_and_reset_robot(node);
-    control_loop(quadruped.get(), node);
+    control_loop(initialize_and_reset_robot(node).get(), node);
   } catch (const std::runtime_error& e) {
-    RCLCPP_ERROR(rclcpp::get_logger("unitree_robot"), "%s", e.what());
+    RCLCPP_ERROR_STREAM(node->get_logger(), e.what());
     return 1;
   }
 

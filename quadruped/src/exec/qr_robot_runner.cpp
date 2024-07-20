@@ -22,6 +22,8 @@ qrLocomotionController* SetUpController(
     qrStateEstimatorContainer* stateEstimators,
     qrUserParameters* userParameters,
     std::string& homeDir) {
+  std::string robot_config_dir = homeDir + "/config/" + quadruped->robotName;
+
   qrComAdjuster* comAdjuster = new qrComAdjuster(
       quadruped,      //
       gaitGenerator,  //
@@ -48,7 +50,7 @@ qrLocomotionController* SetUpController(
       stateEstimators,  //
       footholdPlanner,  //
       *userParameters,  //
-      homeDir + "config/" + quadruped->robotName + "/swing_leg_controller.yaml");
+      robot_config_dir + "/swing_leg_controller.yaml");
   std::cout << "init swingLegController finish" << std::endl;
 
   qrStanceLegControllerInterface* stanceLegController = new qrStanceLegControllerInterface(
@@ -59,7 +61,7 @@ qrLocomotionController* SetUpController(
       posePlanner,      //
       footholdPlanner,  //
       *userParameters,  //
-      homeDir + "config/" + quadruped->robotName + "/stance_leg_controller.yaml");
+      robot_config_dir + "/stance_leg_controller.yaml");
   std::cout << "init stanceLegController finish" << std::endl;
 
   qrLocomotionController* locomotionController = new qrLocomotionController(
@@ -91,10 +93,11 @@ qrRobotRunner::qrRobotRunner(
     : quadruped(quadrupedIn),
       desiredStateCommand(new qrDesiredStateCommand(nh, quadruped)),
       userParameters(homeDir + "config/user_parameters.yaml") {
-  std::cout << "[Runner] name: " << quadruped->robotName << std::endl;
-  std::cout << homeDir + "config/" + quadruped->robotName + "/main.yaml" << std::endl;
-  YAML::Node mainConfig = YAML::LoadFile(homeDir + "config/" + quadruped->robotName + "/main.yaml");
+  std::string robot_config_dir = homeDir + "config/" + quadruped->robotName;
+  RCLCPP_INFO_STREAM(nh->get_logger(), "[Runner] name: " << quadruped->robotName);
 
+  // main config
+  YAML::Node mainConfig = YAML::LoadFile(robot_config_dir + "/main.yaml");
   int twistMode = mainConfig["speed_update_mode"].as<int>();
   std::vector<float> linearVel = mainConfig["const_twist"]["linear"].as<std::vector<float>>();
   Vec3<float> desiredSpeed = Eigen::MatrixXf::Map(&linearVel[0], 3, 1);
@@ -115,16 +118,26 @@ qrRobotRunner::qrRobotRunner(
 
   if (quadruped->controlParams["mode"] == LocomotionMode::WALK_LOCOMOTION) {
     gaitGenerator = new qrWalkGaitGenerator(
-        quadruped, homeDir + "config/" + quadruped->robotName + "/openloop_gait_generator.yaml");
+        quadruped,  //
+        robot_config_dir + "/openloop_gait_generator.yaml");
   } else {
     gaitGenerator = new qrOpenLoopGaitGenerator(
-        quadruped, homeDir + "config/" + quadruped->robotName + "/openloop_gait_generator.yaml");
+        quadruped,  //
+        robot_config_dir + "/openloop_gait_generator.yaml");
   }
   std::cout << "init gaitGenerator finish" << std::endl;
 
   stateEstimators = new qrStateEstimatorContainer(
-      quadruped, gaitGenerator, &userParameters, "config/" + quadruped->robotName + "/terrain.yaml", homeDir);
-  controlFSM = new qrControlFSM<float>(quadruped, stateEstimators, gaitGenerator, desiredStateCommand, &userParameters);
+      quadruped,        //
+      gaitGenerator,    //
+      &userParameters,  //
+      robot_config_dir + "/terrain.yaml");
+  controlFSM = new qrControlFSM<float>(
+      quadruped,            //
+      stateEstimators,      //
+      gaitGenerator,        //
+      desiredStateCommand,  //
+      &userParameters);
   resetTime = quadruped->GetTimeSinceReset();
   stateEstimators->Reset();
   // gaitGenerator->Reset(resetTime);
@@ -142,7 +155,9 @@ bool qrRobotRunner::Update() {
 }
 
 bool qrRobotRunner::Step() {
-  quadruped->Step(qrMotorCommand::convertToMatix(hybridAction), HYBRID_MODE);
+  quadruped->Step(
+      qrMotorCommand::convertToMatix(hybridAction),  //
+      HYBRID_MODE);
 
   return 1;
 }

@@ -15,7 +15,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "quadruped/robots/qr_robot_a1_sim.h"
-
+#include "quadruped/utils/qr_utils.hpp"
 namespace Quadruped {
 
 /**
@@ -55,9 +55,8 @@ qrRobotA1Sim::qrRobotA1Sim(const rclcpp::Node::SharedPtr& nh, std::string config
   std::vector<std::vector<float>> linksComPos_ =
       robotConfig["robot_params"]["links_com_pos"].as<std::vector<std::vector<float>>>();
 
-  for (int i = 0; i < 9; ++i) {
-    std::cout << inertias[0][i] << std::endl;
-  }
+  std::string inertias_str = array_to_string(inertias[0], "inertias: ");
+  RCLCPP_INFO_STREAM(nhIn->get_logger(), "\n\t" << inertias_str);
 
   for (int legId = 0; legId < NumLeg; ++legId) {
     Mat3<float> inertia = Mat3<float>::Zero();
@@ -185,14 +184,16 @@ qrRobotA1Sim::qrRobotA1Sim(const rclcpp::Node::SharedPtr& nh, std::string config
   std::this_thread::sleep_for(std::chrono::milliseconds(300));
 
   yawOffset = 0;  // lowState.imu.rpy[2]; // todo
-  std::cout << "yawOffset: " << yawOffset << std::endl;
+  RCLCPP_INFO_STREAM(
+      nhIn->get_logger(), "\n\t"
+                              << "yaw offset: " << yawOffset);
 
   // timeStep = 1.0 / robotConfig["controller_params"]["freq"].as<int>();
   this->ResetTimer();
   lastResetTime = GetTimeSinceReset();
   initComplete = true;
 
-  std::cout << "-------A1 Sim init Complete-------" << std::endl;
+  RCLCPP_INFO_STREAM(nhIn->get_logger(), "sim robot object init complete.");
 }
 
 bool qrRobotA1Sim::BuildDynamicModel() {
@@ -233,10 +234,10 @@ bool qrRobotA1Sim::BuildDynamicModel() {
   hipRotationalInertia = hipRotationalInertia * 1e-6;
   Vec3<float> hipCOM(-0.003237, -0.022327, -0.027326);  // left, for right filp y-axis value.
   SpatialInertia<float> hipInertia(1.013, hipCOM, hipRotationalInertia);
-  std::cout << "hipInertia -----" << std::endl;
-  std::cout << hipInertia.getInertiaTensor() << std::endl;
-  std::cout << hipInertia.flipAlongAxis(CoordinateAxis::Y).getInertiaTensor() << std::endl;
-  std::cout << "----- hipInertia " << std::endl;
+  RCLCPP_INFO_STREAM(
+      nhIn->get_logger(), "hip inertia: \n"                     //
+                              << hipInertia.getInertiaTensor()  //
+                              << hipInertia.flipAlongAxis(CoordinateAxis::Y).getInertiaTensor());
 
   Mat3<float> kneeRotationalInertia, kneeRotationalInertiaRotated;
   kneeRotationalInertiaRotated << 2998, 0, -141.2, 0, 3014, 0, -141.2, 0, 32.4;
@@ -401,13 +402,13 @@ bool qrRobotA1Sim::BuildDynamicModel() {
     //     _full_config[3 * leg + i + 6] = _state.q[3 * leg + i];
     //   }
     // }
-    printf("339\n");
+    RCLCPP_INFO_STREAM(nhIn->get_logger(), "339");
 
     fb.bodyOrientation << 1, 0, 0, 0;  // 0.896127, 0.365452,0.246447,-0.0516205;
     // fb.bodyPosition << 0.00437649, 0.000217693, 0.285963;
     fb.bodyPosition.setZero();
     fb.bodyVelocity << 3, 3, 3, 0.2, 0.1, 0.1;
-    printf("343\n");
+    RCLCPP_INFO_STREAM(nhIn->get_logger(), "343");
 
     fb.q.resize(12, 1);
     fb.q.setZero();
@@ -418,10 +419,10 @@ bool qrRobotA1Sim::BuildDynamicModel() {
         fb.qd.resize(12, 1);
     fb.qd.setZero();
     // fb.qd << 0.2, 0, 0, 0.1, 0, 0., 0, -0.3, 0.6, 0, 0.3, 1;
-    printf("346\n");
+    RCLCPP_INFO_STREAM(nhIn->get_logger(), "346");
 
     model.setState(fb);
-    printf("348\n");
+    RCLCPP_INFO_STREAM(nhIn->get_logger(), "348");
 
     model.forwardKinematics();
     model.massMatrix();
@@ -438,12 +439,16 @@ bool qrRobotA1Sim::BuildDynamicModel() {
         }
       }
     }
-    std::cout << "A = \n" << A << std::endl;
     float energy = 0.5 * dq.dot(A * dq);
+    std::cout << "A = \n" << A << std::endl;
     std::cout << "energy = " << energy << std::endl;
+    RCLCPP_INFO_STREAM(
+        nhIn->get_logger(), "\n\t"
+                                << "A = " << A << "\n\t"
+                                << "energy" << energy);
 
     // model.getPosition(8);
-    printf("351\n");
+    RCLCPP_INFO_STREAM(nhIn->get_logger(), "351");
 
     // FIXME(zhiqi.jia) :: why use throw?
     throw std::domain_error("finished!!!!");

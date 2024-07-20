@@ -29,8 +29,6 @@ qrRaibertSwingLegController::qrRaibertSwingLegController(
   this->desiredTwistingSpeed = user_parameters.desiredTwistingSpeed;
   this->desiredHeight = Matrix<float, 3, 1>(0, 0, user_parameters.desiredHeight - user_parameters.footClearance);
 
-  std::cout << config_path << std::endl;
-
   swingLegConfig = YAML::LoadFile(config_path);
   footOffset = swingLegConfig["swing_leg_params"]["foot_offset"].as<float>();
   this->userParameters = &user_parameters;

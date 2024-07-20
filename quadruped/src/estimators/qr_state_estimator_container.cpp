@@ -13,14 +13,12 @@ qrStateEstimatorContainer::qrStateEstimatorContainer(
     qrRobot* quadrupedIn,
     qrGaitGenerator* gaitGeneratorIn,
     qrUserParameters* userParametersIn,
-    std::string terrainConfigPath,
-    std::string homeDir)
+    std::string terrainConfigPath)
     :
-
       quadruped(quadrupedIn),
       gaitGenerator(gaitGeneratorIn),
       userParameters(userParametersIn) {
-  groundEstimator = new qrGroundSurfaceEstimator(quadruped, homeDir + terrainConfigPath);
+  groundEstimator = new qrGroundSurfaceEstimator(quadruped, terrainConfigPath);
 
   contactDetection = new qrContactDetection(quadruped, gaitGenerator, groundEstimator);
 

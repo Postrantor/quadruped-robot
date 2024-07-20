@@ -34,12 +34,12 @@ void StandUp(qrRobot* robot, float standUpTime, float totalTime, float timeStep)
   robot->ReceiveObservation();
   Eigen::Matrix<float, 12, 1> motorAnglesBeforeStandUP = robot->GetMotorAngles();
   Eigen::Matrix<float, 12, 1> diff = motorAnglesBeforeStandUP - robot->lastMotorCommands.col(0);
-  if (robot->lastMotorControlMode == MotorMode::POSITION_MODE &&
-      diff.cwiseAbs().maxCoeff() < 0.15)  // use last action for smoothness
-  {
+  // use last action for smoothness
+  if (robot->lastMotorControlMode == MotorMode::POSITION_MODE && diff.cwiseAbs().maxCoeff() < 0.15) {
     motorAnglesBeforeStandUP = robot->lastMotorCommands.col(0);
   }
   std::cout << "---------------------Standing Up---------------------" << std::endl;
+
   Eigen::Matrix<float, 12, 1> action;
   float startTime = timer.GetTimeSinceReset();
   float endTime = startTime + totalTime;

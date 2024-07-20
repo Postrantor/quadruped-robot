@@ -65,7 +65,7 @@ qrContactDetection::qrContactDetection(
   /* accVar and obsVar determine which variable should be more trusty */
   filterSlip = new TinyEKF<4, 4>(&x[0], 1.f, &accelerometerVariance[0], &obsVariance[0]);
 
-  std::cout << "init detection --- " << std::endl;
+  std::cout << "init detection finish" << std::endl;
 }
 
 void qrContactDetection::Update(float currentTime) {

@@ -5,6 +5,8 @@
  * @copyright MIT License
  */
 
+#include <iostream>
+
 #include "quadruped/controllers/mpc/qr_mpc_stance_leg_controller.h"
 
 using robotics::math::clip;
@@ -20,9 +22,7 @@ MPCStanceLegController::MPCStanceLegController(
     qrFootholdPlanner* footholdPlanner,
     qrUserParameters& userParameters,
     std::string configFilepath)
-    :
-
-      TorqueStanceLegController(
+    : TorqueStanceLegController(
           robot,
           gaitGenerator,
           stateEstimators,
@@ -42,9 +42,12 @@ MPCStanceLegController::MPCStanceLegController(
   iterationsInaMPC = round(dtMPC / dt);
   defaultIterationsInMpc = iterationsInaMPC;
 
-  printf(
-      "[Convex MPC] dt: %.3f iterations: %d, dtMPC: %.3f, horizonLen: %d\n", dt, iterationsInaMPC, dtMPC,
-      horizonLength);  // 0.002, 15, 0.03
+  std::cout << "[Convex MPC]: "
+            << "\n\tdt: " << dt                          //
+            << ", \n\titerations: " << iterationsInaMPC  //
+            << ", \n\tdtMPC: " << dtMPC                  //
+            << ", \n\thorizonLen: " << horizonLength << std::endl;
+  // 0.002, 15, 0.03
 
   useWBC = userParameters.useWBC;
 

@@ -24,7 +24,7 @@ qrRobotEstimator::qrRobotEstimator(
   estimatedRPY = pose.tail(3);
   std::cout << "estimatedPosition = " << estimatedPosition.transpose() << std::endl;
   lastTimestamp = 0;
-  std::cout << "init robotEstimator finish\n" << std::endl;
+  std::cout << "init robotEstimator finish" << std::endl;
   // CMUInitState();
 }
 

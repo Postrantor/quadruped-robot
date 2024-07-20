@@ -24,10 +24,16 @@ extern void UpdateControllerParams(qrLocomotionController* controller, Eigen::Ve
 template <typename T>
 qrFSMStateLocomotion<T>::qrFSMStateLocomotion(qrControlFSMData<T>* controlFSMData)
     : qrFSMState<T>(controlFSMData, FSM_StateName::LOCOMOTION, "LOCOMOTION") {
-  std::string homeDir = ament_index_cpp::get_package_share_directory("quadruped") + "/";
+  // FIXME(zhiqi.jia) :: should be use input param get homedir
+  std::string homeDir = ament_index_cpp::get_package_share_directory("quadruped") + "/../../";
+
   locomotionController = SetUpController(
-      controlFSMData->quadruped, controlFSMData->gaitGenerator, controlFSMData->desiredStateCommand,
-      controlFSMData->stateEstimators, controlFSMData->userParameters, homeDir);
+      controlFSMData->quadruped,      //
+      controlFSMData->gaitGenerator,  //
+      controlFSMData->desiredStateCommand,
+      controlFSMData->stateEstimators,  //
+      controlFSMData->userParameters,   //
+      homeDir);
 
   printf("LocomotionController Init Finished\n");
 
