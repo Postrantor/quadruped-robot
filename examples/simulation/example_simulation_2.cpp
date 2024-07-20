@@ -20,8 +20,8 @@
 
 #include "quadruped/robots/qr_robot_a1_sim.h"
 #include "quadruped/exec/qr_robot_runner.h"
-#include "quadruped/ros/qr_control2gazebo_msg.h"
 #include "quadruped/utils/qr_cpptypes.h"
+// #include "quadruped/ros/qr_control2gazebo.h"
 
 /**
  * @brief 重置机器人的姿态和关节状态
@@ -282,7 +282,7 @@ void control_loop(
     }
   }
 
-  quadruped->stateDataFlow.visualizer.Show();
+  // quadruped->stateDataFlow.visualizer.Show();
 }
 
 /**

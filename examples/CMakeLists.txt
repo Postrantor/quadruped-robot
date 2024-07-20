@@ -47,4 +47,9 @@ target_link_libraries(${PROJECT_NAME}
 )
 ament_target_dependencies(${PROJECT_NAME} ${DEPENDENCIES})
 
+install(
+  TARGETS ${PROJECT_NAME}
+  DESTINATION bin
+)
+
 ament_package()
