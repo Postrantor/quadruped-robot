@@ -29,8 +29,10 @@ find_package(std_srvs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
-find_package(unitree_msgs REQUIRED)
+find_package(gazebo_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(unitree_msgs REQUIRED)
+find_package(xpp_msgs REQUIRED)
 
 find_package(Eigen3 REQUIRED)
 find_package(unitree_legged_sdk REQUIRED) # A1 & AligenGo
@@ -109,6 +111,8 @@ ament_target_dependencies(${PROJECT_NAME} PUBLIC
   nav_msgs
   geometry_msgs
   sensor_msgs
+  xpp_msgs
+  gazebo_msgs
   unitree_msgs
   tf2_ros
 )

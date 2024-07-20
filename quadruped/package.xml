@@ -11,14 +11,17 @@
     <buildtool_depend>ament_cmake</buildtool_depend>
 
     <depend>rclcpp</depend>
+
     <depend>std_msgs</depend>
     <depend>std_srvs</depend>
     <depend>nav_msgs</depend>
     <depend>sensor_msgs</depend>
     <depend>geometry_msgs</depend>
-    <depend>unitree_msgs</depend>
-    <depend>message_filters</depend>
+    <depend>gazebo_msgs</depend>
     <depend>tf2</depend>
+    <depend>message_filters</depend>
+    <depend>unitree_msgs</depend>
+    <depend>xpp_msgs</depend>
 
     <depend>eigen3</depend>
     <depend>unitree_legged_sdk</depend>
