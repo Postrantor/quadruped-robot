@@ -29,6 +29,8 @@ public:
    * @brief qrRobotA1Sim 类的构造函数
    * @param nh: ROS 节点句柄。
    * @param configFilePath: 配置文件路径。
+   * @note 因为实例化机器人对象的参数都存储在配置文件中，就暂时没有使用基类中的构造函数
+   *       而是在自己的构造函数中先去解析配置文件，获得参数值后去初始化成员函数
    */
   qrRobotA1Sim(const rclcpp::Node::SharedPtr& nh, std::string configFilePath);
 
@@ -52,6 +54,7 @@ public:
 
   /**
    * @see qrRobot::ApplyAction
+   * @details for real robot. use unitree sdk
    */
   void ApplyAction(const std::vector<qrMotorCommand>& motorCommands, MotorMode motorControlMode);
 
@@ -65,9 +68,17 @@ public:
    */
   virtual bool BuildDynamicModel() override;
 
+  // callback
   void ImuCallback(const sensor_msgs::msg::Imu::SharedPtr msg);
 
-  void MotorStateCallback(const unitree_msgs::msg::MotorState::SharedPtr msg, int index);
+  void qrRobotA1Sim::MotorStateCallback(int index, const unitree_msgs::msg::MotorState::SharedPtr msg) {
+    lowState.motor_state[index].mode = msg->mode;
+    lowState.motor_state[index].q = msg->q;
+    lowState.motor_state[index].dq = msg->dq;
+    lowState.motor_state[index].tau = msg->tau;
+    lowState.motor_state[index].temp = msg->temp;
+  }
+
   void FRhipCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
   void FRthighCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
   void FRcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
@@ -81,16 +92,21 @@ public:
   void RLthighCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
   void RLcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
 
-  void FootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr msg, int index);
-  void FRfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr msg);
-  void FLfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr msg);
-  void RRfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr msg);
-  void RLfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr msg);
+  // void qrRobotA1Sim::FootCallback(int index, const geometry_msgs::msg::WrenchStamped::SharedPtr msg) {
+  //   lowState.foot_force_est[index].x = msg->wrench.force.x;
+  //   lowState.foot_force_est[index].y = msg->wrench.force.y;
+  //   lowState.foot_force_est[index].z = msg->wrench.force.z;
+  //   lowState.foot_force[index] = msg->wrench.force.z;
+  // }
+  // void FRfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr msg);
+  // void FLfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr msg);
+  // void RRfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr msg);
+  // void RLfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr msg);
 
   /**
    * @brief ROS 节点句柄。
    */
-  rclcpp::Node::SharedPtr nh;
+  rclcpp::Node::SharedPtr nhIn;
 
   /**
    * @brief Unitree 低级命令，存储电机命令。
@@ -110,7 +126,6 @@ public:
   /**
    * @brief 12个关节状态订阅者。
    */
-
   rclcpp::Subscription<unitree_msgs::msg::MotorState>::SharedPtr jointStateSub[12];
 
   /**
