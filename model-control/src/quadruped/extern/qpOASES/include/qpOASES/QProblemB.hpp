@@ -135,11 +135,12 @@ public:
       const Bounds* const guessedBounds = 0, /**< Optimal working set of bounds for solution (xOpt,yOpt). \n
                                                                                               (If a null pointer is
                                                 passed, all bounds are assumed inactive!) */
-      const real_t* const _R = 0             /**< Pre-computed (upper triangular) Cholesky factor of Hessian matrix.
-                                                                              The Cholesky factor must be stored in a real_t array
-                                                of size nV*nV             in row-major format. Note: Only used if xOpt/yOpt and gB are NULL! \n
-                                                                              (If a null pointer is passed, Cholesky decomposition
-                                                is computed internally!) */
+      const real_t* const _R =
+          0 /**< Pre-computed (upper triangular) Cholesky factor of Hessian matrix.
+                                             The Cholesky factor must be stored in a real_t array
+               of size nV*nV             in row-major format. Note: Only used if xOpt/yOpt and gB are NULL! \n
+                                             (If a null pointer is passed, Cholesky decomposition
+               is computed internally!) */
   );
 
   /** Initialises a simply bounded QP problem with given QP data and tries to solve it
@@ -187,11 +188,12 @@ public:
       const Bounds* const guessedBounds = 0, /**< Optimal working set of bounds for solution (xOpt,yOpt). \n
                                                                                               (If a null pointer is
                                                 passed, all bounds are assumed inactive!) */
-      const real_t* const _R = 0             /**< Pre-computed (upper triangular) Cholesky factor of Hessian matrix.
-                                                                              The Cholesky factor must be stored in a real_t array
-                                                of size nV*nV             in row-major format. Note: Only used if xOpt/yOpt and gB are NULL! \n
-                                                                              (If a null pointer is passed, Cholesky decomposition
-                                                is computed internally!) */
+      const real_t* const _R =
+          0 /**< Pre-computed (upper triangular) Cholesky factor of Hessian matrix.
+                                             The Cholesky factor must be stored in a real_t array
+               of size nV*nV             in row-major format. Note: Only used if xOpt/yOpt and gB are NULL! \n
+                                             (If a null pointer is passed, Cholesky decomposition
+               is computed internally!) */
   );
 
   /** Initialises a simply bounded QP problem with given QP data to be read from files and solves it
@@ -884,8 +886,8 @@ private:
       real_t* const cputime, /**< Input: Maximum CPU time allowed for QP solution. \n
                                                               Output: CPU time spent for QP solution (or to perform nWSR
                                 iterations). */
-      int_t
-          nWSRperformed = 0,            /**< Number of working set recalculations already performed to solve
+      int_t nWSRperformed =
+          0,                            /**< Number of working set recalculations already performed to solve
                                                                          this QP within previous solveRegularisedQP() calls. This
                                            number is            always zero, except for successive calls when using the far bound strategy. */
       BooleanType isFirstCall = BT_TRUE /**< Indicating whether this is the first call for current QP. */

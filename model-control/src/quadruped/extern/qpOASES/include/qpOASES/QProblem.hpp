@@ -558,8 +558,8 @@ protected:
       real_t* const cputime,       /**< Input: Maximum CPU time allowed for QP solution. \n
                                                                     Output: CPU time spent for QP solution (or to perform nWSR
                                       iterations). */
-      int_t
-          nWSRperformed = 0,            /**< Number of working set recalculations already performed to solve
+      int_t nWSRperformed =
+          0,                            /**< Number of working set recalculations already performed to solve
                                                                          this QP within previous solveRegularisedQP() calls. This
                                            number is            always zero, except for successive calls when using the far bound strategy. */
       BooleanType isFirstCall = BT_TRUE /**< Indicating whether this is the first call for current QP. */

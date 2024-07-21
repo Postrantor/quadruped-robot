@@ -42,26 +42,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace xpp {
 
 namespace biped {
-enum FootIDs { L=0, R };
-static std::map<FootIDs, std::string> foot_to_name =
-{
-  {L, "Left" },
-  {R, "Right"}
-};
-}
+enum FootIDs { L = 0, R };
+static std::map<FootIDs, std::string> foot_to_name = {{L, "Left"}, {R, "Right"}};
+}  // namespace biped
 
 namespace quad {
 // enum FootIDs { LF=0, RF, LH, RH }; //todo : hyq
-enum FootIDs { RF=0, LF, RH, LH };
-static std::map<FootIDs, std::string> foot_to_name =
-{
-  {LF, "Left-Front" },
-  {RF, "Right-Front"},
-  {LH, "Left-Hind"  },
-  {RH, "Right-Hind" }
-};
-}
+enum FootIDs { RF = 0, LF, RH, LH };
+static std::map<FootIDs, std::string> foot_to_name = {
+    {LF, "Left-Front"}, {RF, "Right-Front"}, {LH, "Left-Hind"}, {RH, "Right-Hind"}};
+}  // namespace quad
 
-} // namespace xpp
+}  // namespace xpp
 
 #endif /* XPP_STATES_ENDEFFECTOR_MAPPINGS_H_ */

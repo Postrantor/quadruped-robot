@@ -49,10 +49,8 @@ function format_c_cpp_dir_r {
 
 format_c_cpp_dir_r "${WS_ROOT}/src/examples"
 format_c_cpp_dir_r "${WS_ROOT}/src/quadruped"
-# format_c_cpp_dir_r "${WS_ROOT}/controller"
-# format_c_cpp_dir_r "${WS_ROOT}/interfaces"
-# format_c_cpp_dir_r "${WS_ROOT}/simulation"
-# format_c_cpp_dir_r "${WS_ROOT}/thirdpart"
-# format_c_cpp_dir_r "${WS_ROOT}/unitree_sdk"
+format_c_cpp_dir_r "${WS_ROOT}/src/robot_description"
+format_c_cpp_dir_r "${WS_ROOT}/src/simulation"
+format_c_cpp_dir_r "${WS_ROOT}/src/xpp"
 
 exit 0

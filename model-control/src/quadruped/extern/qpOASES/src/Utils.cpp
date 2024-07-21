@@ -906,7 +906,8 @@ extern "C" void gdb_printmat(const char* fname, real_t* M, int_t n, int_t m, int
 /*
  *	_ _ c x a _ p u r e _ v i r t u a l
  */
-void __cxa_pure_virtual(void) { /* put your customized implementation here! */ }
+void __cxa_pure_virtual(void) { /* put your customized implementation here! */
+}
 #endif /* __DSPACE__ || __XPCTARGET__ || __C_WRAPPER__ */
 
 END_NAMESPACE_QPOASES
