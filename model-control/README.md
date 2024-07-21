@@ -3,6 +3,10 @@ tip: translate by baidu@2024-01-15 05:49:32
 ---
 
 - [0. command](#0-command)
+  - [step1](#step1)
+  - [step2](#step2)
+  - [step 3](#step-3)
+- [debug](#debug)
 - [1. Overview](#1-overview)
 - [2. Source Code Structure](#2-source-code-structure)
 - [3. Build the Project](#3-build-the-project)
@@ -19,7 +23,7 @@ tip: translate by baidu@2024-01-15 05:49:32
 # 0. command
 
 ```bash
-roslaunch qr_gazebo gazebo_startup.launch wname:=earth
+roslaunch qr_gazebo gazebo_startup.launch wname:=earth &
 roslaunch qr_gazebo model_spawn.launch rname:=a1 use_xacro:=true use_camera:=false
 rosrun examples example_a1_sim
 rosrun examples example_keyboard
@@ -50,27 +54,33 @@ rosrun examples example_keyboard
 /gazebo/clear_joint_forces
 /gazebo/delete_light
 /gazebo/delete_model
-/gazebo/get_joint_properties
-/gazebo/get_light_properties
-/gazebo/get_link_properties
-/gazebo/get_link_state
-/gazebo/get_loggers
-/gazebo/get_model_properties
-/gazebo/get_model_state
-/gazebo/get_physics_properties
-/gazebo/get_world_properties
+
 /gazebo/pause_physics
 /gazebo/reset_simulation
 /gazebo/reset_world
+
+/gazebo/get_joint_properties
 /gazebo/set_joint_properties
+/gazebo/get_light_properties
 /gazebo/set_light_properties
+/gazebo/get_link_properties
 /gazebo/set_link_properties
+/gazebo/get_link_state
 /gazebo/set_link_state
-/gazebo/set_logger_level
-/gazebo/set_model_configuration
+/gazebo/get_model_state
 /gazebo/set_model_state
-/gazebo/set_parameters
+/gazebo/get_physics_properties
 /gazebo/set_physics_properties
+
+/gazebo/get_model_properties
+/gazebo/set_model_configuration
+
+/gazebo/get_world_properties
+/gazebo/set_parameters
+
+/gazebo/get_loggers
+/gazebo/set_logger_level
+
 /gazebo/spawn_sdf_model
 /gazebo/spawn_urdf_model
 /gazebo/unpause_physics
@@ -92,6 +102,7 @@ rosrun examples example_keyboard
 /a1_gazebo/controller_manager/reload_controller_libraries
 /a1_gazebo/controller_manager/switch_controller
 /a1_gazebo/controller_manager/unload_controller
+
 /gazebo/apply_body_wrench
 /gazebo/apply_joint_effort
 /gazebo/clear_body_wrenches
@@ -124,15 +135,139 @@ rosrun examples example_keyboard
 /gazebo/unpause_physics
 /gazebo_gui/get_loggers
 /gazebo_gui/set_logger_level
+
 /rosout/get_loggers
 /rosout/set_logger_level
 /spawn_model_ubuntu_4195_7100063672855841887/get_loggers
 /spawn_model_ubuntu_4195_7100063672855841887/set_logger_level
+
+> parameter
+PARAMETERS
+- /a1_gazebo/FL_calf_controller/joint: FL_calf_joint
+- /a1_gazebo/FL_calf_controller/pid/d: 8.0
+- /a1_gazebo/FL_calf_controller/pid/i: 0.0
+- /a1_gazebo/FL_calf_controller/pid/p: 300.0
+- /a1_gazebo/FL_calf_controller/type: unitree_legged_co...
+
+
+- /a1_gazebo/FL_hip_controller/joint: FL_hip_joint
+- /a1_gazebo/FL_hip_controller/pid/d: 5.0
+- /a1_gazebo/FL_hip_controller/pid/i: 0.0
+- /a1_gazebo/FL_hip_controller/pid/p: 100.0
+- /a1_gazebo/FL_hip_controller/type: unitree_legged_co...
+
+- /a1_gazebo/FL_thigh_controller/joint: FL_thigh_joint
+- /a1_gazebo/FL_thigh_controller/pid/d: 8.0
+- /a1_gazebo/FL_thigh_controller/pid/i: 0.0
+- /a1_gazebo/FL_thigh_controller/pid/p: 300.0
+- /a1_gazebo/FL_thigh_controller/type: unitree_legged_co...
+
+- /a1_gazebo/FR_calf_controller/joint: FR_calf_joint
+- /a1_gazebo/FR_calf_controller/pid/d: 8.0
+- /a1_gazebo/FR_calf_controller/pid/i: 0.0
+- /a1_gazebo/FR_calf_controller/pid/p: 300.0
+- /a1_gazebo/FR_calf_controller/type: unitree_legged_co...
+
+- /a1_gazebo/FR_hip_controller/joint: FR_hip_joint
+- /a1_gazebo/FR_hip_controller/pid/d: 5.0
+- /a1_gazebo/FR_hip_controller/pid/i: 0.0
+- /a1_gazebo/FR_hip_controller/pid/p: 100.0
+- /a1_gazebo/FR_hip_controller/type: unitree_legged_co...
+
+- /a1_gazebo/FR_thigh_controller/joint: FR_thigh_joint
+- /a1_gazebo/FR_thigh_controller/pid/d: 8.0
+- /a1_gazebo/FR_thigh_controller/pid/i: 0.0
+- /a1_gazebo/FR_thigh_controller/pid/p: 300.0
+- /a1_gazebo/FR_thigh_controller/type: unitree_legged_co...
+
+- /a1_gazebo/RL_calf_controller/joint: RL_calf_joint
+- /a1_gazebo/RL_calf_controller/pid/d: 8.0
+- /a1_gazebo/RL_calf_controller/pid/i: 0.0
+- /a1_gazebo/RL_calf_controller/pid/p: 300.0
+- /a1_gazebo/RL_calf_controller/type: unitree_legged_co...
+
+- /a1_gazebo/RL_hip_controller/joint: RL_hip_joint
+- /a1_gazebo/RL_hip_controller/pid/d: 5.0
+- /a1_gazebo/RL_hip_controller/pid/i: 0.0
+- /a1_gazebo/RL_hip_controller/pid/p: 100.0
+- /a1_gazebo/RL_hip_controller/type: unitree_legged_co...
+
+- /a1_gazebo/RL_thigh_controller/joint: RL_thigh_joint
+- /a1_gazebo/RL_thigh_controller/pid/d: 8.0
+- /a1_gazebo/RL_thigh_controller/pid/i: 0.0
+- /a1_gazebo/RL_thigh_controller/pid/p: 300.0
+- /a1_gazebo/RL_thigh_controller/type: unitree_legged_co...
+
+- /a1_gazebo/RR_calf_controller/joint: RR_calf_joint
+- /a1_gazebo/RR_calf_controller/pid/d: 8.0
+- /a1_gazebo/RR_calf_controller/pid/i: 0.0
+- /a1_gazebo/RR_calf_controller/pid/p: 300.0
+- /a1_gazebo/RR_calf_controller/type: unitree_legged_co...
+
+- /a1_gazebo/RR_hip_controller/joint: RR_hip_joint
+- /a1_gazebo/RR_hip_controller/pid/d: 5.0
+- /a1_gazebo/RR_hip_controller/pid/i: 0.0
+- /a1_gazebo/RR_hip_controller/pid/p: 100.0
+- /a1_gazebo/RR_hip_controller/type: unitree_legged_co...
+
+- /a1_gazebo/RR_thigh_controller/joint: RR_thigh_joint
+- /a1_gazebo/RR_thigh_controller/pid/d: 8.0
+- /a1_gazebo/RR_thigh_controller/pid/i: 0.0
+- /a1_gazebo/RR_thigh_controller/pid/p: 300.0
+- /a1_gazebo/RR_thigh_controller/type: unitree_legged_co...
+- /a1_gazebo/joint_state_controller/publish_rate: 1000
+- /a1_gazebo/joint_state_controller/type: joint_state_contr...
+
+- /robot_description: <?xml version="1....
+- /rosdistro: noetic
+- /rosversion: 1.16.0
+
+> start controller
+process[spawn_model_ubuntu_35308_1710532594375493026-1]: started with pid [35324]
+[INFO] [1721537035.288955, 0.000000]: Loading model XML from ros parameter robot_description
+[INFO] [1721537035.318440, 0.000000]: Waiting for service /gazebo/spawn_urdf_model
+[INFO] [1721537035.323082, 0.000000]: Calling service /gazebo/spawn_urdf_model
+[INFO] [1721537037.619846, 0.000000]: Spawn status: SpawnModel: Successfully spawned entity
+[INFO] [1721537037.621866, 0.000000]: Unpausing physics
+[ INFO] [1721537038.342880450, 0.273000000]: spawn model state: 0
+[ INFO] [1721537040.344264617, 2.117000000]: Gazebo model spawn correctly
+----------------------------------------------------------------
+Press Enter key to start controllers.
+----------------------------------------------------------------
+
+[ INFO] [1721537501.937188354, 397.751000000]: success to call load_controller service
+[ INFO] [1721537501.937691543, 397.752000000]: joint_state_controller load correctly
+[ INFO] [1721537502.015547917, 397.801000000]: success to call load_controller service
+[ INFO] [1721537502.015603174, 397.801000000]: FR_hip_controller load correctly
+[ INFO] [1721537502.024301269, 397.803000000]: success to call load_controller service
+[ INFO] [1721537502.024330538, 397.803000000]: FR_thigh_controller load correctly
+[ INFO] [1721537502.043786846, 397.813000000]: success to call load_controller service
+[ INFO] [1721537502.043821256, 397.813000000]: FR_calf_controller load correctly
+[ INFO] [1721537502.059511544, 397.815000000]: success to call load_controller service
+[ INFO] [1721537502.059541104, 397.815000000]: FL_hip_controller load correctly
+[ INFO] [1721537502.077190662, 397.829000000]: success to call load_controller service
+[ INFO] [1721537502.077225292, 397.829000000]: FL_thigh_controller load correctly
+[ INFO] [1721537502.095650748, 397.836000000]: success to call load_controller service
+[ INFO] [1721537502.095683529, 397.836000000]: FL_calf_controller load correctly
+[ INFO] [1721537502.111114580, 397.845000000]: success to call load_controller service
+[ INFO] [1721537502.111149447, 397.845000000]: RR_hip_controller load correctly
+[ INFO] [1721537502.132087380, 397.860000000]: success to call load_controller service
+[ INFO] [1721537502.132122414, 397.860000000]: RR_thigh_controller load correctly
+[ INFO] [1721537502.152189145, 397.865000000]: success to call load_controller service
+[ INFO] [1721537502.152220345, 397.865000000]: RR_calf_controller load correctly
+[ INFO] [1721537502.166580581, 397.882000000]: success to call load_controller service
+[ INFO] [1721537502.166625933, 397.882000000]: RL_hip_controller load correctly
+[ INFO] [1721537502.184750615, 397.893000000]: success to call load_controller service
+[ INFO] [1721537502.184802667, 397.893000000]: RL_thigh_controller load correctly
+[ INFO] [1721537502.196721084, 397.904000000]: success to call load_controller service
+[ INFO] [1721537502.196752404, 397.904000000]: RL_calf_controller load correctly
 ```
 
 ## step 3
 
 ```bash
+> rosrun examples example_a1_sim
+
 > rosservice list
 rosservice type /a1_gazebo/controller_manager/list_controller_types
 # > controller_manager_msgs/ListControllerTypes
@@ -222,6 +357,223 @@ rosservice type /spawn_model_ubuntu_4195_7100063672855841887/get_loggers
 # > roscpp/GetLoggers
 rosservice type /spawn_model_ubuntu_4195_7100063672855841887/set_logger_level
 # > roscpp/SetLoggerLevel
+
+> rostopic list
+/a1_gazebo/FL_calf_controller/command
+/a1_gazebo/FL_calf_controller/joint_wrench
+/a1_gazebo/FL_calf_controller/state
+/a1_gazebo/FL_hip_controller/command
+/a1_gazebo/FL_hip_controller/joint_wrench
+/a1_gazebo/FL_hip_controller/state
+/a1_gazebo/FL_thigh_controller/command
+/a1_gazebo/FL_thigh_controller/joint_wrench
+/a1_gazebo/FL_thigh_controller/state
+/a1_gazebo/FR_calf_controller/command
+/a1_gazebo/FR_calf_controller/joint_wrench
+/a1_gazebo/FR_calf_controller/state
+/a1_gazebo/FR_hip_controller/command
+/a1_gazebo/FR_hip_controller/joint_wrench
+/a1_gazebo/FR_hip_controller/state
+/a1_gazebo/FR_thigh_controller/command
+/a1_gazebo/FR_thigh_controller/joint_wrench
+/a1_gazebo/FR_thigh_controller/state
+/a1_gazebo/RL_calf_controller/command
+/a1_gazebo/RL_calf_controller/joint_wrench
+/a1_gazebo/RL_calf_controller/state
+/a1_gazebo/RL_hip_controller/command
+/a1_gazebo/RL_hip_controller/joint_wrench
+/a1_gazebo/RL_hip_controller/state
+/a1_gazebo/RL_thigh_controller/command
+/a1_gazebo/RL_thigh_controller/joint_wrench
+/a1_gazebo/RL_thigh_controller/state
+/a1_gazebo/RR_calf_controller/command
+/a1_gazebo/RR_calf_controller/joint_wrench
+/a1_gazebo/RR_calf_controller/state
+/a1_gazebo/RR_hip_controller/command
+/a1_gazebo/RR_hip_controller/joint_wrench
+/a1_gazebo/RR_hip_controller/state
+/a1_gazebo/RR_thigh_controller/command
+/a1_gazebo/RR_thigh_controller/joint_wrench
+/a1_gazebo/RR_thigh_controller/state
+/a1_gazebo/joint_states
+/clock
+/gazebo/link_states
+/gazebo/model_states
+/gazebo/parameter_descriptions
+/gazebo/parameter_updates
+/gazebo/performance_metrics
+/gazebo/set_link_state
+/gazebo/set_model_state
+/joy
+/rosout
+/rosout_agg
+/tf
+/trunk_imu
+/visual/FL_foot_contact/the_force
+/visual/FR_foot_contact/the_force
+/visual/RL_foot_contact/the_force
+/visual/RR_foot_contact/the_force
+/xpp/params
+/xpp/state_curr
+/xpp/state_des
+```
+
+# debug
+
+```bash
+> rosservice call /gazebo/get_model_state "model_name: 'a1_gazebo'"
+
+header:
+  seq: 1
+  stamp:
+    secs: 500
+    nsecs: 710000000
+  frame_id: ''
+pose:
+  position:
+    x: -0.03026398036198896
+    y: 0.021486680178571322
+    z: 0.2902044312809233
+  orientation:
+    x: -0.0025977188369381552
+    y: -0.002292590699380101
+    z: -0.047982515777219535
+    w: 0.998842166743284
+twist:
+  linear:
+    x: -1.601952362458282e-05
+    y: 9.014322288913362e-05
+    z: -0.00031542604317989244
+  angular:
+    x: 1.1839083251700746e-05
+    y: 0.0015341154865489463
+    z: 0.00018991785095419627
+success: True
+status_message: "GetModelState: got properties"
+```
+
+```bash
+> rosservice call /gazebo/get_model_properties "model_name: 'a1_gazebo'"
+parent_model_name: ''
+canonical_body_name: ''
+body_names:
+  - base
+  - FL_hip
+  - FL_thigh
+  - FL_calf
+  - FR_hip
+  - FR_thigh
+  - FR_calf
+  - RL_hip
+  - RL_thigh
+  - RL_calf
+  - RR_hip
+  - RR_thigh
+  - RR_calf
+geom_names:
+  - base_fixed_joint_lump__trunk_collision
+  - base_fixed_joint_lump__imu_link_collision_1
+  - FL_hip_collision
+  - FL_hip_fixed_joint_lump__FL_thigh_shoulder_collision_1
+  - FL_thigh_collision
+  - FL_calf_collision
+  - FL_calf_fixed_joint_lump__FL_foot_collision_1
+  - FR_hip_collision
+  - FR_hip_fixed_joint_lump__FR_thigh_shoulder_collision_1
+  - FR_thigh_collision
+  - FR_calf_collision
+  - FR_calf_fixed_joint_lump__FR_foot_collision_1
+  - RL_hip_collision
+  - RL_hip_fixed_joint_lump__RL_thigh_shoulder_collision_1
+  - RL_thigh_collision
+  - RL_calf_collision
+  - RL_calf_fixed_joint_lump__RL_foot_collision_1
+  - RR_hip_collision
+  - RR_hip_fixed_joint_lump__RR_thigh_shoulder_collision_1
+  - RR_thigh_collision
+  - RR_calf_collision
+  - RR_calf_fixed_joint_lump__RR_foot_collision_1
+joint_names:
+  - FL_hip_joint
+  - FL_thigh_joint
+  - FL_calf_joint
+  - FR_hip_joint
+  - FR_thigh_joint
+  - FR_calf_joint
+  - RL_hip_joint
+  - RL_thigh_joint
+  - RL_calf_joint
+  - RR_hip_joint
+  - RR_thigh_joint
+  - RR_calf_joint
+child_model_names: []
+is_static: False
+success: True
+status_message: "GetModelProperties: got properties"
+```
+
+```bash
+> rosservice call /gazebo/get_link_state "link_name: 'FL_hip_joint'"
+link_state:
+  link_name: ''
+  pose:
+    position:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+    orientation:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 0.0
+  twist:
+    linear:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+    angular:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+  reference_frame: ''
+success: False
+status_message: "GetLinkState: link not found, did you forget to scope the link by model name?"
+```
+
+```bash
+> rostopic info /a1_gazebo/FL_calf_controller/state
+Type: unitree_legged_msgs/MotorState
+
+Publishers:
+ * /gazebo (http://ubuntu:42717/)
+
+Subscribers:
+ * /a1_sim (http://ubuntu:42131/)
+
+> rostopic echo /a1_gazebo/FL_calf_controller/state
+---
+mode: 0
+q: -1.8372163772583008
+dq: -13.69507884979248
+ddq: 0.0
+tauEst: -4.63516902923584
+q_raw: 0.0
+dq_raw: 0.0
+ddq_raw: 0.0
+temperature: 0
+reserve: [0, 0]
+---
+mode: 0
+q: -1.8505470752716064
+dq: -13.458257675170898
+ddq: 0.0
+tauEst: -3.55810546875
+q_raw: 0.0
+dq_raw: 0.0
+ddq_raw: 0.0
+temperature: 0
+reserve: [0, 0]
+---
 ```
 
 # 1. Overview
