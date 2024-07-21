@@ -1,9 +1,19 @@
 #include "qr_gazebo/gazebo_model_spawn.h"
 
 const std::vector<std::string> GazeboSpawner::controller_list = {
-    "joint_state_controller", "FR_hip_controller",   "FR_thigh_controller", "FR_calf_controller",  "FL_hip_controller",
-    "FL_thigh_controller",    "FL_calf_controller",  "RR_hip_controller",   "RR_thigh_controller", "RR_calf_controller",
-    "RL_hip_controller",      "RL_thigh_controller", "RL_calf_controller"};
+    "joint_state_controller",  //
+    "FR_hip_controller",       //
+    "FR_thigh_controller",     //
+    "FR_calf_controller",      //
+    "FL_hip_controller",       //
+    "FL_thigh_controller",     //
+    "FL_calf_controller",      //
+    "RR_hip_controller",       //
+    "RR_thigh_controller",     //
+    "RR_calf_controller",      //
+    "RL_hip_controller",       //
+    "RL_thigh_controller",     //
+    "RL_calf_controller"};
 
 geometry_msgs::Pose GazeboSpawner::model_pose = geometry_msgs::Pose();
 
@@ -39,7 +49,6 @@ bool GazeboSpawner::spawn_model(std::string urdf_param) {
   // }
 
   sleep(2);
-
   ROS_INFO("Gazebo model spawn correctly");
 
   return true;
