@@ -274,8 +274,8 @@ void control_loop(
         std::abs(quadruped->baseRollPitchYaw[0]) > 0.6) {
       RCLCPP_INFO_STREAM(
           node->get_logger(), "\n\t"
-                                  << "base pos:" << quadruped->basePosition << "\n\t"
-                                  << "base rpy:" << quadruped->GetBaseRollPitchYaw());
+                                  << "base pos: \n\t" << quadruped->basePosition << "\n\t"
+                                  << "base rpy: \n\t" << quadruped->GetBaseRollPitchYaw());
       RCLCPP_ERROR(node->get_logger(), "the dog is going down, main function exit.");
       break;
     }

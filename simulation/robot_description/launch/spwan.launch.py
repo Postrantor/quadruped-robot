@@ -10,7 +10,7 @@ from launch.substitutions.launch_configuration import LaunchConfiguration
 ARGUMENTS = [
     DeclareLaunchArgument(
         'use_sim_time',
-        default_value='false',
+        default_value='true',
         choices=['true', 'false'],
         description='use_sim_time'),
     DeclareLaunchArgument(
@@ -77,7 +77,7 @@ def generate_launch_description():
     # TODO(zhiqi.jia)::gazebo replace read this yaml, should be create parameter server by controller.yaml
     # move to urdf `gazebo` tag
     # robot_controllers = PathJoinSubstitution([
-    #     FindPackageShare("robot_description"), "config", "controllers.yaml",])
+    #     FindPackageShare("robot_description"), "config", "controller.yaml",])
     # control_node = Node(
     #     package="controller_manager",
     #     executable="ros2_control_node",

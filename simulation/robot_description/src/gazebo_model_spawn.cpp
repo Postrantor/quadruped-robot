@@ -1,15 +1,17 @@
 /**
- * @brief Gazebo模型生成器类的实现
- * @detail 该类提供了在Gazebo仿真环境中生成、删除和管理机器人模型的方法。
+ * @author postrantor
  * @date 2024-06-23 02:58:50
+ * @date 2024-07-21 16:06:47
+ * @brief Gazebo模型生成器类的实现
+ * @details 该类提供了在Gazebo仿真环境中生成、删除和管理机器人模型的方法。
  */
-
-#include "qr_gazebo/gazebo_model_spawn.hpp"
 
 #include <string>
 #include <vector>
+#include <thread>
+#include <chrono>
 
-#include "geometry_msgs/msg/pose.hpp"
+#include "qr_gazebo/gazebo_model_spawn.hpp"
 
 const std::vector<std::string> GazeboSpawner::controller_list = {
     "joint_state_controller",  //
@@ -32,10 +34,10 @@ bool GazeboSpawner::spawn_model(const std::string& urdf_param) {
   auto command = "ros2 run gazebo_ros spawn_entity.py -entity " + d_robot_type + "_gazebo -topic " + urdf_param +
                  " -x 0 -y 0 -z 0.4";
   int state = system(command.c_str());
-  RCLCPP_INFO(rclcpp::get_logger("gazebo_model_spawn"), "spawn model state: %d", state);
+  RCLCPP_INFO_STREAM(d_node->get_logger(), "spawn model state: " << state);
 
   std::this_thread::sleep_for(std::chrono::seconds(2));
-  RCLCPP_INFO(rclcpp::get_logger("gazebo_model_spawn"), "gazebo model spawn correctly");
+  RCLCPP_INFO_STREAM(d_node->get_logger(), "gazebo model spawn correctly");
 
   return state == 0;
 }
@@ -44,8 +46,10 @@ bool GazeboSpawner::delete_model() {
   auto command =
       "ros2 service call /gazebo/delete_entity gazebo_msgs/srv/DeleteEntity \"{name: '" + d_robot_type + "_gazebo'}\"";
   int state = system(command.c_str());
-  RCLCPP_INFO(rclcpp::get_logger("gazebo_model_spawn"), "delete model state: %d", state);
-  RCLCPP_INFO(rclcpp::get_logger("gazebo_model_spawn"), "gazebo model delete correctly");
+  RCLCPP_INFO_STREAM(d_node->get_logger(), "delete model state: " << state);
+
+  std::this_thread::sleep_for(std::chrono::seconds(2));
+  RCLCPP_INFO_STREAM(d_node->get_logger(), "gazebo model delete correctly");
 
   return state == 0;
 }
@@ -53,7 +57,7 @@ bool GazeboSpawner::delete_model() {
 void GazeboSpawner::start_controllers() {
   auto service_name = "/" + d_robot_type + "_gazebo/controller_manager/switch_controller";
   auto request = std::make_shared<controller_manager_msgs::srv::SwitchController::Request>();
-  request->start_controllers = controller_list;
+  request->activate_controllers = controller_list;
   request->strictness = controller_manager_msgs::srv::SwitchController::Request::STRICT;
 
   call_service<controller_manager_msgs::srv::SwitchController>(service_name, request);
@@ -62,7 +66,7 @@ void GazeboSpawner::start_controllers() {
 bool GazeboSpawner::stop_controllers() {
   auto service_name = "/" + d_robot_type + "_gazebo/controller_manager/switch_controller";
   auto request = std::make_shared<controller_manager_msgs::srv::SwitchController::Request>();
-  request->stop_controllers = controller_list;
+  request->deactivate_controllers = controller_list;
   request->strictness = controller_manager_msgs::srv::SwitchController::Request::STRICT;
 
   call_service<controller_manager_msgs::srv::SwitchController>(service_name, request);

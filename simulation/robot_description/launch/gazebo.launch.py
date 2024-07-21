@@ -1,3 +1,8 @@
+"""
+Demo for spawn_entity.
+Launches Gazebo and spawns a model
+"""
+
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, RegisterEventHandler, DeclareLaunchArgument, GroupAction, TimerAction
@@ -10,7 +15,7 @@ from launch.substitutions.launch_configuration import LaunchConfiguration
 ARGUMENTS = [
     DeclareLaunchArgument(
         'use_sim_time',
-        default_value='false',
+        default_value='true',
         choices=['true', 'false'],
         description='use_sim_time'),
     DeclareLaunchArgument(
@@ -41,9 +46,10 @@ def generate_launch_description():
 
     # 文件路径定义
     gazebo_launch_file = PathJoinSubstitution([pkg_gazebo_ros, 'launch', 'gazebo.launch.py'])
-    empty_world_file = PathJoinSubstitution([pkg_description, 'worlds', 'empty.world'])
+    empty_world_file = PathJoinSubstitution([pkg_description, 'worlds', 'earth.world'])
     rviz2_config_file = PathJoinSubstitution([pkg_description, 'config', 'robot.rviz'])
     xacro_file = PathJoinSubstitution([pkg_description, 'xacro', 'robot.xacro'])
+    robot_controllers = PathJoinSubstitution([pkg_description, 'config', 'controller.yaml'])
 
     # 启动 Gazebo 并指定 empty.world 文件，添加 gazebo_ros_state 插件
     gazebo = IncludeLaunchDescription(
@@ -80,13 +86,12 @@ def generate_launch_description():
 
     # TODO(zhiqi.jia)::gazebo replace read this yaml, should be create parameter server by controller.yaml
     # move to urdf `gazebo` tag
-    # robot_controllers = PathJoinSubstitution([
-    #     FindPackageShare("robot_description"), "config", "controllers.yaml",])
-    # control_node = Node(
-    #     package="controller_manager",
-    #     executable="ros2_control_node",
-    #     parameters=[robot_description, robot_controllers],
-    #     output="both",)
+    control_node = Node(
+        package="controller_manager",
+        executable="ros2_control_node",
+        parameters=['robot_description', robot_controllers],
+        output="both",
+    )
 
     # 加载 joint_state_broadcaster 控制器
     load_joint_state_broadcaster = Node(
@@ -96,12 +101,41 @@ def generate_launch_description():
         output='screen',
     )
 
-    # 加载 diff_drive_base_controller 控制器
-    load_diff_drive_base_controller = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['diff_drive_base_controller', '--controller-manager', '/controller_manager'],
-        output='screen',
+    # 控制器名称列表
+    controller_names = [
+        'FL_hip_controller',
+        'FL_thigh_controller',
+        'FL_calf_controller',
+        'FR_hip_controller',
+        'FR_thigh_controller',
+        'FR_calf_controller',
+        'RL_hip_controller',
+        'RL_thigh_controller',
+        'RL_calf_controller',
+        'RR_hip_controller',
+        'RR_thigh_controller',
+        'RR_calf_controller',
+    ]
+
+    # 控制器节点列表
+    controllers = [
+        Node(
+            package='controller_manager',
+            executable='spawner',
+            arguments=[controller_name, '--controller-manager', '/controller_manager'],
+            output='screen',
+        ) for controller_name in controller_names
+    ]
+
+    # 延迟启动控制器
+    delayed_controllers = TimerAction(
+        period=5.0,  # 延迟 5 秒
+        actions=controllers
+    )
+
+    delayed_spawn = TimerAction(
+        period=5.0,  # 延迟 5 秒
+        actions=[spawn_entity]
     )
 
     # 事件处理器，用于在特定节点退出后启动其他节点
@@ -109,13 +143,13 @@ def generate_launch_description():
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=spawn_entity,
-                on_exit=[load_joint_state_broadcaster],
+                on_exit=[control_node],
             )
         ),
         RegisterEventHandler(
             event_handler=OnProcessExit(
-                target_action=load_joint_state_broadcaster,
-                on_exit=[load_diff_drive_base_controller],
+                target_action=control_node,
+                on_exit=[load_joint_state_broadcaster],
             )
         ),
     ]
@@ -125,8 +159,10 @@ def generate_launch_description():
         *ARGUMENTS,
         gazebo,
         node_robot_state_publisher,
-        spawn_entity,
-        # *event_handlers
+        control_node,
+        delayed_spawn,
+        load_joint_state_broadcaster,
+        delayed_controllers,
     ])
 
     return ld

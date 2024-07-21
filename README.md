@@ -3,6 +3,7 @@ tip: translate by baidu@2024-01-15 05:49:32
 ---
 
 - [0. command](#0-command)
+  - [debug](#debug)
 - [1. Overview](#1-overview)
 - [2. Source Code Structure](#2-source-code-structure)
 - [3. Build the Project](#3-build-the-project)
@@ -19,11 +20,7 @@ tip: translate by baidu@2024-01-15 05:49:32
 # 0. command
 
 ```bash
-roslaunch qr_gazebo gazebo_startup.launch wname:=earth
-roslaunch qr_gazebo model_spawn.launch rname:=a1 use_xacro:=true use_camera:=false
-rosrun examples example_a1_sim
-rosrun examples example_keyboard
-  # L --> J
+ros2 launch robot_description gazebo.launch.py
 ```
 
 第三方功能包：
@@ -33,6 +30,56 @@ ROS2 功能包：
 - git@github.com:ros-controls/ros2_control.git
 - https://github.com/ros-controls/ros2_control_demos.git
 - git@github.com:ros-controls/ros2_controllers.git
+
+## debug
+
+```bash
+> ros2 launch robot_description gazebo.launch.py
+
+> ros2 topic list
+/clock
+/joint_states
+/parameter_events
+/performance_metrics
+/robot_description
+/rosout
+/tf
+/tf_static
+
+> ros2 service list
+/apply_joint_effort
+/apply_link_wrench
+/clear_joint_efforts
+/clear_link_wrenches
+/get_model_list
+/pause_physics
+/unpause_physics
+/delete_entity
+/spawn_entity
+/reset_simulation
+/reset_world
+
+/gazebo/describe_parameters
+/gazebo/get_parameter_types
+/gazebo/get_parameters
+/gazebo/list_parameters
+/gazebo/set_parameters
+/gazebo/set_parameters_atomically
+
+/gazebo_ros2_control/describe_parameters
+/gazebo_ros2_control/get_parameter_types
+/gazebo_ros2_control/get_parameters
+/gazebo_ros2_control/list_parameters
+/gazebo_ros2_control/set_parameters
+/gazebo_ros2_control/set_parameters_atomically
+
+/robot_state_publisher/describe_parameters
+/robot_state_publisher/get_parameter_types
+/robot_state_publisher/get_parameters
+/robot_state_publisher/list_parameters
+/robot_state_publisher/set_parameters
+/robot_state_publisher/set_parameters_atomically
+```
 
 # 1. Overview
 

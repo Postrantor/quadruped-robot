@@ -126,16 +126,15 @@ private:
       auto result = client->async_send_request(request);
       if (rclcpp::spin_until_future_complete(d_node, result) == rclcpp::FutureReturnCode::SUCCESS) {
         if (result.get()->ok) {
-          RCLCPP_INFO(
-              rclcpp::get_logger("gazebo_model_spawn"), "Successfully called service: %s", service_name.c_str());
+          RCLCPP_INFO_STREAM(d_node->get_logger(), "Successfully called service: " << service_name.c_str());
         } else {
-          RCLCPP_WARN(rclcpp::get_logger("gazebo_model_spawn"), "Service call failed: %s", service_name.c_str());
+          RCLCPP_WARN_STREAM(d_node->get_logger(), "Service call failed: " << service_name.c_str());
         }
       } else {
-        RCLCPP_ERROR(rclcpp::get_logger("gazebo_model_spawn"), "Failed to call service: %s", service_name.c_str());
+        RCLCPP_ERROR_STREAM(d_node->get_logger(), "Failed to call service: " << service_name.c_str());
       }
     } else {
-      RCLCPP_ERROR(rclcpp::get_logger("gazebo_model_spawn"), "Service not available: %s", service_name.c_str());
+      RCLCPP_ERROR_STREAM(d_node->get_logger(), "Service not available: " << service_name.c_str());
     }
   }
 };

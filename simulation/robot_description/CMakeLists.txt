@@ -13,7 +13,6 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
-find_package(gazebo REQUIRED)
 find_package(urdf REQUIRED)
 find_package(controller_interface REQUIRED)
 find_package(backward_ros REQUIRED)
@@ -27,7 +26,6 @@ find_package(unitree_msgs REQUIRED)
 # dependency
 set(DEPENDENCIES
   rclcpp
-  gazebo
   tf2
   tf2_ros
   geometry_msgs
@@ -58,12 +56,12 @@ add_library(qr_gazebo SHARED
 ament_target_dependencies(qr_gazebo ${DEPENDENCIES})
 
 # plugins
-add_library(unitreeFootContactPlugin SHARED plugin/foot_contact_plugin.cpp)
-ament_target_dependencies(unitreeFootContactPlugin ${DEPENDENCIES})
-add_library(unitreeDrawForcePlugin SHARED plugin/draw_force_plugin.cpp)
-ament_target_dependencies(unitreeDrawForcePlugin ${DEPENDENCIES})
-add_library(drawLinesPlugin SHARED plugin/draw_lines_plugin.cpp)
-ament_target_dependencies(drawLinesPlugin ${DEPENDENCIES})
+# add_library(unitreeFootContactPlugin SHARED plugin/foot_contact_plugin.cpp)
+# ament_target_dependencies(unitreeFootContactPlugin ${DEPENDENCIES})
+# add_library(unitreeDrawForcePlugin SHARED plugin/draw_force_plugin.cpp)
+# ament_target_dependencies(unitreeDrawForcePlugin ${DEPENDENCIES})
+# add_library(drawLinesPlugin SHARED plugin/draw_lines_plugin.cpp)
+# ament_target_dependencies(drawLinesPlugin ${DEPENDENCIES})
 
 # executable
 add_executable(spawn_model
@@ -77,9 +75,9 @@ install(
   TARGETS
     spawn_model
     qr_gazebo
-    unitreeFootContactPlugin
-    unitreeDrawForcePlugin
-    drawLinesPlugin
+    # unitreeFootContactPlugin
+    # unitreeDrawForcePlugin
+    # drawLinesPlugin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin

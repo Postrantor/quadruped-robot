@@ -1,6 +1,6 @@
 controller_manager:
   ros__parameters:
-    update_rate: 100.0
+    update_rate: 10
     desired_cmd_timeout: 0.5
 
     joint_state_broadcaster:
@@ -8,35 +8,35 @@ controller_manager:
 
     # FL Controller
     FL_hip_controller:
-      type: unitree_joint_control/UnitreeJointController
+      type: unitree_position_controller/UnitreePositionController
     FL_thigh_controller:
-      type: unitree_joint_control/UnitreeJointController
+      type: unitree_position_controller/UnitreePositionController
     FL_calf_controller:
-      type: unitree_joint_control/UnitreeJointController
+      type: unitree_position_controller/UnitreePositionController
 
     # FR Controller
     FR_hip_controller:
-      type: unitree_joint_control/UnitreeJointController
+      type: unitree_position_controller/UnitreePositionController
     FR_thigh_controller:
-      type: unitree_joint_control/UnitreeJointController
+      type: unitree_position_controller/UnitreePositionController
     FR_calf_controller:
-      type: unitree_joint_control/UnitreeJointController
+      type: unitree_position_controller/UnitreePositionController
 
     # RL Controller
     RL_hip_controller:
-      type: unitree_joint_control/UnitreeJointController
+      type: unitree_position_controller/UnitreePositionController
     RL_thigh_controller:
-      type: unitree_joint_control/UnitreeJointController
+      type: unitree_position_controller/UnitreePositionController
     RL_calf_controller:
-      type: unitree_joint_control/UnitreeJointController
+      type: unitree_position_controller/UnitreePositionController
 
     # RR Controller
     RR_hip_controller:
-      type: unitree_joint_control/UnitreeJointController
+      type: unitree_position_controller/UnitreePositionController
     RR_thigh_controller:
-      type: unitree_joint_control/UnitreeJointController
+      type: unitree_position_controller/UnitreePositionController
     RR_calf_controller:
-      type: unitree_joint_control/UnitreeJointController
+      type: unitree_position_controller/UnitreePositionController
 
 # FL Controller
 FL_hip_controller:
