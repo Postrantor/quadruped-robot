@@ -23,8 +23,7 @@ tip: translate by baidu@2024-01-15 05:49:32
 # 0. command
 
 ```bash
-roslaunch qr_gazebo gazebo_startup.launch wname:=earth &
-roslaunch qr_gazebo model_spawn.launch rname:=a1 use_xacro:=true use_camera:=false
+roslaunch qr_gazebo model_spawn.launch
 rosrun examples example_a1_sim
 rosrun examples example_keyboard
   # L --> J
