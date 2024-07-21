@@ -24,7 +24,6 @@
 
 #include "estimators/qr_state_estimator_container.h"
 
-
 namespace Quadruped {
 
 qrStateEstimatorContainer::qrStateEstimatorContainer(
@@ -32,22 +31,22 @@ qrStateEstimatorContainer::qrStateEstimatorContainer(
     qrGaitGenerator *gaitGeneratorIn,
     qrUserParameters *userParametersIn,
     std::string terrainConfigPath,
-    std::string homeDir):
+    std::string homeDir)
+    :
 
-    quadruped(quadrupedIn),
-    gaitGenerator(gaitGeneratorIn),
-    userParameters(userParametersIn)
-{
-    groundEstimator = new qrGroundSurfaceEstimator(quadruped, homeDir + terrainConfigPath);
-    
-    contactDetection = new qrContactDetection(quadruped,gaitGenerator, groundEstimator);
+      quadruped(quadrupedIn),
+      gaitGenerator(gaitGeneratorIn),
+      userParameters(userParametersIn) {
+  groundEstimator = new qrGroundSurfaceEstimator(quadruped, homeDir + terrainConfigPath);
 
-    robotEstimator = new qrRobotEstimator(quadruped, gaitGenerator, groundEstimator, userParametersIn);
-    
-    // _estimators.push_back(groundEsitmator);
-    // _estimators.push_back(contactDetection);
-    // _estimators.push_back(stateEstimator);
-    std::cout << "init state estimator container!" << std::endl;
+  contactDetection = new qrContactDetection(quadruped, gaitGenerator, groundEstimator);
+
+  robotEstimator = new qrRobotEstimator(quadruped, gaitGenerator, groundEstimator, userParametersIn);
+
+  // _estimators.push_back(groundEsitmator);
+  // _estimators.push_back(contactDetection);
+  // _estimators.push_back(stateEstimator);
+  std::cout << "init state estimator container!" << std::endl;
 }
 
-} // Namespace Quadruped
+}  // Namespace Quadruped

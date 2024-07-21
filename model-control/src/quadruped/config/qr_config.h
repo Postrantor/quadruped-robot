@@ -42,4 +42,4 @@
 const int NumMotorOfOneLeg = 3;
 const float MAXIMUM_STEP = 0.001f;
 
-#endif //QR_CONFIG_H
+#endif  // QR_CONFIG_H

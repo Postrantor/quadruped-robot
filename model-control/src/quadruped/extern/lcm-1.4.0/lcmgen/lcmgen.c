@@ -6,7 +6,6 @@
 #endif
 #include <ctype.h>
 #include <inttypes.h>
-
 #include <sys/stat.h>
 #include <sys/types.h>
 #ifndef WIN32

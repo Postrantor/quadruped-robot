@@ -7,13 +7,11 @@
 #endif
 #include <assert.h>
 #include <inttypes.h>
-
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include "lcmgen.h"
-
 #include "getopt.h"
+#include "lcmgen.h"
 
 #ifdef WIN32
 #include <lcm/windows/WinPorting.h>

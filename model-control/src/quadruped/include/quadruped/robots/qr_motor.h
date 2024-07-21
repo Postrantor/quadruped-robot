@@ -40,70 +40,63 @@ namespace Quadruped {
  * @param tua double, torque
  */
 struct qrMotorCommand {
+  double p;
+  double Kp;
+  double d;
+  double Kd;
+  double tua;
 
-    double p;
-    double Kp;
-    double d;
-    double Kd;
-    double tua;
+  qrMotorCommand() = default;
 
-    qrMotorCommand() = default;
+  /**
+   * @brief constructor of qrMotorCommand
+   * @param pIn: joint angle input
+   * @param KpIn: position stiffness input
+   * @param dIn: joint velocity input
+   * @param KdIn: velocity stiffness input
+   * @param tuaIn:torque input
+   */
+  qrMotorCommand(double pIn, double KpIn, double dIn, double KdIn, double tuaIn)
+      : p(pIn), Kp(KpIn), d(dIn), Kd(KdIn), tua(tuaIn){};
 
-    /**
-     * @brief constructor of qrMotorCommand
-     * @param pIn: joint angle input
-     * @param KpIn: position stiffness input
-     * @param dIn: joint velocity input
-     * @param KdIn: velocity stiffness input
-     * @param tuaIn:torque input
-     */
-    qrMotorCommand(double pIn, double KpIn, double dIn, double KdIn, double tuaIn):
-        p(pIn),
-        Kp(KpIn),
-        d(dIn),
-        Kd(KdIn),
-        tua(tuaIn) {
-    };
+  /**
+   * @brief constructor of qrMotorCommand
+   * @param cmd: vector of p, Kp, d, Kd and tau
+   */
+  qrMotorCommand(const Eigen::Matrix<float, 5, 1> &cmd);
 
-    /**
-     * @brief constructor of qrMotorCommand
-     * @param cmd: vector of p, Kp, d, Kd and tau
-     */
-    qrMotorCommand(const Eigen::Matrix<float, 5, 1> &cmd);
+  /**
+   * @brief set p, Kp, d, Kd and tau to 0
+   */
+  void SetZero();
 
-    /**
-     * @brief set p, Kp, d, Kd and tau to 0
-     */
-    void SetZero();
+  /**
+   * @brief convert p, Kp, d, Kd and tau to Vector
+   * @return vector of < p, Kp, d, Kd and tau >
+   */
+  Eigen::Matrix<float, 5, 1> convertToVector() const;
 
-    /**
-     * @brief convert p, Kp, d, Kd and tau to Vector
-     * @return vector of < p, Kp, d, Kd and tau >
-     */
-    Eigen::Matrix<float, 5, 1> convertToVector() const;
+  /**
+   * @brief operator reload to output the motor command
+   */
+  friend std::ostream &operator<<(std::ostream &os, qrMotorCommand &data);
 
-    /**
-     * @brief operator reload to output the motor command
-     */
-    friend std::ostream &operator<<(std::ostream &os, qrMotorCommand &data);
-
-    /**
-     * @brief convert vector of commands to eigen matrix
-     * @param MotorCommands: vector of cmds
-     * @return command matrix
-     */
-    static Eigen::Matrix<float, 5, 12> convertToMatix(const std::vector<qrMotorCommand> &MotorCommands) {
-        Eigen::Matrix<float, 5, 12> MotorCommandMatrix;
-        int i = 0;
-        for (auto &cmd: MotorCommands) {
-            MotorCommandMatrix.col(i) = cmd.convertToVector();
-            ++i;
-        }
-        return MotorCommandMatrix;
-    };
-
+  /**
+   * @brief convert vector of commands to eigen matrix
+   * @param MotorCommands: vector of cmds
+   * @return command matrix
+   */
+  static Eigen::Matrix<float, 5, 12> convertToMatix(const std::vector<qrMotorCommand> &MotorCommands) {
+    Eigen::Matrix<float, 5, 12> MotorCommandMatrix;
+    int i = 0;
+    for (auto &cmd : MotorCommands) {
+      MotorCommandMatrix.col(i) = cmd.convertToVector();
+      ++i;
+    }
+    return MotorCommandMatrix;
+  };
 };
 
-} // Namespace Quadruped
+}  // Namespace Quadruped
 
-#endif // QR_MOTOR_H
+#endif  // QR_MOTOR_H

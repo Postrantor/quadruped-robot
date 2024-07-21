@@ -1,35 +1,33 @@
-#include <tinynurbs/tinynurbs.h>
+#include <cmath>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
-#include <cmath>
+#include <tinynurbs/tinynurbs.h>
 
 #include "catch.hpp"
 
 using namespace std;
 
 // Unit circle
-tinynurbs::RationalCurve3f getCircle() {
+tinynurbs::RationalCurve3f getCircle()
+{
     tinynurbs::RationalCurve3f crv;
-    crv.control_points = {glm::vec3(1, 0, 0),
-                          glm::vec3(1, 1, 0),
-                          glm::vec3(0, 1, 0),
-                          glm::vec3(-1, 1, 0),
-                          glm::vec3(-1, 0, 0),
-                          glm::vec3(-1, -1, 0),
-                          glm::vec3(0, -1, 0),
-                          glm::vec3(1, -1, 0),
-                          glm::vec3(1, 0, 0)
-                         };
+    crv.control_points = {glm::vec3(1, 0, 0),  glm::vec3(1, 1, 0),  glm::vec3(0, 1, 0),
+                          glm::vec3(-1, 1, 0), glm::vec3(-1, 0, 0), glm::vec3(-1, -1, 0),
+                          glm::vec3(0, -1, 0), glm::vec3(1, -1, 0), glm::vec3(1, 0, 0)};
     const float sqrt2_over_2 = std::sqrt(2.f) / 2.f;
-    crv.weights = {1, sqrt2_over_2, 1, sqrt2_over_2, 1,
-                   sqrt2_over_2, 1, sqrt2_over_2, 1
-                  };
-    crv.knots = {0, 0, 0,
-                 glm::half_pi<float>(), glm::half_pi<float>(),
-                 glm::pi<float>(), glm::pi<float>(),
-                 3 * glm::half_pi<float>(), 3 * glm::half_pi<float>(),
-                 glm::two_pi<float>(), glm::two_pi<float>(), glm::two_pi<float>()
-                };
+    crv.weights = {1, sqrt2_over_2, 1, sqrt2_over_2, 1, sqrt2_over_2, 1, sqrt2_over_2, 1};
+    crv.knots = {0,
+                 0,
+                 0,
+                 glm::half_pi<float>(),
+                 glm::half_pi<float>(),
+                 glm::pi<float>(),
+                 glm::pi<float>(),
+                 3 * glm::half_pi<float>(),
+                 3 * glm::half_pi<float>(),
+                 glm::two_pi<float>(),
+                 glm::two_pi<float>(),
+                 glm::two_pi<float>()};
     crv.degree = 2;
     return crv;
 }
@@ -76,7 +74,7 @@ TEST_CASE("curveInsertKnot (rational)", "[curve, rational, modify]")
 {
     auto crv = getCircle();
     glm::vec3 pt = tinynurbs::curvePoint(crv, 0.25f);
-    
+
     size_t n_knots_prev = crv.knots.size();
     size_t n_control_points_prev = crv.control_points.size();
 
@@ -108,12 +106,14 @@ TEST_CASE("curveSplit (rational)", "[curve, rational, modify]")
     REQUIRE(left.degree == crv.degree);
     REQUIRE(right.degree == crv.degree);
 
-    for (int i = 0; i < left.degree + 1; ++i) {
+    for (int i = 0; i < left.degree + 1; ++i)
+    {
         int d = left.knots.size() - (left.degree + 1);
-        REQUIRE(left.knots[d+i] == Approx(u));
+        REQUIRE(left.knots[d + i] == Approx(u));
     }
 
-    for (int i = 0; i < right.degree + 1; ++i) {
+    for (int i = 0; i < right.degree + 1; ++i)
+    {
         REQUIRE(right.knots[i] == Approx(u));
     }
 
@@ -131,17 +131,20 @@ TEST_CASE("curveReadOBJ and curveSaveOBJ (rational)", "[curve, rational, obj]")
     auto read_crv = tinynurbs::curveReadOBJ<float>("curve.obj");
     REQUIRE(crv.degree == read_crv.degree);
     REQUIRE(crv.knots.size() == read_crv.knots.size());
-    for (int i = 0; i < crv.knots.size(); ++i) {
+    for (int i = 0; i < crv.knots.size(); ++i)
+    {
         REQUIRE(crv.knots[i] == Approx(read_crv.knots[i]));
     }
     REQUIRE(crv.control_points.size() == read_crv.control_points.size());
-    for (int i = 0; i < crv.control_points.size(); ++i) {
+    for (int i = 0; i < crv.control_points.size(); ++i)
+    {
         REQUIRE(crv.control_points[i].x == Approx(read_crv.control_points[i].x));
         REQUIRE(crv.control_points[i].y == Approx(read_crv.control_points[i].y));
         REQUIRE(crv.control_points[i].z == Approx(read_crv.control_points[i].z));
     }
     REQUIRE(crv.weights.size() == read_crv.weights.size());
-    for (int i = 0; i < crv.weights.size(); ++i) {
+    for (int i = 0; i < crv.weights.size(); ++i)
+    {
         REQUIRE(crv.weights[i] == Approx(read_crv.weights[i]));
     }
 }

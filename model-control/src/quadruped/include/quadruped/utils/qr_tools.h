@@ -37,7 +37,6 @@
 #include "utils/qr_visualization.h"
 #include "utils/qr_print.hpp"
 
-
 namespace robotics {
 
 namespace utils {
@@ -52,9 +51,9 @@ std::string GetExePath();
  */
 int getch1();
 
-} // Namespace utils
+}  // Namespace utils
 
-} // Namespace robotics
+}  // Namespace robotics
 
 #ifdef _useros
 /**
@@ -68,4 +67,4 @@ std::string GetHomeDir(std::string homeName = "quadruped-robot/");
 std::string GetHomeDir(std::string homeName = "quadruped-robot/");
 #endif
 
-#endif // QR_TOOLS_H
+#endif  // QR_TOOLS_H

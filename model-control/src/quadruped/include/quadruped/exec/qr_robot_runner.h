@@ -48,7 +48,6 @@
 #include "utils/physics_transform.h"
 #include "fsm/qr_control_fsm.hpp"
 
-
 using namespace Quadruped;
 
 /**
@@ -56,65 +55,55 @@ using namespace Quadruped;
  * @param quadruped : pointer to A1Robot.
  * @return pointer to LocomotionController.
  */
-qrLocomotionController *SetUpController(qrRobot *quadruped, qrGaitGenerator* gaitGenerator,
-                                    qrDesiredStateCommand* desiredStateCommand,
-                                    qrStateEstimatorContainer* stateEstimators, 
-                                    qrUserParameters* userParameters,
-                                    std::string& homeDir);
+qrLocomotionController* SetUpController(
+    qrRobot* quadruped,
+    qrGaitGenerator* gaitGenerator,
+    qrDesiredStateCommand* desiredStateCommand,
+    qrStateEstimatorContainer* stateEstimators,
+    qrUserParameters* userParameters,
+    std::string& homeDir);
 
 /**
  * @brief Setup the desired speed for robot.
  */
-void UpdateControllerParams(qrLocomotionController *controller, Eigen::Vector3f linSpeed, float angSpeed);
-
+void UpdateControllerParams(qrLocomotionController* controller, Eigen::Vector3f linSpeed, float angSpeed);
 
 class qrRobotRunner {
-
 public:
+  qrRobotRunner(qrRobot* quadruped, std::string& homeDir, ros::NodeHandle& nh);
 
-    qrRobotRunner(qrRobot* quadruped, std::string& homeDir, ros::NodeHandle& nh);
+  bool Update();
 
-    bool Update();
+  bool Step();
 
-    bool Step();
+  ~qrRobotRunner();
 
-    ~qrRobotRunner();
+  inline qrLocomotionController* GetLocomotionController() { return controlFSM->GetLocomotionController(); }
 
-    inline qrLocomotionController* GetLocomotionController() {
-        return  controlFSM->GetLocomotionController();
-    }
+  inline qrStateEstimatorContainer* GetStateEstimator() { return stateEstimators; }
 
-    inline qrStateEstimatorContainer* GetStateEstimator() {
-        return  stateEstimators;
-    }
+  inline qrDesiredStateCommand* GetDesiredStateCommand() { return desiredStateCommand; }
 
-    inline qrDesiredStateCommand* GetDesiredStateCommand() {
-      return desiredStateCommand;
-    }
+  inline qrGaitGenerator* GetGaitGenerator() { return gaitGenerator; }
 
-    inline qrGaitGenerator* GetGaitGenerator() {
-      return gaitGenerator;
-    }
 private:
+  qrRobot* quadruped;
 
-    qrRobot* quadruped;
+  qrGaitGenerator* gaitGenerator;
 
-    qrGaitGenerator* gaitGenerator;
+  qrUserParameters userParameters;
 
-    qrUserParameters userParameters;
+  qrStateEstimatorContainer* stateEstimators;
 
-    qrStateEstimatorContainer* stateEstimators;
+  qrDesiredStateCommand* desiredStateCommand;
 
-    qrDesiredStateCommand* desiredStateCommand;
+  qrControlFSM<float>* controlFSM;
 
-    qrControlFSM<float>* controlFSM;
+  float resetTime;
 
-    float resetTime;
+  float timeSinceReset;
 
-    float timeSinceReset;
-
-    std::vector<qrMotorCommand> hybridAction;
-
+  std::vector<qrMotorCommand> hybridAction;
 };
 
-#endif //QR_ROBOT_RUNNER_H
+#endif  // QR_ROBOT_RUNNER_H

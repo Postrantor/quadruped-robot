@@ -36,45 +36,45 @@
 namespace Quadruped {
 
 namespace Action {
-    
-    void ShinkLeg(qrRobot *robot, float totalTime, float timeStep);
 
-    /**
-     * @brief stand up action function.
-     * @param robot the robot to execute this action.
-     * @param standUptime the time that stand up action need to cost.
-     * @param totalTime the time that robot start to execute other operation.
-     * @param timeStep the time that each step cost.
-     */
-    void StandUp(qrRobot *robot, float standUpTime, float totalTime, float timeStep);
+void ShinkLeg(qrRobot *robot, float totalTime, float timeStep);
 
-    /**
-     * @brief sit down action function.
-     * @param robot the robot to execute this action.
-     * @param sitDownTime the time that sit down action need to cost.
-     * @param timeStep the time that each step cost.
-     */
-    void SitDown(qrRobot *robot, float sitDownTime, float timeStep);
+/**
+ * @brief stand up action function.
+ * @param robot the robot to execute this action.
+ * @param standUptime the time that stand up action need to cost.
+ * @param totalTime the time that robot start to execute other operation.
+ * @param timeStep the time that each step cost.
+ */
+void StandUp(qrRobot *robot, float standUpTime, float totalTime, float timeStep);
 
-    /**
-     * @brief keep Stand action function.
-     * @param robot the robot to execute this action.
-     * @param KeepStandTime the time that robot keeps standing.
-     * @param timeStep the time that each step cost.
-     */
-    void KeepStand(qrRobot *robot, float KeepStandTime = 1.0, float timeStep = 0.001);
+/**
+ * @brief sit down action function.
+ * @param robot the robot to execute this action.
+ * @param sitDownTime the time that sit down action need to cost.
+ * @param timeStep the time that each step cost.
+ */
+void SitDown(qrRobot *robot, float sitDownTime, float timeStep);
 
-    /**
-     * @brief control foot action function. This is for walk gait.
-     * @param robot the robot to execute this action.
-     * @param locomotionController the time that robot keeps standing.
-     * @param walkTime the time that control foot action need to cost.
-     * @param timeStep the time that each step cost.
-     */
-    void ControlFoot(qrRobot *robot, qrLocomotionController *locomotionController, float walkTime, float timeStep);
+/**
+ * @brief keep Stand action function.
+ * @param robot the robot to execute this action.
+ * @param KeepStandTime the time that robot keeps standing.
+ * @param timeStep the time that each step cost.
+ */
+void KeepStand(qrRobot *robot, float KeepStandTime = 1.0, float timeStep = 0.001);
 
-} // Namespace Action
+/**
+ * @brief control foot action function. This is for walk gait.
+ * @param robot the robot to execute this action.
+ * @param locomotionController the time that robot keeps standing.
+ * @param walkTime the time that control foot action need to cost.
+ * @param timeStep the time that each step cost.
+ */
+void ControlFoot(qrRobot *robot, qrLocomotionController *locomotionController, float walkTime, float timeStep);
 
-} //Namespace Quadruped
+}  // Namespace Action
 
-#endif //QR_ACTION_H
+}  // Namespace Quadruped
+
+#endif  // QR_ACTION_H

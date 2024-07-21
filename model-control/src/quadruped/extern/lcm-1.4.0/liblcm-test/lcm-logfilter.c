@@ -2,12 +2,10 @@
 // desc: utility to selectively extract channels from a logfile into a new one
 
 #include <getopt.h>
+#include <glib.h>
+#include <lcm/lcm.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#include <glib.h>
-
-#include <lcm/lcm.h>
 
 static void usage()
 {

@@ -1,7 +1,7 @@
+#include "common.hpp"
+
 #include <inttypes.h>
 #include <stdio.h>
-
-#include "common.hpp"
 
 #define info(...)                        \
     do {                                 \

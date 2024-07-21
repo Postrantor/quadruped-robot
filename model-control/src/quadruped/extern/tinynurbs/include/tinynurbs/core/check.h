@@ -275,8 +275,8 @@ template <typename T> unsigned int knotMultiplicity(const std::vector<T> &knots,
  * @return Multiplicity (>= 1)
  */
 template <typename T>
-[[deprecated("Use knotMultiplicity(knots, param).")]]
-unsigned int knotMultiplicity(const std::vector<T> &knots, unsigned int index)
+[[deprecated("Use knotMultiplicity(knots, param).")]] unsigned int
+knotMultiplicity(const std::vector<T> &knots, unsigned int index)
 {
     T curr_knot_val = knots[index];
     T eps = std::numeric_limits<T>::epsilon();

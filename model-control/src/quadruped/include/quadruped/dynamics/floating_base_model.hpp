@@ -37,10 +37,7 @@ struct FBModelState {
   /*!
    * Print the position of the body
    */
-  void print() const {
-    printf("position: %.3f %.3f %.3f\n", bodyPosition[0], bodyPosition[1],
-           bodyPosition[2]);
-  }
+  void print() const { printf("position: %.3f %.3f %.3f\n", bodyPosition[0], bodyPosition[1], bodyPosition[2]); }
 };
 
 /*!
@@ -61,8 +58,7 @@ struct FBModelStateDerivative {
  */
 template <typename T>
 class FloatingBaseModel {
-
- public:
+public:
   /*!
    * Initialize a floating base model with default gravity
    */
@@ -71,17 +67,26 @@ class FloatingBaseModel {
 
   void addBase(const SpatialInertia<T>& inertia);
   void addBase(T mass, const Vec3<T>& com, const Mat3<T>& I);
-  int addGroundContactPoint(int bodyID, const Vec3<T>& location,
-                            bool isFoot = false);
+  int addGroundContactPoint(int bodyID, const Vec3<T>& location, bool isFoot = false);
   void addGroundContactBoxPoints(int bodyId, const Vec3<T>& dims);
-  int addBody(const SpatialInertia<T>& inertia,
-              const SpatialInertia<T>& rotorInertia, T gearRatio, int parent,
-              JointType jointType, CoordinateAxis jointAxis,
-              const Mat6<T>& Xtree, const Mat6<T>& Xrot);
-  int addBody(const MassProperties<T>& inertia,
-              const MassProperties<T>& rotorInertia, T gearRatio, int parent,
-              JointType jointType, CoordinateAxis jointAxis,
-              const Mat6<T>& Xtree, const Mat6<T>& Xrot);
+  int addBody(
+      const SpatialInertia<T>& inertia,
+      const SpatialInertia<T>& rotorInertia,
+      T gearRatio,
+      int parent,
+      JointType jointType,
+      CoordinateAxis jointAxis,
+      const Mat6<T>& Xtree,
+      const Mat6<T>& Xrot);
+  int addBody(
+      const MassProperties<T>& inertia,
+      const MassProperties<T>& rotorInertia,
+      T gearRatio,
+      int parent,
+      JointType jointType,
+      CoordinateAxis jointAxis,
+      const Mat6<T>& Xtree,
+      const Mat6<T>& Xrot);
   void check();
   T totalRotorMass();
   T totalNonRotorMass();
@@ -96,9 +101,7 @@ class FloatingBaseModel {
    * Get vector of body spatial inertias
    * @return Vector of body spatial inertias
    */
-  const std::vector<SpatialInertia<T>,
-                    Eigen::aligned_allocator<SpatialInertia<T>>>&
-  getBodyInertiaVector() {
+  const std::vector<SpatialInertia<T>, Eigen::aligned_allocator<SpatialInertia<T>>>& getBodyInertiaVector() {
     return _Ibody;
   }
 
@@ -106,9 +109,7 @@ class FloatingBaseModel {
    * Get vector of rotor spatial inertias
    * @return Vector of rotor spatial inertias
    */
-  const std::vector<SpatialInertia<T>,
-                    Eigen::aligned_allocator<SpatialInertia<T>>>&
-  getRotorInertiaVector() {
+  const std::vector<SpatialInertia<T>, Eigen::aligned_allocator<SpatialInertia<T>>>& getRotorInertiaVector() {
     return _Irot;
   }
 
@@ -122,19 +123,14 @@ class FloatingBaseModel {
    * @param gc_index : index of contact point
    * @param flag : enable/disable contact calculation
    */
-  void setContactComputeFlag(size_t gc_index, bool flag) {
-    _compute_contact_info[gc_index] = flag;
-  }
+  void setContactComputeFlag(size_t gc_index, bool flag) { _compute_contact_info[gc_index] = flag; }
 
-  DMat<T> invContactInertia(const int gc_index,
-                            const D6Mat<T>& force_directions);
+  DMat<T> invContactInertia(const int gc_index, const D6Mat<T>& force_directions);
   T invContactInertia(const int gc_index, const Vec3<T>& force_ics_at_contact);
 
-  T applyTestForce(const int gc_index, const Vec3<T>& force_ics_at_contact,
-                   FBModelStateDerivative<T>& dstate_out);
+  T applyTestForce(const int gc_index, const Vec3<T>& force_ics_at_contact, FBModelStateDerivative<T>& dstate_out);
 
-  T applyTestForce(const int gc_index, const Vec3<T>& force_ics_at_contact,
-                   DVec<T>& dstate_out);
+  T applyTestForce(const int gc_index, const Vec3<T>& force_ics_at_contact, DVec<T>& dstate_out);
 
   void addDynamicsVars(int count);
 
@@ -173,9 +169,8 @@ class FloatingBaseModel {
     _accelerationsUpToDate = false;
   }
 
-  Vec3<T> getPosition(const int link_idx, const Vec3<T> & local_pos);
+  Vec3<T> getPosition(const int link_idx, const Vec3<T>& local_pos);
   Vec3<T> getPosition(const int link_idx);
-
 
   Mat3<T> getOrientation(const int link_idx);
   Vec3<T> getLinearVelocity(const int link_idx, const Vec3<T>& point);
@@ -208,8 +203,7 @@ class FloatingBaseModel {
   std::vector<JointType> _jointTypes;
   std::vector<CoordinateAxis> _jointAxes;
   std::vector<Mat6<T>, Eigen::aligned_allocator<Mat6<T>>> _Xtree, _Xrot;
-  std::vector<SpatialInertia<T>, Eigen::aligned_allocator<SpatialInertia<T>>> _Ibody,
-      _Irot;
+  std::vector<SpatialInertia<T>, Eigen::aligned_allocator<SpatialInertia<T>>> _Ibody, _Irot;
   std::vector<std::string> _bodyNames;
 
   size_t _nGroundContact = 0;
@@ -237,13 +231,12 @@ class FloatingBaseModel {
    */
   const DVec<T>& getCoriolisForce() const { return _Cqd; }
 
-
   /// BEGIN ALGORITHM SUPPORT VARIABLES
   FBModelState<T> _state;
   FBModelStateDerivative<T> _dState;
 
-  vectorAligned<SVec<T>> _v, _vrot, _a, _arot, _avp, _avprot, _c, _crot, _S,
-      _Srot, _fvp, _fvprot, _ag, _agrot, _f, _frot;
+  vectorAligned<SVec<T>> _v, _vrot, _a, _arot, _avp, _avprot, _c, _crot, _S, _Srot, _fvp, _fvprot, _ag, _agrot, _f,
+      _frot;
 
   vectorAligned<SVec<T>> _U, _Urot, _Utot, _pA, _pArot;
   vectorAligned<SVec<T>> _externalForces;
@@ -287,7 +280,6 @@ class FloatingBaseModel {
   DMat<T> _qdd_from_subqdd;
   Eigen::ColPivHouseholderQR<Mat6<T>> _invIA5;
 };
-
 
 // #include "dynamics/floating_base_model.hxx"
 #endif  // LIBBIOMIMETICS_FLOATINGBASEMODEL_H

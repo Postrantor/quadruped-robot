@@ -1,10 +1,9 @@
 #include <gtest/gtest.h>
+#include <lcm/lcm.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
-#include <lcm/lcm.h>
 
 #include "common.h"
 

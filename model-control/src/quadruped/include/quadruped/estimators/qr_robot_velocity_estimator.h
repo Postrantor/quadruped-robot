@@ -28,7 +28,6 @@
 #include <deque>
 #include <numeric>
 
-
 #include "utils/qr_se3.h"
 #include "robots/qr_robot.h"
 #include "gait/qr_openloop_gait_generator.h"
@@ -36,7 +35,6 @@
 
 /* this is a external lib, but using some variables defined in qr_filter.hpp*/
 #include "TinyEKF.h"
-
 
 namespace Quadruped {
 
@@ -49,121 +47,111 @@ namespace Quadruped {
  * @param initial_covariance: covariance estimation of initial state.
  */
 class qrRobotVelocityEstimator {
-
 public:
+  /**
+   * @brief Estimates base velocity of A1 robot.
+   * The velocity estimator consists of 2 parts:
+   * 1) A state estimator for CoM velocity.
+   *
+   * Two sources of information are used:
+   * The integrated reading of accelerometer and the velocity estimation from
+   * contact legs. The readings are fused together using a Kalman Filter.
+   *
+   * 2) A moving average filter to smooth out velocity readings
+   * @param robot: the robot class for velocity estimation.
+   * @param gaitGeneratorIn: generate desired gait schedule for locomotion.
+   * @param userParametersIn: parameters for kalman filter and moving window algorithm.
+   */
+  qrRobotVelocityEstimator(qrRobot *robot, qrGaitGenerator *gaitGeneratorIn, qrUserParameters *userParametersIn);
 
-    /**
-     * @brief Estimates base velocity of A1 robot.
-     * The velocity estimator consists of 2 parts:
-     * 1) A state estimator for CoM velocity.
-     *
-     * Two sources of information are used:
-     * The integrated reading of accelerometer and the velocity estimation from
-     * contact legs. The readings are fused together using a Kalman Filter.
-     *
-     * 2) A moving average filter to smooth out velocity readings
-     * @param robot: the robot class for velocity estimation.
-     * @param gaitGeneratorIn: generate desired gait schedule for locomotion.
-     * @param userParametersIn: parameters for kalman filter and moving window algorithm.
-     */
-    qrRobotVelocityEstimator(qrRobot *robot,
-                           qrGaitGenerator *gaitGeneratorIn,
-                           qrUserParameters *userParametersIn);
+  /**
+   * @brief Reset the robot velocity estimator.
+   * @param currentTime: time since the timer started
+   */
+  void Reset(float currentTime);
 
-    /**
-     * @brief Reset the robot velocity estimator.
-     * @param currentTime: time since the timer started
-     */
-    void Reset(float currentTime);
+  /**
+   * @brief Compute the time period between two adjacent imu message.
+   */
+  float ComputeDeltaTime(uint32_t tick);
 
-    /**
-     * @brief Compute the time period between two adjacent imu message.
-     */
-    float ComputeDeltaTime(uint32_t tick);
+  /**
+   * @brief Estimate the velocity in base frame.
+   */
+  void Update(float currentTime);
 
-    /**
-     * @brief Estimate the velocity in base frame.
-     */
-    void Update(float currentTime);
+  /**
+   * @brief Getter method of member estimatedVelocity.
+   */
+  const Vec3<float> &GetEstimatedVelocity() const { return estimatedVelocity; };
 
-    /**
-     * @brief Getter method of member estimatedVelocity.
-     */
-    const Vec3<float> &GetEstimatedVelocity() const {
-        return estimatedVelocity;
-    };
-
-    /**
-     * @brief Getter method of member estimatedAngularVelocity.
-     */
-    const Vec3<float> &GetEstimatedAngularVelocity() const {
-        return estimatedAngularVelocity;
-    };
+  /**
+   * @brief Getter method of member estimatedAngularVelocity.
+   */
+  const Vec3<float> &GetEstimatedAngularVelocity() const { return estimatedAngularVelocity; };
 
 private:
+  /**
+   * @brief The robot class for the velocity estimation.
+   */
+  qrRobot *robot;
 
-    /**
-     * @brief The robot class for the velocity estimation.
-     */
-    qrRobot *robot;
+  /**
+   * @brief Generate desired gait schedule for locomotion.
+   */
+  qrGaitGenerator *gaitGenerator;
 
-    /**
-     * @brief Generate desired gait schedule for locomotion.
-     */
-    qrGaitGenerator *gaitGenerator;
+  /**
+   * @brief The window size of moving window algorithm.
+   */
+  int windowSize;
 
-    /**
-     * @brief The window size of moving window algorithm.
-     */
-    int windowSize;
+  /**
+   * @brief The initila variance of kalman filter.
+   */
+  float initialVariance;
 
-    /**
-     * @brief The initila variance of kalman filter.
-     */
-    float initialVariance;
+  /**
+   * @brief Time stamp when last loop ended.
+   */
+  uint32_t lastTimestamp;
 
-    /**
-     * @brief Time stamp when last loop ended.
-     */
-    uint32_t lastTimestamp;
+  /**
+   * @brief Estimated velocity in base frame.
+   */
+  Vec3<float> estimatedVelocity;
 
-    /**
-     * @brief Estimated velocity in base frame.
-     */
-    Vec3<float> estimatedVelocity;
+  /**
+   * @brief Estimated angular velocity in base frame.
+   */
+  Vec3<float> estimatedAngularVelocity;
 
-    /**
-     * @brief Estimated angular velocity in base frame.
-     */
-    Vec3<float> estimatedAngularVelocity;
+  /**
+   * @brief Moving window filter in x-axis for the kalman filter.
+   */
+  qrMovingWindowFilter<double, 1> velocityFilterX;
 
-    /**
-     * @brief Moving window filter in x-axis for the kalman filter.
-     */
-    qrMovingWindowFilter<double, 1> velocityFilterX;
+  /**
+   * @brief Moving window filter in y-axis for the kalman filter.
+   */
+  qrMovingWindowFilter<double, 1> velocityFilterY;
 
-    /**
-     * @brief Moving window filter in y-axis for the kalman filter.
-     */
-    qrMovingWindowFilter<double, 1> velocityFilterY;
+  /**
+   * @brief Moving window filter in z-axis for the kalman filter.
+   */
+  qrMovingWindowFilter<double, 1> velocityFilterZ;
 
-    /**
-     * @brief Moving window filter in z-axis for the kalman filter.
-     */
-    qrMovingWindowFilter<double, 1> velocityFilterZ;
+  /**
+   * @brief Moving window filter for liner acceleration.
+   */
+  qrMovingWindowFilter<float, 3> AccFilter;
 
-    /**
-     * @brief Moving window filter for liner acceleration.
-     */
-    qrMovingWindowFilter<float, 3> AccFilter;
-    
-    /**
-     * @brief Kalman filter for the velocity estimation.
-     */
-    TinyEKF<3,3> *filter;
-
+  /**
+   * @brief Kalman filter for the velocity estimation.
+   */
+  TinyEKF<3, 3> *filter;
 };
 
-} // namespace Quadruped
+}  // namespace Quadruped
 
-#endif // QR_ROBOT_VELOCITY_ESTIMATOR_H
+#endif  // QR_ROBOT_VELOCITY_ESTIMATOR_H

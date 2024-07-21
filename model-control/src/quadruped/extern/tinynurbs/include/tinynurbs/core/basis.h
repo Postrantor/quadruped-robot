@@ -1,6 +1,6 @@
 /**
  * Low-level functions for evaluating B-spline basis functions and their derivatives
- * 
+ *
  * Use of this source code is governed by a BSD-style license that can be found in
  * the LICENSE file.
  */
@@ -21,7 +21,7 @@ namespace tinynurbs
  * @param[in] knots Knot vector of the curve.
  * @param[in] u Parameter value.
  * @return Span index into the knot vector such that (span - 1) < u <= span
-*/
+ */
 template <typename T> int findSpan(unsigned int degree, const std::vector<T> &knots, T u)
 {
     // index of last control point

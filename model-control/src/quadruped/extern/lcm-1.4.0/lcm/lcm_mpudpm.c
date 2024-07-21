@@ -22,10 +22,9 @@
 #include "dbg.h"
 #include "lcm.h"
 #include "lcm_internal.h"
+#include "lcmtypes/channel_port_map_update_t.h"
 #include "ringbuffer.h"
 #include "udpm_util.h"
-
-#include "lcmtypes/channel_port_map_update_t.h"
 
 // Lets reserve channels starting with #! for internal use
 #define RESERVED_CHANNEL_PREFIX "#!"

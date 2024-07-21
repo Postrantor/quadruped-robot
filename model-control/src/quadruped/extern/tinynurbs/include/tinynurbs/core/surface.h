@@ -1,7 +1,7 @@
 /**
  * The Surface and RationalSurface classes represent non-rational and rational
  * NURBS surfaces, respectively.
-  *
+ *
  * Use of this source code is governed by a BSD-style license that can be found in
  * the LICENSE file.
  */

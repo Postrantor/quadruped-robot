@@ -1,6 +1,6 @@
 /**
  * Wavefront OBJ realted I/O functionality for curves and surfaces.
- * 
+ *
  * Use of this source code is governed by a BSD-style license that can be found in
  * the LICENSE file.
  */
@@ -384,7 +384,7 @@ void curveSaveOBJ(std::ostream &os, unsigned int degree, const std::vector<T> &k
     for (int i = 0; i < ctrlPts.size(); ++i)
     {
         os << "v " << ctrlPts[i].x << " " << ctrlPts[i].y << " " << ctrlPts[i].z << " "
-             << weights[i] << endl;
+           << weights[i] << endl;
     }
 
     int n_knots = knots.size();
@@ -440,8 +440,8 @@ void surfaceSaveOBJ(std::ostream &os, unsigned int deg_u, unsigned int deg_v,
     {
         for (int i = 0; i < ctrlPts.rows(); i++)
         {
-            os << "v " << ctrlPts(i, j).x << " " << ctrlPts(i, j).y << " " << ctrlPts(i, j).z
-                 << " " << weights(i, j) << endl;
+            os << "v " << ctrlPts(i, j).x << " " << ctrlPts(i, j).y << " " << ctrlPts(i, j).z << " "
+               << weights(i, j) << endl;
         }
     }
 
@@ -461,7 +461,7 @@ void surfaceSaveOBJ(std::ostream &os, unsigned int deg_u, unsigned int deg_v,
     }
     os << "deg " << deg_u << " " << deg_v << endl << "surf ";
     os << knots_u[deg_u] << " " << knots_u[nknots_u - deg_u - 1] << " " << knots_v[deg_v] << " "
-         << knots_v[nknots_v - deg_v - 1];
+       << knots_v[nknots_v - deg_v - 1];
     for (int i = 0; i < nCpU * nCpV; i++)
     {
         os << " " << i + 1;
@@ -549,8 +549,7 @@ template <typename T> void surfaceSaveOBJ(std::ostream &os, const Surface<T> &sr
  * @param os The output stream
  * @param srf RationalSurface object to save
  */
-template <typename T>
-void surfaceSaveOBJ(std::ostream &os, const RationalSurface<T> &srf)
+template <typename T> void surfaceSaveOBJ(std::ostream &os, const RationalSurface<T> &srf)
 {
     internal::surfaceSaveOBJ(os, srf.degree_u, srf.degree_v, srf.knots_u, srf.knots_v,
                              srf.control_points, srf.weights, true);

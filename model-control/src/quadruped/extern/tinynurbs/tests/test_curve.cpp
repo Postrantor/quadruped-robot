@@ -1,18 +1,16 @@
-#include <tinynurbs/tinynurbs.h>
+#include <cmath>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
-#include <cmath>
+#include <tinynurbs/tinynurbs.h>
 
 #include "catch.hpp"
 
 using namespace std;
 
-tinynurbs::Curve3f getNonrationalBezierCurve() {
+tinynurbs::Curve3f getNonrationalBezierCurve()
+{
     tinynurbs::Curve3f crv;
-    crv.control_points = {glm::vec3(-1, 0, 0),
-                          glm::vec3(0, 1, 0),
-                          glm::vec3(1, 0, 0)
-                         };
+    crv.control_points = {glm::vec3(-1, 0, 0), glm::vec3(0, 1, 0), glm::vec3(1, 0, 0)};
     crv.knots = {0, 0, 0, 1, 1, 1};
     crv.degree = 2;
     return crv;
@@ -78,7 +76,7 @@ TEST_CASE("curveInsertKnot (non-rational)", "[curve, non-rational, modify]")
 {
     auto crv = getNonrationalBezierCurve();
     glm::vec2 pt = tinynurbs::curvePoint(crv, 0.25f);
-    
+
     size_t n_knots_prev = crv.knots.size();
     size_t n_control_points_prev = crv.control_points.size();
 
@@ -109,12 +107,14 @@ TEST_CASE("curveSplit (non-rational)", "[curve, non-rational, modify]")
     REQUIRE(left.degree == crv.degree);
     REQUIRE(right.degree == crv.degree);
 
-    for (unsigned int i = 0; i < left.degree + 1; ++i) {
+    for (unsigned int i = 0; i < left.degree + 1; ++i)
+    {
         int d = static_cast<int>(left.knots.size()) - (left.degree + 1);
-        REQUIRE(left.knots[d+i] == Approx(u));
+        REQUIRE(left.knots[d + i] == Approx(u));
     }
 
-    for (unsigned int i = 0; i < right.degree + 1; ++i) {
+    for (unsigned int i = 0; i < right.degree + 1; ++i)
+    {
         REQUIRE(right.knots[i] == Approx(u));
     }
 
@@ -131,11 +131,13 @@ TEST_CASE("curveReadOBJ and curveSaveOBJ (non-rational)", "[curve, non-rational,
     auto read_crv = tinynurbs::Curve3f(tinynurbs::curveReadOBJ<float>("curve.obj"));
     REQUIRE(crv.degree == read_crv.degree);
     REQUIRE(crv.knots.size() == read_crv.knots.size());
-    for (int i = 0; i < crv.knots.size(); ++i) {
+    for (int i = 0; i < crv.knots.size(); ++i)
+    {
         REQUIRE(crv.knots[i] == Approx(read_crv.knots[i]));
     }
     REQUIRE(crv.control_points.size() == read_crv.control_points.size());
-    for (int i = 0; i < crv.control_points.size(); ++i) {
+    for (int i = 0; i < crv.control_points.size(); ++i)
+    {
         REQUIRE(crv.control_points[i].x == Approx(read_crv.control_points[i].x));
         REQUIRE(crv.control_points[i].y == Approx(read_crv.control_points[i].y));
     }

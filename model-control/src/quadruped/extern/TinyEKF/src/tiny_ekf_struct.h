@@ -2,7 +2,7 @@
  * tiny_ekf_struct.h: common data structure for TinyEKF
  *
  * You should #include this file after using #define for N (states) and M
-*  (observations)
+ *  (observations)
  *
  * Copyright (C) 2016 Simon D. Levy
  *
@@ -11,7 +11,6 @@
 
 #ifndef TINYEKF_TINYEKF_STRUCT_H
 #define TINYEKF_TINYEKF_STRUCT_H
-
 
 // typedef struct {
 
@@ -42,44 +41,40 @@
 //     double tmp2[Mobs][Nsta];
 //     double tmp3[Mobs][Mobs];
 //     double tmp4[Mobs][Mobs];
-//     double tmp5[Mobs]; 
+//     double tmp5[Mobs];
 
-// } ekf_t;      
+// } ekf_t;
 
+template <unsigned int N = 3, unsigned int M = 3>
+struct ekf_t {
+  int n = N; /* number of state values */
+  int m = M; /* number of observables */
 
+  double x[N]; /* state vector */
 
-template<unsigned int N=3, unsigned int M=3>
-struct ekf_t{
+  double P[N][N]; /* prediction error covariance */
+  double Q[N][N]; /* process noise covariance */
+  double R[M][M]; /* measurement error covariance */
 
-    int n=N;          /* number of state values */
-    int m=M;          /* number of observables */
+  double G[N][M]; /* Kalman gain; a.k.a. K */
 
-    double x[N];    /* state vector */
+  double F[N][N]; /* Jacobian of process model */
+  double H[M][N]; /* Jacobian of measurement model */
 
-    double P[N][N];  /* prediction error covariance */
-    double Q[N][N];  /* process noise covariance */
-    double R[M][M];  /* measurement error covariance */
+  double Ht[N][M]; /* transpose of measurement Jacobian */
+  double Ft[N][N]; /* transpose of process Jacobian */
+  double Pp[N][N]; /* P, post-prediction, pre-update */
 
-    double G[N][M];  /* Kalman gain; a.k.a. K */
+  double fx[N]; /* output of user defined f() state-transition function */
+  double hx[M]; /* output of user defined h() measurement function */
 
-    double F[N][N];  /* Jacobian of process model */
-    double H[M][N];  /* Jacobian of measurement model */
-
-    double Ht[N][M]; /* transpose of measurement Jacobian */
-    double Ft[N][N]; /* transpose of process Jacobian */
-    double Pp[N][N]; /* P, post-prediction, pre-update */
-
-    double fx[N];   /* output of user defined f() state-transition function */
-    double hx[M];   /* output of user defined h() measurement function */
-
-    /* temporary storage */
-    double tmp0[N][N];
-    double tmp1[N][M];
-    double tmp2[M][N];
-    double tmp3[M][M];
-    double tmp4[M][M];
-    double tmp5[M]; 
-
+  /* temporary storage */
+  double tmp0[N][N];
+  double tmp1[N][M];
+  double tmp2[M][N];
+  double tmp3[M][M];
+  double tmp4[M][M];
+  double tmp5[M];
 };
 
-#endif // TINYEKF_TINYEKF_STRUCT_H
+#endif  // TINYEKF_TINYEKF_STRUCT_H

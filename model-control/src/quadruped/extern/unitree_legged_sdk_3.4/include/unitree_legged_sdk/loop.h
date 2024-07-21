@@ -14,16 +14,15 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/function.hpp>
 
-namespace UNITREE_LEGGED_SDK 
-{
+namespace UNITREE_LEGGED_SDK {
 
-constexpr int THREAD_PRIORITY    = 95;   // real-time priority
+constexpr int THREAD_PRIORITY = 95;  // real-time priority
 
-typedef boost::function<void ()> Callback;
+typedef boost::function<void()> Callback;
 
 class Loop {
 public:
-  Loop(std::string name, float period, int bindCPU = -1):_name(name), _period(period), _bindCPU(bindCPU) {}
+  Loop(std::string name, float period, int bindCPU = -1) : _name(name), _period(period), _bindCPU(bindCPU) {}
   ~Loop();
   void start();
   void shutdown();
@@ -46,16 +45,14 @@ private:
 */
 class LoopFunc : public Loop {
 public:
-  LoopFunc(std::string name, float period, const Callback& _cb)
-    : Loop(name, period), _fp(_cb){}
-  LoopFunc(std::string name, float period, int bindCPU, const Callback& _cb)
-    : Loop(name, period, bindCPU), _fp(_cb){}
+  LoopFunc(std::string name, float period, const Callback& _cb) : Loop(name, period), _fp(_cb) {}
+  LoopFunc(std::string name, float period, int bindCPU, const Callback& _cb) : Loop(name, period, bindCPU), _fp(_cb) {}
   void functionCB() { (_fp)(); }
+
 private:
-  boost::function<void ()>  _fp;
+  boost::function<void()> _fp;
 };
 
-
-}
+}  // namespace UNITREE_LEGGED_SDK
 
 #endif

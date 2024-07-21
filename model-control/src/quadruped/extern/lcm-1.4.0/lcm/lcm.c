@@ -1,18 +1,19 @@
 
+#include "lcm.h"
+
 #include <assert.h>
+#include <glib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 
-#include <glib.h>
-
 #include "dbg.h"
-#include "lcm.h"
 #include "lcm_internal.h"
 
 #ifdef WIN32
 #include <winsock2.h>
+
 #include "windows/WinPorting.h"
 #else
 #include <sys/select.h>

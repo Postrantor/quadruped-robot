@@ -1,6 +1,6 @@
 /**
  * Functions for modifying NURBS curves and surfaces.
- * 
+ *
  * Use of this source code is governed by a BSD-style license that can be found in
  * the LICENSE file.
  */
@@ -121,7 +121,7 @@ void surfaceKnotInsert(unsigned int degree, const std::vector<T> &knots,
 {
     int span = findSpan(degree, knots, knot);
     unsigned int s = knotMultiplicity(knots, knot);
-    assert(s <= degree);  // Knot multiplicity cannot be greater than degree
+    assert(s <= degree); // Knot multiplicity cannot be greater than degree
     if (s == degree)
     {
         new_cp = cp;

@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+
 #include "../lcm_coretypes.h"
 
 #ifndef _channel_port_map_update_t_h

@@ -6,17 +6,17 @@
 
 #include <stdint.h>
 
-struct AAA{
-    int direction;
-    float deepth;
-    uint32_t crc;
+struct AAA {
+  int direction;
+  float deepth;
+  uint32_t crc;
 };
 
-struct BBB{
-    float yaw;
-    float pitch;
-    float roll;
-    uint32_t crc;
+struct BBB {
+  float yaw;
+  float pitch;
+  float roll;
+  uint32_t crc;
 };
 
 #endif

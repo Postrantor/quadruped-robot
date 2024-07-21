@@ -5,6 +5,7 @@
  **/
 
 #include "channel_port_map_update_t.h"
+
 #include <string.h>
 
 static int __channel_port_map_update_t_hash_computed;

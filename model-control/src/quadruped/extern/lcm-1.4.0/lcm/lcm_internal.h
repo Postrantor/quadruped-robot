@@ -2,6 +2,7 @@
 #define __LCM_INTERNAL_H__
 
 #include <glib.h>
+
 #include "lcm.h"
 
 // GRegex was new in GLib 2.14.0
@@ -12,6 +13,7 @@
 
 #ifdef WIN32
 #include <winsock2.h>
+
 #include "windows/WinPorting.h"
 #else
 // in POSIX systems, the normal read/write/close/pipe functions are fine for
