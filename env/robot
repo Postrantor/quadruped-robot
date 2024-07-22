@@ -1,0 +1,60 @@
+# --- --- --- env --- --- ---
+source /opt/ros/humble/setup.bash
+source ~/project/model_ws/install/setup.bash
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+# export CYCLONEDDS_URI='<CycloneDDS><Domain><General><Interfaces>
+#                             <NetworkInterface name="enp2s0" priority="default" multicast="default" />
+#                         </Interfaces></General></Domain></CycloneDDS>'
+#export GZ_VERSION=fortress
+source /usr/share/gazebo/setup.sh
+
+# --- --- --- alias --- --- ---
+function colcon_build() {
+    declare -A paths=(
+        ["control"]="/project/control_ws"
+        ["demo"]="/project/demo_ws"
+        ["unitree"]="/project/unitree_ws"
+        ["gazebo"]="/project/gazebo_ws"
+        ["sim"]="/project/sim_ws"
+        ["model"]="/project/model_ws"
+    )
+
+    if [[ -z ${paths[$1]} ]]; then
+        echo "Invalid argument. Usage: colcon_build [control|demo|unitree] [custom_args]"
+        return 1
+    fi
+
+    cd ~/"${paths[$1]}"
+    shift
+    colcon build --symlink-install --parallel-workers 5 --cmake-force-configure --cmake-args '-DCMAKE_BUILD_TYPE=Debug' '-DCMAKE_EXPORT_COMPILE_COMMANDS=On' -Wall -Wextra -Wpedantic "$@"
+}
+function cd_ws() {
+    declare -A paths=(
+        ["control"]="/project/control_ws"
+        ["demo"]="/project/demo_ws"
+        ["unitree"]="/project/unitree_ws"
+        ["gazebo"]="/project/gazebo_ws"
+        ["sim"]="/project/sim_ws"
+        ["model"]="/project/model_ws"
+    )
+
+    if [[ -z ${paths[$1]} ]]; then
+        echo "Invalid argument. Usage: cd workspace [control|demo|unitree] [custom_args]"
+        return 1
+    fi
+
+    cd ~/"${paths[$1]}"
+    source ~/"${paths[$1]}"/install/setup.bash
+}
+alias catkin_dev='sudo chmod a+rw /dev/i2c-1'
+alias cman='man -M /usr/share/man/zh_CN'
+alias translate='python /home/trantor/script/python/translate/translate_by_baidu.py '
+
+# --- --- --- path --- --- ---
+export PATH=$PATH:.
+export PATH=$PATH:$(find ~/project/ros_team_workspace/scripts -type d | tr '\n' ':')
+
+# --- --- --- proxy --- --- ---
+export http_proxy=192.168.31.201:7890
+export https_proxy=192.168.31.201:7890
+# export ALL_PROXY=socks5://192.168.31.201:7891
