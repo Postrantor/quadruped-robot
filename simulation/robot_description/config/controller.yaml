@@ -1,49 +1,48 @@
 controller_manager:
   ros__parameters:
-    update_rate: 10
-    desired_cmd_timeout: 0.5
+    update_rate: 1
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
     # FL Controller
     FL_hip_controller:
-      type: unitree_position_controller/UnitreePositionController
+      type: unitree_joint_controller/UnitreeJointController
     FL_thigh_controller:
-      type: unitree_position_controller/UnitreePositionController
+      type: unitree_joint_controller/UnitreeJointController
     FL_calf_controller:
-      type: unitree_position_controller/UnitreePositionController
+      type: unitree_joint_controller/UnitreeJointController
 
     # FR Controller
     FR_hip_controller:
-      type: unitree_position_controller/UnitreePositionController
+      type: unitree_joint_controller/UnitreeJointController
     FR_thigh_controller:
-      type: unitree_position_controller/UnitreePositionController
+      type: unitree_joint_controller/UnitreeJointController
     FR_calf_controller:
-      type: unitree_position_controller/UnitreePositionController
+      type: unitree_joint_controller/UnitreeJointController
 
     # RL Controller
     RL_hip_controller:
-      type: unitree_position_controller/UnitreePositionController
+      type: unitree_joint_controller/UnitreeJointController
     RL_thigh_controller:
-      type: unitree_position_controller/UnitreePositionController
+      type: unitree_joint_controller/UnitreeJointController
     RL_calf_controller:
-      type: unitree_position_controller/UnitreePositionController
+      type: unitree_joint_controller/UnitreeJointController
 
     # RR Controller
     RR_hip_controller:
-      type: unitree_position_controller/UnitreePositionController
+      type: unitree_joint_controller/UnitreeJointController
     RR_thigh_controller:
-      type: unitree_position_controller/UnitreePositionController
+      type: unitree_joint_controller/UnitreeJointController
     RR_calf_controller:
-      type: unitree_position_controller/UnitreePositionController
+      type: unitree_joint_controller/UnitreeJointController
 
 # FL Controller
 FL_hip_controller:
   ros__parameters:
     update_rate: 10
     desired_cmd_timeout: 0.5
-    joint_name: FL_hip_joint
+    joint_name: [FL_hip_joint]
     pid:
       p: 100.0
       i: 0.0
@@ -52,7 +51,7 @@ FL_thigh_controller:
   ros__parameters:
     update_rate: 10
     desired_cmd_timeout: 0.5
-    joint_name: FL_thigh_joint
+    joint_name: [FL_thigh_joint]
     pid:
       p: 300.0
       i: 0.0
@@ -61,7 +60,7 @@ FL_calf_controller:
   ros__parameters:
     update_rate: 10
     desired_cmd_timeout: 0.5
-    joint_name: FL_calf_joint
+    joint_name: [FL_calf_joint]
     pid:
       p: 300.0
       i: 0.0
@@ -72,7 +71,7 @@ FR_hip_controller:
   ros__parameters:
     update_rate: 10
     desired_cmd_timeout: 0.5
-    joint_name: FR_hip_joint
+    joint_name: [FR_hip_joint]
     pid:
       p: 100.0
       i: 0.0
@@ -81,7 +80,7 @@ FR_thigh_controller:
   ros__parameters:
     update_rate: 10
     desired_cmd_timeout: 0.5
-    joint_name: FR_thigh_joint
+    joint_name: [FR_thigh_joint]
     pid:
       p: 300.0
       i: 0.0
@@ -90,7 +89,7 @@ FR_calf_controller:
   ros__parameters:
     update_rate: 10
     desired_cmd_timeout: 0.5
-    joint_name: FR_calf_joint
+    joint_name: [FR_calf_joint]
     pid:
       p: 300.0
       i: 0.0
@@ -101,7 +100,7 @@ RL_hip_controller:
   ros__parameters:
     update_rate: 10
     desired_cmd_timeout: 0.5
-    joint_name: RL_hip_joint
+    joint_name: [RL_hip_joint]
     pid:
       p: 100.0
       i: 0.0
@@ -110,7 +109,7 @@ RL_thigh_controller:
   ros__parameters:
     update_rate: 10
     desired_cmd_timeout: 0.5
-    joint_name: RL_thigh_joint
+    joint_name: [RL_thigh_joint]
     pid:
       p: 300.0
       i: 0.0
@@ -119,7 +118,7 @@ RL_calf_controller:
   ros__parameters:
     update_rate: 10
     desired_cmd_timeout: 0.5
-    joint_name: RL_calf_joint
+    joint_name: [RL_calf_joint]
     pid:
       p: 300.0
       i: 0.0
@@ -130,7 +129,7 @@ RR_hip_controller:
   ros__parameters:
     update_rate: 10
     desired_cmd_timeout: 0.5
-    joint_name: RR_hip_joint
+    joint_name: [RR_hip_joint]
     pid:
       p: 100.0
       i: 0.0
@@ -139,7 +138,7 @@ RR_thigh_controller:
   ros__parameters:
     update_rate: 10
     desired_cmd_timeout: 0.5
-    joint_name: RR_thigh_joint
+    joint_name: [RR_thigh_joint]
     pid:
       p: 300.0
       i: 0.0
@@ -148,7 +147,7 @@ RR_calf_controller:
   ros__parameters:
     update_rate: 10
     desired_cmd_timeout: 0.5
-    joint_name: RR_calf_joint
+    joint_name: [RR_calf_joint]
     pid:
       p: 300.0
       i: 0.0

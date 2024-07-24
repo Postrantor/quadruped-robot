@@ -51,7 +51,7 @@ set(PLUGINS
 
 # library
 add_library(qr_gazebo SHARED
-  "src/gazebo_model_spawn.cpp"
+  src/gazebo_model_spawn.cpp
 )
 ament_target_dependencies(qr_gazebo ${DEPENDENCIES})
 
@@ -65,7 +65,7 @@ ament_target_dependencies(qr_gazebo ${DEPENDENCIES})
 
 # executable
 add_executable(spawn_model
-  "src/spawn_model.cpp"
+  src/spawn_model.cpp
 )
 target_link_libraries(spawn_model qr_gazebo)
 ament_target_dependencies(spawn_model ${DEPENDENCIES})
@@ -84,8 +84,8 @@ install(
 )
 
 install(
-  DIRECTORY include/
-  DESTINATION include
+  DIRECTORY include
+  DESTINATION .
 )
 
 install(

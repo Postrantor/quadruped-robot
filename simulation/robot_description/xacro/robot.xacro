@@ -8,6 +8,7 @@
     <xacro:include filename="$(find robot_description)/xacro/leg.xacro"/>
     <xacro:include filename="$(find robot_description)/xacro/stairs.xacro"/>
     <xacro:include filename="$(find robot_description)/xacro/gazebo.xacro"/>
+    <xacro:include filename="$(find robot_description)/config/ros2_control.xacro"/>
     <xacro:if value="$(arg USE_CAMERA)">
         <xacro:include filename="$(find realsense_ros_gazebo)/xacro/depthcam.xacro"/>
     </xacro:if>

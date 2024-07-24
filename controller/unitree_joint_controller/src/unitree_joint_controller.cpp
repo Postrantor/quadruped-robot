@@ -287,9 +287,9 @@ controller_interface::return_type UnitreeJointController::update(
     publish_target_state_->publish(target_state);
     // and write()->motor
     for (size_t i = 0; i < params_.joint_name.size(); ++i) {
-      RCLCPP_INFO_STREAM(
-          LOGGER, "from publisher: " << DEFAULT_DESIRED_CMD_TOPIC << " write() desired_cmd to hardware interfaces");
       registered_joint_handles_[i].command_velocity.get().set_value(desired_cmd.dq);
+      RCLCPP_INFO_STREAM(
+          LOGGER, "update()->write " << params_.joint_name[i] << " to hardware;" << "\n\tand pub to topic: " << DEFAULT_REAL_CMD_TOPIC << " and " << DEFAULT_TARGET_STATE_TOPIC);
     }
   }
 

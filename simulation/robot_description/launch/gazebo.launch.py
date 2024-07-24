@@ -1,7 +1,12 @@
-"""
-Demo for spawn_entity.
-Launches Gazebo and spawns a model
-"""
+# @brief
+# @author postrantor@gmail.com
+# @date 2024-07-24 22:35:39
+#
+# example:
+#    ```bash
+#    ros2 launch robot_description robot.launch.py
+#    ros2 run robot_description example_robot
+#    ```
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
@@ -104,17 +109,17 @@ def generate_launch_description():
     # 控制器名称列表
     controller_names = [
         'FL_hip_controller',
-        'FL_thigh_controller',
-        'FL_calf_controller',
-        'FR_hip_controller',
-        'FR_thigh_controller',
-        'FR_calf_controller',
-        'RL_hip_controller',
-        'RL_thigh_controller',
-        'RL_calf_controller',
-        'RR_hip_controller',
-        'RR_thigh_controller',
-        'RR_calf_controller',
+        # 'FL_thigh_controller',
+        # 'FL_calf_controller',
+        # 'FR_hip_controller',
+        # 'FR_thigh_controller',
+        # 'FR_calf_controller',
+        # 'RL_hip_controller',
+        # 'RL_thigh_controller',
+        # 'RL_calf_controller',
+        # 'RR_hip_controller',
+        # 'RR_thigh_controller',
+        # 'RR_calf_controller',
     ]
 
     # 控制器节点列表
@@ -129,7 +134,7 @@ def generate_launch_description():
 
     # 延迟启动控制器
     delayed_controllers = TimerAction(
-        period=5.0,  # 延迟 5 秒
+        period=10.0,  # 延迟 5 秒
         actions=controllers
     )
 

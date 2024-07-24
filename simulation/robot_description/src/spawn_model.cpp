@@ -81,5 +81,6 @@ int main(int argc, char** argv) {
   cm.delete_model();
 
   rclcpp::shutdown();
+
   return 0;
 }
