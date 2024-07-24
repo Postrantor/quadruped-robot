@@ -77,7 +77,6 @@ file(GLOB_RECURSE sources
 if(NOT ${USE_SIM})
   list(
     REMOVE_ITEM
-    includePath
     "include/quadruped/robots/qr_robot_sim.h"
     "include/quadruped/robots/qr_a1_sim.h")
   set(filtered_sources

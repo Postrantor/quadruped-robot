@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.8)
 project(unitree_joint_controller LANGUAGES CXX)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "(GNU|Clang)")
@@ -6,6 +6,9 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "(GNU|Clang)")
 endif()
 
 set(THIS_PACKAGE_INCLUDE_DEPENDS
+  rclcpp
+  rclcpp_lifecycle
+  rcpputils
   generate_parameter_library
   pluginlib
   realtime_tools
@@ -13,9 +16,6 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   hardware_interface
   geometry_msgs
   unitree_msgs
-  rclcpp
-  rclcpp_lifecycle
-  rcpputils
 )
 
 find_package(ament_cmake REQUIRED)
@@ -24,15 +24,21 @@ foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
 
-# 这里会生成一些 parameter 的类，所以下面include的时候要包含 build/
-generate_parameter_library(unitree_joint_controller_parameters
-  src/unitree_joint_controller_parameter.yaml
-)
-
 # add unitree_joint_control_tool so
 link_directories(lib)
-# set(unitree_joint_control_tool_lib "unitree_joint_control_tool_arm64")
-set(unitree_joint_control_tool_lib "unitree_joint_control_tool")
+if(CMAKE_CROSSCOMPILING)
+  message("[unitree_joint_controller] crosscompile arm target")
+  set(UNITREE_JOINT_CONTROLLER_LIB ${CMAKE_CURRENT_SOURCE_DIR}/lib/libunitree_joint_control_tool_arm64.so)
+else()
+  message("[unitree_joint_controller] compile x86 target")
+  set(UNITREE_JOINT_CONTROLLER_LIB ${CMAKE_CURRENT_SOURCE_DIR}/lib/libunitree_joint_control_tool.so)
+endif()
+
+# 这里会生成一些 parameter 的类，所以下面include的时候要包含 build/
+generate_parameter_library(
+  unitree_joint_controller_parameters
+    src/unitree_joint_controller_parameter.yaml
+)
 
 add_library(unitree_joint_controller SHARED
   src/unitree_joint_controller.cpp
@@ -44,18 +50,23 @@ target_include_directories(unitree_joint_controller PUBLIC
 )
 target_link_libraries(unitree_joint_controller PUBLIC
   unitree_joint_controller_parameters
-  ${unitree_joint_control_tool_lib})
-ament_target_dependencies(unitree_joint_controller PUBLIC ${THIS_PACKAGE_INCLUDE_DEPENDS})
+  ${UNITREE_JOINT_CONTROLLER_LIB})
+ament_target_dependencies(unitree_joint_controller PUBLIC
+  ${THIS_PACKAGE_INCLUDE_DEPENDS})
 # causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
 target_compile_definitions(unitree_joint_controller PRIVATE "unitree_joint_CONTROLLER_BUILDING_DLL")
 pluginlib_export_plugin_description_file(controller_interface unitree_joint_plugin.xml)
 
 install(
-  DIRECTORY include/
-  DESTINATION include
+  DIRECTORY include lib
+  DESTINATION .
 )
-install(TARGETS unitree_joint_controller unitree_joint_controller_parameters
+
+install(
+  TARGETS
+    unitree_joint_controller
+    unitree_joint_controller_parameters
   EXPORT export_unitree_joint_controller
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
@@ -64,4 +75,5 @@ install(TARGETS unitree_joint_controller unitree_joint_controller_parameters
 
 ament_export_targets(export_unitree_joint_controller HAS_LIBRARY_TARGET)
 ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
+
 ament_package()
