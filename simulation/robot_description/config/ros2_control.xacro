@@ -1,142 +1,150 @@
 <?xml version="1.0"?>
-<robot name="robot_a1"
-  xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="use_ros2_control" params="use_mock_hardware">
+    <ros2_control name="GazeboSystem" type="system">
+      <!-- set `false` by launch -->
+      <xacro:if value="${use_mock_hardware}">
+        <hardware>
+          <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+        </hardware>
+      </xacro:if>
+      <xacro:unless value="${use_mock_hardware}">
+        <hardware>
+          <plugin>unitree_motor_example/UnitreeMotorSystemHardware</plugin>
+          <param name="hw_start_interval_millisec">200</param>
+          <param name="hw_stop_interval_millisec">100</param>
+        </hardware>
+      </xacro:unless>
 
-  <ros2_control name="GazeboSystem" type="system">
-    <hardware>
-      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
-    </hardware>
-    <xacro:unless value="${use_mock_hardware}">
-      <hardware>
-        <plugin>unitree_motor_example/UnitreeMotorSystemHardware</plugin>
-        <param name="hw_start_interval_millisec">200</param>
-        <param name="hw_stop_interval_millisec">100</param>
-      </hardware>
-    </xacro:unless>
+      <!-- controller_interface<->hardware_interface -->
+      <!-- FL_joint -->
+      <joint name="FL_hip_joint">
+        <command_interface name="velocity">
+          <param name="min">-1</param>
+          <param name="max">1</param>
+        </command_interface>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+        <param name="motor_id">0</param>
+        <param name="serial_port">/dev/ttyUSB0</param>
+      </joint>
+      <joint name="FL_thigh_joint">
+        <command_interface name="velocity">
+          <param name="min">-1</param>
+          <param name="max">1</param>
+        </command_interface>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+        <param name="motor_id">1</param>
+        <param name="serial_port">/dev/ttyUSB0</param>
+      </joint>
+      <joint name="FL_calf_joint">
+        <command_interface name="velocity">
+          <param name="min">-1</param>
+          <param name="max">1</param>
+        </command_interface>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+        <param name="motor_id">2</param>
+        <param name="serial_port">/dev/ttyUSB0</param>
+      </joint>
 
-    <joint name="FL_hip_joint">
-      <command_interface name="velocity">
-        <param name="min">-1</param>
-        <param name="max">1</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <param name="motor_id">0</param>
-      <param name="serial_port">/dev/ttyUSB0</param>
-    </joint>
-    <joint name="FL_thigh_joint">
-      <command_interface name="velocity">
-        <param name="min">-1</param>
-        <param name="max">1</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <param name="motor_id">1</param>
-      <param name="serial_port">/dev/ttyUSB0</param>
-    </joint>
-    <joint name="FL_calf_joint">
-      <command_interface name="velocity">
-        <param name="min">-1</param>
-        <param name="max">1</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <param name="motor_id">2</param>
-      <param name="serial_port">/dev/ttyUSB0</param>
-    </joint>
+      <!-- FR_joint -->
+      <joint name="FR_hip_joint">
+        <command_interface name="velocity">
+          <param name="min">-1</param>
+          <param name="max">1</param>
+        </command_interface>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+        <param name="motor_id">3</param>
+        <param name="serial_port">/dev/ttyUSB0</param>
+      </joint>
+      <joint name="FR_thigh_joint">
+        <command_interface name="velocity">
+          <param name="min">-1</param>
+          <param name="max">1</param>
+        </command_interface>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+        <param name="motor_id">4</param>
+        <param name="serial_port">/dev/ttyUSB0</param>
+      </joint>
+      <joint name="FR_calf_joint">
+        <command_interface name="velocity">
+          <param name="min">-1</param>
+          <param name="max">1</param>
+        </command_interface>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+        <param name="motor_id">5</param>
+        <param name="serial_port">/dev/ttyUSB0</param>
+      </joint>
 
-    <joint name="FR_hip_joint">
-      <command_interface name="velocity">
-        <param name="min">-1</param>
-        <param name="max">1</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <param name="motor_id">3</param>
-      <param name="serial_port">/dev/ttyUSB0</param>
-    </joint>
-    <joint name="FR_thigh_joint">
-      <command_interface name="velocity">
-        <param name="min">-1</param>
-        <param name="max">1</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <param name="motor_id">4</param>
-      <param name="serial_port">/dev/ttyUSB0</param>
-    </joint>
-    <joint name="FR_calf_joint">
-      <command_interface name="velocity">
-        <param name="min">-1</param>
-        <param name="max">1</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <param name="motor_id">5</param>
-      <param name="serial_port">/dev/ttyUSB0</param>
-    </joint>
+      <!-- RL_joint -->
+      <joint name="RL_hip_joint">
+        <command_interface name="velocity">
+          <param name="min">-1</param>
+          <param name="max">1</param>
+        </command_interface>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+        <param name="motor_id">6</param>
+        <param name="serial_port">/dev/ttyUSB0</param>
+      </joint>
+      <joint name="RL_thigh_joint">
+        <command_interface name="velocity">
+          <param name="min">-1</param>
+          <param name="max">1</param>
+        </command_interface>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+        <param name="motor_id">7</param>
+        <param name="serial_port">/dev/ttyUSB0</param>
+      </joint>
+      <joint name="RL_calf_joint">
+        <command_interface name="velocity">
+          <param name="min">-1</param>
+          <param name="max">1</param>
+        </command_interface>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+        <param name="motor_id">8</param>
+        <param name="serial_port">/dev/ttyUSB0</param>
+      </joint>
 
-    <joint name="RL_hip_joint">
-      <command_interface name="velocity">
-        <param name="min">-1</param>
-        <param name="max">1</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <param name="motor_id">6</param>
-      <param name="serial_port">/dev/ttyUSB0</param>
-    </joint>
-    <joint name="RL_thigh_joint">
-      <command_interface name="velocity">
-        <param name="min">-1</param>
-        <param name="max">1</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <param name="motor_id">7</param>
-      <param name="serial_port">/dev/ttyUSB0</param>
-    </joint>
-    <joint name="RL_calf_joint">
-      <command_interface name="velocity">
-        <param name="min">-1</param>
-        <param name="max">1</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <param name="motor_id">8</param>
-      <param name="serial_port">/dev/ttyUSB0</param>
-    </joint>
+      <!-- RR_joint -->
+      <joint name="RR_hip_joint">
+        <command_interface name="velocity">
+          <param name="min">-1</param>
+          <param name="max">1</param>
+        </command_interface>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+        <param name="motor_id">9</param>
+        <param name="serial_port">/dev/ttyUSB0</param>
+      </joint>
+      <joint name="RR_thigh_joint">
+        <command_interface name="velocity">
+          <param name="min">-1</param>
+          <param name="max">1</param>
+        </command_interface>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+        <param name="motor_id">10</param>
+        <param name="serial_port">/dev/ttyUSB0</param>
+      </joint>
+      <joint name="RR_calf_joint">
+        <command_interface name="velocity">
+          <param name="min">-1</param>
+          <param name="max">1</param>
+        </command_interface>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+        <param name="motor_id">11</param>
+        <param name="serial_port">/dev/ttyUSB0</param>
+      </joint>
 
-    <joint name="RR_hip_joint">
-      <command_interface name="velocity">
-        <param name="min">-1</param>
-        <param name="max">1</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <param name="motor_id">9</param>
-      <param name="serial_port">/dev/ttyUSB0</param>
-    </joint>
-    <joint name="RR_thigh_joint">
-      <command_interface name="velocity">
-        <param name="min">-1</param>
-        <param name="max">1</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <param name="motor_id">10</param>
-      <param name="serial_port">/dev/ttyUSB0</param>
-    </joint>
-    <joint name="RR_calf_joint">
-      <command_interface name="velocity">
-        <param name="min">-1</param>
-        <param name="max">1</param>
-      </command_interface>
-      <state_interface name="position"/>
-      <state_interface name="velocity"/>
-      <param name="motor_id">11</param>
-      <param name="serial_port">/dev/ttyUSB0</param>
-    </joint>
-  </ros2_control>
-
+    </ros2_control>
+  </xacro:macro>
 </robot>

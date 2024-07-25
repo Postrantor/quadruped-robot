@@ -19,28 +19,24 @@ from launch.substitutions.launch_configuration import LaunchConfiguration
 
 ARGUMENTS = [
     DeclareLaunchArgument(
+        'robot_name',
+        default_value='robot_a1',
+        description='robot namespace'),
+    DeclareLaunchArgument(
         'use_sim_time',
         default_value='true',
         choices=['true', 'false'],
         description='use_sim_time'),
     DeclareLaunchArgument(
-        'robot_name',
-        default_value='robot_a1',
-        description='robot name'),
-    DeclareLaunchArgument(
-        'namespace',
-        default_value=LaunchConfiguration('robot_name'),
-        description='robot namespace'),
-    DeclareLaunchArgument(
-        'use_camera',
-        default_value='false',
-        description='Enable the camera'
-    ),
+        'use_mock_hardware',
+        default_value='true',
+        choices=['true', 'false'],
+        description='use gazebo simulation'),
     DeclareLaunchArgument(
         'debug',
         default_value='false',
-        description='debug'
-    ),
+        choices=['true', 'false'],
+        description='debug'),
 ]
 
 
@@ -71,10 +67,10 @@ def generate_launch_description():
             {'use_sim_time': LaunchConfiguration('use_sim_time')},
             {'robot_description': Command([
                 'xacro', ' ', xacro_file, ' '
-                'USE_CAMERA:=', LaunchConfiguration('use_camera'), ' '
-                'DEBUG:=', LaunchConfiguration('debug'), ' '
+                'debug:=', LaunchConfiguration('debug'), ' '
+                'use_mock_hardware:=', LaunchConfiguration('use_mock_hardware'), ' '
                 'gazebo:=ignition', ' ',
-                'namespace:=', LaunchConfiguration('namespace')])},],
+                'namespace:=', LaunchConfiguration('robot_name')])},],
         remappings=[
             ('/tf', 'tf'),
             ('/tf_static', 'tf_static')],
@@ -148,15 +144,11 @@ def generate_launch_description():
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=spawn_entity,
-                on_exit=[control_node],
-            )
-        ),
+                on_exit=[control_node],)),
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=control_node,
-                on_exit=[load_joint_state_broadcaster],
-            )
-        ),
+                on_exit=[load_joint_state_broadcaster],)),
     ]
 
     # 启动描述符

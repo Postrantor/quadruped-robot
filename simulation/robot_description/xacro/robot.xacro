@@ -1,26 +1,21 @@
 <?xml version="1.0"?>
 <robot name="robot_a1"
     xmlns:xacro="http://www.ros.org/wiki/xacro">
-    <!-- ros2 run xacro xacro robot.xacro -o robot.urdf USE_CAMERA:=false DEBUG:=false -->
 
     <xacro:include filename="$(find robot_description)/xacro/const.xacro"/>
     <xacro:include filename="$(find robot_description)/xacro/materials.xacro"/>
     <xacro:include filename="$(find robot_description)/xacro/leg.xacro"/>
-    <xacro:include filename="$(find robot_description)/xacro/stairs.xacro"/>
     <xacro:include filename="$(find robot_description)/xacro/gazebo.xacro"/>
-    <xacro:include filename="$(find robot_description)/config/ros2_control.xacro"/>
-    <xacro:if value="$(arg USE_CAMERA)">
-        <xacro:include filename="$(find realsense_ros_gazebo)/xacro/depthcam.xacro"/>
-    </xacro:if>
-
-    <!-- <xacro:include filename="$(find robot_description)/launch/stairs.urdf.xacro"/> -->
+    <!-- <xacro:include filename="$(find robot_description)/xacro/stairs.xacro"/> -->
     <!-- <xacro:stairs stairs="15" xpos="0" ypos="0" zpos="0" /> -->
+    <xacro:include filename="$(find robot_description)/config/ros2_control.xacro"/>
+    <xacro:use_ros2_control use_mock_hardware="$(arg use_mock_hardware)" />
 
     <!-- rollover protection mode will add an additional stick on the top, use "true" or "false" to switch it. -->
     <xacro:property name="rolloverProtection" value="false"/>
 
     <!-- debug mode will hung up the robot, use "true" or "false" to switch it. -->
-    <xacro:if value="$(arg DEBUG)">
+    <xacro:if value="$(arg debug)">
         <link name="world"/>
         <joint name="base_static_joint" type="fixed">
             <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -37,13 +32,11 @@
             </geometry>
         </visual>
     </link>
-
     <joint name="floating_base" type="fixed">
         <origin rpy="0 0 0" xyz="0 0 0"/>
         <parent link="base"/>
         <child link="trunk"/>
     </joint>
-
     <!-- <joint name="fixed_base" type="revolute">
         <limit upper="6.28" lower="-6.28" effort="1000" velocity="1000.00"/>
         <origin rpy="0 0 0" xyz="0 0 0.5"/>
@@ -72,19 +65,12 @@
         </inertial>
     </link>
 
-    <xacro:if value="$(arg USE_CAMERA)">
-        <xacro:realsense_d435 sensor_name="d435" parent_link="trunk" rate="10">
-            <origin rpy="0 0 0 " xyz="0.25 0 0.055"/>
-        </xacro:realsense_d435>
-    </xacro:if>
-
     <xacro:if value="${(rolloverProtection == 'true')}">
         <joint name="stick_joint" type="fixed">
             <parent link="trunk"/>
             <child link="stick_link"/>
             <origin rpy="0 0 0" xyz="${0.18} 0 ${stick_length/2.0+0.08}"/>
         </joint>
-
         <link name="stick_link">
             <visual>
                 <geometry>
@@ -111,7 +97,6 @@
         <child link="imu_link"/>
         <origin rpy="0 0 0" xyz="0 0 0"/>
     </joint>
-
     <link name="imu_link">
         <inertial>
             <mass value="0.001"/>
@@ -136,19 +121,15 @@
     <xacro:leg name="FR" mirror="-1" mirror_dae="False" front_hind="1" front_hind_dae="True">
         <origin rpy="0 0 0" xyz="${leg_offset_x} ${-leg_offset_y} 0"/>
     </xacro:leg>
-
     <xacro:leg name="FL" mirror="1" mirror_dae="True" front_hind="1" front_hind_dae="True">
         <origin rpy="0 0 0" xyz="${leg_offset_x} ${leg_offset_y} 0"/>
     </xacro:leg>
-
     <xacro:leg name="RR" mirror="-1" mirror_dae="False" front_hind="-1" front_hind_dae="False">
         <origin rpy="0 0 0" xyz="${-leg_offset_x} ${-leg_offset_y} 0"/>
     </xacro:leg>
-
     <xacro:leg name="RL" mirror="1" mirror_dae="True" front_hind="-1" front_hind_dae="False">
         <origin rpy="0 0 0" xyz="${-leg_offset_x} ${leg_offset_y} 0"/>
     </xacro:leg>
 
     <!-- <xacro:stairs stairs="15" xpos="0" ypos="2.0" zpos="0" /> -->
-
 </robot>
