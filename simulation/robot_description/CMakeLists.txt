@@ -98,4 +98,9 @@ install(
     share/${PROJECT_NAME}
 )
 
+install(
+  FILES scripts/activate_controller.py
+  DESTINATION share/${PROJECT_NAME}
+)
+
 ament_package()

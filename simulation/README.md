@@ -5,7 +5,7 @@ date: 2024-07-21 22:10:40
 ## start
 
 ```bash
-ros2 launch robot_description gazebo.launch.py
+ros2 launch robot_description gazebo.launch.py --debug
 ```
 
 默认起一个 gazebo server 等价于如下指令，会加载一些 so：

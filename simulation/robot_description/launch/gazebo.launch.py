@@ -10,9 +10,9 @@
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, RegisterEventHandler, DeclareLaunchArgument, GroupAction, TimerAction
+from launch.actions import IncludeLaunchDescription, RegisterEventHandler, DeclareLaunchArgument, GroupAction, TimerAction, SetEnvironmentVariable, ExecuteProcess
 from launch.substitutions import Command, PathJoinSubstitution
-from launch.event_handlers import OnProcessExit
+from launch.event_handlers import OnProcessExit, OnProcessStart
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from launch.substitutions.launch_configuration import LaunchConfiguration
@@ -37,6 +37,8 @@ ARGUMENTS = [
         default_value='false',
         choices=['true', 'false'],
         description='debug'),
+    SetEnvironmentVariable('SVGA_VGPU10', '0'),  # 禁用硬件加速
+    SetEnvironmentVariable('IGNITION_FUEL_URI', ''),  # 禁止从网络下载模型文件
 ]
 
 
@@ -49,8 +51,8 @@ def generate_launch_description():
     gazebo_launch_file = PathJoinSubstitution([pkg_gazebo_ros, 'launch', 'gazebo.launch.py'])
     empty_world_file = PathJoinSubstitution([pkg_description, 'worlds', 'earth.world'])
     rviz2_config_file = PathJoinSubstitution([pkg_description, 'config', 'robot.rviz'])
-    xacro_file = PathJoinSubstitution([pkg_description, 'xacro', 'robot.xacro'])
     robot_controllers = PathJoinSubstitution([pkg_description, 'config', 'controller.yaml'])
+    xacro_file = PathJoinSubstitution([pkg_description, 'xacro', 'robot.xacro'])
 
     # 启动 Gazebo 并指定 empty.world 文件，添加 gazebo_ros_state 插件
     gazebo = IncludeLaunchDescription(
@@ -70,11 +72,20 @@ def generate_launch_description():
                 'debug:=', LaunchConfiguration('debug'), ' '
                 'use_mock_hardware:=', LaunchConfiguration('use_mock_hardware'), ' '
                 'gazebo:=ignition', ' ',
-                'namespace:=', LaunchConfiguration('robot_name')])},],
+                'namespace:=', LaunchConfiguration('robot_name')])},
+        ],
         remappings=[
             ('/tf', 'tf'),
-            ('/tf_static', 'tf_static')],
+            ('/tf_static', 'tf_static')
+        ],
         output='screen',
+    )
+
+    control_node = Node(
+        package="controller_manager",
+        executable="ros2_control_node",
+        parameters=[robot_controllers], # same as <gazebo> tag parameters
+        output="screen",
     )
 
     # 生成机器人实体节点
@@ -85,25 +96,9 @@ def generate_launch_description():
         output='screen'
     )
 
-    # TODO(zhiqi.jia)::gazebo replace read this yaml, should be create parameter server by controller.yaml
-    # move to urdf `gazebo` tag
-    control_node = Node(
-        package="controller_manager",
-        executable="ros2_control_node",
-        parameters=['robot_description', robot_controllers],
-        output="both",
-    )
-
-    # 加载 joint_state_broadcaster 控制器
-    load_joint_state_broadcaster = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['joint_state_broadcaster', '--controller-manager', '/controller_manager'],
-        output='screen',
-    )
-
     # 控制器名称列表
     controller_names = [
+        'joint_state_broadcaster',
         'FL_hip_controller',
         # 'FL_thigh_controller',
         # 'FL_calf_controller',
@@ -117,49 +112,47 @@ def generate_launch_description():
         # 'RR_thigh_controller',
         # 'RR_calf_controller',
     ]
-
-    # 控制器节点列表
-    controllers = [
-        Node(
-            package='controller_manager',
-            executable='spawner',
-            arguments=[controller_name, '--controller-manager', '/controller_manager'],
-            output='screen',
+    load_and_config_controllers = [
+        ExecuteProcess(
+            cmd=['ros2', 'control', 'load_controller', '--set-state', 'configured', controller_name],
+            output='screen'
+        ) for controller_name in controller_names
+    ]
+    active_controllers = [
+        ExecuteProcess(
+            cmd=['ros2', 'control', 'set_controller_state', controller_name, 'active'],
+            output='screen'
         ) for controller_name in controller_names
     ]
 
-    # 延迟启动控制器
-    delayed_controllers = TimerAction(
-        period=10.0,  # 延迟 5 秒
-        actions=controllers
+    # load target
+    load_resource = TimerAction(
+        period=0.0,
+        actions=[gazebo, control_node]
     )
-
-    delayed_spawn = TimerAction(
-        period=5.0,  # 延迟 5 秒
-        actions=[spawn_entity]
+    delayed_start_entity = TimerAction(
+        period=5.0,
+        actions=[node_robot_state_publisher, spawn_entity]
     )
-
-    # 事件处理器，用于在特定节点退出后启动其他节点
+    delayed_load_controllers = TimerAction(
+        # should be wait for /controller_manager service ready
+        period=15.0,
+        actions=load_and_config_controllers
+    )
     event_handlers = [
         RegisterEventHandler(
             event_handler=OnProcessExit(
-                target_action=spawn_entity,
-                on_exit=[control_node],)),
-        RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=control_node,
-                on_exit=[load_joint_state_broadcaster],)),
+                target_action=load_and_config_controllers[-1],
+                on_exit=active_controllers
+            ))
     ]
 
-    # 启动描述符
     ld = LaunchDescription([
         *ARGUMENTS,
-        gazebo,
-        node_robot_state_publisher,
-        control_node,
-        delayed_spawn,
-        load_joint_state_broadcaster,
-        delayed_controllers,
+        load_resource,
+        delayed_start_entity,
+        delayed_load_controllers,
+        *event_handlers
     ])
 
     return ld
