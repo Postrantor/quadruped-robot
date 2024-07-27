@@ -4,7 +4,7 @@
 #
 # example:
 #    ```bash
-#    ros2 launch robot_description robot.launch.py
+#    ros2 launch robot_description gazebo.launch.py
 #    ros2 run robot_description example_robot
 #    ```
 
@@ -97,21 +97,12 @@ def generate_launch_description():
     )
 
     # load all controller
-    controller_names = [
-        'joint_state_broadcaster',
-        'FL_hip_controller',
-        'FL_thigh_controller',
-        'FL_calf_controller',
-        'FR_hip_controller',
-        'FR_thigh_controller',
-        'FR_calf_controller',
-        'RL_hip_controller',
-        'RL_thigh_controller',
-        'RL_calf_controller',
-        'RR_hip_controller',
-        'RR_thigh_controller',
-        'RR_calf_controller',
+    leg_controller_names = [
+        f'{leg}_{part}_controller'
+        for leg in ['FL', 'FR', 'RL', 'RR']
+        for part in ['hip', 'thigh', 'calf']
     ]
+    controller_names = leg_controller_names + ['joint_state_broadcaster']
     load_controllers = Node(
         package="controller_manager",
         executable="spawner",
