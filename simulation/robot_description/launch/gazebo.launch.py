@@ -84,7 +84,7 @@ def generate_launch_description():
     control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
-        parameters=[robot_controllers], # same as <gazebo> tag parameters
+        parameters=[robot_controllers],  # same as <gazebo> tag parameters
         output="screen",
     )
 
@@ -96,34 +96,29 @@ def generate_launch_description():
         output='screen'
     )
 
-    # 控制器名称列表
+    # load all controller
     controller_names = [
         'joint_state_broadcaster',
         'FL_hip_controller',
-        # 'FL_thigh_controller',
-        # 'FL_calf_controller',
-        # 'FR_hip_controller',
-        # 'FR_thigh_controller',
-        # 'FR_calf_controller',
-        # 'RL_hip_controller',
-        # 'RL_thigh_controller',
-        # 'RL_calf_controller',
-        # 'RR_hip_controller',
-        # 'RR_thigh_controller',
-        # 'RR_calf_controller',
+        'FL_thigh_controller',
+        'FL_calf_controller',
+        'FR_hip_controller',
+        'FR_thigh_controller',
+        'FR_calf_controller',
+        'RL_hip_controller',
+        'RL_thigh_controller',
+        'RL_calf_controller',
+        'RR_hip_controller',
+        'RR_thigh_controller',
+        'RR_calf_controller',
     ]
-    load_and_config_controllers = [
-        ExecuteProcess(
-            cmd=['ros2', 'control', 'load_controller', '--set-state', 'configured', controller_name],
-            output='screen'
-        ) for controller_name in controller_names
-    ]
-    active_controllers = [
-        ExecuteProcess(
-            cmd=['ros2', 'control', 'set_controller_state', controller_name, 'active'],
-            output='screen'
-        ) for controller_name in controller_names
-    ]
+    load_controllers = Node(
+        package="controller_manager",
+        executable="spawner",
+        # load each controller -> config and active all controller
+        arguments=['--activate-as-group', *controller_names],
+        output="screen",
+    )
 
     # load target
     load_resource = TimerAction(
@@ -136,23 +131,23 @@ def generate_launch_description():
     )
     delayed_load_controllers = TimerAction(
         # should be wait for /controller_manager service ready
-        period=15.0,
-        actions=load_and_config_controllers
+        period=20.0,
+        actions=[load_controllers]
     )
-    event_handlers = [
-        RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=load_and_config_controllers[-1],
-                on_exit=active_controllers
-            ))
-    ]
+    # event_handlers = [
+    #     RegisterEventHandler(
+    #         event_handler=OnProcessExit(
+    #             target_action=load_and_config_controllers[-1],
+    #             on_exit=active_controllers
+    #         ))
+    # ]
 
     ld = LaunchDescription([
         *ARGUMENTS,
         load_resource,
         delayed_start_entity,
         delayed_load_controllers,
-        *event_handlers
+        # *event_handlers
     ])
 
     return ld
