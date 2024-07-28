@@ -1,35 +1,11 @@
 # 这个文件是用于生成对应的参数解析、参数服务用的，在 cmake 中使用
 
 unitree_position_controller:
-  joint_ll_0_name:
+  joint_name:
     {
       type: string_array,
       default_value: [],
       description: "unitree motor joint",
-    }
-  pose_covariance_diagonal:
-    {
-      type: double_array,
-      default_value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-      description: "Odometry covariance for the encoder output of the robot for the pose. These values should be tuned to your robot's sample odometry data, but these values are a good place to start: ``[0.001, 0.001, 0.001, 0.001, 0.001, 0.01]``.",
-    }
-  twist_covariance_diagonal:
-    {
-      type: double_array,
-      default_value: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-      description: "Odometry covariance for the encoder output of the robot for the speed. These values should be tuned to your robot's sample odometry data, but these values are a good place to start: ``[0.001, 0.001, 0.001, 0.001, 0.001, 0.01]``.",
-    }
-  open_loop:
-    {
-      type: bool,
-      default_value: false,
-      description: "If set to true the odometry of the robot will be calculated from the commanded values and not from feedback.",
-    }
-  position_feedback:
-    {
-      type: bool,
-      default_value: false,
-      description: "Is there position feedback from hardware.",
     }
   publish_rate: {
       type: double,
@@ -41,37 +17,3 @@ unitree_position_controller:
       default_value: 0.5, # seconds
       description: "Timeout in seconds, after which input command on ``cmd_vel`` topic is considered staled.",
     }
-  publish_limited_velocity:
-    {
-      type: bool,
-      default_value: false,
-      description: "Publish limited velocity value.",
-    }
-  velocity_rolling_window_size:
-    {
-      type: int,
-      default_value: 10,
-      description: "Size of the rolling window for calculation of mean velocity use in odometry.",
-    }
-  linear:
-    x:
-      has_velocity_limits: { type: bool, default_value: false }
-      has_acceleration_limits: { type: bool, default_value: false }
-      has_jerk_limits: { type: bool, default_value: false }
-      max_velocity: { type: double, default_value: .NAN }
-      min_velocity: { type: double, default_value: .NAN }
-      max_acceleration: { type: double, default_value: .NAN }
-      min_acceleration: { type: double, default_value: .NAN }
-      max_jerk: { type: double, default_value: .NAN }
-      min_jerk: { type: double, default_value: .NAN }
-  angular:
-    z:
-      has_velocity_limits: { type: bool, default_value: false }
-      has_acceleration_limits: { type: bool, default_value: false }
-      has_jerk_limits: { type: bool, default_value: false }
-      max_velocity: { type: double, default_value: .NAN }
-      min_velocity: { type: double, default_value: .NAN }
-      max_acceleration: { type: double, default_value: .NAN }
-      min_acceleration: { type: double, default_value: .NAN }
-      max_jerk: { type: double, default_value: .NAN }
-      min_jerk: { type: double, default_value: .NAN }

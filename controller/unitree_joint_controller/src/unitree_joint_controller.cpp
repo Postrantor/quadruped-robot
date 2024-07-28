@@ -1,6 +1,6 @@
 /**
  * @brief controller for unitree motor
- * @date 2024-06-24 09:37:38
+ * @date 2024-07-28 16:49:13
  * @copyright Copyright (c) 2024
  */
 
@@ -23,12 +23,6 @@
 #include "unitree_joint_controller/unitree_joint_controller.hpp"
 
 namespace {
-/**
-  ros2 topic pub --rate 10 /unitree_base_controller/cmd_vel geometry_msgs/msg/TwistStamped
-  "twist:
-    linear: x: 0.7 y: 0.0 z: 0.0
-    angular: x: 0.0 y: 0.0 z: 1.0"
-*/
 constexpr auto DEFAULT_DESIRED_CMD_TOPIC = "~/desired_cmd";    // sub
 constexpr auto DEFAULT_REAL_CMD_TOPIC = "~/control_cmd";       // pub
 constexpr auto DEFAULT_TARGET_STATE_TOPIC = "~/target_state";  // pub
@@ -253,6 +247,14 @@ controller_interface::return_type UnitreeJointController::update(
     target_state.dq = feedback_velocity;
   }
 
+  std::cout << "@zhiqi.jia debug unitree_joint_controller - desired_cmd: \n" //
+    << "\tq: " << desired_cmd.q
+    << "\tdq: " << desired_cmd.dq //
+    << "\ttau: " << desired_cmd.tau //
+    << "\tk_q: " << desired_cmd.k_q //
+    << "\tk_dq: " << desired_cmd.k_dq //
+    << std::endl;
+
   // TODO(@zhiqi.jia) :: should add limited
   if (desired_cmd.mode == PMSM) {
     servo_cmd_.pos = desired_cmd.q;
@@ -289,8 +291,15 @@ controller_interface::return_type UnitreeJointController::update(
     for (size_t i = 0; i < params_.joint_name.size(); ++i) {
       registered_joint_handles_[i].command_velocity.get().set_value(desired_cmd.dq);
       RCLCPP_INFO_STREAM(
-          LOGGER, "update()->write " << params_.joint_name[i] << " to hardware;" << "\n\tand pub to topic: " << DEFAULT_REAL_CMD_TOPIC << " and " << DEFAULT_TARGET_STATE_TOPIC);
+          LOGGER, "update()->write " << params_.joint_name[i] << "desired_cmd.dq: " << desired_cmd.dq << " to hardware");
     }
+  }
+
+  for (size_t i = 0; i < params_.joint_name.size(); ++i) {
+    auto feedback_pos_ = registered_joint_handles_[i].feedback_position.get().get_value();
+    auto feedback_vel_ = registered_joint_handles_[i].feedback_velocity.get().get_value();
+    RCLCPP_INFO_STREAM(
+        LOGGER, "get feedback from gazebo hardware: " << feedback_vel_ << "\t" << feedback_pos_);
   }
 
   return controller_interface::return_type::OK;
@@ -343,9 +352,9 @@ controller_interface::CallbackReturn UnitreeJointController::get_joint_handle(
 
     // return
     registered_handles.emplace_back(JointHandle{
-        std::ref(*command_velocity_handle),  //
         std::ref(*state_position_handle),    //
         std::ref(*state_velocity_handle),    //
+        std::ref(*command_velocity_handle),  //
     });
   }
 

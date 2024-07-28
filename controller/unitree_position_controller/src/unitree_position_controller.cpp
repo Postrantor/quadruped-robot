@@ -34,7 +34,7 @@ using namespace std::chrono_literals;
 
 controller_interface::InterfaceConfiguration UnitreePositionController::command_interface_configuration() const {
   std::vector<std::string> conf_names;
-  for (const auto &joint_name : params_.joint_ll_0_name) {
+  for (const auto &joint_name : params_.joint_name) {
     // `<joint_name>/<interface_type>`
     conf_names.push_back(joint_name + "/" + hardware_interface::HW_IF_VELOCITY);
   }
@@ -44,7 +44,7 @@ controller_interface::InterfaceConfiguration UnitreePositionController::command_
 
 controller_interface::InterfaceConfiguration UnitreePositionController::state_interface_configuration() const {
   std::vector<std::string> conf_names;
-  for (const auto &joint_name : params_.joint_ll_0_name) {
+  for (const auto &joint_name : params_.joint_name) {
     conf_names.push_back(joint_name + "/" + hardware_interface::HW_IF_POSITION);
     conf_names.push_back(joint_name + "/" + hardware_interface::HW_IF_VELOCITY);
   }
@@ -134,7 +134,7 @@ CallbackReturn UnitreePositionController::on_configure(const rclcpp_lifecycle::S
 
 CallbackReturn UnitreePositionController::on_activate(const rclcpp_lifecycle::State &) {
   // get hardware_interface
-  const auto result = get_joint_handle(params_.joint_ll_0_name, registered_joint_handles_);
+  const auto result = get_joint_handle(params_.joint_name, registered_joint_handles_);
   if (result == CallbackReturn::ERROR) {
     return CallbackReturn::ERROR;
   }
@@ -223,7 +223,7 @@ controller_interface::return_type UnitreePositionController::update(
 
   // 2. read `target_state` from hardware_interface
   // 针对unitree motor应该使用上次write()中获取的结果？
-  for (size_t i = 0; i < params_.joint_ll_0_name.size(); ++i) {
+  for (size_t i = 0; i < params_.joint_name.size(); ++i) {
     const double feedback_position = registered_joint_handles_[i].feedback_position.get().get_value();
     const double feedback_velocity = registered_joint_handles_[i].feedback_velocity.get().get_value();
 
@@ -265,11 +265,18 @@ controller_interface::return_type UnitreePositionController::update(
     publishe_real_command_->publish(desired_state);  // real_cmd=sub_cmd
     publishe_target_state_->publish(target_state);
     // and write()->motor
-    for (size_t i = 0; i < params_.joint_ll_0_name.size(); ++i) {
+    for (size_t i = 0; i < params_.joint_name.size(); ++i) {
+      registered_joint_handles_[i].command_velocity.get().set_value(0.33);
       RCLCPP_INFO_STREAM(
-          LOGGER, "from publisher: " << DEFAULT_DESIRED_STATE_TOPIC << " write() desired_state to hardware interfaces");
-      registered_joint_handles_[i].command_velocity.get().set_value(desired_state.twist.linear.y);
+          LOGGER, "update()->write " << params_.joint_name[i] << "last_desired_state->twist.linear.x: " << last_desired_state->twist.linear.x << " to hardware");
     }
+  }
+
+  for (size_t i = 0; i < params_.joint_name.size(); ++i) {
+    auto feedback_pos_ = registered_joint_handles_[i].feedback_position.get().get_value();
+    auto feedback_vel_ = registered_joint_handles_[i].feedback_velocity.get().get_value();
+    RCLCPP_INFO_STREAM(
+        LOGGER, "get feedback from gazebo hardware: " << feedback_vel_ << "\t" << feedback_pos_);
   }
 
   return controller_interface::return_type::OK;
