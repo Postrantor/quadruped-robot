@@ -9,6 +9,37 @@ ros2 launch robot_description gazebo.launch.py --debug
 ros2 control list_controllers -v
 ```
 
+###
+
+尝试通过命令行方式发送控制指令可能会有问题？
+可能是以为数据类型不完全匹配的问题，需要看一下 controller 的细节。
+
+```bash
+ros2 topic pub --rate 1 /FL_calf_controller/desired_state geometry_msgs/msg/TwistStamped "{
+  twist: {
+    linear: {x: 0.7, y: 0.0, z: 0.0},
+    angular: {x: 0.0, y: 0.0, z: 1.0},
+  }
+}"
+
+ros2 topic pub --rate 1 /FL_calf_controller/desired_cmd unitree_msgs/msg/MotorCmd "{
+  header: {
+    stamp: {sec: 0, nanosec: 0},
+    frame_id: 'frame_id_string'
+  },
+  hex_len: 17,
+  id: 0,
+  mode: 10,
+  tau: 2.0,
+  dq: 2.0,
+  q: 15.0,
+  k_q: 5.0,
+  k_dq: 5.0
+}"
+```
+
+### gazebo 调试
+
 默认起一个 gazebo server 等价于如下指令，会加载一些 so：
 
 ```bash

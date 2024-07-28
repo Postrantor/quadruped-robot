@@ -70,17 +70,24 @@ add_executable(spawn_model
 target_link_libraries(spawn_model qr_gazebo)
 ament_target_dependencies(spawn_model ${DEPENDENCIES})
 
+# executable
+add_executable(example_robot
+  example/example_robot.cpp
+)
+ament_target_dependencies(example_robot ${DEPENDENCIES})
+
 # install
 install(
   TARGETS
     spawn_model
     qr_gazebo
+    example_robot
     # unitreeFootContactPlugin
     # unitreeDrawForcePlugin
     # drawLinesPlugin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
+  RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
 install(

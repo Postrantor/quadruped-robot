@@ -1,18 +1,20 @@
-# @brief
-# @author postrantor@gmail.com
-# @date 2024-07-24 22:35:39
-#
-# example:
-#    ```bash
-#    ros2 launch robot_description gazebo.launch.py
-#    ros2 run robot_description example_robot
-#    ```
+"""
+@brief
+@author postrantor@gmail.com
+@date 2024-07-29 20:48:03
+
+example:
+   ```bash
+   ros2 launch robot_description gazebo.launch.py
+   ros2 run robot_description example_robot
+   ```
+"""
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, RegisterEventHandler, DeclareLaunchArgument, GroupAction, TimerAction, SetEnvironmentVariable, ExecuteProcess
+from launch.actions import IncludeLaunchDescription, RegisterEventHandler, DeclareLaunchArgument, TimerAction, SetEnvironmentVariable
 from launch.substitutions import Command, PathJoinSubstitution
-from launch.event_handlers import OnProcessExit, OnProcessStart
+from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from launch.substitutions.launch_configuration import LaunchConfiguration
@@ -43,24 +45,24 @@ ARGUMENTS = [
 
 
 def generate_launch_description():
-    # 获取共享目录路径
+    # get package path
     pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
     pkg_description = get_package_share_directory('robot_description')
 
-    # 文件路径定义
+    # get config file path
     gazebo_launch_file = PathJoinSubstitution([pkg_gazebo_ros, 'launch', 'gazebo.launch.py'])
     empty_world_file = PathJoinSubstitution([pkg_description, 'worlds', 'earth.world'])
     rviz2_config_file = PathJoinSubstitution([pkg_description, 'config', 'robot.rviz'])
     robot_controllers = PathJoinSubstitution([pkg_description, 'config', 'controller.yaml'])
     xacro_file = PathJoinSubstitution([pkg_description, 'xacro', 'robot.xacro'])
 
-    # 启动 Gazebo 并指定 empty.world 文件，添加 gazebo_ros_state 插件
+    # start Gazebo use empty.world, load gazebo_ros_state
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(gazebo_launch_file),
         launch_arguments={'world': empty_world_file}.items()
     )
 
-    # 机器人状态发布器节点
+    # load robot_state_publisher
     node_robot_state_publisher = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
@@ -88,7 +90,7 @@ def generate_launch_description():
         output="screen",
     )
 
-    # 生成机器人实体节点
+    # spawn entity
     spawn_entity = Node(
         package='gazebo_ros',
         executable='spawn_entity.py',
@@ -102,43 +104,37 @@ def generate_launch_description():
         for leg in ['FL', 'FR', 'RL', 'RR']
         for part in ['hip', 'thigh', 'calf']
     ]
-    controller_names = leg_controller_names + ['joint_state_broadcaster']
+    controller_names = ['FL_thigh_controller'] + ['joint_state_broadcaster']
     load_controllers = Node(
         package="controller_manager",
         executable="spawner",
         # load each controller -> config and active all controller
-        arguments=['--activate-as-group', *controller_names],
+        arguments=['--activate-as-group', *controller_names, '--controller-manager', '/controller_manager'],
         output="screen",
     )
 
     # load target
     load_resource = TimerAction(
         period=0.0,
-        actions=[gazebo, control_node]
+        actions=[gazebo]
     )
     delayed_start_entity = TimerAction(
         period=5.0,
         actions=[node_robot_state_publisher, spawn_entity]
     )
-    delayed_load_controllers = TimerAction(
-        # should be wait for /controller_manager service ready
-        period=20.0,
-        actions=[load_controllers]
-    )
-    # event_handlers = [
-    #     RegisterEventHandler(
-    #         event_handler=OnProcessExit(
-    #             target_action=load_and_config_controllers[-1],
-    #             on_exit=active_controllers
-    #         ))
-    # ]
+    event_handlers = [
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=spawn_entity,  # load_and_config_controllers[-1],
+                on_exit=load_controllers
+            ))
+    ]
 
     ld = LaunchDescription([
         *ARGUMENTS,
         load_resource,
         delayed_start_entity,
-        delayed_load_controllers,
-        # *event_handlers
+        *event_handlers,
     ])
 
     return ld

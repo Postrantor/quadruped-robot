@@ -48,8 +48,8 @@ target_compile_definitions(unitree_position_controller PRIVATE "unitree_position
 pluginlib_export_plugin_description_file(controller_interface unitree_position_plugin.xml)
 
 install(
-  DIRECTORY include/
-  DESTINATION include
+  DIRECTORY include
+  DESTINATION .
 )
 
 install(
