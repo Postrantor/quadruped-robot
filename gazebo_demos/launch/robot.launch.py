@@ -10,7 +10,7 @@
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, RegisterEventHandler, GroupAction
+from launch.actions import IncludeLaunchDescription, RegisterEventHandler
 from launch.substitutions import Command, PathJoinSubstitution
 from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -27,6 +27,17 @@ def generate_launch_description():
     empty_world_file = PathJoinSubstitution([pkg_description, 'worlds', 'empty.world'])
     rviz2_config_file = PathJoinSubstitution([pkg_description, 'config', 'robot.rviz'])
     xacro_file = PathJoinSubstitution([pkg_description, 'xacro', 'robot.urdf'])
+
+    robot_controllers = PathJoinSubstitution([pkg_description, 'config', 'unitree_motor_controllers.yaml'])
+    control_node = Node(
+        package="controller_manager",
+        executable="ros2_control_node",
+        parameters=[robot_controllers],  # same as <gazebo> tag parameters
+        remappings=[
+            ("~/robot_description", "/robot_description"),
+        ],
+        output="screen",
+    )
 
     # 机器人状态发布器节点
     node_robot_state_publisher = Node(
@@ -46,6 +57,10 @@ def generate_launch_description():
     )
 
     # 生成机器人实体节点
+    # 创建 `gazebo_ros_state` node，以及如下service/topic
+    # - service: get_entity_state
+    # - service: set_entity_state
+    # - topic: model_states
     spawn_entity = Node(
         package='gazebo_ros',
         executable='spawn_entity.py',
@@ -53,29 +68,11 @@ def generate_launch_description():
         output='screen'
     )
 
-    # TODO(zhiqi.jia)::gazebo replace read this yaml, should be create parameter server by controller.yaml
-    # move to urdf `gazebo` tag
-    # robot_controllers = PathJoinSubstitution([
-    #     FindPackageShare("unitree_motor_example"), "config", "unitree_motor_controllers.yaml",])
-    # control_node = Node(
-    #     package="controller_manager",
-    #     executable="ros2_control_node",
-    #     parameters=[robot_description, robot_controllers],
-    #     output="both",)
-
-    # 加载 joint_state_broadcaster 控制器
-    load_joint_state_broadcaster = Node(
+    # 加载控制器
+    load_controllers = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['joint_state_broadcaster', '--controller-manager', '/controller_manager'],
-        output='screen',
-    )
-
-    # 加载 diff_drive_base_controller 控制器
-    load_diff_drive_base_controller = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['diff_drive_base_controller', '--controller-manager', '/controller_manager'],
+        arguments=['joint_state_broadcaster', 'diff_drive_base_controller', '--activate-as-group', '--controller-manager', '/controller_manager'],
         output='screen',
     )
 
@@ -94,15 +91,7 @@ def generate_launch_description():
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=spawn_entity,
-                on_exit=[load_joint_state_broadcaster],
-            )
-        ),
-        RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=load_joint_state_broadcaster,
-                on_exit=[load_diff_drive_base_controller],
-            )
-        ),
+                on_exit=[load_controllers],)),
     ]
 
     # 启动描述符

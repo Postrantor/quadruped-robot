@@ -1,3 +1,10 @@
+/**
+ * @brief
+ * @date 2024-07-28 14:31:04
+ * @copyright Copyright (c) 2024
+ *
+ */
+
 #include <memory>
 #include <rclcpp/rclcpp.hpp>
 #include <geometry_msgs/msg/twist.hpp>
@@ -12,14 +19,11 @@ int main(int argc, char* argv[]) {
   auto publisher =
       node->create_publisher<geometry_msgs::msg::Twist>("/diff_drive_base_controller/cmd_vel_unstamped", 10);
 
-  RCLCPP_INFO(node->get_logger(), "node created");
-
   geometry_msgs::msg::Twist command;
 
   command.linear.x = 0.2;
   command.linear.y = 0.0;
   command.linear.z = 0.0;
-
   command.angular.x = 0.0;
   command.angular.y = 0.0;
   command.angular.z = 0.1;
@@ -29,6 +33,7 @@ int main(int argc, char* argv[]) {
     std::this_thread::sleep_for(50ms);
     rclcpp::spin_some(node);
   }
+
   rclcpp::shutdown();
 
   return 0;

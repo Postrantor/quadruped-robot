@@ -169,6 +169,76 @@ trantor ➜ ~/project/demo_ws
 
 ##### 插件 `gazebo_ros_state`
 
+添加这个插件，在 service 中会多出这些
+
+```log
+> ros2 node info /gazebo_ros_state
+/gazebo_ros_state
+  Subscribers:
+    /clock: rosgraph_msgs/msg/Clock
+    /parameter_events: rcl_interfaces/msg/ParameterEvent
+  Publishers:
+    /link_states: gazebo_msgs/msg/LinkStates
+    /model_states: gazebo_msgs/msg/ModelStates
+    /parameter_events: rcl_interfaces/msg/ParameterEvent
+    /rosout: rcl_interfaces/msg/Log
+  Service Servers:
+    /gazebo_ros_state/describe_parameters: rcl_interfaces/srv/DescribeParameters
+    /gazebo_ros_state/get_parameter_types: rcl_interfaces/srv/GetParameterTypes
+    /gazebo_ros_state/get_parameters: rcl_interfaces/srv/GetParameters
+    /gazebo_ros_state/list_parameters: rcl_interfaces/srv/ListParameters
+    /gazebo_ros_state/set_parameters: rcl_interfaces/srv/SetParameters
+    /gazebo_ros_state/set_parameters_atomically: rcl_interfaces/srv/SetParametersAtomically
+    /get_entity_state: gazebo_msgs/srv/GetEntityState
+    /set_entity_state: gazebo_msgs/srv/SetEntityState
+  Service Clients:
+
+  Action Servers:
+
+  Action Clients:
+```
+
+```log
+/gazebo_ros_state/describe_parameters
+/gazebo_ros_state/get_parameter_types
+/gazebo_ros_state/get_parameters
+/gazebo_ros_state/list_parameters
+/gazebo_ros_state/set_parameters
+/gazebo_ros_state/set_parameters_atomically
+```
+
+以及一些 topic
+
+```log
+[gzserver-1] [INFO] [1722146331.162803978] [gazebo_ros_state]: Publishing states of gazebo models at [/model_states]
+[gzserver-1] [INFO] [1722146331.167023273] [gazebo_ros_state]: Publishing states of gazebo links at [/link_states]
+```
+
+订阅这两个 topic 的信息可以发现，是 gazebo 在向外反馈机器人的状态信息
+
+```
+> ros2 topic info -v /link_states
+Type: gazebo_msgs/msg/LinkStates
+
+Publisher count: 1
+
+Node name: gazebo_ros_state
+Node namespace: /
+Topic type: gazebo_msgs/msg/LinkStates
+Endpoint type: PUBLISHER
+GID: 01.10.d8.92.48.dd.26.ee.bb.cb.6d.88.00.00.43.03.00.00.00.00.00.00.00.00
+QoS profile:
+  Reliability: RELIABLE
+  History (Depth): KEEP_LAST (1)
+  Durability: VOLATILE
+  Lifespan: Infinite
+  Deadline: Infinite
+  Liveliness: AUTOMATIC
+  Liveliness lease duration: Infinite
+
+Subscription count: 0
+```
+
 - service: get_entity_state
 - service: set_entity_state
 - topic: model_states
@@ -184,3 +254,68 @@ trantor ➜ ~/project/demo_ws
 - 定期发布 model_states ROS 主题，其中包含仿真中所有模型的姿态和扭转。
 
 See more details on ROS 2 Migration: [Entity states](https://github.com/ros-simulation/gazebo_ros_pkgs/wiki/ROS-2-Migration:-Entity-states)
+
+#####
+
+```log
+> ros2 launch gazebo_ros2_control_demos robot.launch.py
+
+[INFO] [gzserver-1]: process started with pid [12557]
+[INFO] [gzclient-2]: process started with pid [12559]
+[INFO] [robot_state_publisher-3]: process started with pid [12561]
+[INFO] [spawn_entity.py-4]: process started with pid [12563]
+[robot_state_publisher-3] [WARN] [1722148088.366125552] [kdl_parser]: The root link chassis has an inertia specified in the URDF, but KDL does not support a root link with an inertia.  As a workaround, you can add an extra dummy link to your URDF.
+[robot_state_publisher-3] [INFO] [1722148088.366513807] [robot_state_publisher]: got segment caster
+[robot_state_publisher-3] [INFO] [1722148088.366649290] [robot_state_publisher]: got segment chassis
+[robot_state_publisher-3] [INFO] [1722148088.366674503] [robot_state_publisher]: got segment left_wheel
+[robot_state_publisher-3] [INFO] [1722148088.366694503] [robot_state_publisher]: got segment right_wheel
+[spawn_entity.py-4] [INFO] [1722148088.735728001] [spawn_entity]: Spawn Entity started
+[spawn_entity.py-4] [INFO] [1722148088.736174854] [spawn_entity]: Loading entity published on topic robot_description
+[spawn_entity.py-4] [INFO] [1722148088.738805119] [spawn_entity]: Waiting for entity xml on robot_description
+[spawn_entity.py-4] [INFO] [1722148088.740924785] [spawn_entity]: Waiting for service /spawn_entity, timeout = 30
+[spawn_entity.py-4] [INFO] [1722148088.741381347] [spawn_entity]: Waiting for service /spawn_entity
+[gzserver-1] [INFO] [1722148089.481451569] [gazebo_ros_state]: Publishing states of gazebo models at [/model_states]
+[gzserver-1] [INFO] [1722148089.483798132] [gazebo_ros_state]: Publishing states of gazebo links at [/link_states]
+[spawn_entity.py-4] [INFO] [1722148089.497492284] [spawn_entity]: Calling service /spawn_entity
+[spawn_entity.py-4] [INFO] [1722148089.750278031] [spawn_entity]: Spawn status: SpawnEntity: Successfully spawned entity [diffdrive]
+[gzserver-1] [INFO] [1722148089.791557756] [gazebo_ros2_control]: Loading gazebo_ros2_control plugin
+[gzserver-1] [INFO] [1722148089.798216903] [gazebo_ros2_control]: Starting gazebo_ros2_control plugin in namespace: /
+[gzserver-1] [INFO] [1722148089.798348759] [gazebo_ros2_control]: Starting gazebo_ros2_control plugin in ros 2 node: gazebo_ros2_control
+[gzserver-1] [INFO] [1722148089.802834510] [gazebo_ros2_control]: connected to service!! robot_state_publisher
+[gzserver-1] [INFO] [1722148089.804750631] [gazebo_ros2_control]: Received urdf from param server, parsing...
+[gzserver-1] [INFO] [1722148089.805260221] [gazebo_ros2_control]: Loading parameter files /home/trantor/project/demo_ws/install/gazebo_ros2_control_demos/share/gazebo_ros2_control_demos/config/controller.yaml
+[gzserver-1] [INFO] [1722148089.849426259] [gazebo_ros2_control]: Loading joint: left_wheel_joint
+[gzserver-1] [INFO] [1722148089.849700505] [gazebo_ros2_control]: 	State:
+[gzserver-1] [INFO] [1722148089.849748064] [gazebo_ros2_control]: 		 position
+[gzserver-1] [INFO] [1722148089.850334195] [gazebo_ros2_control]: 		 velocity
+[gzserver-1] [INFO] [1722148089.850641951] [gazebo_ros2_control]: 	Command:
+[gzserver-1] [INFO] [1722148089.850764714] [gazebo_ros2_control]: 		 velocity
+[gzserver-1] [INFO] [1722148089.851574653] [gazebo_ros2_control]: Loading joint: right_wheel_joint
+[gzserver-1] [INFO] [1722148089.851615453] [gazebo_ros2_control]: 	State:
+[gzserver-1] [INFO] [1722148089.851645009] [gazebo_ros2_control]: 		 position
+[gzserver-1] [INFO] [1722148089.851722547] [gazebo_ros2_control]: 		 velocity
+[gzserver-1] [INFO] [1722148089.851746077] [gazebo_ros2_control]: 	Command:
+[gzserver-1] [INFO] [1722148089.851783785] [gazebo_ros2_control]: 		 velocity
+[gzserver-1] [INFO] [1722148089.853470955] [resource_manager]: Initialize hardware 'GazeboSystem'
+[gzserver-1] [INFO] [1722148089.856482494] [resource_manager]: Successful initialization of hardware 'GazeboSystem'
+[gzserver-1] [INFO] [1722148089.862613787] [resource_manager]: 'configure' hardware 'GazeboSystem'
+[gzserver-1] [INFO] [1722148089.863024462] [resource_manager]: Successful 'configure' of hardware 'GazeboSystem'
+[gzserver-1] [INFO] [1722148089.863665043] [resource_manager]: 'activate' hardware 'GazeboSystem'
+[gzserver-1] [INFO] [1722148089.863694982] [resource_manager]: Successful 'activate' of hardware 'GazeboSystem'
+[gzserver-1] [INFO] [1722148089.865766258] [gazebo_ros2_control]: Loading controller_manager
+[gzserver-1] [WARN] [1722148089.947164544] [gazebo_ros2_control]:  Desired controller update period (0.01 s) is slower than the gazebo simulation period (0.001 s).
+[gzserver-1] [INFO] [1722148089.948366914] [gazebo_ros2_control]: Loaded gazebo_ros2_control.
+[INFO] [spawn_entity.py-4]: process has finished cleanly [pid 12563]
+[INFO] [spawner-5]: process started with pid [12669]
+[gzserver-1] [INFO] [1722148090.345370213] [controller_manager]: Loading controller 'joint_state_broadcaster'
+[spawner-5] [INFO] [1722148090.420926867] [spawner_joint_state_broadcaster]: Loaded joint_state_broadcaster
+[gzserver-1] [INFO] [1722148090.424703341] [controller_manager]: Configuring controller 'joint_state_broadcaster'
+[gzserver-1] [INFO] [1722148090.426234441] [joint_state_broadcaster]: 'joints' or 'interfaces' parameter is empty. All available state interfaces will be published
+[gzserver-1] [INFO] [1722148090.457912768] [controller_manager]: Loading controller 'diff_drive_base_controller'
+[spawner-5] [INFO] [1722148090.508866352] [spawner_joint_state_broadcaster]: Loaded diff_drive_base_controller
+[gzserver-1] [INFO] [1722148090.510738046] [controller_manager]: Configuring controller 'diff_drive_base_controller'
+[spawner-5] [INFO] [1722148090.574776267] [spawner_joint_state_broadcaster]: Configured and activated all the parsed controllers list!
+[INFO] [spawner-5]: process has finished cleanly [pid 12669]
+[gzclient-2] context mismatch in svga_surface_destroy
+[gzclient-2] context mismatch in svga_surface_destroy
+```
