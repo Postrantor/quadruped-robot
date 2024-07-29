@@ -2,19 +2,6 @@
 <robot name="robot_a1"
     xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <gazebo>
-        <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
-            <parameters>$(find robot_description)/config/controller.yaml</parameters>
-            <robot_param>robot_description</robot_param>
-            <robot_param_node>robot_state_publisher</robot_param_node>
-            <ros>
-                <!-- <namespace>/robot_a1</namespace> -->
-                <!-- <remapping>/old_topic:=/new_topic</remapping> -->
-                <!-- <remapping>/another_old_topic:=/another_new_topic</remapping> -->
-            </ros>
-        </plugin>
-    </gazebo>
-
     <!-- <gazebo reference="imu_link">
         <gravity>true</gravity>
         <sensor name="imu_sensor" type="imu">

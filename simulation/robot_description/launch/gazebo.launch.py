@@ -51,10 +51,10 @@ def generate_launch_description():
 
     # get config file path
     gazebo_launch_file = PathJoinSubstitution([pkg_gazebo_ros, 'launch', 'gazebo.launch.py'])
-    empty_world_file = PathJoinSubstitution([pkg_description, 'worlds', 'earth.world'])
-    rviz2_config_file = PathJoinSubstitution([pkg_description, 'config', 'robot.rviz'])
-    robot_controllers = PathJoinSubstitution([pkg_description, 'config', 'controller.yaml'])
-    xacro_file = PathJoinSubstitution([pkg_description, 'xacro', 'robot.xacro'])
+    empty_world_file = PathJoinSubstitution([pkg_description, 'config', 'worlds', 'earth.world'])
+    robot_controllers = PathJoinSubstitution([pkg_description, 'config', 'controller', 'controller.yaml'])
+    xacro_file = PathJoinSubstitution([pkg_description, 'config', 'xacro', 'robot.xacro'])
+    rviz2_config_file = PathJoinSubstitution([pkg_description, 'config', 'rviz', 'robot.rviz'])
 
     # start Gazebo use empty.world, load gazebo_ros_state
     gazebo = IncludeLaunchDescription(

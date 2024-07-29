@@ -37,21 +37,26 @@ set(DEPENDENCIES
   tf2_ros
 )
 
-include_directories(
-  include
-)
+include_directories(include)
 
-add_executable(${PROJECT_NAME} simulation/example_simulation_2.cpp)
-target_link_libraries(${PROJECT_NAME}
+add_executable(example_simulation
+  simulation/example_simulation_2.cpp)
+target_link_libraries(example_simulation
   Eigen3::Eigen
 )
-ament_target_dependencies(${PROJECT_NAME} ${DEPENDENCIES})
+ament_target_dependencies(example_simulation ${DEPENDENCIES})
+
+# executable
+add_executable(example_robot
+  simulation/example_robot.cpp
+)
+ament_target_dependencies(example_robot ${DEPENDENCIES})
 
 install(
-  TARGETS ${PROJECT_NAME}
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
+  TARGETS
+    example_simulation
+    example_robot
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 ament_package()

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <robot name="robot_a1"
     xmlns:xacro="http://www.ros.org/wiki/xacro">
-    <xacro:include filename="$(find robot_description)/xacro/transmission.xacro"/>
+    <xacro:include filename="$(find robot_description)/config/xacro/transmission.xacro"/>
 
     <!-- <xacro:property name="damping" value="0.3" /> -->
     <!-- <xacro:property name="friction" value="0.3" /> -->
@@ -37,7 +37,7 @@
                     <origin rpy="${PI} ${PI} 0" xyz="0 0 0"/>
                 </xacro:if>
                 <geometry>
-                    <mesh filename="$(find robot_description)/meshes/hip.dae" scale="1 1 1"/>
+                    <mesh filename="$(find robot_description)/config/meshes/hip.dae" scale="1 1 1"/>
                 </geometry>
                 <material name="orange"/>
             </visual>
@@ -84,10 +84,10 @@
                 <origin rpy="0 0 0" xyz="0 0 0"/>
                 <geometry>
                     <xacro:if value="${mirror_dae == True}">
-                        <mesh filename="$(find robot_description)/meshes/thigh.dae" scale="1 1 1"/>
+                        <mesh filename="$(find robot_description)/config/meshes/thigh.dae" scale="1 1 1"/>
                     </xacro:if>
                     <xacro:if value="${mirror_dae == False}">
-                        <mesh filename="$(find robot_description)/meshes/thigh_mirror.dae" scale="1 1 1"/>
+                        <mesh filename="$(find robot_description)/config/meshes/thigh_mirror.dae" scale="1 1 1"/>
                     </xacro:if>
                 </geometry>
                 <material name="orange"/>
@@ -118,7 +118,7 @@
             <visual>
                 <origin rpy="0 0 0" xyz="0 0 0"/>
                 <geometry>
-                    <mesh filename="$(find robot_description)/meshes/calf.dae" scale="1 1 1"/>
+                    <mesh filename="$(find robot_description)/config/meshes/calf.dae" scale="1 1 1"/>
                 </geometry>
                 <material name="orange"/>
             </visual>
