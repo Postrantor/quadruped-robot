@@ -12,8 +12,11 @@
 #include <vector>
 
 #include "rclcpp/logging.hpp"
+
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "lifecycle_msgs/msg/state.hpp"
+#include "unitree_msgs/msg/motor_cmd.hpp"
+#include "unitree_msgs/msg/motor_state.hpp"
 
 #include "unitree_joint_controller/unitree_joint_controller.hpp"
 
@@ -70,15 +73,16 @@ CallbackReturn UnitreeJointController::on_configure(const rclcpp_lifecycle::Stat
   }
 
   // fill last two desired states with default constructed commands
-  const geometry_msgs::msg::TwistStamped empty_twist{};
-  previous_desired_states_.emplace(empty_twist);
-  previous_desired_states_.emplace(empty_twist);
+  const unitree_msgs::msg::MotorState empty_sate{};
+  previous_states_.emplace(empty_sate);
+  previous_states_.emplace(empty_sate);
 
   // fill last two desired states with default constructed commands
-  received_desired_state_ptr_.set(std::make_shared<geometry_msgs::msg::TwistStamped>(empty_twist));
-  subscribe_desired_state_ = get_node()->create_subscription<geometry_msgs::msg::TwistStamped>(
+  const unitree_msgs::msg::MotorCmd empty_desired_state{};
+  received_desired_state_ptr_.set(std::make_shared<unitree_msgs::msg::MotorCmd>(empty_desired_state));
+  subscribe_desired_state_ = get_node()->create_subscription<unitree_msgs::msg::MotorCmd>(
       DEFAULT_DESIRED_STATE_TOPIC, rclcpp::SystemDefaultsQoS(),
-      [this](const std::shared_ptr<geometry_msgs::msg::TwistStamped> msg) -> void {
+      [this](const std::shared_ptr<unitree_msgs::msg::MotorCmd> msg) -> void {
         if (!subscriber_is_active_) {
           RCLCPP_WARN_STREAM(LOGGER, "can't accept new commands. subscriber is inactive");
           return;
@@ -86,7 +90,7 @@ CallbackReturn UnitreeJointController::on_configure(const rclcpp_lifecycle::Stat
         if ((msg->header.stamp.sec == 0) && (msg->header.stamp.nanosec == 0)) {
           RCLCPP_WARN_ONCE(
               LOGGER,
-              "received twiststamped with zero timestamp, "
+              "received unitree stamped with zero timestamp, "
               "setting it to current time, this message will only be shown once");
           msg->header.stamp = get_node()->get_clock()->now();
         }
@@ -94,7 +98,7 @@ CallbackReturn UnitreeJointController::on_configure(const rclcpp_lifecycle::Stat
       });
 
   // initialize publisher
-  publishe_target_state_ = get_node()->create_publisher<geometry_msgs::msg::TwistStamped>(
+  publishe_target_state_ = get_node()->create_publisher<unitree_msgs::msg::MotorState>(
       DEFAULT_TARGET_STATE_TOPIC, rclcpp::SystemDefaultsQoS());
 
   // limit publish on the /odom and /tf
@@ -143,7 +147,7 @@ CallbackReturn UnitreeJointController::on_cleanup(const rclcpp_lifecycle::State 
   if (!reset()) {
     return CallbackReturn::ERROR;
   }
-  received_desired_state_ptr_.set(std::make_shared<geometry_msgs::msg::TwistStamped>());
+  received_desired_state_ptr_.set(std::make_shared<unitree_msgs::msg::MotorCmd>());
   return CallbackReturn::SUCCESS;
 }
 
@@ -178,7 +182,7 @@ controller_interface::return_type UnitreeJointController::update(
   }
 
   // 1. sub `desired_state`
-  std::shared_ptr<geometry_msgs::msg::TwistStamped> last_desired_state;
+  std::shared_ptr<unitree_msgs::msg::MotorCmd> last_desired_state;
   received_desired_state_ptr_.get(last_desired_state);
   if (last_desired_state == nullptr) {
     RCLCPP_WARN_STREAM(LOGGER, "desired state message received was a nullptr.");
@@ -187,10 +191,9 @@ controller_interface::return_type UnitreeJointController::update(
 
   // brake, if desired_state has timeout, override the stored command
   if ((time - last_desired_state->header.stamp) > desired_state_timeout_) {
-    last_desired_state->twist.linear.x = 0.0;
+    last_desired_state->dq = 0.0;
+    last_desired_state->tau = 0.0;
   }
-
-  geometry_msgs::msg::TwistStamped target_state;  // for publish
 
   // 2. read `target_state` from hardware_interface
   for (size_t i = 0; i < params_.joint_name.size(); ++i) {
@@ -201,8 +204,8 @@ controller_interface::return_type UnitreeJointController::update(
       RCLCPP_ERROR_STREAM(LOGGER, "either the position or velocity joint is invalid for index " << i);
       return controller_interface::return_type::ERROR;
     }
-    target_state.twist.angular.x = feedback_position;
-    target_state.twist.angular.y = feedback_velocity;
+    target_state_.q = feedback_position;
+    target_state_.dq = feedback_velocity;
 
     RCLCPP_INFO_STREAM(
         LOGGER, "update()->read(): \n\tfeedback_position: " << feedback_position
@@ -210,25 +213,12 @@ controller_interface::return_type UnitreeJointController::update(
   }
 
   // 4. publish `target_state`
-  bool should_publish = false;  // TODO(@zhiqi.jia), use timer?
-  try {
-    if (previous_publish_timestamp_ + publish_period_ < time) {
-      previous_publish_timestamp_ += publish_period_;
-      should_publish = true;
-    }
-  } catch (const std::runtime_error &) {
-    previous_publish_timestamp_ = time;
-    should_publish = true;
-  }
-  if (should_publish) {
-    publishe_target_state_->publish(target_state);
-    // and write()->motor
-    for (size_t i = 0; i < params_.joint_name.size(); ++i) {
-      registered_joint_handles_[i].command_velocity.get().set_value(last_desired_state->twist.linear.x);
-      RCLCPP_INFO_STREAM(
-          LOGGER, "update()->write() " << params_.joint_name[i] << "last_desired_state->twist.linear.x: "
-                                       << last_desired_state->twist.linear.x << " to hardware");
-    }
+  publishe_target_state_->publish(target_state_);
+  // and write()->motor
+  for (size_t i = 0; i < params_.joint_name.size(); ++i) {
+    registered_joint_handles_[i].command_velocity.get().set_value(last_desired_state->dq);
+    RCLCPP_INFO_STREAM(
+        LOGGER, "update()->write() " << params_.joint_name[i] << "dq: " << last_desired_state->dq << " to hardware");
   }
 
   return controller_interface::return_type::OK;
@@ -296,8 +286,8 @@ CallbackReturn UnitreeJointController::get_joint_handle(
 // reset pid controller parameter
 bool UnitreeJointController::reset() {
   // empty queue
-  std::queue<geometry_msgs::msg::TwistStamped> empty;
-  std::swap(previous_desired_states_, empty);
+  std::queue<unitree_msgs::msg::MotorState> empty;
+  std::swap(previous_states_, empty);
 
   // clear
   registered_joint_handles_.clear();

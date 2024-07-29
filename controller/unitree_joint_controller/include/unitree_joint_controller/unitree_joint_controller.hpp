@@ -21,9 +21,9 @@
 #include "realtime_tools/realtime_publisher.h"
 
 #include "controller_interface/controller_interface.hpp"
-#include "geometry_msgs/msg/twist.hpp"
-#include "geometry_msgs/msg/twist_stamped.hpp"
 #include "hardware_interface/handle.hpp"
+#include "unitree_msgs/msg/motor_cmd.hpp"
+#include "unitree_msgs/msg/motor_state.hpp"
 
 #include "unitree_joint_controller_parameters.hpp"  // generate to build folder
 #include "unitree_joint_controller/visibility_control.h"
@@ -32,7 +32,7 @@ namespace unitree_joint_controller {
 
 using CallbackReturn = controller_interface::CallbackReturn;
 using InterfaceConfiguration = controller_interface::InterfaceConfiguration;
-// FIXME(@zhiqi.jia), shoud be in class
+
 static const rclcpp::Logger LOGGER = rclcpp::get_logger("unitree_joint_controller");
 
 class UnitreeJointController : public controller_interface::ControllerInterface {
@@ -56,7 +56,6 @@ public:
   UNITREE_JOINT_CONTROLLER_PUBLIC
   InterfaceConfiguration command_interface_configuration() const override;
 
-  // 2. state_interface 同上
   UNITREE_JOINT_CONTROLLER_PUBLIC
   InterfaceConfiguration state_interface_configuration() const override;
 
@@ -109,16 +108,17 @@ public:
   CallbackReturn on_shutdown(const rclcpp_lifecycle::State &previous_state) override;
 
 protected:
-  // subscribe `desired_state`
-  bool subscriber_is_active_{false};  // for lifecycle config
-  rclcpp::Subscription<geometry_msgs::msg::TwistStamped>::SharedPtr subscribe_desired_state_{nullptr};
-  std::queue<geometry_msgs::msg::TwistStamped> previous_states_;  // last two commands
+  bool subscriber_is_active_{false};
+  std::queue<unitree_msgs::msg::MotorState> previous_states_{};
+  rclcpp::Subscription<unitree_msgs::msg::MotorCmd>::SharedPtr subscribe_desired_state_{nullptr};
+  realtime_tools::RealtimeBox<std::shared_ptr<unitree_msgs::msg::MotorCmd>> received_desired_state_ptr_{nullptr};
 
   // publish `real_command`
-  std::shared_ptr<rclcpp::Publisher<geometry_msgs::msg::TwistStamped>> publishe_real_command_{nullptr};
+  std::shared_ptr<rclcpp::Publisher<unitree_msgs::msg::MotorCmd>> publishe_real_command_{nullptr};
 
   // publish `target_state`
-  std::shared_ptr<rclcpp::Publisher<geometry_msgs::msg::TwistStamped>> publishe_target_state_{nullptr};
+  unitree_msgs::msg::MotorState target_state_;
+  std::shared_ptr<rclcpp::Publisher<unitree_msgs::msg::MotorState>> publishe_target_state_{nullptr};
 
   // publish rate, use timer?
   double publish_rate_ = 50.0;
@@ -157,11 +157,6 @@ protected:
   CallbackReturn get_joint_handle(
       const std::vector<std::string> &joints_name,  //
       std::vector<JointHandle> &registered_handles);
-
-  // 这里应该是通过 realtime_toolbox 工具箱中的set/get方法来，可能是有锁来保护
-  std::queue<geometry_msgs::msg::TwistStamped> previous_desired_states_;  // last two commands
-  realtime_tools::RealtimeBox<std::shared_ptr<geometry_msgs::msg::TwistStamped>> received_desired_state_ptr_{nullptr};
-  // std::shared_ptr<geometry_msgs::msg::TwistStamped> received_desired_state_ptr_{nullptr};
 
   // parameters from ros for unitree_joint_controller
   std::shared_ptr<ParamListener> param_listener_;

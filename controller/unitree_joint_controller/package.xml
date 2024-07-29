@@ -19,7 +19,6 @@
   <depend>unitree_sdk</depend>
   <depend>controller_interface</depend>
   <depend>hardware_interface</depend>
-  <depend>geometry_msgs</depend>
   <depend>unitree_msgs</depend>
 
   <test_depend>ament_cmake_gmock</test_depend>

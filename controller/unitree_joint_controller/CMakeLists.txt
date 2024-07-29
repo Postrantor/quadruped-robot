@@ -14,7 +14,7 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   realtime_tools
   controller_interface
   hardware_interface
-  geometry_msgs
+  unitree_msgs
 )
 
 find_package(ament_cmake REQUIRED)
