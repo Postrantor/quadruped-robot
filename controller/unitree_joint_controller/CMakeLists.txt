@@ -9,13 +9,12 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   rclcpp
   rclcpp_lifecycle
   rcpputils
-  generate_parameter_library
   pluginlib
+  generate_parameter_library
   realtime_tools
   controller_interface
   hardware_interface
   geometry_msgs
-  unitree_msgs
 )
 
 find_package(ament_cmake REQUIRED)
@@ -40,8 +39,9 @@ generate_parameter_library(
     src/unitree_joint_controller_parameter.yaml
 )
 
-add_library(unitree_joint_controller SHARED
-  src/unitree_joint_controller.cpp
+add_library(
+  unitree_joint_controller SHARED
+    src/unitree_joint_controller.cpp
 )
 target_compile_features(unitree_joint_controller PUBLIC cxx_std_17)
 target_include_directories(unitree_joint_controller PUBLIC
@@ -59,10 +59,9 @@ target_compile_definitions(unitree_joint_controller PRIVATE "unitree_joint_CONTR
 pluginlib_export_plugin_description_file(controller_interface unitree_joint_plugin.xml)
 
 install(
-  DIRECTORY include lib
+  DIRECTORY include
   DESTINATION .
 )
-
 install(
   TARGETS
     unitree_joint_controller
@@ -71,6 +70,10 @@ install(
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
+)
+install(
+  DIRECTORY include lib
+  DESTINATION .
 )
 
 ament_export_targets(export_unitree_joint_controller HAS_LIBRARY_TARGET)

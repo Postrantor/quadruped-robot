@@ -1,6 +1,6 @@
 /**
- * @brief controller for unitree motor
- * @date 2024-06-24 09:37:38
+ * @brief
+ * @date 2024-07-29 19:59:11
  * @copyright Copyright (c) 2024
  */
 
@@ -9,9 +9,9 @@
 
 #include <chrono>
 #include <memory>
+#include <string>
 #include <cmath>
 #include <queue>
-#include <string>
 #include <vector>
 
 #include "rclcpp/rclcpp.hpp"
@@ -21,41 +21,44 @@
 #include "realtime_tools/realtime_publisher.h"
 
 #include "controller_interface/controller_interface.hpp"
+#include "geometry_msgs/msg/twist.hpp"
+#include "geometry_msgs/msg/twist_stamped.hpp"
 #include "hardware_interface/handle.hpp"
-#include "unitree_msgs/msg/motor_cmd.hpp"
-#include "unitree_msgs/msg/motor_state.hpp"
 
-#include "unitree_joint_controller/unitree_joint_control_tool.hpp"
 #include "unitree_joint_controller_parameters.hpp"  // generate to build folder
 #include "unitree_joint_controller/visibility_control.h"
 
 namespace unitree_joint_controller {
 
+using CallbackReturn = controller_interface::CallbackReturn;
+using InterfaceConfiguration = controller_interface::InterfaceConfiguration;
+// FIXME(@zhiqi.jia), shoud be in class
 static const rclcpp::Logger LOGGER = rclcpp::get_logger("unitree_joint_controller");
 
 class UnitreeJointController : public controller_interface::ControllerInterface {
 public:
-  /**
-   * @brief Construct a new Unitree Joint Controller object
-   * @details 这里采用的是 lifecycle node 的方式，所以创建、销毁pub/sub的操作需要在对应的api中实现
-   * 构造函数中不再有任何实现
-   */
   UNITREE_JOINT_CONTROLLER_PUBLIC
+
+  /**
+   * @brief Construct a new Unitree Position Controller object
+   * @details 这里采用的是 lifecycle node 的方式，所以创建、销毁pub/sub的操作需要在对应的api中实现
+   *         构造函数中不再有任何实现
+   */
   UnitreeJointController() = default;
 
   /**
    * @brief 2. command_interface, type `ALL`，`INDIVIDUAL` 和 `NONE`
-   * 将方法全部注册到基类对应的成员变量中，通过 share memory 的方式和 hardware
-   * 方面通信
-   * @return controller_interface::InterfaceConfiguration
+   *        将方法全部注册到基类对应的成员变量中，通过 share memory 的方式和 hardware
+   *        方面通信
+   * @return InterfaceConfiguration
    * return `<joint_name>/<interface_type>`
    */
   UNITREE_JOINT_CONTROLLER_PUBLIC
-  controller_interface::InterfaceConfiguration command_interface_configuration() const override;
+  InterfaceConfiguration command_interface_configuration() const override;
 
   // 2. state_interface 同上
   UNITREE_JOINT_CONTROLLER_PUBLIC
-  controller_interface::InterfaceConfiguration state_interface_configuration() const override;
+  InterfaceConfiguration state_interface_configuration() const override;
 
   /**
    * @brief 4. 从硬件接口获取状态，并下发命令到硬件
@@ -69,95 +72,72 @@ public:
   /**
    * @brief 0. 初始化各种资源
    * @details 1.创建param_listener node; 2.从yaml文件中解析参数;
-   *  read from `ros2_control/<description>.ros2_control.xacro`
-   *  read from `config/_controller.yaml`
-   *  这里仅仅做一些必要的初始化，比如构造一些临时的对象等
-   *  对于 pub/sub 这类对象，作为类的成员函数中定义，在`on_configure()`中构造
-   * @return controller_interface::CallbackReturn
+   *          read from `ros2_control/<description>.ros2_control.xacro`
+   *          read from `config/_controller.yaml`
+   *          这里仅仅做一些必要的初始化，比如构造一些临时的对象等
+   *          对于 pub/sub 这类对象，作为类的成员函数中定义，在`on_configure()`中构造
+   * @return CallbackReturn
    */
   UNITREE_JOINT_CONTROLLER_PUBLIC
-  controller_interface::CallbackReturn on_init() override;
+  CallbackReturn on_init() override;
 
   /**
    * @brief 1. 创建 publisher_, subscriber_
-   * @return controller_interface::CallbackReturn
+   * @return CallbackReturn
    */
   UNITREE_JOINT_CONTROLLER_PUBLIC
-  controller_interface::CallbackReturn on_configure(const rclcpp_lifecycle::State &previous_state) override;
+  CallbackReturn on_configure(const rclcpp_lifecycle::State &previous_state) override;
 
   /**
    * @brief 将关节和对应的接口关联起来
    * @details controller_interface <-> hardware_interface
-   * @return controller_interface::CallbackReturn, ==> `registered_handles_`
+   * @return CallbackReturn, ==> `registered_handles_`
    */
   UNITREE_JOINT_CONTROLLER_PUBLIC
-  controller_interface::CallbackReturn on_activate(const rclcpp_lifecycle::State &previous_state) override;
+  CallbackReturn on_activate(const rclcpp_lifecycle::State &previous_state) override;
 
   UNITREE_JOINT_CONTROLLER_PUBLIC
-  controller_interface::CallbackReturn on_deactivate(const rclcpp_lifecycle::State &previous_state) override;
+  CallbackReturn on_deactivate(const rclcpp_lifecycle::State &previous_state) override;
 
   UNITREE_JOINT_CONTROLLER_PUBLIC
-  controller_interface::CallbackReturn on_cleanup(const rclcpp_lifecycle::State &previous_state) override;
+  CallbackReturn on_cleanup(const rclcpp_lifecycle::State &previous_state) override;
 
   UNITREE_JOINT_CONTROLLER_PUBLIC
-  controller_interface::CallbackReturn on_error(const rclcpp_lifecycle::State &previous_state) override;
+  CallbackReturn on_error(const rclcpp_lifecycle::State &previous_state) override;
 
   UNITREE_JOINT_CONTROLLER_PUBLIC
-  controller_interface::CallbackReturn on_shutdown(const rclcpp_lifecycle::State &previous_state) override;
+  CallbackReturn on_shutdown(const rclcpp_lifecycle::State &previous_state) override;
 
 protected:
-  // subscribe motor_cmd as `desired state` set to motor
+  // subscribe `desired_state`
   bool subscriber_is_active_{false};  // for lifecycle config
-  rclcpp::Subscription<unitree_msgs::msg::MotorCmd>::SharedPtr subscribe_desired_cmd_{nullptr};
-  realtime_tools::RealtimeBox<std::shared_ptr<unitree_msgs::msg::MotorCmd>> rb_desired_cmd_{nullptr};
-  std::queue<unitree_msgs::msg::MotorCmd> previous_desired_cmd_;  // the two most recent control commands
-  // publish `real_cmd`
-  rclcpp::Publisher<unitree_msgs::msg::MotorCmd>::SharedPtr publish_real_cmd_{nullptr};
+  rclcpp::Subscription<geometry_msgs::msg::TwistStamped>::SharedPtr subscribe_desired_state_{nullptr};
+  std::queue<geometry_msgs::msg::TwistStamped> previous_states_;  // last two commands
+
+  // publish `real_command`
+  std::shared_ptr<rclcpp::Publisher<geometry_msgs::msg::TwistStamped>> publishe_real_command_{nullptr};
+
   // publish `target_state`
-  rclcpp::Publisher<unitree_msgs::msg::MotorState>::SharedPtr publish_target_state_{nullptr};
+  std::shared_ptr<rclcpp::Publisher<geometry_msgs::msg::TwistStamped>> publishe_target_state_{nullptr};
 
-  // parameters from ros for unitree_joint_controller
-  std::shared_ptr<ParamListener> param_listener_;
-  Params params_;
-
-  // about timer
+  // publish rate, use timer?
   double publish_rate_ = 50.0;
   rclcpp::Duration publish_period_ = rclcpp::Duration::from_nanoseconds(0);
   rclcpp::Time previous_update_timestamp_{0};
   rclcpp::Time previous_publish_timestamp_{0, 0, RCL_CLOCK_UNINITIALIZED};
-  std::chrono::milliseconds desired_cmd_timeout_{500};  // timeout to refresh
-
-  // arithmetic
-  double pid_p_{0};
-  double pid_i_{0};
-  double pid_d_{0};
-
-  // safety
-  // SpeedLimiter limiter_linear_;
-  // SpeedLimiter limiter_angular_;
-
-  // unitree_msgs::msg::MotorCmd last_cmd_;
-  // unitree_msgs::msg::MotorState last_state_;
-  ServoCmd servo_cmd_;  // use for `computeTorque`
-
-  // break
-  bool is_halted_ = false;
-  bool use_stamped_vel_ = true;
-  bool reset();
-  void halt();
 
   /**
    * @brief 这里的值是直接从硬件中 read()/write() 通过进程内通信(share memory)获得
-   * 还可以再封装一层！直接对每个interface的 ->set()/->get()
+   *        还可以再封装一层！直接对每个interface的 ->set()/->get()
    */
   struct JointHandle {
+    std::reference_wrapper<hardware_interface::LoanedCommandInterface> command_velocity;
     std::reference_wrapper<const hardware_interface::LoanedStateInterface> feedback_position;
     std::reference_wrapper<const hardware_interface::LoanedStateInterface> feedback_velocity;
-    std::reference_wrapper<hardware_interface::LoanedCommandInterface> command_velocity;
   };
 
   /**
-   * <joint name="${prefix}joint_ll_0_name">
+   * <joint name="${prefix}joint_name">
    *   <command_interface name="velocity"/>
    *   <state_interface name="position"/>
    *   <state_interface name="velocity"/>
@@ -169,14 +149,32 @@ protected:
   /**
    * @brief find joint interface handle from `state_interfaces_` and `command_interfaces_`
    * @details find all joint interface include state, command from controller_manger(controller_interface) and
-   * resource_manager(hardware_interface)
+   *          resource_manager(hardware_interface)
    * @param joints_name
    * @param registered_handles
-   * @return controller_interface::CallbackReturn
+   * @return CallbackReturn
    */
-  controller_interface::CallbackReturn get_joint_handle(
+  CallbackReturn get_joint_handle(
       const std::vector<std::string> &joints_name,  //
       std::vector<JointHandle> &registered_handles);
+
+  // 这里应该是通过 realtime_toolbox 工具箱中的set/get方法来，可能是有锁来保护
+  std::queue<geometry_msgs::msg::TwistStamped> previous_desired_states_;  // last two commands
+  realtime_tools::RealtimeBox<std::shared_ptr<geometry_msgs::msg::TwistStamped>> received_desired_state_ptr_{nullptr};
+  // std::shared_ptr<geometry_msgs::msg::TwistStamped> received_desired_state_ptr_{nullptr};
+
+  // parameters from ros for unitree_joint_controller
+  std::shared_ptr<ParamListener> param_listener_;
+  Params params_;
+
+  // timeout to consider desired_state commands old
+  std::chrono::milliseconds desired_state_timeout_{500};
+
+  // break
+  bool is_halted = false;
+  bool use_stamped_vel_ = true;
+  bool reset();
+  void halt();
 };
 }  // namespace unitree_joint_controller
 

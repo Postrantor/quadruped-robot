@@ -47,6 +47,7 @@ private:
     publisher_->publish(cmd);
   }
 
+  // rclcpp::Publisher<unitree_msgs::msg::MotorCmd>::SharedPtr publisher_;
   rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr publisher_;
   rclcpp::TimerBase::SharedPtr timer_;
 };
