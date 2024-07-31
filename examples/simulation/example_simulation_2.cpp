@@ -1,13 +1,14 @@
 /**
- * @author GPT4-o
  * @brief
- * @date 2024-06-24 16:12:43
+ * @author GPT4-o
+ * @author postrantor@gmail.com
+ * @date 2024-08-01 22:18:20
  * @copyright Copyright (c) 2024
  */
 
 #include <future>
-#include <Eigen/Dense>
 #include <chrono>
+#include <Eigen/Dense>
 
 #include "rclcpp/rclcpp.hpp"
 #include "ament_index_cpp/get_package_share_directory.hpp"
@@ -26,12 +27,12 @@
 /**
  * @brief 重置机器人的姿态和关节状态
  * @details 通过调用Gazebo服务重置机器人的位置、姿态和关节角度
+ * @note 通过 `ros2 service type <service_name>` 查看对应服务类型
+ *        按照相同的类型对比 example 实例程序中的 srv
+ *        需要显示加载 `gazebo_ros_state` 插件
  * @param model_state_client 设置模型状态的服务客户端
  * @param joint_state_client 设置关节状态的服务客户端
  * @return 是否成功重置机器人的状态
- * @note 通过 `ros2 service type <service_name>` 查看对应服务类型
- *  按照相同的类型对比 example 实例程序中的 srv
- *  需要显示加载 `gazebo_ros_state` 插件
  */
 auto reset_robot(
     const std::shared_ptr<rclcpp::Node>& node,
@@ -52,36 +53,18 @@ auto reset_robot(
   // 设置关节状态请求参数
   joint_state_request->model_name = "a1_gazebo";
   joint_state_request->urdf_param_name = "robot_description";
-  joint_state_request->joint_names = {
-      "FR_hip_joint",    //
-      "FR_thigh_joint",  //
-      "FR_calf_joint",   //
-      "FL_hip_joint",    //
-      "FL_thigh_joint",  //
-      "FL_calf_joint",   //
-      "RR_hip_joint",    //
-      "RR_thigh_joint",  //
-      "RR_calf_joint",   //
-      "RL_hip_joint",    //
-      "RL_thigh_joint",  //
-      "RL_calf_joint"};
+  joint_state_request->joint_names = {"FR_hip_joint", "FR_thigh_joint", "FR_calf_joint",  //
+                                      "FL_hip_joint", "FL_thigh_joint", "FL_calf_joint",  //
+                                      "RR_hip_joint", "RR_thigh_joint", "RR_calf_joint",  //
+                                      "RL_hip_joint", "RL_thigh_joint", "RL_calf_joint"};
   // 定义关节角度
   double hip_angle = 0.3;
   double thigh_angle = 1.1;
   double calf_angle = -2.2;
-  joint_state_request->joint_positions = {
-      -hip_angle,   //
-      thigh_angle,  //
-      calf_angle,   //
-      hip_angle,    //
-      thigh_angle,  //
-      calf_angle,   //
-      -hip_angle,   //
-      thigh_angle,  //
-      calf_angle,   //
-      hip_angle,    //
-      thigh_angle,  //
-      calf_angle};
+  joint_state_request->joint_positions = {-hip_angle, thigh_angle, calf_angle,  //
+                                          hip_angle,  thigh_angle, calf_angle,  //
+                                          -hip_angle, thigh_angle, calf_angle,  //
+                                          hip_angle,  thigh_angle, calf_angle};
 
   // 异步发送设置实体状态和关节状态请求
   auto entity_state_response_future = entity_state_client->async_send_request(entity_state_request);

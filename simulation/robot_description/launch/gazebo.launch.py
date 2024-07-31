@@ -1,5 +1,7 @@
+#!/usr/bin/env python3
+
 """
-@brief
+@brief load robot in gazebo use ros2_control
 @author postrantor@gmail.com
 @date 2024-07-29 20:48:03
 
@@ -52,7 +54,7 @@ def generate_launch_description():
     # get config file path
     gazebo_launch_file = PathJoinSubstitution([pkg_gazebo_ros, 'launch', 'gazebo.launch.py'])
     empty_world_file = PathJoinSubstitution([pkg_description, 'config', 'worlds', 'earth.world'])
-    robot_controllers = PathJoinSubstitution([pkg_description, 'config', 'controller', 'controller.yaml'])
+    robot_controllers = PathJoinSubstitution([pkg_description, 'config', 'controller', 'position_controller.yaml'])
     xacro_file = PathJoinSubstitution([pkg_description, 'config', 'xacro', 'robot.xacro'])
     rviz2_config_file = PathJoinSubstitution([pkg_description, 'config', 'rviz', 'robot.rviz'])
 
@@ -62,7 +64,32 @@ def generate_launch_description():
         launch_arguments={'world': empty_world_file}.items()
     )
 
-    # load robot_state_publisher
+    # spawn entity in gazebo
+    spawn_entity = Node(
+        package='gazebo_ros',
+        executable='spawn_entity.py',
+        arguments=['-topic', 'robot_description', '-entity', LaunchConfiguration('robot_name')],
+        output='screen'
+    )
+
+    # load controller_manager with controller.yaml config
+    control_node = Node(
+        package="controller_manager",
+        executable="ros2_control_node",
+        # same as <gazebo> tag parameters
+        parameters=[
+            {'robot_controllers': robot_controllers},
+            {'robot_description': Command([
+                'xacro', ' ', xacro_file, ' '
+                'debug:=', LaunchConfiguration('debug'), ' '
+                'use_mock_hardware:=', LaunchConfiguration('use_mock_hardware'), ' '
+                'gazebo:=ignition', ' ',
+                'namespace:=', LaunchConfiguration('robot_name')])},
+        ],
+        output="screen",
+    )
+
+    # load robot_state_publisher node
     node_robot_state_publisher = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
@@ -83,45 +110,31 @@ def generate_launch_description():
         output='screen',
     )
 
-    control_node = Node(
-        package="controller_manager",
-        executable="ros2_control_node",
-        parameters=[robot_controllers],  # same as <gazebo> tag parameters
-        output="screen",
-    )
-
-    # spawn entity
-    spawn_entity = Node(
-        package='gazebo_ros',
-        executable='spawn_entity.py',
-        arguments=['-topic', 'robot_description', '-entity', LaunchConfiguration('robot_name')],
-        output='screen'
-    )
-
-    # load all controller
+    # load all unitree_joint_controller
     leg_controller_names = [
         f'{leg}_{part}_controller'
         for leg in ['FL', 'FR', 'RL', 'RR']
         for part in ['hip', 'thigh', 'calf']
     ]
-    controller_names = ['FL_thigh_controller'] + ['joint_state_broadcaster']
+    controller_names = ['joint_state_broadcaster'] + leg_controller_names
     load_controllers = Node(
         package="controller_manager",
         executable="spawner",
-        # load each controller -> config and active all controller
+        # load each controller use controller_manager service
         arguments=['--activate-as-group', *controller_names, '--controller-manager', '/controller_manager'],
         output="screen",
     )
 
-    # load target
+    # load target step by step
     load_resource = TimerAction(
         period=0.0,
-        actions=[gazebo]
+        actions=[gazebo, spawn_entity]
     )
     delayed_start_entity = TimerAction(
         period=5.0,
-        actions=[node_robot_state_publisher, spawn_entity]
+        actions=[control_node, node_robot_state_publisher]
     )
+    # load controller after spawn_entity
     event_handlers = [
         RegisterEventHandler(
             event_handler=OnProcessExit(
