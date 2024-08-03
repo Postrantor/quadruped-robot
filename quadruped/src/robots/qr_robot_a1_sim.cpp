@@ -3,7 +3,7 @@
  * @author GPT4-o
  * @author postrantor
  * @brief
- * @date 2022
+ * @date 2024-08-04 01:23:06
  * @copyright MIT License
  */
 
@@ -14,6 +14,7 @@
 #include <Eigen/Dense>
 
 #include "rclcpp/rclcpp.hpp"
+
 #include "quadruped/robots/qr_robot_a1_sim.h"
 #include "quadruped/utils/qr_utils.hpp"
 namespace Quadruped {
@@ -130,45 +131,57 @@ qrRobotA1Sim::qrRobotA1Sim(const rclcpp::Node::SharedPtr& nh, std::string config
 
   /// callback
   imuSub = nhIn->create_subscription<sensor_msgs::msg::Imu>(
-      "a1_gazebo/trunk_imu", 1, std::bind(&qrRobotA1Sim::ImuCallback, this, std::placeholders::_1));
+      "/trunk_imu", 1, std::bind(&qrRobotA1Sim::ImuCallback, this, std::placeholders::_1));
 
-  jointStateSub[0] = nhIn->create_subscription<unitree_msgs::msg::MotorState>(
-      "a1_gazebo/FR_hip_controller/state", 1, std::bind(&qrRobotA1Sim::FRhipCallback, this, std::placeholders::_1));
-  jointStateSub[1] = nhIn->create_subscription<unitree_msgs::msg::MotorState>(
-      "a1_gazebo/FR_thigh_controller/state", 1, std::bind(&qrRobotA1Sim::FRthighCallback, this, std::placeholders::_1));
-  jointStateSub[2] = nhIn->create_subscription<unitree_msgs::msg::MotorState>(
-      "a1_gazebo/FR_calf_controller/state", 1, std::bind(&qrRobotA1Sim::FRcalfCallback, this, std::placeholders::_1));
-  jointStateSub[3] = nhIn->create_subscription<unitree_msgs::msg::MotorState>(
-      "a1_gazebo/FL_hip_controller/state", 1, std::bind(&qrRobotA1Sim::FLhipCallback, this, std::placeholders::_1));
-  jointStateSub[4] = nhIn->create_subscription<unitree_msgs::msg::MotorState>(
-      "a1_gazebo/FL_thigh_controller/state", 1, std::bind(&qrRobotA1Sim::FLthighCallback, this, std::placeholders::_1));
-  jointStateSub[5] = nhIn->create_subscription<unitree_msgs::msg::MotorState>(
-      "a1_gazebo/FL_calf_controller/state", 1, std::bind(&qrRobotA1Sim::FLcalfCallback, this, std::placeholders::_1));
-  jointStateSub[6] = nhIn->create_subscription<unitree_msgs::msg::MotorState>(
-      "a1_gazebo/RR_hip_controller/state", 1, std::bind(&qrRobotA1Sim::RRhipCallback, this, std::placeholders::_1));
-  jointStateSub[7] = nhIn->create_subscription<unitree_msgs::msg::MotorState>(
-      "a1_gazebo/RR_thigh_controller/state", 1, std::bind(&qrRobotA1Sim::RRthighCallback, this, std::placeholders::_1));
-  jointStateSub[8] = nhIn->create_subscription<unitree_msgs::msg::MotorState>(
-      "a1_gazebo/RR_calf_controller/state", 1, std::bind(&qrRobotA1Sim::RRcalfCallback, this, std::placeholders::_1));
-  jointStateSub[9] = nhIn->create_subscription<unitree_msgs::msg::MotorState>(
-      "a1_gazebo/RL_hip_controller/state", 1, std::bind(&qrRobotA1Sim::RLhipCallback, this, std::placeholders::_1));
-  jointStateSub[10] = nhIn->create_subscription<unitree_msgs::msg::MotorState>(
-      "a1_gazebo/RL_thigh_controller/state", 1, std::bind(&qrRobotA1Sim::RLthighCallback, this, std::placeholders::_1));
-  jointStateSub[11] = nhIn->create_subscription<unitree_msgs::msg::MotorState>(
-      "a1_gazebo/RL_calf_controller/state", 1, std::bind(&qrRobotA1Sim::RLcalfCallback, this, std::placeholders::_1));
+  jointStateSub[0] = nhIn->create_subscription<unitree_msgs::msg::MotorCmd>(
+      "/FR_hip_controller/desired_state",  //
+      1, std::bind(&qrRobotA1Sim::FRhipCallback, this, std::placeholders::_1));
+  jointStateSub[1] = nhIn->create_subscription<unitree_msgs::msg::MotorCmd>(
+      "/FR_thigh_controller/desired_state",  //
+      1, std::bind(&qrRobotA1Sim::FRthighCallback, this, std::placeholders::_1));
+  jointStateSub[2] = nhIn->create_subscription<unitree_msgs::msg::MotorCmd>(
+      "/FR_calf_controller/desired_state",  //
+      1, std::bind(&qrRobotA1Sim::FRcalfCallback, this, std::placeholders::_1));
+  jointStateSub[3] = nhIn->create_subscription<unitree_msgs::msg::MotorCmd>(
+      "/FL_hip_controller/desired_state",  //
+      1, std::bind(&qrRobotA1Sim::FLhipCallback, this, std::placeholders::_1));
+  jointStateSub[4] = nhIn->create_subscription<unitree_msgs::msg::MotorCmd>(
+      "/FL_thigh_controller/desired_state",  //
+      1, std::bind(&qrRobotA1Sim::FLthighCallback, this, std::placeholders::_1));
+  jointStateSub[5] = nhIn->create_subscription<unitree_msgs::msg::MotorCmd>(
+      "/FL_calf_controller/desired_state",  //
+      1, std::bind(&qrRobotA1Sim::FLcalfCallback, this, std::placeholders::_1));
+  jointStateSub[6] = nhIn->create_subscription<unitree_msgs::msg::MotorCmd>(
+      "/RR_hip_controller/desired_state",  //
+      1, std::bind(&qrRobotA1Sim::RRhipCallback, this, std::placeholders::_1));
+  jointStateSub[7] = nhIn->create_subscription<unitree_msgs::msg::MotorCmd>(
+      "/RR_thigh_controller/desired_state",  //
+      1, std::bind(&qrRobotA1Sim::RRthighCallback, this, std::placeholders::_1));
+  jointStateSub[8] = nhIn->create_subscription<unitree_msgs::msg::MotorCmd>(
+      "/RR_calf_controller/desired_state",  //
+      1, std::bind(&qrRobotA1Sim::RRcalfCallback, this, std::placeholders::_1));
+  jointStateSub[9] = nhIn->create_subscription<unitree_msgs::msg::MotorCmd>(
+      "/RL_hip_controller/desired_state",  //
+      1, std::bind(&qrRobotA1Sim::RLhipCallback, this, std::placeholders::_1));
+  jointStateSub[10] = nhIn->create_subscription<unitree_msgs::msg::MotorCmd>(
+      "/RL_thigh_controller/desired_state",  //
+      1, std::bind(&qrRobotA1Sim::RLthighCallback, this, std::placeholders::_1));
+  jointStateSub[11] = nhIn->create_subscription<unitree_msgs::msg::MotorCmd>(
+      "/RL_calf_controller/desired_state",  //
+      1, std::bind(&qrRobotA1Sim::RLcalfCallback, this, std::placeholders::_1));
 
-  jointCmdPub[0] = nhIn->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/FR_hip_controller/command", 1);
-  jointCmdPub[1] = nhIn->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/FR_thigh_controller/command", 1);
-  jointCmdPub[2] = nhIn->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/FR_calf_controller/command", 1);
-  jointCmdPub[3] = nhIn->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/FL_hip_controller/command", 1);
-  jointCmdPub[4] = nhIn->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/FL_thigh_controller/command", 1);
-  jointCmdPub[5] = nhIn->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/FL_calf_controller/command", 1);
-  jointCmdPub[6] = nhIn->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/RR_hip_controller/command", 1);
-  jointCmdPub[7] = nhIn->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/RR_thigh_controller/command", 1);
-  jointCmdPub[8] = nhIn->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/RR_calf_controller/command", 1);
-  jointCmdPub[9] = nhIn->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/RL_hip_controller/command", 1);
-  jointCmdPub[10] = nhIn->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/RL_thigh_controller/command", 1);
-  jointCmdPub[11] = nhIn->create_publisher<unitree_msgs::msg::MotorCmd>("a1_gazebo/RL_calf_controller/command", 1);
+  jointCmdPub[0] = nhIn->create_publisher<unitree_msgs::msg::MotorState>("/FR_hip_controller/target_state", 1);
+  jointCmdPub[1] = nhIn->create_publisher<unitree_msgs::msg::MotorState>("/FR_thigh_controller/target_state", 1);
+  jointCmdPub[2] = nhIn->create_publisher<unitree_msgs::msg::MotorState>("/FR_calf_controller/target_state", 1);
+  jointCmdPub[3] = nhIn->create_publisher<unitree_msgs::msg::MotorState>("/FL_hip_controller/target_state", 1);
+  jointCmdPub[4] = nhIn->create_publisher<unitree_msgs::msg::MotorState>("/FL_thigh_controller/target_state", 1);
+  jointCmdPub[5] = nhIn->create_publisher<unitree_msgs::msg::MotorState>("/FL_calf_controller/target_state", 1);
+  jointCmdPub[6] = nhIn->create_publisher<unitree_msgs::msg::MotorState>("/RR_hip_controller/target_state", 1);
+  jointCmdPub[7] = nhIn->create_publisher<unitree_msgs::msg::MotorState>("/RR_thigh_controller/target_state", 1);
+  jointCmdPub[8] = nhIn->create_publisher<unitree_msgs::msg::MotorState>("/RR_calf_controller/target_state", 1);
+  jointCmdPub[9] = nhIn->create_publisher<unitree_msgs::msg::MotorState>("/RL_hip_controller/target_state", 1);
+  jointCmdPub[10] = nhIn->create_publisher<unitree_msgs::msg::MotorState>("/RL_thigh_controller/target_state", 1);
+  jointCmdPub[11] = nhIn->create_publisher<unitree_msgs::msg::MotorState>("/RL_calf_controller/target_state", 1);
 
   // footForceSub[0] = nhIn->create_subscription<geometry_msgs::msg::WrenchStamped>(
   //     "/visual/FR_foot_contact/the_force", 1, std::bind(&qrRobotA1Sim::FRfootCallback, this, std::placeholders::_1));
@@ -485,25 +498,24 @@ void qrRobotA1Sim::ImuCallback(const sensor_msgs::msg::Imu::SharedPtr msg) {
   lowState.imu.accelerometer[2] = msg->linear_acceleration.z;
 }
 
-void qrRobotA1Sim::MotorStateCallback(int index, const unitree_msgs::msg::MotorState::SharedPtr msg) {
+void qrRobotA1Sim::MotorCmdCallback(int index, const unitree_msgs::msg::MotorCmd::SharedPtr msg) {
   lowState.motor_state[index].mode = msg->mode;
   lowState.motor_state[index].q = msg->q;
   lowState.motor_state[index].dq = msg->dq;
   lowState.motor_state[index].tau = msg->tau;
-  lowState.motor_state[index].temp = msg->temp;
 }
-void qrRobotA1Sim::FRhipCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(0, msg); }
-void qrRobotA1Sim::FRthighCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(1, msg); }
-void qrRobotA1Sim::FRcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(2, msg); }
-void qrRobotA1Sim::FLhipCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(3, msg); }
-void qrRobotA1Sim::FLthighCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(4, msg); }
-void qrRobotA1Sim::FLcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(5, msg); }
-void qrRobotA1Sim::RRhipCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(6, msg); }
-void qrRobotA1Sim::RRthighCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(7, msg); }
-void qrRobotA1Sim::RRcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(8, msg); }
-void qrRobotA1Sim::RLhipCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(9, msg); }
-void qrRobotA1Sim::RLthighCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(10, msg); }
-void qrRobotA1Sim::RLcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr msg) { MotorStateCallback(11, msg); }
+void qrRobotA1Sim::FRhipCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg) { MotorCmdCallback(0, msg); }
+void qrRobotA1Sim::FRthighCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg) { MotorCmdCallback(1, msg); }
+void qrRobotA1Sim::FRcalfCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg) { MotorCmdCallback(2, msg); }
+void qrRobotA1Sim::FLhipCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg) { MotorCmdCallback(3, msg); }
+void qrRobotA1Sim::FLthighCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg) { MotorCmdCallback(4, msg); }
+void qrRobotA1Sim::FLcalfCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg) { MotorCmdCallback(5, msg); }
+void qrRobotA1Sim::RRhipCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg) { MotorCmdCallback(6, msg); }
+void qrRobotA1Sim::RRthighCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg) { MotorCmdCallback(7, msg); }
+void qrRobotA1Sim::RRcalfCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg) { MotorCmdCallback(8, msg); }
+void qrRobotA1Sim::RLhipCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg) { MotorCmdCallback(9, msg); }
+void qrRobotA1Sim::RLthighCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg) { MotorCmdCallback(10, msg); }
+void qrRobotA1Sim::RLcalfCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg) { MotorCmdCallback(11, msg); }
 
 // void qrRobotA1Sim::FootCallback(int index, const geometry_msgs::msg::WrenchStamped::SharedPtr msg) {
 //   lowState.foot_force_est[index].x = msg->wrench.force.x;
@@ -519,14 +531,12 @@ void qrRobotA1Sim::RLcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr
 // FIXME(zhiqi.jia) :: why use motor_id * 5?
 void qrRobotA1Sim::SendCommand(const std::array<float, 60> motor_cmd) {
   for (int id = 0; id < 12; id++) {
-    lowCmd.motor_cmd[id].mode = 0x0A;
-    lowCmd.motor_cmd[id].q = motor_cmd[id * 5];
-    lowCmd.motor_cmd[id].dq = motor_cmd[id * 5 + 2];
-    lowCmd.motor_cmd[id].k_q = motor_cmd[id * 5 + 1];
-    lowCmd.motor_cmd[id].k_dq = motor_cmd[id * 5 + 3];
-    lowCmd.motor_cmd[id].tau = motor_cmd[id * 5 + 4];
+    lowState.motor_state[id].mode = 0x0A;
+    lowState.motor_state[id].q = motor_cmd[id * 5];
+    lowState.motor_state[id].dq = motor_cmd[id * 5 + 2];
+    lowState.motor_state[id].tau = motor_cmd[id * 5 + 4];
 
-    jointCmdPub[id]->publish(lowCmd.motor_cmd[id]);
+    jointCmdPub[id]->publish(lowState.motor_state[id]);
   }
 }
 

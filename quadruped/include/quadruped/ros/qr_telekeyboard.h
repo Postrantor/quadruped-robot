@@ -1,76 +1,57 @@
 /**
- * @author Robot Motion and Vision Laboratory at East China Normal University
  * @brief
- * @date 2022
+ * @author Robot Motion and Vision Laboratory at East China Normal University
+ * @author postrantor@gmail.com
+ * @date 2024-08-04 00:28:11
  * @copyright MIT License
  */
 
-#ifndef QR_TELEKEYBOARD_H
-#define QR_TELEKEYBOARD_H
+#ifndef QR_TELEKEYBOARD_HPP
+#define QR_TELEKEYBOARD_HPP
 
 #include "rclcpp/rclcpp.hpp"
-
 #include "sensor_msgs/msg/joy.hpp"
 
-#include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
 #include <map>
+#include <tuple>
+#include <string>
 #include <vector>
 
-/**
- * @brief qrTeleKeyboard 类用于将键盘接收到的消息转换为 Twist 消息，以便 qrVelocityParamReceiver 接收。
- */
-class qrTeleKeyboard {
+class qrTeleKeyboard : public rclcpp::Node {
 public:
-  /**
-   * @brief qrTeleKeyboard 的构造函数。
-   * @param nh 该类创建的 ROS 节点。
-   */
-  qrTeleKeyboard(const rclcpp::Node::SharedPtr& nhIn);
-
-  /**
-   * @brief qrTeleKeyboard 的默认析构函数。
-   */
-  ~qrTeleKeyboard() {}
-
-  /**
-   * @brief 从键盘获取事件并将其转换为相应的字符。
-   *        用于非阻塞键盘输入。
-   * @return 事件的索引号。
-   */
-  int getch();
-
-  /**
-   * @brief 不断地从键盘接收事件，直到输入 Ctrl+C。
-   */
-  void run();
-
-  /**
-   * @brief 不断地发送默认的 Twist 消息。
-   */
-  void run_default();
-
-  /**
-   * @brief 键盘是否停止接收事件。
-   */
-  bool finish;
-
-  /**
-   * @brief 用于同步 run 和 run_default 线程的互斥锁。
-   */
-  bool mutex;
+  qrTeleKeyboard();
 
 private:
   /**
-   * @brief 转换后的消息要发布到的主题。
+   * @brief Keep receiving the event from the keyboard. Keep running until input
+   *        Ctrl+C.
    */
-  std::string cmdTopic = "/joy";
+  void timer_callback();
 
   /**
-   * @brief 该类创建的 ROS 节点。
+   * @brief Keep sending the default Twist message.
    */
-  rclcpp::Node::SharedPtr& nh;
+  void default_timer_callback();
+
+  /**
+   * @brief Get the event from the keyboard and convert it to corresponding char.
+   *        For non-blocking keyboard inputs.
+   * @node 非阻塞获取键盘输入
+   * @return The number of the event's index.
+   */
+  int getch_nonblocking();
+
+private:
+  /**
+   * @brief The topic which the converted message to publish to.
+   */
+  std::string topic_name_ = "/qr_telekeyboard";
+
+  rclcpp::Publisher<sensor_msgs::msg::Joy>::SharedPtr pub_;
+  rclcpp::TimerBase::SharedPtr timer_;
+  sensor_msgs::msg::Joy joy_msg_;
 };
 
-#endif  // QR_TELEKEYBOARD_H
+#endif  // QR_TELEKEYBOARD_HPP

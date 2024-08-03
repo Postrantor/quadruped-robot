@@ -10,10 +10,13 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rclcpp</depend>
+  <depend>backward_ros</depend>
   <depend>quadruped</depend>
   <depend>unitree_msgs</depend>
   <depend>gazebo_msgs</depend>
   <depend>std_srvs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>nav_msgs</depend>
   <!-- <depend>unitree_legged_sdk</depend> -->
   <depend>ament_index_cpp</depend>
 

@@ -2,12 +2,7 @@
   "configurations": [
     {
       "name": "ROS",
-      "includePath": [
-        "/opt/ros/humble/include/**",
-        "${workspaceFolder}/**",
-        "build/**",
-        "install/**"
-      ],
+      "includePath": ["/opt/ros/humble/include/**", "${workspaceFolder}/**"],
       "defines": [],
       "compilerPath": "/usr/bin/g++",
       "compileCommands": "${workspaceFolder}/build/compile_commands.json",

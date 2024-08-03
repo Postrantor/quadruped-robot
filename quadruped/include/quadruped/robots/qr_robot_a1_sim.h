@@ -71,19 +71,19 @@ public:
   // callback
   void ImuCallback(const sensor_msgs::msg::Imu::SharedPtr msg);
 
-  void MotorStateCallback(int index, const unitree_msgs::msg::MotorState::SharedPtr msg);
-  void FRhipCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
-  void FRthighCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
-  void FRcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
-  void FLhipCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
-  void FLthighCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
-  void FLcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
-  void RRhipCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
-  void RRthighCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
-  void RRcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
-  void RLhipCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
-  void RLthighCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
-  void RLcalfCallback(const unitree_msgs::msg::MotorState::SharedPtr msg);
+  void MotorCmdCallback(int index, const unitree_msgs::msg::MotorCmd::SharedPtr msg);
+  void FRhipCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg);
+  void FRthighCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg);
+  void FRcalfCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg);
+  void FLhipCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg);
+  void FLthighCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg);
+  void FLcalfCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg);
+  void RRhipCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg);
+  void RRthighCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg);
+  void RRcalfCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg);
+  void RLhipCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg);
+  void RLthighCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg);
+  void RLcalfCallback(const unitree_msgs::msg::MotorCmd::SharedPtr msg);
 
   // void qrRobotA1Sim::FootCallback(int index, const geometry_msgs::msg::WrenchStamped::SharedPtr msg);
   // void FRfootCallback(const geometry_msgs::msg::WrenchStamped::SharedPtr msg);
@@ -109,17 +109,17 @@ public:
   /**
    * @brief 12个关节命令发布者。
    */
-  rclcpp::Publisher<unitree_msgs::msg::MotorCmd>::SharedPtr jointCmdPub[12];
+  rclcpp::Publisher<unitree_msgs::msg::MotorState>::SharedPtr jointCmdPub[12];
 
   /**
    * @brief 12个关节状态订阅者。
    */
-  rclcpp::Subscription<unitree_msgs::msg::MotorState>::SharedPtr jointStateSub[12];
+  rclcpp::Subscription<unitree_msgs::msg::MotorCmd>::SharedPtr jointStateSub[12];
 
   /**
    * @brief 4个力传感器订阅者。
    */
-  rclcpp::Subscription<unitree_msgs::msg::MotorState>::SharedPtr footForceSub[4];
+  rclcpp::Subscription<unitree_msgs::msg::MotorCmd>::SharedPtr footForceSub[4];
 
   /**
    * @brief Gazebo IMU 订阅者。

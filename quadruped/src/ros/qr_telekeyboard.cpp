@@ -1,136 +1,72 @@
 /**
  * @brief
- * @date 2022
+ * @author Robot Motion and Vision Laboratory at East China Normal University
+ * @author postrantor@gmail.com
+ * @date 2024-08-04 00:28:11
  * @copyright MIT License
  */
 
-#include "rclcpp/rclcpp.hpp"
+#include "quadruped/ros/qr_telekeyboard.h"
 
-#include "sensor_msgs/msg/joy.hpp"
+qrTeleKeyboard::qrTeleKeyboard() : Node("qr_telekeyboard") {
+  joy_msg_.buttons = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  joy_msg_.axes = {0, 0, 0, 0, 0, 0, 0, 0};
 
-#include <termios.h>
-#include <unistd.h>
-#include <map>
-#include <tuple>
-#include <iostream>
+  pub_ = this->create_publisher<sensor_msgs::msg::Joy>(topic_name_, 10);
+  timer_ = this->create_wall_timer(std::chrono::milliseconds(100), std::bind(&qrTeleKeyboard::timer_callback, this));
+}
 
-class qrTeleKeyboard : public rclcpp::Node {
-public:
-  qrTeleKeyboard() : Node("qr_telekeyboard"), finish(false), mutex(false) {
-    pub = this->create_publisher<sensor_msgs::msg::Joy>(cmdTopic, 1);
+void qrTeleKeyboard::timer_callback() {
+  char key = getch_nonblocking();
+
+  std::map<char, int> buttons_binding{{'k', 0}, {'l', 1}, {'j', 2}, {'i', 3}, {'o', 4}, {'u', 5}};
+  std::map<char, std::tuple<int, float>> rockers_binding{{'w', {4, 0.8}},  {'a', {3, 0.8}}, {'s', {4, -0.8}},
+                                                         {'d', {3, -0.8}}, {'q', {0, 1.0}}, {'e', {0, -1.0}}};
+
+  // 如果有按键按下，则更新joy_msg_
+  if (buttons_binding.count(key) == 1) {
+    joy_msg_.buttons[buttons_binding[key]] = 1;
+  } else if (rockers_binding.count(key) == 1) {
+    joy_msg_.axes[std::get<0>(rockers_binding[key])] = std::get<1>(rockers_binding[key]);
+  } else {
+    // 如果没有按键按下，则发送0值
+    joy_msg_.buttons = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    joy_msg_.axes = {0, 0, 0, 0, 0, 0, 0, 0};
   }
 
-  int getch(void) {
-    int ch;
-    struct termios oldt;
-    struct termios newt;
+  if (key == '\x03') {  // Ctrl+C
+    RCLCPP_INFO(this->get_logger(), "Break from keyboard.");
+    rclcpp::shutdown();
+    return;
+  }
 
-    // Store old settings, and copy to new settings
-    tcgetattr(STDIN_FILENO, &oldt);
-    newt = oldt;
+  pub_->publish(joy_msg_);
+}
 
-    // Make required changes and apply the settings
-    newt.c_lflag &= ~(ICANON | ECHO);
-    newt.c_iflag |= IGNBRK;
-    newt.c_iflag &= ~(INLCR | ICRNL | IXON | IXOFF);
-    newt.c_lflag &= ~(ICANON | ECHO | ECHOK | ECHOE | ECHONL | ISIG | IEXTEN);
-    newt.c_cc[VMIN] = 1;
-    newt.c_cc[VTIME] = 0;
-    tcsetattr(fileno(stdin), TCSANOW, &newt);
+int qrTeleKeyboard::getch_nonblocking() {
+  int ch = -1;
+  struct termios oldt, newt;
 
-    // Get the current character
+  tcgetattr(STDIN_FILENO, &oldt);
+  newt = oldt;
+  newt.c_lflag &= ~(ICANON | ECHO);
+  tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+
+  // Set non-blocking mode
+  struct timeval tv;
+  fd_set fds;
+
+  tv.tv_sec = 0;
+  tv.tv_usec = 0;
+
+  FD_ZERO(&fds);
+  FD_SET(STDIN_FILENO, &fds);
+
+  if (select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) > 0) {
     ch = getchar();
-
-    // Reapply old settings
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-
-    return ch;
   }
 
-  void run() {
-    auto joy_msg = sensor_msgs::msg::Joy();
-    char key = ' ';
-    // initialize joy cmd
-    joy_msg.buttons = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    joy_msg.axes = {0, 0, 0, 0, 0, 0, 0, 0};
+  tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
 
-    // joy's A X B Y Rb
-    std::map<char, int> buttons_binding;
-    buttons_binding['k'] = 0;  // joy A
-    buttons_binding['l'] = 1;  // joy B
-    buttons_binding['j'] = 2;  // joy X
-    buttons_binding['i'] = 3;  // joy Y
-    buttons_binding['o'] = 4;  // joy RB
-    buttons_binding['u'] = 5;  // joy RL
-
-    std::map<char, std::tuple<int, float>> rockers_binding;
-    rockers_binding['w'] = {4, 0.8};
-    rockers_binding['a'] = {3, 0.8};
-    rockers_binding['s'] = {4, -0.8};
-    rockers_binding['d'] = {3, -0.8};
-    rockers_binding['q'] = {0, 1.0};
-    rockers_binding['e'] = {0, -1.0};
-
-    while (rclcpp::ok()) {
-      key = getch();
-      mutex = true;
-
-      if (buttons_binding.count(key) == 1) {
-        joy_msg.buttons[buttons_binding[key]] = 1;
-      } else if (rockers_binding.count(key) == 1) {
-        joy_msg.axes[std::get<0>(rockers_binding[key])] = std::get<1>(rockers_binding[key]);
-      }
-
-      // receive Ctrl+C
-      if (key == '\x03') {
-        std::cout << "Break from keyboard." << std::endl;
-        finish = true;
-        break;
-      }
-
-      pub->publish(joy_msg);
-
-      // clear the joy_msg
-      joy_msg.buttons = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-      joy_msg.axes = {0, 0, 0, 0, 0, 0, 0, 0};
-
-      rclcpp::spin_some(this->get_node_base_interface());
-      mutex = false;
-    }
-  }
-
-  void run_default() {
-    auto joy_msg = sensor_msgs::msg::Joy();
-    joy_msg.buttons = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    joy_msg.axes = {0, 0, 0, 0, 0, 0, 0, 0};
-    while (rclcpp::ok()) {
-      if (finish) {
-        break;
-      }
-      if (!mutex) {
-        pub->publish(joy_msg);
-      }
-      std::this_thread::sleep_for(std::chrono::seconds(1));
-      rclcpp::spin_some(this->get_node_base_interface());
-    }
-  }
-
-private:
-  rclcpp::Publisher<sensor_msgs::msg::Joy>::SharedPtr pub;
-  bool finish;
-  bool mutex;
-  const std::string cmdTopic = "cmd_topic";
-};
-
-int main(int argc, char** argv) {
-  rclcpp::init(argc, argv);
-
-  auto node = std::make_shared<qrTeleKeyboard>();
-  std::thread run_thread(&qrTeleKeyboard::run, node);
-  node->run_default();
-  run_thread.join();
-
-  rclcpp::shutdown();
-
-  return 0;
+  return ch;
 }

@@ -40,7 +40,6 @@ controller_manager:
 # FL Controller
 FL_hip_controller:
   ros__parameters:
-    update_rate: 10
     desired_cmd_timeout: 0.5
     joint_name: [FL_hip_joint]
     pid:
@@ -49,7 +48,6 @@ FL_hip_controller:
       d: 5.0
 FL_thigh_controller:
   ros__parameters:
-    update_rate: 10
     desired_cmd_timeout: 0.5
     joint_name: [FL_thigh_joint]
     pid:
@@ -58,7 +56,6 @@ FL_thigh_controller:
       d: 8.0
 FL_calf_controller:
   ros__parameters:
-    update_rate: 10
     desired_cmd_timeout: 0.5
     joint_name: [FL_calf_joint]
     pid:
@@ -69,7 +66,6 @@ FL_calf_controller:
 # FR Controller
 FR_hip_controller:
   ros__parameters:
-    update_rate: 10
     desired_cmd_timeout: 0.5
     joint_name: [FR_hip_joint]
     pid:
@@ -78,7 +74,6 @@ FR_hip_controller:
       d: 5.0
 FR_thigh_controller:
   ros__parameters:
-    update_rate: 10
     desired_cmd_timeout: 0.5
     joint_name: [FR_thigh_joint]
     pid:
@@ -87,7 +82,6 @@ FR_thigh_controller:
       d: 8.0
 FR_calf_controller:
   ros__parameters:
-    update_rate: 10
     desired_cmd_timeout: 0.5
     joint_name: [FR_calf_joint]
     pid:
@@ -98,7 +92,6 @@ FR_calf_controller:
 # RL Controller
 RL_hip_controller:
   ros__parameters:
-    update_rate: 10
     desired_cmd_timeout: 0.5
     joint_name: [RL_hip_joint]
     pid:
@@ -107,7 +100,6 @@ RL_hip_controller:
       d: 5.0
 RL_thigh_controller:
   ros__parameters:
-    update_rate: 10
     desired_cmd_timeout: 0.5
     joint_name: [RL_thigh_joint]
     pid:
@@ -116,7 +108,6 @@ RL_thigh_controller:
       d: 8.0
 RL_calf_controller:
   ros__parameters:
-    update_rate: 10
     desired_cmd_timeout: 0.5
     joint_name: [RL_calf_joint]
     pid:
@@ -127,7 +118,6 @@ RL_calf_controller:
 # RR Controller
 RR_hip_controller:
   ros__parameters:
-    update_rate: 10
     desired_cmd_timeout: 0.5
     joint_name: [RR_hip_joint]
     pid:
@@ -136,7 +126,6 @@ RR_hip_controller:
       d: 5.0
 RR_thigh_controller:
   ros__parameters:
-    update_rate: 10
     desired_cmd_timeout: 0.5
     joint_name: [RR_thigh_joint]
     pid:
@@ -145,7 +134,6 @@ RR_thigh_controller:
       d: 8.0
 RR_calf_controller:
   ros__parameters:
-    update_rate: 10
     desired_cmd_timeout: 0.5
     joint_name: [RR_calf_joint]
     pid:

@@ -7,14 +7,13 @@ if(NOT CMAKE_CXX_STANDARD)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
+  add_compile_options(-Wall -Wextra -Wpedantic) #  -Werror
 endif()
 
 # set c++ standard and build type
 set(CMAKE_BUILD_TYPE "Debug") # "RELEASE", "Debug"
 set(CMAKE_CXX_FLAGS "-O3 -DEIGEN_NO_DEBUG -fopenmp")
 add_compile_options(-D_cplusplus -D_useros -fPIC)
-# add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 
 option(USE_BLAS "USE MKL BLAS" OFF)
 option(USE_SIM "USE Simulation" ON)
@@ -25,6 +24,7 @@ if(NOT ${USE_SIM})
 endif()
 
 # ros
+find_package(backward_ros REQUIRED)
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(yaml_cpp_vendor REQUIRED)
@@ -78,14 +78,12 @@ file(GLOB_RECURSE sources
   src/*/*/*.cpp
 )
 
-if(NOT ${USE_SIM})
-  list(
-    REMOVE_ITEM
-    "include/quadruped/robots/qr_robot_sim.h"
-    "include/quadruped/robots/qr_a1_sim.h")
+if(${USE_SIM})
   set(filtered_sources
-    ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_sim.cpp
-    ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_a1_sim.cpp)
+    # ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_sim.cpp
+    # ${PROJECT_SOURCE_DIR}/src/robots/qr_robot_a1_sim.cpp
+    ${PROJECT_SOURCE_DIR}/src/ros/qr_control2gazebo.cpp
+  )
   list(REMOVE_ITEM sources ${filtered_sources})
 endif()
 
