@@ -3,7 +3,7 @@
  * @author unitree
  * @date 2024-06-23 16:06:13
  * @copyright Copyright (c) 2018-2019, Unitree Robotics.Co.Ltd. All rights reserved.
-    Use of this source code is governed by the MPL-2.0 license, see LICENSE.
+ *             Use of this source code is governed by the MPL-2.0 license, see LICENSE.
  */
 
 #ifndef _UNITREE_JOINT_CONTROL_TOOL_H_
@@ -17,8 +17,9 @@
 
 #define posStopF (2.146E+9f)  // stop position control mode
 #define velStopF (16000.0f)   // stop velocity control mode
-#define PMSM (0x0A)           // motor state
-#define BRAKE (0x00)          // motor state
+
+#define PMSM (0x0A)   // motor state
+#define BRAKE (0x00)  // motor state
 
 typedef struct {
   uint8_t mode;
@@ -32,14 +33,14 @@ typedef struct {
 /**
  * @brief 限位函数
  * @details ros2 中倒是有现成的限位函数，可以不用这个sdk中提供的
- *  eg. clamp(1.5, -1, 1) = 1
+ *          eg. clamp(1.5, -1, 1) = 1
  * @return double
  */
 double clamp(double&, double, double);
 
 /**
  * @brief get current velocity
- * 依据 current_postion/last_position/last_velocity 计算速度值
+ *          依据 current_postion/last_position/last_velocity 计算速度值
  * @param current_position
  * @param last_position
  * @param last_velocity

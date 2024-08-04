@@ -1,6 +1,6 @@
 /**
  * @brief
- * @date 2024-07-29 23:52:05
+ * @date 2024-08-04 23:41:27
  * @copyright Copyright (c) 2024
  */
 
@@ -19,6 +19,7 @@
 #include "unitree_msgs/msg/motor_state.hpp"
 
 #include "unitree_joint_controller/unitree_joint_controller.hpp"
+#include "unitree_joint_controller/unitree_joint_control_tool.hpp"
 
 namespace {
 constexpr auto DEFAULT_DESIRED_STATE_TOPIC = "~/desired_state";  // sub
@@ -33,6 +34,7 @@ controller_interface::InterfaceConfiguration UnitreeJointController::command_int
   for (const auto &joint_name : params_.joint_name) {
     conf_names.push_back(joint_name + "/" + hardware_interface::HW_IF_POSITION);
     conf_names.push_back(joint_name + "/" + hardware_interface::HW_IF_VELOCITY);
+    conf_names.push_back(joint_name + "/" + hardware_interface::HW_IF_EFFORT);
   }
 
   return {controller_interface::interface_configuration_type::INDIVIDUAL, conf_names};
@@ -43,6 +45,7 @@ controller_interface::InterfaceConfiguration UnitreeJointController::state_inter
   for (const auto &joint_name : params_.joint_name) {
     conf_names.push_back(joint_name + "/" + hardware_interface::HW_IF_POSITION);
     conf_names.push_back(joint_name + "/" + hardware_interface::HW_IF_VELOCITY);
+    conf_names.push_back(joint_name + "/" + hardware_interface::HW_IF_EFFORT);
   }
 
   return {controller_interface::interface_configuration_type::INDIVIDUAL, conf_names};
@@ -172,7 +175,7 @@ CallbackReturn UnitreeJointController::on_shutdown(const rclcpp_lifecycle::State
  */
 controller_interface::return_type UnitreeJointController::update(
     const rclcpp::Time &time,  //
-    const rclcpp::Duration & /*period*/) {
+    const rclcpp::Duration &period) {
   // 0. check lifecycle state
   if (get_state().id() == lifecycle_msgs::msg::State::PRIMARY_STATE_INACTIVE) {
     if (!is_halted) {
@@ -191,43 +194,91 @@ controller_interface::return_type UnitreeJointController::update(
   }
 
   // brake, if desired_state has timeout, override the stored command
-  if ((time - last_desired_state->header.stamp) > desired_state_timeout_) {
-    last_desired_state->dq = 0.0;
-    last_desired_state->tau = 0.0;
+  // if ((time - last_desired_state->header.stamp) > desired_state_timeout_) {
+  //   last_desired_state->mode == BRAKE;
+  //   RCLCPP_WARN_STREAM(LOGGER, "break, desired_state timeout.");
+  // }
+
+  if (last_desired_state->mode == BRAKE) {
+    servo_cmd_.posStiffness = 0;
+    servo_cmd_.vel = 0;
+    servo_cmd_.velStiffness = 0;
+    servo_cmd_.torque = 0;
+    effort_limits(servo_cmd_.torque);
+    RCLCPP_WARN_STREAM(LOGGER, "break, stop joint.");
+  }
+
+  // copy from unitree_sdk
+  if (last_desired_state->mode == PMSM) {
+    servo_cmd_.pos = last_desired_state->q;
+    position_limits(servo_cmd_.pos);
+
+    servo_cmd_.posStiffness = last_desired_state->k_q;
+    if (fabs(last_desired_state->q - posStopF) < 0.00001) {
+      servo_cmd_.posStiffness = 0;
+    }
+
+    servo_cmd_.vel = last_desired_state->dq;
+    velocity_limits(servo_cmd_.vel);
+
+    servo_cmd_.velStiffness = last_desired_state->k_dq;
+    if (fabs(last_desired_state->dq - velStopF) < 0.00001) {
+      servo_cmd_.velStiffness = 0;
+    }
+
+    servo_cmd_.torque = last_desired_state->tau;
+    effort_limits(servo_cmd_.torque);
+
+    RCLCPP_INFO_STREAM(LOGGER, "limit joint action.");
   }
 
   // 2. read `target_state` from hardware_interface
   for (size_t i = 0; i < params_.joint_name.size(); ++i) {
-    const double feedback_position = registered_joint_handles_[i].feedback_position.get().get_value();
-    const double feedback_velocity = registered_joint_handles_[i].feedback_velocity.get().get_value();
-    const double feedback_effort = registered_joint_handles_[i].feedback_effort.get().get_value();
+    target_state_.q = registered_joint_handles_[i].feedback_position.get().get_value();
+    target_state_.dq = registered_joint_handles_[i].feedback_velocity.get().get_value();
+    target_state_.tau_est = registered_joint_handles_[i].feedback_effort.get().get_value();
 
-    if (std::isnan(feedback_position) || std::isnan(feedback_velocity) || std::isnan(feedback_effort)) {
-      RCLCPP_ERROR_STREAM(LOGGER, "either the position or velocity joint is invalid for index " << i);
+    if (std::isnan(target_state_.q) || std::isnan(target_state_.dq) || std::isnan(target_state_.tau_est)) {
+      RCLCPP_ERROR_STREAM(LOGGER, "the joint position/velocity/effort is invalid for index " << i);
       return controller_interface::return_type::ERROR;
     }
-    target_state_.q = feedback_position;
-    target_state_.dq = feedback_velocity;
-    target_state_.tau_est = feedback_effort;
 
     RCLCPP_INFO_STREAM(
-        LOGGER, "update()->read(): \n\tfeedback_position: " << feedback_position
-                                                            << "\n\tfeedback_velocity: " << feedback_velocity
-                                                            << "\n\tfeedback_effort: " << feedback_effort);
+        LOGGER, "\n" << params_.joint_name[i] << "\n\t- feedback_position: " << target_state_.q  //
+                     << "\n\t- feedback_velocity: " << target_state_.dq
+                     << "\n\t- feedback_effort: " << target_state_.tau_est);
   }
+
+  // 3. 依据电机状态信息/许用值估算(微分)出电机受力状态信息
+  current_pos_ = target_state_.q;
+  current_vel_ = computeVel(current_pos_, (double)target_state_.q, (double)target_state_.dq, period.seconds());
+  calc_torque_ = computeTorque(current_pos_, current_vel_, servo_cmd_);
+  effort_limits(calc_torque_);
+
+  for (size_t i = 0; i < params_.joint_name.size(); ++i) {
+    registered_joint_handles_[i].command_effort.get().set_value(calc_torque_);
+    RCLCPP_INFO_STREAM(LOGGER, "\n" << params_.joint_name[i] << "\n\t- control_effort: " << calc_torque_);
+  }
+
+  last_desired_state->q = current_pos_;
+  last_desired_state->dq = current_vel_;
+  last_desired_state->tau = calc_torque_;
+
   publishe_target_state_->publish(target_state_);
 
-  // 3. write()->motor
-  for (size_t i = 0; i < params_.joint_name.size(); ++i) {
-    registered_joint_handles_[i].command_position.get().set_value(last_desired_state->q);
-    registered_joint_handles_[i].command_velocity.get().set_value(last_desired_state->dq);
-    registered_joint_handles_[i].command_effort.get().set_value(last_desired_state->tau);
-    RCLCPP_INFO_STREAM(
-        LOGGER, "update()->write() " << params_.joint_name[i] << "\n\tq: " << last_desired_state->q
-                                     << "\n\tdq: " << last_desired_state->dq << "\n\ttau: " << last_desired_state->tau);
-  }
-
   return controller_interface::return_type::OK;
+}
+
+void UnitreeJointController::position_limits(double &position) {
+  clamp(position, params_.position.limit_lower, params_.position.limit_upper);
+}
+
+void UnitreeJointController::velocity_limits(double &velocity) {
+  clamp(velocity, params_.velocity.limit_lower, params_.velocity.limit_upper);
+}
+
+void UnitreeJointController::effort_limits(double &effort) {
+  clamp(effort, params_.effort.limit_lower, params_.effort.limit_upper);
 }
 
 CallbackReturn UnitreeJointController::get_joint_handle(

@@ -275,8 +275,13 @@ int main(int argc, char** argv) {
   const std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared("robot_sim");
   RCLCPP_INFO_STREAM(node->get_logger(), "starting robot_sim node.");
 
-  std::unique_ptr<Quadruped::qrRobotA1Sim> robot_sim = initialize_and_reset_robot(node);
-  control_loop(robot_sim.get(), node);
+  try {
+    std::unique_ptr<Quadruped::qrRobotA1Sim> robot_sim = initialize_and_reset_robot(node);
+    control_loop(robot_sim.get(), node);
+  } catch (const std::runtime_error& e) {
+    RCLCPP_ERROR_STREAM(node->get_logger(), e.what());
+    return 1;
+  }
 
   rclcpp::shutdown();
   return 0;

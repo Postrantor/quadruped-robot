@@ -6,26 +6,56 @@ unitree_joint_controller:
       default_value: [],
       description: "unitree motor joint",
     }
+
   publish_rate: {
       type: double,
       default_value: 50.0, # Hz
       description: "Publishing rate (Hz) of the odometry and TF messages.",
     }
+
   desired_state_timeout: {
       type: double,
       default_value: 0.5, # seconds
       description: "Timeout in seconds, after which input command on ``cmd_vel`` topic is considered staled.",
     }
+
   pid:
-    p: {
-        type: double, #
-        default_value: .NAN,
+    p: { type: double, default_value: .NAN }
+    i: { type: double, default_value: .NAN }
+    d: { type: double, default_value: .NAN }
+
+  position:
+    limit_upper: {
+        type: double,
+        default_value: .NAN, #
+        description: "position limit",
       }
-    i: {
-        type: double, #
-        default_value: .NAN,
+    limit_lower: {
+        type: double,
+        default_value: .NAN, #
+        description: "position limit",
       }
-    d: {
-        type: double, #
-        default_value: .NAN,
+
+  velocity:
+    limit_upper: {
+        type: double,
+        default_value: .NAN, #
+        description: "velocity limit value",
+      }
+    limit_lower: {
+        type: double,
+        default_value: .NAN, #
+        description: "velocity limit value",
+      }
+
+  effort:
+    limit_upper: {
+        type: double,
+        default_value: .NAN, #
+        description: "effort limit value",
+      }
+    limit_lower: {
+        type: double,
+        default_value: .NAN, #
+        description: "effort limit value",
       }

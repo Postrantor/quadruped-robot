@@ -68,7 +68,17 @@ def generate_launch_description():
     spawn_entity = Node(
         package='gazebo_ros',
         executable='spawn_entity.py',
-        arguments=['-topic', 'robot_description', '-entity', LaunchConfiguration('robot_name')],
+        arguments=[
+            '-topic', '/robot_description',
+            '-entity', LaunchConfiguration('robot_name'),
+            '-reference_frame', 'world',
+            '-x', '1.2',
+            '-y', '0.0',
+            '-z', '0.1',
+            '-R', '0.0',
+            '-P', '0.0',
+            '-Y', '0.0',
+        ],
         output='screen'
     )
 
@@ -76,15 +86,8 @@ def generate_launch_description():
     control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
-        # same as <gazebo> tag parameters
         parameters=[
             {'robot_controllers': robot_controllers},
-            {'robot_description': Command([
-                'xacro', ' ', xacro_file, ' '
-                'debug:=', LaunchConfiguration('debug'), ' '
-                'use_mock_hardware:=', LaunchConfiguration('use_mock_hardware'), ' '
-                'gazebo:=ignition', ' ',
-                'namespace:=', LaunchConfiguration('robot_name')])},
         ],
         output="screen",
     )
@@ -113,7 +116,7 @@ def generate_launch_description():
     # load all unitree_joint_controller
     leg_controller_names = [
         f'{leg}_{part}_controller'
-        for leg in ['FL', 'FR', 'RL', 'RR']
+        for leg in ['FL',]  # 'FR', 'RL', 'RR'
         for part in ['hip', 'thigh', 'calf']
     ]
     controller_names = ['joint_state_broadcaster'] + leg_controller_names
@@ -128,19 +131,18 @@ def generate_launch_description():
     # load target step by step
     load_resource = TimerAction(
         period=0.0,
-        actions=[gazebo, control_node]
+        actions=[gazebo, node_robot_state_publisher]
     )
     delayed_start_entity = TimerAction(
-        period=5.0,
-        actions=[spawn_entity, node_robot_state_publisher]
+        period=15.0,
+        actions=[spawn_entity]  # control_node,
     )
     # load controller after spawn_entity
     event_handlers = [
         RegisterEventHandler(
             event_handler=OnProcessExit(
-                target_action=spawn_entity,  # load_and_config_controllers[-1],
-                on_exit=load_controllers
-            ))
+                target_action=spawn_entity,
+                on_exit=load_controllers))
     ]
 
     ld = LaunchDescription([

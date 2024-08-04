@@ -1,6 +1,6 @@
 /**
  * @brief
- * @date 2024-07-29 19:59:11
+ * @date 2024-08-04 23:56:46
  * @copyright Copyright (c) 2024
  */
 
@@ -25,8 +25,11 @@
 #include "unitree_msgs/msg/motor_cmd.hpp"
 #include "unitree_msgs/msg/motor_state.hpp"
 
-#include "unitree_joint_controller_parameters.hpp"  // generate to build folder
+#include "unitree_joint_controller_parameters.hpp"  // generate
 #include "unitree_joint_controller/visibility_control.h"
+
+// add unitree_sdk
+#include "unitree_joint_controller/unitree_joint_control_tool.hpp"
 
 namespace unitree_joint_controller {
 
@@ -107,6 +110,28 @@ public:
   UNITREE_JOINT_CONTROLLER_PUBLIC
   CallbackReturn on_shutdown(const rclcpp_lifecycle::State &previous_state) override;
 
+  /**
+   * @brief 限位
+   * @details 通过joint_urdf获取urdf中设置的限位参数，使用clamp()函数计算获得限位值
+   * @param position
+   */
+  UNITREE_JOINT_CONTROLLER_PUBLIC
+  void position_limits(double &position);
+
+  /**
+   * @brief 限位
+   * @param velocity
+   */
+  UNITREE_JOINT_CONTROLLER_PUBLIC
+  void velocity_limits(double &velocity);
+
+  /**
+   * @brief 限位
+   * @param effort
+   */
+  UNITREE_JOINT_CONTROLLER_PUBLIC
+  void effort_limits(double &effort);
+
 protected:
   bool subscriber_is_active_{false};
   std::queue<unitree_msgs::msg::MotorState> previous_states_{};
@@ -142,15 +167,17 @@ protected:
   /**
    * <joint name="${prefix}joint_name">
    *   <command_interface name="position"/>
-   *   <command_interface name="velocity"/>
-   *   <command_interface name="effort"/>
-   *   <state_interface name="position"/>
-   *   <state_interface name="velocity"/>
+   *   ... ...
    *   <state_interface name="effort"/>
    *   <param name="id">1</param>
    * </joint>
    */
   std::vector<JointHandle> registered_joint_handles_;
+
+  ServoCmd servo_cmd_;
+  double current_pos_;
+  double current_vel_;
+  double calc_torque_;
 
   /**
    * @brief find joint interface handle from `state_interfaces_` and `command_interfaces_`

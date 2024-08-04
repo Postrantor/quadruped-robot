@@ -6,11 +6,6 @@
       <parameters>$(find robot_description)/config/controller/controller.yaml</parameters>
       <robot_param>robot_description</robot_param>
       <robot_param_node>robot_state_publisher</robot_param_node>
-      <ros>
-        <!-- <namespace>/robot_a1</namespace> -->
-        <!-- <remapping>/old_topic:=/new_topic</remapping> -->
-        <!-- <remapping>/another_old_topic:=/another_new_topic</remapping> -->
-      </ros>
     </plugin>
   </gazebo>
 
