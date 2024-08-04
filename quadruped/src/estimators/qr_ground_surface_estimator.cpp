@@ -14,7 +14,7 @@ qrGroundSurfaceEstimator::qrGroundSurfaceEstimator(qrRobot* robotIn, std::string
   terrain.footHoldOffset = footStepperConfig["foothold_offset"].as<float>();
   robot->footHoldOffset = terrain.footHoldOffset;
   Reset(0.f);
-  std::cout << "init groundEsitmator finish\n" << std::endl;
+  std::cout << "init groundEsitmator finish" << std::endl;
 }
 
 void qrGroundSurfaceEstimator::Update(float currentTime) {

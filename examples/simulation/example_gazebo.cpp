@@ -186,11 +186,20 @@ void control_loop(
           << ", " << quadruped->GetBaseOrientation().z()                   //
           << ", " << quadruped->GetBaseOrientation().w() << "]");
 
-  // 设置可视化标签
-  // Quadruped::Visualization2D& vis = quadruped->stateDataFlow.visualizer;
-  // vis.SetLabelNames({"pitch", "H", "vx in world", "vy in world", "vz in world"});
+  // 2. 创建机器人运行实例
+  std::string home_dir_ = ament_index_cpp::get_package_share_directory("quadruped") + "/../../";
+  RCLCPP_INFO_STREAM(node->get_logger(), "get package config dir: \n\t- `" << home_dir_ << "`");
+  qrRobotRunner robotRunner(quadruped, home_dir_, node);
 
-  // 2. 创建服务客户端，获取初始状态
+  RCLCPP_INFO_STREAM(node->get_logger(), "LocomotionController Init Finished");
+  qrLocomotionController* locomotionController = robotRunner.GetLocomotionController();
+  qrStateEstimatorContainer* stateEstimators = robotRunner.GetStateEstimator();
+
+  RCLCPP_INFO_STREAM(node->get_logger(), "ROS Modules Init Finished");
+
+  RCLCPP_INFO_STREAM(node->get_logger(), "TimeSinceReset: " << quadruped->GetTimeSinceReset());
+
+  // 3. 创建服务客户端，获取初始状态
   auto base_state_client = node->create_client<gazebo_msgs::srv::GetEntityState>("/get_entity_state");
   if (!base_state_client->wait_for_service(std::chrono::seconds(2))) {
     RCLCPP_ERROR(node->get_logger(), "base state service not available");
@@ -199,51 +208,51 @@ void control_loop(
     RCLCPP_ERROR_STREAM(node->get_logger(), "get common position in world failed.");
   }
 
-  // 3. 创建机器人运行实例
-  std::string home_dir_ = ament_index_cpp::get_package_share_directory("quadruped") + "/../../";
-  RCLCPP_INFO_STREAM(node->get_logger(), "get package config dir: \n\t- `" << home_dir_ << "`");
-  qrRobotRunner robotRunner(quadruped, home_dir_, node);
-
-  // 4. 创建并初始化控制器消息传递实例
-  // auto controller2gazeboMsg = std::make_unique<Quadruped::qrController2GazeboMsg>(
-  //     quadruped,                              //
-  //     robotRunner.GetLocomotionController(),  //
-  //     node);
-  // RCLCPP_INFO(node->get_logger(), "ros2 modules init finished");
-
   // 5. main loop
   rclcpp::Rate loop_rate1(1000);  // 设置循环频率
-  rclcpp::Rate loop_rate2(700);
+  rclcpp::Rate loop_rate2(500);
+  RCLCPP_INFO_STREAM(node->get_logger(), "loop rate " << round(1.0 / quadruped->timeStep));
 
   float startTime = quadruped->GetTimeSinceReset();
   float currentTime = startTime;
   float startTimeWall = startTime;
 
+  int switchMode;
+  int count = 0;
+  float avgCost = 0;
+  const int n = 10000;
+
+  RCLCPP_INFO_STREAM(node->get_logger(), "start control loop... ...");
   while (rclcpp::ok() && currentTime - startTime < 1000.0f) {
     startTimeWall = quadruped->GetTimeSinceReset();
 
     robotRunner.Update();
     robotRunner.Step();
 
+    // 计算耗时
     currentTime = quadruped->GetTimeSinceReset();
+    avgCost += (currentTime - startTimeWall);
+    if ((count + 1) % 1000 == 0) {
+      RCLCPP_INFO_STREAM(node->get_logger(), "avg time cost = " << avgCost << "ms");
+      avgCost = 0.;
+    }
 
-    // 机器人状态检查
+    // 检查机器人状态
     if (quadruped->basePosition[2] < 0.10 ||                     //
         quadruped->stateDataFlow.heightInControlFrame < 0.05 ||  //
         quadruped->basePosition[2] > 0.40 ||                     //
         std::abs(quadruped->baseRollPitchYaw[0]) > 0.6) {
+      RCLCPP_ERROR_STREAM(node->get_logger(), "the dog is going down, main function exit...");
       RCLCPP_INFO_STREAM(
           node->get_logger(), "\n\t"
                                   << "base pos: \n\t" << quadruped->basePosition << "\n\t"
                                   << "base rpy: \n\t" << quadruped->GetBaseRollPitchYaw());
-      RCLCPP_WARN_STREAM(node->get_logger(), "the dog is going down, main function exit...");
       // break;
     }
 
     // 控制仿真频率
-    // FIXME(@zhiqi.jia) :: use timer callback
     if (quadruped->useRosTime) {
-      rclcpp::spin_some(node);  // 非阻塞回调执行
+      rclcpp::spin_some(node);
       if (quadruped->timeStep < 0.0015)
         loop_rate1.sleep();
       else
@@ -252,9 +261,8 @@ void control_loop(
       while (quadruped->GetTimeSinceReset() - startTimeWall < quadruped->timeStep) {
       }
     }
+    count++;
   }
-
-  // quadruped->stateDataFlow.visualizer.Show();
 }
 
 /**
@@ -267,13 +275,8 @@ int main(int argc, char** argv) {
   const std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared("robot_sim");
   RCLCPP_INFO_STREAM(node->get_logger(), "starting robot_sim node.");
 
-  try {
-    std::unique_ptr<Quadruped::qrRobotA1Sim> robot_sim = initialize_and_reset_robot(node);
-    control_loop(robot_sim.get(), node);
-  } catch (const std::runtime_error& e) {
-    RCLCPP_ERROR_STREAM(node->get_logger(), e.what());
-    return 1;
-  }
+  std::unique_ptr<Quadruped::qrRobotA1Sim> robot_sim = initialize_and_reset_robot(node);
+  control_loop(robot_sim.get(), node);
 
   rclcpp::shutdown();
   return 0;

@@ -97,6 +97,7 @@ qrRobotRunner::qrRobotRunner(
   RCLCPP_INFO_STREAM(nh->get_logger(), "[Runner] name: " << quadruped->robotName);
 
   // main config
+  RCLCPP_INFO_STREAM(nh->get_logger(), "load yaml: " << robot_config_dir + "/main.yaml");
   YAML::Node mainConfig = YAML::LoadFile(robot_config_dir + "/main.yaml");
   int twistMode = mainConfig["speed_update_mode"].as<int>();
   std::vector<float> linearVel = mainConfig["const_twist"]["linear"].as<std::vector<float>>();
@@ -155,9 +156,7 @@ bool qrRobotRunner::Update() {
 }
 
 bool qrRobotRunner::Step() {
-  quadruped->Step(
-      qrMotorCommand::convertToMatix(hybridAction),  //
-      HYBRID_MODE);
+  quadruped->Step(qrMotorCommand::convertToMatix(hybridAction), HYBRID_MODE);
 
   return 1;
 }

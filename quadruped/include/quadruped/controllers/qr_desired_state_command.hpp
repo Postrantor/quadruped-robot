@@ -152,7 +152,7 @@ private:
   /**
    * @brief ROS joy_node 的话题名称
    */
-  std::string topicName = "/joy";
+  std::string topicName = "/quadruped_joy";
 
   /**
    * @brief 当前 joy 状态

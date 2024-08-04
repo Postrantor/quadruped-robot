@@ -31,6 +31,7 @@ using namespace std::chrono_literals;
 controller_interface::InterfaceConfiguration UnitreeJointController::command_interface_configuration() const {
   std::vector<std::string> conf_names;
   for (const auto &joint_name : params_.joint_name) {
+    conf_names.push_back(joint_name + "/" + hardware_interface::HW_IF_POSITION);
     conf_names.push_back(joint_name + "/" + hardware_interface::HW_IF_VELOCITY);
   }
 
@@ -199,26 +200,31 @@ controller_interface::return_type UnitreeJointController::update(
   for (size_t i = 0; i < params_.joint_name.size(); ++i) {
     const double feedback_position = registered_joint_handles_[i].feedback_position.get().get_value();
     const double feedback_velocity = registered_joint_handles_[i].feedback_velocity.get().get_value();
+    const double feedback_effort = registered_joint_handles_[i].feedback_effort.get().get_value();
 
-    if (std::isnan(feedback_position) || std::isnan(feedback_velocity)) {
+    if (std::isnan(feedback_position) || std::isnan(feedback_velocity) || std::isnan(feedback_effort)) {
       RCLCPP_ERROR_STREAM(LOGGER, "either the position or velocity joint is invalid for index " << i);
       return controller_interface::return_type::ERROR;
     }
     target_state_.q = feedback_position;
     target_state_.dq = feedback_velocity;
+    target_state_.tau_est = feedback_effort;
 
     RCLCPP_INFO_STREAM(
         LOGGER, "update()->read(): \n\tfeedback_position: " << feedback_position
-                                                            << "\n\tfeedback_velocity: " << feedback_velocity);
+                                                            << "\n\tfeedback_velocity: " << feedback_velocity
+                                                            << "\n\tfeedback_effort: " << feedback_effort);
   }
-
-  // 4. publish `target_state`
   publishe_target_state_->publish(target_state_);
-  // and write()->motor
+
+  // 3. write()->motor
   for (size_t i = 0; i < params_.joint_name.size(); ++i) {
+    registered_joint_handles_[i].command_position.get().set_value(last_desired_state->q);
     registered_joint_handles_[i].command_velocity.get().set_value(last_desired_state->dq);
+    registered_joint_handles_[i].command_effort.get().set_value(last_desired_state->tau);
     RCLCPP_INFO_STREAM(
-        LOGGER, "update()->write() " << params_.joint_name[i] << "dq: " << last_desired_state->dq << " to hardware");
+        LOGGER, "update()->write() " << params_.joint_name[i] << "\n\tq: " << last_desired_state->q
+                                     << "\n\tdq: " << last_desired_state->dq << "\n\ttau: " << last_desired_state->tau);
   }
 
   return controller_interface::return_type::OK;
@@ -259,6 +265,30 @@ CallbackReturn UnitreeJointController::get_joint_handle(
       RCLCPP_ERROR_STREAM(LOGGER, "unable to obtain joint state handle for " << joint_name.c_str());
       return CallbackReturn::ERROR;
     }
+    // find state_effort_handle
+    const auto state_effort_handle = std::find_if(
+        state_interfaces_.cbegin(),  //
+        state_interfaces_.cend(),    //
+        [&joint_name](const auto &interface) {
+          return interface.get_prefix_name() == joint_name &&
+                 interface.get_interface_name() == hardware_interface::HW_IF_EFFORT;
+        });
+    if (state_effort_handle == state_interfaces_.cend()) {
+      RCLCPP_ERROR_STREAM(LOGGER, "unable to obtain joint state handle for " << joint_name.c_str());
+      return CallbackReturn::ERROR;
+    }
+    // find command_position_handle
+    const auto command_position_handle = std::find_if(
+        command_interfaces_.begin(),  //
+        command_interfaces_.end(),    //
+        [&joint_name](const auto &interface) {
+          return interface.get_prefix_name() == joint_name &&
+                 interface.get_interface_name() == hardware_interface::HW_IF_POSITION;
+        });
+    if (command_position_handle == command_interfaces_.end()) {
+      RCLCPP_ERROR_STREAM(LOGGER, "unable to obtain joint command handle for " << joint_name.c_str());
+      return CallbackReturn::ERROR;
+    }
     // find command_velocity_handle
     const auto command_velocity_handle = std::find_if(
         command_interfaces_.begin(),  //
@@ -271,12 +301,27 @@ CallbackReturn UnitreeJointController::get_joint_handle(
       RCLCPP_ERROR_STREAM(LOGGER, "unable to obtain joint command handle for " << joint_name.c_str());
       return CallbackReturn::ERROR;
     }
+    // find command_effort_handle
+    const auto command_effort_handle = std::find_if(
+        command_interfaces_.begin(),  //
+        command_interfaces_.end(),    //
+        [&joint_name](const auto &interface) {
+          return interface.get_prefix_name() == joint_name &&
+                 interface.get_interface_name() == hardware_interface::HW_IF_EFFORT;
+        });
+    if (command_effort_handle == command_interfaces_.end()) {
+      RCLCPP_ERROR_STREAM(LOGGER, "unable to obtain joint command handle for " << joint_name.c_str());
+      return CallbackReturn::ERROR;
+    }
 
     // return
     registered_handles.emplace_back(JointHandle{
+        std::ref(*command_position_handle),  //
         std::ref(*command_velocity_handle),  //
+        std::ref(*command_effort_handle),    //
         std::ref(*state_position_handle),    //
         std::ref(*state_velocity_handle),    //
+        std::ref(*state_effort_handle),      //
     });
   }
 

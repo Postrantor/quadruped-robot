@@ -53,7 +53,7 @@ def generate_launch_description():
 
     # get config file path
     gazebo_launch_file = PathJoinSubstitution([pkg_gazebo_ros, 'launch', 'gazebo.launch.py'])
-    empty_world_file = PathJoinSubstitution([pkg_description, 'config', 'worlds', 'earth.world'])
+    empty_world_file = PathJoinSubstitution([pkg_description, 'config', 'worlds', 'empty.world'])
     robot_controllers = PathJoinSubstitution([pkg_description, 'config', 'controller', 'position_controller.yaml'])
     xacro_file = PathJoinSubstitution([pkg_description, 'config', 'xacro', 'robot.xacro'])
     rviz2_config_file = PathJoinSubstitution([pkg_description, 'config', 'rviz', 'robot.rviz'])
@@ -121,18 +121,18 @@ def generate_launch_description():
         package="controller_manager",
         executable="spawner",
         # load each controller use controller_manager service
-        arguments=['--activate-as-group', *controller_names, '--controller-manager', '/controller_manager'],
+        arguments=['--activate-as-group', *controller_names],
         output="screen",
     )
 
     # load target step by step
     load_resource = TimerAction(
         period=0.0,
-        actions=[gazebo, spawn_entity]
+        actions=[gazebo, control_node]
     )
     delayed_start_entity = TimerAction(
         period=5.0,
-        actions=[control_node, node_robot_state_publisher]
+        actions=[spawn_entity, node_robot_state_publisher]
     )
     # load controller after spawn_entity
     event_handlers = [

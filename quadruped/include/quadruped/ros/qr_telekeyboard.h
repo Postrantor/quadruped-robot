@@ -47,7 +47,7 @@ private:
   /**
    * @brief The topic which the converted message to publish to.
    */
-  std::string topic_name_ = "/qr_telekeyboard";
+  std::string topic_name_ = "/quadruped_joy";
 
   rclcpp::Publisher<sensor_msgs::msg::Joy>::SharedPtr pub_;
   rclcpp::TimerBase::SharedPtr timer_;

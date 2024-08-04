@@ -13,8 +13,10 @@ float32[2] position
 float32[3] euler
 float32[2] velocity
 float32 yaw_speed
+
 BmsCmd bms
 LED[4] led
+
 uint8[40] wireless_remote
 uint32 reserve
 uint32 crc

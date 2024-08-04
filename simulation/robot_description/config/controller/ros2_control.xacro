@@ -33,92 +33,128 @@
       <!-- controller_interface<->hardware_interface -->
       <!-- FL_joint -->
       <joint name="FL_hip_joint">
+        <command_interface name="position"/>
         <command_interface name="velocity"/>
+        <command_interface name="effort"/>
         <state_interface name="position"/>
         <state_interface name="velocity"/>
+        <state_interface name="effort"/>
         <param name="motor_id">0</param>
         <param name="serial_port">/dev/ttyUSB0</param>
       </joint>
       <joint name="FL_thigh_joint">
+        <command_interface name="position"/>
         <command_interface name="velocity"/>
+        <command_interface name="effort"/>
         <state_interface name="position"/>
         <state_interface name="velocity"/>
+        <state_interface name="effort"/>
         <param name="motor_id">1</param>
         <param name="serial_port">/dev/ttyUSB0</param>
       </joint>
       <joint name="FL_calf_joint">
+        <command_interface name="position"/>
         <command_interface name="velocity"/>
+        <command_interface name="effort"/>
         <state_interface name="position"/>
         <state_interface name="velocity"/>
+        <state_interface name="effort"/>
         <param name="motor_id">2</param>
         <param name="serial_port">/dev/ttyUSB0</param>
       </joint>
 
       <!-- FR_joint -->
       <joint name="FR_hip_joint">
+        <command_interface name="position"/>
         <command_interface name="velocity"/>
+        <command_interface name="effort"/>
         <state_interface name="position"/>
         <state_interface name="velocity"/>
+        <state_interface name="effort"/>
         <param name="motor_id">3</param>
         <param name="serial_port">/dev/ttyUSB0</param>
       </joint>
       <joint name="FR_thigh_joint">
+        <command_interface name="position"/>
         <command_interface name="velocity"/>
+        <command_interface name="effort"/>
         <state_interface name="position"/>
         <state_interface name="velocity"/>
+        <state_interface name="effort"/>
         <param name="motor_id">4</param>
         <param name="serial_port">/dev/ttyUSB0</param>
       </joint>
       <joint name="FR_calf_joint">
+        <command_interface name="position"/>
         <command_interface name="velocity"/>
+        <command_interface name="effort"/>
         <state_interface name="position"/>
         <state_interface name="velocity"/>
+        <state_interface name="effort"/>
         <param name="motor_id">5</param>
         <param name="serial_port">/dev/ttyUSB0</param>
       </joint>
 
       <!-- RL_joint -->
       <joint name="RL_hip_joint">
+        <command_interface name="position"/>
         <command_interface name="velocity"/>
+        <command_interface name="effort"/>
         <state_interface name="position"/>
         <state_interface name="velocity"/>
+        <state_interface name="effort"/>
         <param name="motor_id">6</param>
         <param name="serial_port">/dev/ttyUSB0</param>
       </joint>
       <joint name="RL_thigh_joint">
+        <command_interface name="position"/>
         <command_interface name="velocity"/>
+        <command_interface name="effort"/>
         <state_interface name="position"/>
         <state_interface name="velocity"/>
+        <state_interface name="effort"/>
         <param name="motor_id">7</param>
         <param name="serial_port">/dev/ttyUSB0</param>
       </joint>
       <joint name="RL_calf_joint">
+        <command_interface name="position"/>
         <command_interface name="velocity"/>
+        <command_interface name="effort"/>
         <state_interface name="position"/>
         <state_interface name="velocity"/>
+        <state_interface name="effort"/>
         <param name="motor_id">8</param>
         <param name="serial_port">/dev/ttyUSB0</param>
       </joint>
 
       <!-- RR_joint -->
       <joint name="RR_hip_joint">
+        <command_interface name="position"/>
         <command_interface name="velocity"/>
+        <command_interface name="effort"/>
         <state_interface name="position"/>
         <state_interface name="velocity"/>
+        <state_interface name="effort"/>
         <param name="motor_id">9</param>
         <param name="serial_port">/dev/ttyUSB0</param>
       </joint>
       <joint name="RR_thigh_joint">
+        <command_interface name="position"/>
         <command_interface name="velocity"/>
+        <command_interface name="effort"/>
         <state_interface name="position"/>
         <state_interface name="velocity"/>
+        <state_interface name="effort"/>
         <param name="motor_id">10</param>
         <param name="serial_port">/dev/ttyUSB0</param>
       </joint>
       <joint name="RR_calf_joint">
+        <command_interface name="position"/>
         <command_interface name="velocity"/>
+        <command_interface name="effort"/>
         <state_interface name="position"/>
         <state_interface name="velocity"/>
+        <state_interface name="effort"/>
         <param name="motor_id">11</param>
         <param name="serial_port">/dev/ttyUSB0</param>
       </joint>

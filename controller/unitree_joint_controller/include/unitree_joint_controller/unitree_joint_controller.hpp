@@ -131,16 +131,22 @@ protected:
    *        还可以再封装一层！直接对每个interface的 ->set()/->get()
    */
   struct JointHandle {
+    std::reference_wrapper<hardware_interface::LoanedCommandInterface> command_position;
     std::reference_wrapper<hardware_interface::LoanedCommandInterface> command_velocity;
+    std::reference_wrapper<hardware_interface::LoanedCommandInterface> command_effort;
     std::reference_wrapper<const hardware_interface::LoanedStateInterface> feedback_position;
     std::reference_wrapper<const hardware_interface::LoanedStateInterface> feedback_velocity;
+    std::reference_wrapper<const hardware_interface::LoanedStateInterface> feedback_effort;
   };
 
   /**
    * <joint name="${prefix}joint_name">
+   *   <command_interface name="position"/>
    *   <command_interface name="velocity"/>
+   *   <command_interface name="effort"/>
    *   <state_interface name="position"/>
    *   <state_interface name="velocity"/>
+   *   <state_interface name="effort"/>
    *   <param name="id">1</param>
    * </joint>
    */
