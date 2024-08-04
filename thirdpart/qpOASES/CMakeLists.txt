@@ -128,8 +128,11 @@ install(
   TARGETS ${PROJECT_NAME}
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
-  RUNTIME DESTINATION lib)
-set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${PACKAGE_SO_VERSION})
+  RUNTIME DESTINATION lib
+)
+
+# FIXME(zhiqi.jia) avoid find_package error
+# set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${PACKAGE_SO_VERSION})
 
 install(
   DIRECTORY include

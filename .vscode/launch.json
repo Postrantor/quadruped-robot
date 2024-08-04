@@ -6,7 +6,6 @@
       "type": "cppdbg",
       "request": "launch",
       "MIMode": "gdb",
-      // "program": "${workspaceFolder}/install/robot_sim/bin/robot_sim",
       "program": "${workspaceFolder}/install/robot_sim/bin/robot_sim",
       "args": [
         // "${workspaceFolder}/install/example_vip_channel/lib/example_vip_channel"
