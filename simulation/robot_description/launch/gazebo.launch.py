@@ -72,7 +72,7 @@ def generate_launch_description():
             '-topic', '/robot_description',
             '-entity', LaunchConfiguration('robot_name'),
             '-reference_frame', 'world',
-            '-x', '1.2',
+            '-x', '0.0',
             '-y', '0.0',
             '-z', '0.1',
             '-R', '0.0',
@@ -88,6 +88,9 @@ def generate_launch_description():
         executable="ros2_control_node",
         parameters=[
             {'robot_controllers': robot_controllers},
+        ],
+        remappings=[
+            ('~/robot_description', '/robot_description'),
         ],
         output="screen",
     )
@@ -105,10 +108,6 @@ def generate_launch_description():
                 'use_mock_hardware:=', LaunchConfiguration('use_mock_hardware'), ' '
                 'gazebo:=ignition', ' ',
                 'namespace:=', LaunchConfiguration('robot_name')])},
-        ],
-        remappings=[
-            ('/tf', 'tf'),
-            ('/tf_static', 'tf_static')
         ],
         output='screen',
     )
@@ -131,11 +130,11 @@ def generate_launch_description():
     # load target step by step
     load_resource = TimerAction(
         period=0.0,
-        actions=[gazebo, node_robot_state_publisher]
+        actions=[gazebo, node_robot_state_publisher, control_node]
     )
     delayed_start_entity = TimerAction(
-        period=15.0,
-        actions=[spawn_entity]  # control_node,
+        period=10.0,
+        actions=[spawn_entity]
     )
     # load controller after spawn_entity
     event_handlers = [
