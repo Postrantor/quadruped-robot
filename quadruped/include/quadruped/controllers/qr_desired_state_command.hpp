@@ -1,18 +1,21 @@
 /**
- * @author Robot Motion and Vision Laboratory at East China Normal University
  * @brief
- * @date 2022
+ * @author Robot Motion and Vision Laboratory at East China Normal University
+ * @author GPT-4o
+ * @author postrantor@gmail.com
+ * @date 2024-08-08 22:31:50
  * @copyright MIT License
  */
 
-#ifndef QR_DESIRED_STATE_COMMAND_H
-#define QR_DESIRED_STATE_COMMAND_H
+#ifndef QUADRUPED__CONTROLLERS__QR_DESIRED_STATE_COMMAND_HPP_
+#define QUADRUPED__CONTROLLERS__QR_DESIRED_STATE_COMMAND_HPP_
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <iostream>
+#include <string>
 
 #include "rclcpp/rclcpp.hpp"
 
@@ -142,7 +145,7 @@ private:
    * @brief 订阅 "/joy" 的 ROS 节点句柄
    * @todo 将使用驱动程序获取 joy 的状态，而不是 ROS 话题
    */
-  const rclcpp::Node::SharedPtr& nh;
+  const rclcpp::Node::SharedPtr& nhIn;
 
   /**
    * @brief ROS joy_node 的订阅者
@@ -152,7 +155,7 @@ private:
   /**
    * @brief ROS joy_node 的话题名称
    */
-  std::string topicName = "/quadruped_joy";
+  std::string topicName{"/quadruped_joy"};
 
   /**
    * @brief 当前 joy 状态
@@ -191,8 +194,10 @@ private:
   bool joyCmdExit;
 
   /**
-   * @brief 一个变量，指示机体是向上还是向下。如果 bodyUp 等于 -1，四足机器人正在蹲下。如果 bodyUp 等于 0，四足机器人在
-   * bodyHeight 处停止。如果 bodyUp 等于 1，四足机器人正在站起来。
+   * @brief 一个变量，指示机体是向上还是向下
+   * @details bodyUp 等于 -1，四足机器人正在蹲下
+   *        如果 bodyUp 等于 0，四足机器人在 bodyHeight 处停止
+   *        如果 bodyUp 等于 1，四足机器人正在站起来
    */
   int bodyUp;
 
@@ -348,6 +353,6 @@ private:
   const float BODY_HEIGHT_MIN = 0.15f;
 };
 
-}  // Namespace Quadruped
+}  // namespace Quadruped
 
-#endif  // QR_DESIRED_STATE_COMMAND_H
+#endif  // QUADRUPED__CONTROLLERS__QR_DESIRED_STATE_COMMAND_HPP_

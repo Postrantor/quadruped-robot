@@ -6,24 +6,27 @@
       <parameters>$(find robot_description)/config/controller/controller.yaml</parameters>
       <robot_param>robot_description</robot_param>
       <robot_param_node>robot_state_publisher</robot_param_node>
+      <!-- <use_sim_time>true</use_sim_time> -->
+      <!-- <robotNamespace>/robot_a1</robotNamespace> -->
+      <!-- <updateRate>100.0</updateRate> -->
     </plugin>
   </gazebo>
 
   <xacro:macro name="use_ros2_control" params="use_mock_hardware">
     <ros2_control name="GazeboSystem" type="system">
       <!-- set `false` by launch -->
-      <xacro:if value="${use_mock_hardware}">
-        <hardware>
-          <plugin>gazebo_ros2_control/GazeboSystem</plugin>
-        </hardware>
-      </xacro:if>
-      <xacro:unless value="${use_mock_hardware}">
+      <!-- <xacro:if value="${use_mock_hardware}"> -->
+      <hardware>
+        <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+      </hardware>
+      <!-- </xacro:if> -->
+      <!-- <xacro:unless value="${use_mock_hardware}">
         <hardware>
           <plugin>unitree_motor_example/UnitreeMotorSystemHardware</plugin>
           <param name="hw_start_interval_millisec">200</param>
           <param name="hw_stop_interval_millisec">100</param>
         </hardware>
-      </xacro:unless>
+      </xacro:unless> -->
 
       <!-- controller_interface<->hardware_interface -->
       <!-- FL_joint -->

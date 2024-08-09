@@ -190,9 +190,9 @@ int Quadruped::qrDesiredStateCommand::RecvSocket() {
 }
 
 Quadruped::qrDesiredStateCommand::qrDesiredStateCommand(
-    const rclcpp::Node::SharedPtr &nhIn,  //
+    const rclcpp::Node::SharedPtr &nh,  //
     Quadruped::qrRobot *robotIn)
-    : nh(nhIn) {
+    : nhIn(nh) {
   stateDes.setZero();
   stateCur.setZero();
   preStateDes.setZero();
@@ -222,17 +222,13 @@ Quadruped::qrDesiredStateCommand::qrDesiredStateCommand(
   bodyUp = 1;
   movementMode = 0;
 
-  // FIXME(@zhiqi.jia) :: maybe no use
-  gamepadCommandSub = nh->create_subscription<sensor_msgs::msg::Joy>(
-      topicName, 10, [this](const sensor_msgs::msg::Joy::SharedPtr joy_msg) { this->JoyCallback(joy_msg); });
-  printf("[Desired State Command] init finish...\n");
+  gamepadCommandSub = nhIn->create_subscription<sensor_msgs::msg::Joy>(
+      topicName,  //
+      10,         //
+      [this](const sensor_msgs::msg::Joy::SharedPtr joy_msg) { this->JoyCallback(joy_msg); });
+  RCLCPP_INFO_STREAM(nhIn->get_logger(), "desired_state_command topic: `" << topicName << "` init finished");
 
   memset(joyData.data_buffer, 0, sizeof(joyData.data_buffer));
-
-  // 创建新线程并运行ReceiveData函数
-  // t = std::thread(Quadruped::RecvSocket);
-  // 等待新线程结束
-  // t.join();
 }
 
 void Quadruped::qrDesiredStateCommand::JoyCallback(const sensor_msgs::msg::Joy::SharedPtr &joy_msg) {
@@ -243,10 +239,10 @@ void Quadruped::qrDesiredStateCommand::JoyCallback(const sensor_msgs::msg::Joy::
    */
   if (joy_msg->buttons[0] == 1) {
     if (!joyCtrlOnRequest) {
-      RCLCPP_INFO(rclcpp::get_logger("quadruped"), "You have open joy control!!!\n");
+      RCLCPP_INFO_STREAM(nhIn->get_logger(), "you have open joy control!!!");
       joyCtrlOnRequest = true;
     } else {
-      RCLCPP_INFO(rclcpp::get_logger("quadruped"), "You have turned off joy control!!!\n");
+      RCLCPP_INFO_STREAM(nhIn->get_logger(), "you have turned off joy control!!!");
       joyCtrlOnRequest = false;
     }
   }
@@ -258,10 +254,10 @@ void Quadruped::qrDesiredStateCommand::JoyCallback(const sensor_msgs::msg::Joy::
     if (joy_msg->buttons[2] == 1) {
       if (movementMode > 0) {
         movementMode = 2;
-        RCLCPP_INFO(rclcpp::get_logger("quadruped"), "You have change the gait !!!\n");
+        RCLCPP_INFO_STREAM(nhIn->get_logger(), "you have change the gait !!!");
         joyCtrlStateChangeRequest = true;
       } else {
-        RCLCPP_INFO(rclcpp::get_logger("quadruped"), "dog should be in torque stance mode first !!!\n");
+        RCLCPP_INFO_STREAM(nhIn->get_logger(), "dog should be in torque stance mode first !!!\n");
       }
     }
 

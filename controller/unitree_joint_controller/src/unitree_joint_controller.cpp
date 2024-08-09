@@ -228,8 +228,6 @@ controller_interface::return_type UnitreeJointController::update(
 
     servo_cmd_.torque = last_desired_state->tau;
     effort_limits(servo_cmd_.torque);
-
-    RCLCPP_INFO_STREAM(LOGGER, "limit joint action.");
   }
 
   // 2. read `target_state` from hardware_interface
@@ -256,8 +254,9 @@ controller_interface::return_type UnitreeJointController::update(
   effort_limits(calc_torque_);
 
   for (size_t i = 0; i < params_.joint_name.size(); ++i) {
-    registered_joint_handles_[i].command_effort.get().set_value(calc_torque_);
-    RCLCPP_INFO_STREAM(LOGGER, "\n" << params_.joint_name[i] << "\n\t- control_effort: " << calc_torque_);
+    registered_joint_handles_[i].command_velocity.get().set_value(last_desired_state->dq);
+    // registered_joint_handles_[i].command_effort.get().set_value(calc_torque_);
+    RCLCPP_INFO_STREAM(LOGGER, "\n" << params_.joint_name[i] << "\n\t- control_velocity: " << last_desired_state->dq);
   }
 
   last_desired_state->q = current_pos_;

@@ -35,7 +35,7 @@ private:
     cmd.k_dq = 0.0;
     cmd.tau = 0.2;
 
-    RCLCPP_INFO_STREAM(this->get_logger(), "Publishing: '%s'" << cmd.dq);
+    RCLCPP_INFO_STREAM(this->get_logger(), "Publishing effort: " << cmd.dq);
     publisher_calf_->publish(cmd);
     publisher_hip_->publish(cmd);
     publisher_thigh_->publish(cmd);

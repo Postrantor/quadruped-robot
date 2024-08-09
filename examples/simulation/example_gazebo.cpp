@@ -213,28 +213,28 @@ void control_loop(
   rclcpp::Rate loop_rate2(500);
   RCLCPP_INFO_STREAM(node->get_logger(), "loop rate " << round(1.0 / quadruped->timeStep));
 
-  float startTime = quadruped->GetTimeSinceReset();
-  float currentTime = startTime;
-  float startTimeWall = startTime;
+  float start_time = quadruped->GetTimeSinceReset();
+  float current_time = start_time;
+  float start_time_wall = start_time;
 
-  int switchMode;
+  int switch_mode;
   int count = 0;
-  float avgCost = 0;
+  float avg_cost = 0;
   const int n = 10000;
 
   RCLCPP_INFO_STREAM(node->get_logger(), "start control loop... ...");
-  while (rclcpp::ok() && currentTime - startTime < 1000.0f) {
-    startTimeWall = quadruped->GetTimeSinceReset();
+  while (rclcpp::ok() && current_time - start_time < 1000.0f) {
+    start_time_wall = quadruped->GetTimeSinceReset();
 
     robotRunner.Update();
     robotRunner.Step();
 
     // 计算耗时
-    currentTime = quadruped->GetTimeSinceReset();
-    avgCost += (currentTime - startTimeWall);
+    current_time = quadruped->GetTimeSinceReset();
+    avg_cost += (current_time - start_time_wall);
     if ((count + 1) % 1000 == 0) {
-      RCLCPP_INFO_STREAM(node->get_logger(), "avg time cost = " << avgCost << "ms");
-      avgCost = 0.;
+      RCLCPP_INFO_STREAM(node->get_logger(), "avg time cost = " << avg_cost << "ms");
+      avg_cost = 0.;
     }
 
     // 检查机器人状态
@@ -258,7 +258,7 @@ void control_loop(
       else
         loop_rate2.sleep();
     } else {
-      while (quadruped->GetTimeSinceReset() - startTimeWall < quadruped->timeStep) {
+      while (quadruped->GetTimeSinceReset() - start_time_wall < quadruped->timeStep) {
       }
     }
     count++;

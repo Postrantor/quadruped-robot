@@ -38,7 +38,7 @@ ARGUMENTS = [
         description='use gazebo simulation'),
     DeclareLaunchArgument(
         'debug',
-        default_value='false',
+        default_value='true',
         choices=['true', 'false'],
         description='debug'),
     SetEnvironmentVariable('SVGA_VGPU10', '0'),  # 禁用硬件加速
@@ -74,7 +74,7 @@ def generate_launch_description():
             '-reference_frame', 'world',
             '-x', '0.0',
             '-y', '0.0',
-            '-z', '0.1',
+            '-z', '0.5',
             '-R', '0.0',
             '-P', '0.0',
             '-Y', '0.0',
@@ -83,6 +83,7 @@ def generate_launch_description():
     )
 
     # load controller_manager with controller.yaml config
+    # the loading of control_nodel conflicts with `<gazebo>` in the urdf configuration file.
     control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
@@ -115,8 +116,8 @@ def generate_launch_description():
     # load all unitree_joint_controller
     leg_controller_names = [
         f'{leg}_{part}_controller'
-        for leg in ['FL',]  # 'FR', 'RL', 'RR'
-        for part in ['hip', 'thigh', 'calf']
+        for leg in ['FR']  # 'FL', 'FR', 'RL', 'RR'
+        for part in ['thigh']  # 'hip', 'thigh', 'calf'
     ]
     controller_names = ['joint_state_broadcaster'] + leg_controller_names
     load_controllers = Node(
@@ -130,7 +131,7 @@ def generate_launch_description():
     # load target step by step
     load_resource = TimerAction(
         period=0.0,
-        actions=[gazebo, node_robot_state_publisher, control_node]
+        actions=[gazebo, node_robot_state_publisher]
     )
     delayed_start_entity = TimerAction(
         period=10.0,
@@ -148,7 +149,7 @@ def generate_launch_description():
         *ARGUMENTS,
         load_resource,
         delayed_start_entity,
-        *event_handlers,
+        * event_handlers,
     ])
 
     return ld
